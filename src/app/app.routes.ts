@@ -82,6 +82,13 @@ export const routes: Routes = [
             (m) => m.PaymentsListComponent,
           ),
       },
+      {
+        path: 'expenses',
+        loadComponent: () =>
+          import('./features/expenses/expenses-list.component').then(
+            (m) => m.ExpensesListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
