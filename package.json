@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend-angular-tech-service": "node dist/frontend-angular-tech-service/server/server.mjs",
-    "sync:types": "swagger-typescript-api -p http://localhost:3000/api/docs-json -o src/app/core/models -n api.interfaces.ts --no-client"
+    "sync:types": "swagger-typescript-api generate -p http://localhost:3000/api/docs-json -o src/app/core/models -n api.interfaces.ts --no-client"
   },
   "private": true,
   "packageManager": "npm@11.16.0",
