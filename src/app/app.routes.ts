@@ -75,6 +75,13 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'payments',
+        loadComponent: () =>
+          import('./features/payments/payments-list.component').then(
+            (m) => m.PaymentsListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
