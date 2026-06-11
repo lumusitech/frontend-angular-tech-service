@@ -1,0 +1,241 @@
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { SuppliersService } from '../../core/services/suppliers.service';
+import { Supplier, SupplierFilters } from '../../core/models/supplier.interfaces';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { SupplierFormComponent } from './supplier-form.component';
+
+@Component({
+  selector: 'app-suppliers-list',
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    EmptyStateComponent,
+  ],
+  template: `
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Proveedores</h1>
+          <p class="text-gray-500 mt-1">Gestiona tus proveedores</p>
+        </div>
+        <button mat-flat-button color="primary" (click)="openCreateDialog()">
+          <mat-icon>add</mat-icon>
+          Nuevo Proveedor
+        </button>
+      </div>
+
+      @if (loading()) {
+        <div class="flex justify-center py-12">
+          <mat-spinner diameter="48" />
+        </div>
+      } @else if (suppliers().length === 0) {
+        <app-empty-state
+          title="Sin proveedores"
+          message="No hay proveedores registrados. Crea tu primer proveedor para comenzar."
+          actionLabel="Crear Proveedor"
+          [action]="openCreateDialog.bind(this)"
+        />
+      } @else {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <table mat-table [dataSource]="suppliers()" class="w-full">
+            <ng-container matColumnDef="name">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Nombre
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-900">
+                {{ supplier.name }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="contact">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Contacto
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+                {{ supplier.contact }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="phone">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Teléfono
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+                {{ supplier.phone }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Email
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+                {{ supplier.email || '-' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="isActive">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Estado
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3">
+                @if (supplier.isActive) {
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                  >
+                    Activo
+                  </span>
+                } @else {
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                  >
+                    Inactivo
+                  </span>
+                }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+              >
+                Acciones
+              </th>
+              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-right">
+                <button mat-icon-button (click)="openEditDialog(supplier)" title="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="deleteSupplier(supplier)"
+                  title="Eliminar"
+                  color="warn"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <mat-paginator
+            [length]="totalSuppliers()"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="[10, 25, 50]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          />
+        </div>
+      }
+    </div>
+  `,
+})
+export class SuppliersListComponent implements OnInit {
+  private readonly suppliersService = inject(SuppliersService);
+  private readonly dialog = inject(MatDialog);
+
+  readonly suppliers = signal<Supplier[]>([]);
+  readonly loading = signal(true);
+  readonly totalSuppliers = signal(0);
+  readonly pageSize = signal(10);
+  readonly currentPage = signal(1);
+
+  displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'actions'];
+
+  ngOnInit(): void {
+    this.loadSuppliers();
+  }
+
+  loadSuppliers(): void {
+    this.loading.set(true);
+    const filters: SupplierFilters = {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+    };
+
+    this.suppliersService.getAll(filters).subscribe({
+      next: (response) => {
+        this.suppliers.set(response.data);
+        this.totalSuppliers.set(response.total);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      },
+    });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage.set(event.pageIndex + 1);
+    this.pageSize.set(event.pageSize);
+    this.loadSuppliers();
+  }
+
+  openCreateDialog(): void {
+    const dialogRef = this.dialog.open(SupplierFormComponent, {
+      width: '600px',
+      data: { mode: 'create' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadSuppliers();
+      }
+    });
+  }
+
+  openEditDialog(supplier: Supplier): void {
+    const dialogRef = this.dialog.open(SupplierFormComponent, {
+      width: '600px',
+      data: { mode: 'edit', supplier },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadSuppliers();
+      }
+    });
+  }
+
+  deleteSupplier(supplier: Supplier): void {
+    if (confirm(`¿Estás seguro de eliminar a ${supplier.name}?`)) {
+      this.suppliersService.delete(supplier.id).subscribe({
+        next: () => this.loadSuppliers(),
+      });
+    }
+  }
+}

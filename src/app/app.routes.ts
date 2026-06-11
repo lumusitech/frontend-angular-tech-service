@@ -42,6 +42,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/clients/clients-list.component').then((m) => m.ClientsListComponent),
       },
+      {
+        path: 'suppliers',
+        loadComponent: () =>
+          import('./features/suppliers/suppliers-list.component').then(
+            (m) => m.SuppliersListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
