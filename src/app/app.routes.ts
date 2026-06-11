@@ -56,6 +56,25 @@ export const routes: Routes = [
             (m) => m.ServiceTypesListComponent,
           ),
       },
+      {
+        path: 'work-orders',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/work-orders/work-orders-list.component').then(
+                (m) => m.WorkOrdersListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/work-orders/work-order-detail.component').then(
+                (m) => m.WorkOrderDetailComponent,
+              ),
+          },
+        ],
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
