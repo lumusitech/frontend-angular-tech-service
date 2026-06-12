@@ -24,10 +24,11 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
       tap((response: LoginResponse) => {
-        this.tokenSignal.set(response.access_token);
-        this.userSignal.set(response.user);
-        localStorage.setItem(TOKEN_KEY, response.access_token);
-        localStorage.setItem(USER_KEY, JSON.stringify(response.user));
+        const { accessToken, user } = response.data;
+        this.tokenSignal.set(accessToken);
+        this.userSignal.set(user);
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
       }),
       catchError((error: unknown) => {
         return throwError(() => error);
