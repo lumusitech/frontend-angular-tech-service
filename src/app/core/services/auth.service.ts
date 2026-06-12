@@ -57,7 +57,14 @@ export class AuthService {
   private getStoredUser(): User | null {
     if (typeof window !== 'undefined') {
       const user = localStorage.getItem(USER_KEY);
-      return user ? JSON.parse(user) : null;
+      if (!user || user === 'undefined' || user === 'null') {
+        return null;
+      }
+      try {
+        return JSON.parse(user) as User;
+      } catch {
+        return null;
+      }
     }
     return null;
   }
