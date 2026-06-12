@@ -4,8 +4,12 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  access_token: string;
-  user: User;
+  statusCode: number;
+  data: {
+    accessToken: string;
+    user: User;
+  };
+  timestamp: string;
 }
 
 export interface User {
