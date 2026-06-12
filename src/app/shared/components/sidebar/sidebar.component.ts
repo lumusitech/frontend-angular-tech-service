@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 interface NavItem {
   label: string;
@@ -9,7 +10,7 @@ interface NavItem {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, SafeHtmlPipe],
   template: `
     <aside
       class="bg-white border-r border-gray-200 h-full transition-all duration-300 flex flex-col"
@@ -49,7 +50,7 @@ interface NavItem {
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
             [class.justify-center]="collapsed()"
           >
-            <span class="text-xl" [innerHTML]="item.icon"></span>
+            <span class="text-xl" [innerHTML]="item.icon | safeHtml"></span>
             @if (!collapsed()) {
               <span class="text-sm font-medium">{{ item.label }}</span>
             }
