@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { WorkOrder, WorkOrderStatus } from '../../core/models/work-order.interfaces';
@@ -21,11 +22,11 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     CurrencyPipe,
   ],
   template: `
-    @if (loading()) {
+    @if (workOrderResource.isLoading()) {
       <div class="flex justify-center py-12">
         <mat-spinner diameter="48" />
       </div>
-    } @else if (workOrder()) {
+    } @else if (workOrderResource.hasValue()) {
       <div class="space-y-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
@@ -35,23 +36,24 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
             <div>
               <div class="flex items-center gap-3">
                 <h1 class="text-2xl font-bold text-gray-900 font-mono">
-                  {{ workOrder()!.trackingCode }}
+                  {{ workOrderResource.value().trackingCode }}
                 </h1>
                 <span
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                  [class]="getStatusClass(workOrder()!.status)"
+                  [class]="getStatusClass(workOrderResource.value().status)"
                 >
-                  {{ getStatusLabel(workOrder()!.status) }}
+                  {{ getStatusLabel(workOrderResource.value().status) }}
                 </span>
                 <span
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                  [class]="getPriorityClass(workOrder()!.priority)"
+                  [class]="getPriorityClass(workOrderResource.value().priority)"
                 >
-                  {{ getPriorityLabel(workOrder()!.priority) }}
+                  {{ getPriorityLabel(workOrderResource.value().priority) }}
                 </span>
               </div>
               <p class="text-gray-500 mt-1">
-                {{ workOrder()!.serviceType.name }} - {{ workOrder()!.client.name }}
+                {{ workOrderResource.value().serviceType.name }} -
+                {{ workOrderResource.value().client.name }}
               </p>
             </div>
           </div>
@@ -69,22 +71,28 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                   <div class="grid grid-cols-2 gap-4">
                     <div>
                       <p class="text-sm text-gray-500">Cliente</p>
-                      <p class="font-medium">{{ workOrder()!.client.name }}</p>
-                      <p class="text-sm text-gray-500">{{ workOrder()!.client.email }}</p>
-                      <p class="text-sm text-gray-500">{{ workOrder()!.client.phone }}</p>
+                      <p class="font-medium">{{ workOrderResource.value().client.name }}</p>
+                      <p class="text-sm text-gray-500">
+                        {{ workOrderResource.value().client.email }}
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        {{ workOrderResource.value().client.phone }}
+                      </p>
                     </div>
                     <div>
                       <p class="text-sm text-gray-500">Ubicación</p>
                       <p class="font-medium">
-                        {{ workOrder()!.location === 'workshop' ? 'Taller' : 'En sitio' }}
+                        {{
+                          workOrderResource.value().location === 'workshop' ? 'Taller' : 'En sitio'
+                        }}
                       </p>
                     </div>
                     <div>
                       <p class="text-sm text-gray-500">Fecha Programada</p>
                       <p class="font-medium">
                         {{
-                          workOrder()!.scheduledDate
-                            ? (workOrder()!.scheduledDate | date: 'dd/MM/yyyy')
+                          workOrderResource.value().scheduledDate
+                            ? (workOrderResource.value().scheduledDate | date: 'dd/MM/yyyy')
                             : '-'
                         }}
                       </p>
@@ -93,17 +101,19 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                       <p class="text-sm text-gray-500">Garantía hasta</p>
                       <p class="font-medium">
                         {{
-                          workOrder()!.warrantyUntil
-                            ? (workOrder()!.warrantyUntil | date: 'dd/MM/yyyy')
+                          workOrderResource.value().warrantyUntil
+                            ? (workOrderResource.value().warrantyUntil | date: 'dd/MM/yyyy')
                             : '-'
                         }}
                       </p>
                     </div>
                   </div>
-                  @if (workOrder()!.diagnosis) {
+                  @if (workOrderResource.value().diagnosis) {
                     <div>
                       <p class="text-sm text-gray-500">Diagnóstico</p>
-                      <p class="mt-1 p-3 bg-gray-50 rounded-lg">{{ workOrder()!.diagnosis }}</p>
+                      <p class="mt-1 p-3 bg-gray-50 rounded-lg">
+                        {{ workOrderResource.value().diagnosis }}
+                      </p>
                     </div>
                   }
                 </div>
@@ -112,14 +122,14 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">checklist</mat-icon>
-                  Tareas ({{ getCompletedTasks() }}/{{ workOrder()!.tasks.length }})
+                  Tareas ({{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }})
                 </ng-template>
                 <div class="p-4">
-                  @if (workOrder()!.tasks.length === 0) {
+                  @if (workOrderResource.value().tasks.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay tareas asignadas</p>
                   } @else {
                     <div class="space-y-3">
-                      @for (task of workOrder()!.tasks; track task.id) {
+                      @for (task of workOrderResource.value().tasks; track task.id) {
                         <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                           <button mat-icon-button (click)="toggleTask(task.id, !task.isCompleted)">
                             <mat-icon>
@@ -153,7 +163,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                   Materiales
                 </ng-template>
                 <div class="p-4">
-                  @if (workOrder()!.materials.length === 0) {
+                  @if (workOrderResource.value().materials.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay materiales registrados</p>
                   } @else {
                     <div class="overflow-x-auto">
@@ -171,7 +181,10 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                           </tr>
                         </thead>
                         <tbody>
-                          @for (material of workOrder()!.materials; track material.id) {
+                          @for (
+                            material of workOrderResource.value().materials;
+                            track material.id
+                          ) {
                             <tr class="border-b">
                               <td class="py-2 px-3">{{ material.description }}</td>
                               <td class="py-2 px-3 text-right">{{ material.quantity }}</td>
@@ -204,11 +217,11 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                   Notas
                 </ng-template>
                 <div class="p-4">
-                  @if (workOrder()!.notes.length === 0) {
+                  @if (workOrderResource.value().notes.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay notas</p>
                   } @else {
                     <div class="space-y-3">
-                      @for (note of workOrder()!.notes; track note.id) {
+                      @for (note of workOrderResource.value().notes; track note.id) {
                         <div class="p-3 bg-gray-50 rounded-lg">
                           <div class="flex items-center gap-2 mb-1">
                             <span
@@ -235,11 +248,11 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
           <div class="space-y-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <h3 class="font-medium text-gray-900 mb-3">Técnicos Asignados</h3>
-              @if (workOrder()!.technicians.length === 0) {
+              @if (workOrderResource.value().technicians.length === 0) {
                 <p class="text-sm text-gray-500">Sin técnicos asignados</p>
               } @else {
                 <div class="space-y-2">
-                  @for (tech of workOrder()!.technicians; track tech.id) {
+                  @for (tech of workOrderResource.value().technicians; track tech.id) {
                     <div class="flex items-center gap-2">
                       <div
                         class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
@@ -261,7 +274,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 <div class="flex justify-between">
                   <span class="text-gray-500">Tareas completadas</span>
                   <span class="font-medium"
-                    >{{ getCompletedTasks() }}/{{ workOrder()!.tasks.length }}</span
+                    >{{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }}</span
                   >
                 </div>
                 <div class="flex justify-between">
@@ -270,7 +283,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 </div>
                 <div class="flex justify-between">
                   <span class="text-gray-500">Creada</span>
-                  <span>{{ workOrder()!.createdAt | date: 'dd/MM/yyyy' }}</span>
+                  <span>{{ workOrderResource.value().createdAt | date: 'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             </div>
@@ -280,36 +293,21 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     }
   `,
 })
-export class WorkOrderDetailComponent implements OnInit {
+export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
 
-  readonly workOrder = signal<WorkOrder | null>(null);
-  readonly loading = signal(true);
+  readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
+
+  readonly workOrderResource = httpResource<WorkOrder>(() => `/api/work-orders/${this.orderId()}`);
 
   getCompletedTasks(): number {
-    return this.workOrder()?.tasks.filter((t) => t.isCompleted).length || 0;
+    return this.workOrderResource.value()?.tasks.filter((t) => t.isCompleted).length || 0;
   }
 
   getMaterialsTotal(): number {
-    return this.workOrder()?.materials.reduce((sum, m) => sum + m.totalCost, 0) || 0;
-  }
-
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.workOrdersService.getById(id).subscribe({
-        next: (workOrder) => {
-          this.workOrder.set(workOrder);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.router.navigate(['/admin/work-orders']);
-        },
-      });
-    }
+    return this.workOrderResource.value()?.materials.reduce((sum, m) => sum + m.totalCost, 0) || 0;
   }
 
   goBack(): void {
@@ -317,14 +315,10 @@ export class WorkOrderDetailComponent implements OnInit {
   }
 
   toggleTask(taskId: string, isCompleted: boolean): void {
-    const id = this.workOrder()?.id;
+    const id = this.workOrderResource.value()?.id;
     if (id) {
       this.workOrdersService.updateTask(id, taskId, { isCompleted }).subscribe({
-        next: () => {
-          this.workOrdersService.getById(id).subscribe({
-            next: (wo) => this.workOrder.set(wo),
-          });
-        },
+        next: () => this.workOrderResource.reload(),
       });
     }
   }

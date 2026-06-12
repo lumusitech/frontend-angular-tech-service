@@ -1,11 +1,11 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ClientsService } from '../../core/services/clients.service';
-import { Client, ClientFilters } from '../../core/models/client.interfaces';
+import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -18,7 +18,6 @@ import { ClientFormComponent } from './client-form.component';
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
-    MatChipsModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -36,20 +35,20 @@ import { ClientFormComponent } from './client-form.component';
         </button>
       </div>
 
-      @if (loading()) {
+      @if (clientsResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (clients().length === 0) {
+      } @else if (clientsResource.hasValue() && clientsResource.value().data.length === 0) {
         <app-empty-state
           title="Sin clientes"
           message="No hay clientes registrados. Crea tu primer cliente para comenzar."
           actionLabel="Crear Cliente"
           [action]="openCreateDialog.bind(this)"
         />
-      } @else {
+      } @else if (clientsResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="clients()" class="w-full">
+          <table mat-table [dataSource]="clientsResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -142,7 +141,7 @@ import { ClientFormComponent } from './client-form.component';
           </table>
 
           <mat-paginator
-            [length]="totalClients()"
+            [length]="clientsResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -153,45 +152,22 @@ import { ClientFormComponent } from './client-form.component';
     </div>
   `,
 })
-export class ClientsListComponent implements OnInit {
+export class ClientsListComponent {
   private readonly clientsService = inject(ClientsService);
   private readonly dialog = inject(MatDialog);
 
-  readonly clients = signal<Client[]>([]);
-  readonly loading = signal(true);
-  readonly totalClients = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
+  readonly clientsResource = httpResource<PaginatedResponse<Client>>(
+    () => `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
+  );
+
   displayedColumns = ['name', 'email', 'phone', 'isActive', 'actions'];
-
-  ngOnInit(): void {
-    this.loadClients();
-  }
-
-  loadClients(): void {
-    this.loading.set(true);
-    const filters: ClientFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-    };
-
-    this.clientsService.getAll(filters).subscribe({
-      next: (response) => {
-        this.clients.set(response.data);
-        this.totalClients.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadClients();
   }
 
   openCreateDialog(): void {
@@ -201,9 +177,7 @@ export class ClientsListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadClients();
-      }
+      if (result) this.clientsResource.reload();
     });
   }
 
@@ -214,16 +188,14 @@ export class ClientsListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadClients();
-      }
+      if (result) this.clientsResource.reload();
     });
   }
 
   deleteClient(client: Client): void {
     if (confirm(`¿Estás seguro de eliminar a ${client.name}?`)) {
       this.clientsService.delete(client.id).subscribe({
-        next: () => this.loadClients(),
+        next: () => this.clientsResource.reload(),
       });
     }
   }

@@ -1,6 +1,8 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ServiceTypesService } from '../../core/services/service-types.service';
-import { ServiceType, ServiceTypeFilters } from '../../core/models/service-type.interfaces';
+import { ServiceType } from '../../core/models/service-type.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,20 +36,22 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
         </button>
       </div>
 
-      @if (loading()) {
+      @if (serviceTypesResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (serviceTypes().length === 0) {
+      } @else if (
+        serviceTypesResource.hasValue() && serviceTypesResource.value().data.length === 0
+      ) {
         <app-empty-state
           title="Sin servicios"
           message="No hay tipos de servicio registrados. Crea tu primer servicio para comenzar."
           actionLabel="Crear Servicio"
           [action]="openCreateDialog.bind(this)"
         />
-      } @else {
+      } @else if (serviceTypesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="serviceTypes()" class="w-full">
+          <table mat-table [dataSource]="serviceTypesResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -144,7 +148,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
           </table>
 
           <mat-paginator
-            [length]="totalServiceTypes()"
+            [length]="serviceTypesResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -155,45 +159,22 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
     </div>
   `,
 })
-export class ServiceTypesListComponent implements OnInit {
+export class ServiceTypesListComponent {
   private readonly serviceTypesService = inject(ServiceTypesService);
   private readonly dialog = inject(MatDialog);
 
-  readonly serviceTypes = signal<ServiceType[]>([]);
-  readonly loading = signal(true);
-  readonly totalServiceTypes = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
+  readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(
+    () => `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
+  );
+
   displayedColumns = ['name', 'description', 'estimatedDuration', 'isActive', 'actions'];
-
-  ngOnInit(): void {
-    this.loadServiceTypes();
-  }
-
-  loadServiceTypes(): void {
-    this.loading.set(true);
-    const filters: ServiceTypeFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-    };
-
-    this.serviceTypesService.getAll(filters).subscribe({
-      next: (response) => {
-        this.serviceTypes.set(response.data);
-        this.totalServiceTypes.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadServiceTypes();
   }
 
   openCreateDialog(): void {
@@ -203,9 +184,7 @@ export class ServiceTypesListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadServiceTypes();
-      }
+      if (result) this.serviceTypesResource.reload();
     });
   }
 
@@ -216,16 +195,14 @@ export class ServiceTypesListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadServiceTypes();
-      }
+      if (result) this.serviceTypesResource.reload();
     });
   }
 
   deleteServiceType(serviceType: ServiceType): void {
     if (confirm(`¿Estás seguro de eliminar "${serviceType.name}"?`)) {
       this.serviceTypesService.delete(serviceType.id).subscribe({
-        next: () => this.loadServiceTypes(),
+        next: () => this.serviceTypesResource.reload(),
       });
     }
   }

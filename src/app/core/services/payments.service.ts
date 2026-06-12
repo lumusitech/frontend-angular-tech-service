@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../models/payment.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PaymentsService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/payments';

@@ -1,6 +1,8 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ExpensesService } from '../../core/services/expenses.service';
-import { Expense, ExpenseFilters, ExpenseCategory } from '../../core/models/expense.interfaces';
+import { Expense, ExpenseCategory } from '../../core/models/expense.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,7 +11,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ExpenseFormComponent } from './expense-form.component';
 import { DatePipe, CurrencyPipe } from '@angular/common';
@@ -25,7 +26,6 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     MatFormFieldModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatCheckboxModule,
     EmptyStateComponent,
     DatePipe,
     CurrencyPipe,
@@ -48,7 +48,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
           <mat-label>Categoría</mat-label>
           <mat-select
             [value]="categoryFilter()"
-            (selectionChange)="categoryFilter.set($event.value); loadExpenses()"
+            (selectionChange)="categoryFilter.set($event.value)"
           >
             <mat-option>Todas</mat-option>
             <mat-option value="rent">Alquiler</mat-option>
@@ -65,20 +65,20 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
         </mat-form-field>
       </div>
 
-      @if (loading()) {
+      @if (expensesResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (expenses().length === 0) {
+      } @else if (expensesResource.hasValue() && expensesResource.value().data.length === 0) {
         <app-empty-state
           title="Sin gastos"
           message="No hay gastos registrados. Crea tu primer gasto para comenzar."
           actionLabel="Crear Gasto"
           [action]="openCreateDialog.bind(this)"
         />
-      } @else {
+      } @else if (expensesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="expenses()" class="w-full">
+          <table mat-table [dataSource]="expensesResource.value().data" class="w-full">
             <ng-container matColumnDef="description">
               <th
                 mat-header-cell
@@ -181,7 +181,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="totalExpenses()"
+            [length]="expensesResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -192,47 +192,24 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     </div>
   `,
 })
-export class ExpensesListComponent implements OnInit {
+export class ExpensesListComponent {
   private readonly expensesService = inject(ExpensesService);
   private readonly dialog = inject(MatDialog);
 
-  readonly expenses = signal<Expense[]>([]);
-  readonly loading = signal(true);
-  readonly totalExpenses = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly categoryFilter = signal<ExpenseCategory | ''>('');
 
+  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(
+    () =>
+      `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
+  );
+
   displayedColumns = ['description', 'category', 'amount', 'date', 'isRecurring', 'actions'];
-
-  ngOnInit(): void {
-    this.loadExpenses();
-  }
-
-  loadExpenses(): void {
-    this.loading.set(true);
-    const filters: ExpenseFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      category: (this.categoryFilter() as ExpenseCategory) || undefined,
-    };
-
-    this.expensesService.getAll(filters).subscribe({
-      next: (response) => {
-        this.expenses.set(response.data);
-        this.totalExpenses.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadExpenses();
   }
 
   openCreateDialog(): void {
@@ -242,9 +219,7 @@ export class ExpensesListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadExpenses();
-      }
+      if (result) this.expensesResource.reload();
     });
   }
 
@@ -255,16 +230,14 @@ export class ExpensesListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadExpenses();
-      }
+      if (result) this.expensesResource.reload();
     });
   }
 
   deleteExpense(expense: Expense): void {
     if (confirm(`¿Estás seguro de eliminar "${expense.description}"?`)) {
       this.expensesService.delete(expense.id).subscribe({
-        next: () => this.loadExpenses(),
+        next: () => this.expensesResource.reload(),
       });
     }
   }
