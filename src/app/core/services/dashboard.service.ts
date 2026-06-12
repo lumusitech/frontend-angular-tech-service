@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 import {
@@ -11,7 +11,7 @@ import {
 import { WorkOrdersService } from './work-orders.service';
 import { PaymentsService } from './payments.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DashboardService {
   private readonly http = inject(HttpClient);
   private readonly workOrdersService = inject(WorkOrdersService);

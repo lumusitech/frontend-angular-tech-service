@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Service, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
@@ -7,7 +7,7 @@ import { LoginRequest, LoginResponse, User } from '../models/auth.interfaces';
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);

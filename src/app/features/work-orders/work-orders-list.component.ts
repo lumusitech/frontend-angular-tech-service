@@ -1,17 +1,17 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
-  WorkOrderFilters,
   WorkOrderStatus,
   WorkOrderPriority,
 } from '../../core/models/work-order.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -27,7 +27,6 @@ import { DatePipe } from '@angular/common';
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
-    MatChipsModule,
     MatSelectModule,
     MatFormFieldModule,
     MatDialogModule,
@@ -51,10 +50,7 @@ import { DatePipe } from '@angular/common';
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
           <mat-label>Estado</mat-label>
-          <mat-select
-            [value]="statusFilter()"
-            (selectionChange)="statusFilter.set($event.value); loadWorkOrders()"
-          >
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
             <mat-option>Todos</mat-option>
             <mat-option value="pending">Pendiente</mat-option>
             <mat-option value="assigned">Asignada</mat-option>
@@ -69,7 +65,7 @@ import { DatePipe } from '@angular/common';
           <mat-label>Prioridad</mat-label>
           <mat-select
             [value]="priorityFilter()"
-            (selectionChange)="priorityFilter.set($event.value); loadWorkOrders()"
+            (selectionChange)="priorityFilter.set($event.value)"
           >
             <mat-option>Todas</mat-option>
             <mat-option value="low">Baja</mat-option>
@@ -80,20 +76,20 @@ import { DatePipe } from '@angular/common';
         </mat-form-field>
       </div>
 
-      @if (loading()) {
+      @if (workOrdersResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (workOrders().length === 0) {
+      } @else if (workOrdersResource.hasValue() && workOrdersResource.value().data.length === 0) {
         <app-empty-state
           title="Sin órdenes"
           message="No hay órdenes de trabajo registradas. Crea tu primera orden para comenzar."
           actionLabel="Crear Orden"
           [action]="openCreateDialog.bind(this)"
         />
-      } @else {
+      } @else if (workOrdersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="workOrders()" class="w-full">
+          <table mat-table [dataSource]="workOrdersResource.value().data" class="w-full">
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -103,9 +99,9 @@ import { DatePipe } from '@angular/common';
                 Código
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
-                <span class="font-mono text-sm font-medium text-blue-600">
-                  {{ order.trackingCode }}
-                </span>
+                <span class="font-mono text-sm font-medium text-blue-600">{{
+                  order.trackingCode
+                }}</span>
               </td>
             </ng-container>
 
@@ -213,7 +209,7 @@ import { DatePipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="totalWorkOrders()"
+            [length]="workOrdersResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -224,18 +220,19 @@ import { DatePipe } from '@angular/common';
     </div>
   `,
 })
-export class WorkOrdersListComponent implements OnInit {
-  private readonly workOrdersService = inject(WorkOrdersService);
+export class WorkOrdersListComponent {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
-  readonly workOrders = signal<WorkOrder[]>([]);
-  readonly loading = signal(true);
-  readonly totalWorkOrders = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
+
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
+    () =>
+      `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
+  );
 
   displayedColumns = [
     'trackingCode',
@@ -247,35 +244,9 @@ export class WorkOrdersListComponent implements OnInit {
     'actions',
   ];
 
-  ngOnInit(): void {
-    this.loadWorkOrders();
-  }
-
-  loadWorkOrders(): void {
-    this.loading.set(true);
-    const filters: WorkOrderFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      status: (this.statusFilter() as WorkOrderStatus) || undefined,
-      priority: (this.priorityFilter() as WorkOrderPriority) || undefined,
-    };
-
-    this.workOrdersService.getAll(filters).subscribe({
-      next: (response) => {
-        this.workOrders.set(response.data);
-        this.totalWorkOrders.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
-
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadWorkOrders();
   }
 
   openCreateDialog(): void {
@@ -285,9 +256,7 @@ export class WorkOrdersListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadWorkOrders();
-      }
+      if (result) this.workOrdersResource.reload();
     });
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../models/service-type.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ServiceTypesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/service-types';
@@ -17,18 +17,11 @@ export class ServiceTypesService {
   getAll(filters?: ServiceTypeFilters): Observable<PaginatedResponse<ServiceType>> {
     let params = new HttpParams();
 
-    if (filters?.search) {
-      params = params.set('search', filters.search);
-    }
-    if (filters?.isActive !== undefined) {
+    if (filters?.search) params = params.set('search', filters.search);
+    if (filters?.isActive !== undefined)
       params = params.set('isActive', filters.isActive.toString());
-    }
-    if (filters?.page) {
-      params = params.set('page', filters.page.toString());
-    }
-    if (filters?.limit) {
-      params = params.set('limit', filters.limit.toString());
-    }
+    if (filters?.page) params = params.set('page', filters.page.toString());
+    if (filters?.limit) params = params.set('limit', filters.limit.toString());
 
     return this.http.get<PaginatedResponse<ServiceType>>(this.apiUrl, { params });
   }

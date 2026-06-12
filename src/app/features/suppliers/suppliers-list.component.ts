@@ -1,6 +1,8 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { SuppliersService } from '../../core/services/suppliers.service';
-import { Supplier, SupplierFilters } from '../../core/models/supplier.interfaces';
+import { Supplier } from '../../core/models/supplier.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,20 +36,20 @@ import { SupplierFormComponent } from './supplier-form.component';
         </button>
       </div>
 
-      @if (loading()) {
+      @if (suppliersResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (suppliers().length === 0) {
+      } @else if (suppliersResource.hasValue() && suppliersResource.value().data.length === 0) {
         <app-empty-state
           title="Sin proveedores"
           message="No hay proveedores registrados. Crea tu primer proveedor para comenzar."
           actionLabel="Crear Proveedor"
           [action]="openCreateDialog.bind(this)"
         />
-      } @else {
+      } @else if (suppliersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="suppliers()" class="w-full">
+          <table mat-table [dataSource]="suppliersResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -153,7 +155,7 @@ import { SupplierFormComponent } from './supplier-form.component';
           </table>
 
           <mat-paginator
-            [length]="totalSuppliers()"
+            [length]="suppliersResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -164,45 +166,22 @@ import { SupplierFormComponent } from './supplier-form.component';
     </div>
   `,
 })
-export class SuppliersListComponent implements OnInit {
+export class SuppliersListComponent {
   private readonly suppliersService = inject(SuppliersService);
   private readonly dialog = inject(MatDialog);
 
-  readonly suppliers = signal<Supplier[]>([]);
-  readonly loading = signal(true);
-  readonly totalSuppliers = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
+    () => `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
+  );
+
   displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'actions'];
-
-  ngOnInit(): void {
-    this.loadSuppliers();
-  }
-
-  loadSuppliers(): void {
-    this.loading.set(true);
-    const filters: SupplierFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-    };
-
-    this.suppliersService.getAll(filters).subscribe({
-      next: (response) => {
-        this.suppliers.set(response.data);
-        this.totalSuppliers.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadSuppliers();
   }
 
   openCreateDialog(): void {
@@ -212,9 +191,7 @@ export class SuppliersListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadSuppliers();
-      }
+      if (result) this.suppliersResource.reload();
     });
   }
 
@@ -225,16 +202,14 @@ export class SuppliersListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadSuppliers();
-      }
+      if (result) this.suppliersResource.reload();
     });
   }
 
   deleteSupplier(supplier: Supplier): void {
     if (confirm(`¿Estás seguro de eliminar a ${supplier.name}?`)) {
       this.suppliersService.delete(supplier.id).subscribe({
-        next: () => this.loadSuppliers(),
+        next: () => this.suppliersResource.reload(),
       });
     }
   }

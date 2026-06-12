@@ -1,11 +1,8 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { PaymentsService } from '../../core/services/payments.service';
-import {
-  Payment,
-  PaymentFilters,
-  PaymentStatus,
-  PaymentMethod,
-} from '../../core/models/payment.interfaces';
+import { Payment, PaymentStatus, PaymentMethod } from '../../core/models/payment.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,10 +39,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
           <mat-label>Estado</mat-label>
-          <mat-select
-            [value]="statusFilter()"
-            (selectionChange)="statusFilter.set($event.value); loadPayments()"
-          >
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
             <mat-option>Todos</mat-option>
             <mat-option value="pending">Pendiente</mat-option>
             <mat-option value="approved">Aprobado</mat-option>
@@ -57,10 +51,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
 
         <mat-form-field appearance="outline" class="w-40">
           <mat-label>Método</mat-label>
-          <mat-select
-            [value]="methodFilter()"
-            (selectionChange)="methodFilter.set($event.value); loadPayments()"
-          >
+          <mat-select [value]="methodFilter()" (selectionChange)="methodFilter.set($event.value)">
             <mat-option>Todos</mat-option>
             <mat-option value="cash">Efectivo</mat-option>
             <mat-option value="transfer">Transferencia</mat-option>
@@ -70,15 +61,15 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
         </mat-form-field>
       </div>
 
-      @if (loading()) {
+      @if (paymentsResource.isLoading()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
-      } @else if (payments().length === 0) {
+      } @else if (paymentsResource.hasValue() && paymentsResource.value().data.length === 0) {
         <app-empty-state title="Sin pagos" message="No hay pagos registrados en el sistema." />
-      } @else {
+      } @else if (paymentsResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="payments()" class="w-full">
+          <table mat-table [dataSource]="paymentsResource.value().data" class="w-full">
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -88,9 +79,9 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Orden
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
-                <span class="font-mono text-sm font-medium text-blue-600">
-                  {{ payment.workOrder.trackingCode }}
-                </span>
+                <span class="font-mono text-sm font-medium text-blue-600">{{
+                  payment.workOrder.trackingCode
+                }}</span>
               </td>
             </ng-container>
 
@@ -191,7 +182,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="totalPayments()"
+            [length]="paymentsResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -202,16 +193,18 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     </div>
   `,
 })
-export class PaymentsListComponent implements OnInit {
+export class PaymentsListComponent {
   private readonly paymentsService = inject(PaymentsService);
 
-  readonly payments = signal<Payment[]>([]);
-  readonly loading = signal(true);
-  readonly totalPayments = signal(0);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly statusFilter = signal<PaymentStatus | ''>('');
   readonly methodFilter = signal<PaymentMethod | ''>('');
+
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(
+    () =>
+      `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
+  );
 
   displayedColumns = [
     'trackingCode',
@@ -223,35 +216,9 @@ export class PaymentsListComponent implements OnInit {
     'actions',
   ];
 
-  ngOnInit(): void {
-    this.loadPayments();
-  }
-
-  loadPayments(): void {
-    this.loading.set(true);
-    const filters: PaymentFilters = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      status: (this.statusFilter() as PaymentStatus) || undefined,
-      method: (this.methodFilter() as PaymentMethod) || undefined,
-    };
-
-    this.paymentsService.getAll(filters).subscribe({
-      next: (response) => {
-        this.payments.set(response.data);
-        this.totalPayments.set(response.total);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
-  }
-
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-    this.loadPayments();
   }
 
   approvePayment(payment: Payment): void {
@@ -261,7 +228,7 @@ export class PaymentsListComponent implements OnInit {
         paidAt: new Date().toISOString(),
       })
       .subscribe({
-        next: () => this.loadPayments(),
+        next: () => this.paymentsResource.reload(),
       });
   }
 
