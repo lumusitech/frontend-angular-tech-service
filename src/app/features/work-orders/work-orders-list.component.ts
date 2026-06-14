@@ -227,7 +227,7 @@ export class WorkOrdersListComponent {
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
     url: `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
-    transform: (res: ApiResponse<PaginatedResponse<WorkOrder>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<WorkOrder>>) => res.data,
   }));
 
   displayedColumns = [

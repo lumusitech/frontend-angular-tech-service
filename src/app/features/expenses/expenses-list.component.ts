@@ -205,7 +205,7 @@ export class ExpensesListComponent {
 
   readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
     url: `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
-    transform: (res: ApiResponse<PaginatedResponse<Expense>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<Expense>>) => res.data,
   }));
 
   displayedColumns = ['description', 'category', 'amount', 'date', 'isRecurring', 'actions'];

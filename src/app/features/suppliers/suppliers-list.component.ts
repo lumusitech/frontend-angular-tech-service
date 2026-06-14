@@ -170,7 +170,7 @@ export class SuppliersListComponent {
 
   readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
     url: `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
-    transform: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
   }));
 
   displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'actions'];

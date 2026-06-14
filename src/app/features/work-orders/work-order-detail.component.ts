@@ -351,7 +351,7 @@ export class WorkOrderDetailComponent {
 
   readonly workOrderResource = httpResource<WorkOrder>(() => ({
     url: `/api/work-orders/${this.orderId()}`,
-    transform: (res: ApiResponse<WorkOrder>) => res.data,
+    parse: (res: ApiResponse<WorkOrder>) => res.data,
   }));
 
   getCompletedTasks(): number {

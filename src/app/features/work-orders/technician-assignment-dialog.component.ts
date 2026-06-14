@@ -74,7 +74,7 @@ export class TechnicianAssignmentDialogComponent {
 
   readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users?role=technician&limit=100',
-    transform: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
   }));
 
   onSelectionChange(event: MatSelectionListChange): void {

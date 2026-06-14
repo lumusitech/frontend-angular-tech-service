@@ -156,7 +156,7 @@ export class ClientsListComponent {
 
   readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
     url: `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
-    transform: (res: ApiResponse<PaginatedResponse<Client>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<Client>>) => res.data,
   }));
 
   displayedColumns = ['name', 'email', 'phone', 'isActive', 'actions'];
