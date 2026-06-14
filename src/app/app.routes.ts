@@ -89,6 +89,27 @@ export const routes: Routes = [
             (m) => m.ExpensesListComponent,
           ),
       },
+      {
+        path: 'billing',
+        loadComponent: () =>
+          import('./features/billing/billing-placeholder.component').then(
+            (m) => m.BillingPlaceholderComponent,
+          ),
+      },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./features/reports/reports-placeholder.component').then(
+            (m) => m.ReportsPlaceholderComponent,
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/settings/settings-placeholder.component').then(
+            (m) => m.SettingsPlaceholderComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

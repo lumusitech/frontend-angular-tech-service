@@ -1,10 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { Supplier } from '../../core/models/supplier.interfaces';
 
 interface DialogData {
   workOrderId: string;
@@ -12,7 +16,14 @@ interface DialogData {
 
 @Component({
   selector: 'app-add-material-dialog',
-  imports: [MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule],
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+  ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>build</mat-icon>
@@ -55,6 +66,18 @@ interface DialogData {
             />
           </mat-form-field>
         </div>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Proveedor (opcional)</mat-label>
+          <mat-select [value]="supplierId()" (selectionChange)="supplierId.set($event.value)">
+            <mat-option>Sin proveedor</mat-option>
+            @if (suppliersResource.hasValue()) {
+              @for (supplier of suppliersResource.value().data; track supplier.id) {
+                <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
+              }
+            }
+          </mat-select>
+        </mat-form-field>
       </form>
     </mat-dialog-content>
 
@@ -79,7 +102,12 @@ export class AddMaterialDialogComponent {
   readonly description = signal('');
   readonly quantity = signal(1);
   readonly unitCost = signal(0);
+  readonly supplierId = signal('');
   readonly saving = signal(false);
+
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
+    () => '/api/suppliers?limit=100',
+  );
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -95,6 +123,7 @@ export class AddMaterialDialogComponent {
         description: this.description(),
         quantity: this.quantity(),
         unitCost: this.unitCost(),
+        supplierId: this.supplierId() || undefined,
       })
       .subscribe({
         next: () => {

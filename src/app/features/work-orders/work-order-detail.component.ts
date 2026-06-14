@@ -201,6 +201,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                             <th class="text-left py-2 px-3 font-medium text-gray-500">
                               Descripción
                             </th>
+                            <th class="text-left py-2 px-3 font-medium text-gray-500">Proveedor</th>
                             <th class="text-right py-2 px-3 font-medium text-gray-500">Cant.</th>
                             <th class="text-right py-2 px-3 font-medium text-gray-500">
                               Costo Unit.
@@ -215,6 +216,9 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                           ) {
                             <tr class="border-b">
                               <td class="py-2 px-3">{{ material.description }}</td>
+                              <td class="py-2 px-3 text-sm text-gray-500">
+                                {{ material.supplier?.name || '-' }}
+                              </td>
                               <td class="py-2 px-3 text-right">{{ material.quantity }}</td>
                               <td class="py-2 px-3 text-right">
                                 {{ material.unitCost | currencyArs }}
@@ -227,7 +231,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                         </tbody>
                         <tfoot>
                           <tr class="font-medium">
-                            <td colspan="3" class="py-2 px-3 text-right">Total Materiales:</td>
+                            <td colspan="4" class="py-2 px-3 text-right">Total Materiales:</td>
                             <td class="py-2 px-3 text-right">
                               {{ getMaterialsTotal() | currencyArs }}
                             </td>
