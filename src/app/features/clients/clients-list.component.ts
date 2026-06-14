@@ -54,7 +54,7 @@ import { ClientFormComponent } from './client-form.component';
         />
       } @else if (clientsResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="clientsResource.value().data" class="w-full">
+          <table mat-table [dataSource]="clientsResource.value()?.data ?? []" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -135,7 +135,7 @@ import { ClientFormComponent } from './client-form.component';
           </table>
 
           <mat-paginator
-            [length]="clientsResource.value().total"
+            [length]="clientsResource.value()?.total ?? 0"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"

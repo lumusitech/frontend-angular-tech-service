@@ -96,7 +96,7 @@ import { DatePipe } from '@angular/common';
         />
       } @else if (workOrdersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="workOrdersResource.value().data" class="w-full">
+          <table mat-table [dataSource]="workOrdersResource.value()?.data ?? []" class="w-full">
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -204,7 +204,7 @@ import { DatePipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="workOrdersResource.value().total"
+            [length]="workOrdersResource.value()?.total ?? 0"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
