@@ -59,4 +59,8 @@ export class WorkOrdersService {
   updateTask(workOrderId: string, taskId: string, dto: UpdateTaskDto): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${workOrderId}/tasks/${taskId}`, dto);
   }
+
+  replaceTechnicians(workOrderId: string, technicianIds: string[]): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${workOrderId}/technicians`, { technicianIds });
+  }
 }

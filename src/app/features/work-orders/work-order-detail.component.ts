@@ -2,15 +2,25 @@ import { Component, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
-import { WorkOrder } from '../../core/models/work-order.interfaces';
+import {
+  WorkOrder,
+  WorkOrderStatus,
+  UpdateWorkOrderDto,
+} from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { DatePipe } from '@angular/common';
+import { StatusTransitionComponent } from './status-transition.component';
+import { AddNoteDialogComponent } from './add-note-dialog.component';
+import { AddMaterialDialogComponent } from './add-material-dialog.component';
+import { AddTaskDialogComponent } from './add-task-dialog.component';
+import { TechnicianAssignmentDialogComponent } from './technician-assignment-dialog.component';
 
 @Component({
   selector: 'app-work-order-detail',
@@ -23,6 +33,7 @@ import { DatePipe } from '@angular/common';
     TrackingCodeComponent,
     CurrencyArsPipe,
     DatePipe,
+    StatusTransitionComponent,
   ],
   template: `
     @if (workOrderResource.isLoading()) {
@@ -56,6 +67,12 @@ import { DatePipe } from '@angular/common';
               </p>
             </div>
           </div>
+
+          <app-status-transition
+            [status]="workOrderResource.value().status"
+            (transition)="onStatusTransition($event)"
+            (openTechnicianAssignment)="openTechnicianDialog()"
+          />
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -124,6 +141,12 @@ import { DatePipe } from '@angular/common';
                   Tareas ({{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }})
                 </ng-template>
                 <div class="p-4">
+                  <div class="flex justify-end mb-4">
+                    <button mat-stroked-button color="primary" (click)="openAddTaskDialog()">
+                      <mat-icon>add</mat-icon>
+                      Agregar Tarea
+                    </button>
+                  </div>
                   @if (workOrderResource.value().tasks.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay tareas asignadas</p>
                   } @else {
@@ -162,6 +185,12 @@ import { DatePipe } from '@angular/common';
                   Materiales
                 </ng-template>
                 <div class="p-4">
+                  <div class="flex justify-end mb-4">
+                    <button mat-stroked-button color="primary" (click)="openAddMaterialDialog()">
+                      <mat-icon>add</mat-icon>
+                      Agregar Material
+                    </button>
+                  </div>
                   @if (workOrderResource.value().materials.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay materiales registrados</p>
                   } @else {
@@ -216,6 +245,12 @@ import { DatePipe } from '@angular/common';
                   Notas
                 </ng-template>
                 <div class="p-4">
+                  <div class="flex justify-end mb-4">
+                    <button mat-stroked-button color="primary" (click)="openAddNoteDialog()">
+                      <mat-icon>add</mat-icon>
+                      Agregar Nota
+                    </button>
+                  </div>
                   @if (workOrderResource.value().notes.length === 0) {
                     <p class="text-gray-500 text-center py-8">No hay notas</p>
                   } @else {
@@ -241,7 +276,13 @@ import { DatePipe } from '@angular/common';
 
           <div class="space-y-4">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <h3 class="font-medium text-gray-900 mb-3">Técnicos Asignados</h3>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium text-gray-900">Técnicos Asignados</h3>
+                <button mat-button color="primary" (click)="openTechnicianDialog()">
+                  <mat-icon>edit</mat-icon>
+                  Editar
+                </button>
+              </div>
               @if (workOrderResource.value().technicians.length === 0) {
                 <p class="text-sm text-gray-500">Sin técnicos asignados</p>
               } @else {
@@ -291,6 +332,7 @@ export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
+  private readonly dialog = inject(MatDialog);
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
 
@@ -315,5 +357,81 @@ export class WorkOrderDetailComponent {
         next: () => this.workOrderResource.reload(),
       });
     }
+  }
+
+  onStatusTransition(event: {
+    status: WorkOrderStatus;
+    startedAt?: string;
+    completedAt?: string;
+  }): void {
+    const id = this.workOrderResource.value()?.id;
+    if (!id) return;
+
+    const dto: UpdateWorkOrderDto = { status: event.status };
+    if (event.startedAt) dto.startedAt = event.startedAt;
+    if (event.completedAt) dto.completedAt = event.completedAt;
+
+    this.workOrdersService.update(id, dto).subscribe({
+      next: () => this.workOrderResource.reload(),
+    });
+  }
+
+  openTechnicianDialog(): void {
+    const workOrder = this.workOrderResource.value();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(TechnicianAssignmentDialogComponent, {
+      width: '500px',
+      data: {
+        workOrderId: workOrder.id,
+        currentTechnicianIds: workOrder.technicians.map((t) => t.id),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.workOrderResource.reload();
+    });
+  }
+
+  openAddNoteDialog(): void {
+    const workOrder = this.workOrderResource.value();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(AddNoteDialogComponent, {
+      width: '500px',
+      data: { workOrderId: workOrder.id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.workOrderResource.reload();
+    });
+  }
+
+  openAddMaterialDialog(): void {
+    const workOrder = this.workOrderResource.value();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(AddMaterialDialogComponent, {
+      width: '500px',
+      data: { workOrderId: workOrder.id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.workOrderResource.reload();
+    });
+  }
+
+  openAddTaskDialog(): void {
+    const workOrder = this.workOrderResource.value();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(AddTaskDialogComponent, {
+      width: '500px',
+      data: { workOrderId: workOrder.id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.workOrderResource.reload();
+    });
   }
 }
