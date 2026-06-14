@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
@@ -35,6 +36,7 @@ import { DatePipe } from '@angular/common';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
@@ -83,6 +85,8 @@ import { DatePipe } from '@angular/common';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (workOrdersResource.error()) {
+        <app-error-state (retry)="workOrdersResource.reload()" />
       } @else if (workOrdersResource.hasValue() && workOrdersResource.value().data.length === 0) {
         <app-empty-state
           title="Sin órdenes"

@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -31,6 +32,7 @@ import { DatePipe } from '@angular/common';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     CurrencyArsPipe,
@@ -72,6 +74,8 @@ import { DatePipe } from '@angular/common';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (expensesResource.error()) {
+        <app-error-state (retry)="expensesResource.reload()" />
       } @else if (expensesResource.hasValue() && expensesResource.value().data.length === 0) {
         <app-empty-state
           title="Sin gastos"

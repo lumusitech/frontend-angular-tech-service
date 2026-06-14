@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
@@ -28,6 +29,7 @@ import { DatePipe } from '@angular/common';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
@@ -67,6 +69,8 @@ import { DatePipe } from '@angular/common';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (paymentsResource.error()) {
+        <app-error-state (retry)="paymentsResource.reload()" />
       } @else if (paymentsResource.hasValue() && paymentsResource.value().data.length === 0) {
         <app-empty-state title="Sin pagos" message="No hay pagos registrados en el sistema." />
       } @else if (paymentsResource.hasValue()) {
