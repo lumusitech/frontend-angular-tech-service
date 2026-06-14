@@ -227,7 +227,13 @@ export class WorkOrdersListComponent {
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
     () => ({
-      url: `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
+      url: '/api/work-orders',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+      },
     }),
     {
       parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<WorkOrder>>).data,
