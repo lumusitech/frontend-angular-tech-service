@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   DashboardKPIs,
   MonthlyRevenue,
@@ -8,30 +8,68 @@ import {
   TopService,
   PaymentMethodDistribution,
 } from '../models/dashboard.interfaces';
-import { WorkOrdersService } from './work-orders.service';
-import { PaymentsService } from './payments.service';
+import { PaginatedResponse } from '../models/client.interfaces';
+import { ApiResponse } from '../models/api-response.interfaces';
+import { unwrapResponse } from '../operators/unwrap-response.operator';
 
 @Service()
 export class DashboardService {
   private readonly http = inject(HttpClient);
-  private readonly workOrdersService = inject(WorkOrdersService);
-  private readonly paymentsService = inject(PaymentsService);
 
   getKPIs(): Observable<DashboardKPIs> {
-    return forkJoin({
-      activeOrders: this.workOrdersService.getAll({ status: 'in_progress', limit: 1 }),
-      completedToday: this.workOrdersService.getAll({ status: 'completed', limit: 1 }),
-      pendingPayments: this.paymentsService.getAll({ status: 'pending', limit: 1 }),
-    }).pipe(
-      map(({ activeOrders, completedToday, pendingPayments }) => ({
-        activeOrders: activeOrders.total,
-        completedToday: completedToday.total,
-        monthlyRevenue: 0,
-        previousMonthRevenue: 0,
-        availableTechnicians: 0,
-        pendingPayments: pendingPayments.total,
-      })),
-    );
+    return new Observable((subscriber) => {
+      let activeOrders = 0;
+      let completedToday = 0;
+      let pendingPayments = 0;
+      let remaining = 3;
+
+      const check = () => {
+        if (--remaining === 0) {
+          subscriber.next({
+            activeOrders,
+            completedToday,
+            monthlyRevenue: 0,
+            previousMonthRevenue: 0,
+            availableTechnicians: 0,
+            pendingPayments,
+          });
+          subscriber.complete();
+        }
+      };
+
+      this.http
+        .get<ApiResponse<PaginatedResponse<unknown>>>('/api/work-orders?status=in_progress&limit=1')
+        .pipe(unwrapResponse())
+        .subscribe({
+          next: (res) => {
+            activeOrders = res.total;
+            check();
+          },
+          error: () => check(),
+        });
+
+      this.http
+        .get<ApiResponse<PaginatedResponse<unknown>>>('/api/work-orders?status=completed&limit=1')
+        .pipe(unwrapResponse())
+        .subscribe({
+          next: (res) => {
+            completedToday = res.total;
+            check();
+          },
+          error: () => check(),
+        });
+
+      this.http
+        .get<ApiResponse<PaginatedResponse<unknown>>>('/api/payments?status=pending&limit=1')
+        .pipe(unwrapResponse())
+        .subscribe({
+          next: (res) => {
+            pendingPayments = res.total;
+            check();
+          },
+          error: () => check(),
+        });
+    });
   }
 
   getMonthlyRevenue(): Observable<MonthlyRevenue[]> {

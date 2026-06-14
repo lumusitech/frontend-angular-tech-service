@@ -3,6 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { SuppliersService } from '../../core/services/suppliers.service';
 import { Supplier } from '../../core/models/supplier.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -55,7 +56,7 @@ import { SupplierFormComponent } from './supplier-form.component';
         />
       } @else if (suppliersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="suppliersResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="suppliersResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -149,7 +150,7 @@ import { SupplierFormComponent } from './supplier-form.component';
           </table>
 
           <mat-paginator
-            [length]="suppliersResource.value()?.total ?? 0"
+            [length]="suppliersResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -167,9 +168,10 @@ export class SuppliersListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
-    () => `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
-  );
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
+    url: `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    transform: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
+  }));
 
   displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'actions'];
 

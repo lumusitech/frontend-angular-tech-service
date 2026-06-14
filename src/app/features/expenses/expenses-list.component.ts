@@ -3,6 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { ExpensesService } from '../../core/services/expenses.service';
 import { Expense, ExpenseCategory } from '../../core/models/expense.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -85,7 +86,7 @@ import { DatePipe } from '@angular/common';
         />
       } @else if (expensesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="expensesResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="expensesResource.value().data" class="w-full">
             <ng-container matColumnDef="description">
               <th
                 mat-header-cell
@@ -183,7 +184,7 @@ import { DatePipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="expensesResource.value()?.total ?? 0"
+            [length]="expensesResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -202,10 +203,10 @@ export class ExpensesListComponent {
   readonly currentPage = signal(1);
   readonly categoryFilter = signal<ExpenseCategory | ''>('');
 
-  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(
-    () =>
-      `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
-  );
+  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
+    url: `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
+    transform: (res: ApiResponse<PaginatedResponse<Expense>>) => res.data,
+  }));
 
   displayedColumns = ['description', 'category', 'amount', 'date', 'isRecurring', 'actions'];
 
