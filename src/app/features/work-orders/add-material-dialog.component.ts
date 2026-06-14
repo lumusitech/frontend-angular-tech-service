@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { Supplier } from '../../core/models/supplier.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 
 interface DialogData {
   workOrderId: string;
@@ -105,9 +106,10 @@ export class AddMaterialDialogComponent {
   readonly supplierId = signal('');
   readonly saving = signal(false);
 
-  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
-    () => '/api/suppliers?limit=100',
-  );
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
+    url: '/api/suppliers?limit=100',
+    transform: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
+  }));
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;

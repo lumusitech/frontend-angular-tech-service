@@ -3,6 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { ServiceTypesService } from '../../core/services/service-types.service';
 import { ServiceType } from '../../core/models/service-type.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -57,7 +58,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
         />
       } @else if (serviceTypesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="serviceTypesResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="serviceTypesResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -142,7 +143,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
           </table>
 
           <mat-paginator
-            [length]="serviceTypesResource.value()?.total ?? 0"
+            [length]="serviceTypesResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -160,9 +161,10 @@ export class ServiceTypesListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(
-    () => `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
-  );
+  readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
+    url: `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    transform: (res: ApiResponse<PaginatedResponse<ServiceType>>) => res.data,
+  }));
 
   displayedColumns = ['name', 'description', 'estimatedDuration', 'isActive', 'actions'];
 

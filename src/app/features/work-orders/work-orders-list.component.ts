@@ -8,6 +8,7 @@ import {
   WorkOrderPriority,
 } from '../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -96,7 +97,7 @@ import { DatePipe } from '@angular/common';
         />
       } @else if (workOrdersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="workOrdersResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="workOrdersResource.value().data" class="w-full">
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -204,7 +205,7 @@ import { DatePipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="workOrdersResource.value()?.total ?? 0"
+            [length]="workOrdersResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -224,10 +225,10 @@ export class WorkOrdersListComponent {
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
-    () =>
-      `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
-  );
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
+    url: `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
+    transform: (res: ApiResponse<PaginatedResponse<WorkOrder>>) => res.data,
+  }));
 
   displayedColumns = [
     'trackingCode',

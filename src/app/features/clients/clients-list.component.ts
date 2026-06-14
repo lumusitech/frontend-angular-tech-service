@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,7 +55,7 @@ import { ClientFormComponent } from './client-form.component';
         />
       } @else if (clientsResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="clientsResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="clientsResource.value().data" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -135,7 +136,7 @@ import { ClientFormComponent } from './client-form.component';
           </table>
 
           <mat-paginator
-            [length]="clientsResource.value()?.total ?? 0"
+            [length]="clientsResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -153,9 +154,10 @@ export class ClientsListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly clientsResource = httpResource<PaginatedResponse<Client>>(
-    () => `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
-  );
+  readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
+    url: `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    transform: (res: ApiResponse<PaginatedResponse<Client>>) => res.data,
+  }));
 
   displayedColumns = ['name', 'email', 'phone', 'isActive', 'actions'];
 

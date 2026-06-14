@@ -3,6 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { PaymentsService } from '../../core/services/payments.service';
 import { Payment, PaymentStatus, PaymentMethod } from '../../core/models/payment.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
@@ -75,7 +76,7 @@ import { DatePipe } from '@angular/common';
         <app-empty-state title="Sin pagos" message="No hay pagos registrados en el sistema." />
       } @else if (paymentsResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="paymentsResource.value()?.data ?? []" class="w-full">
+          <table mat-table [dataSource]="paymentsResource.value().data" class="w-full">
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -181,7 +182,7 @@ import { DatePipe } from '@angular/common';
           </table>
 
           <mat-paginator
-            [length]="paymentsResource.value()?.total ?? 0"
+            [length]="paymentsResource.value().total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -200,10 +201,10 @@ export class PaymentsListComponent {
   readonly statusFilter = signal<PaymentStatus | ''>('');
   readonly methodFilter = signal<PaymentMethod | ''>('');
 
-  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(
-    () =>
-      `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
-  );
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
+    url: `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
+    transform: (res: ApiResponse<PaginatedResponse<Payment>>) => res.data,
+  }));
 
   displayedColumns = [
     'trackingCode',
