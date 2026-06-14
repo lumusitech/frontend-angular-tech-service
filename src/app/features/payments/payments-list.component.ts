@@ -201,10 +201,14 @@ export class PaymentsListComponent {
   readonly statusFilter = signal<PaymentStatus | ''>('');
   readonly methodFilter = signal<PaymentMethod | ''>('');
 
-  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
-    url: `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
-    parse: (res: ApiResponse<PaginatedResponse<Payment>>) => res.data,
-  }));
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(
+    () => ({
+      url: `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Payment>>).data,
+    },
+  );
 
   displayedColumns = [
     'trackingCode',

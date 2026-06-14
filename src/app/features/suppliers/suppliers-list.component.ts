@@ -168,10 +168,14 @@ export class SuppliersListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
-    url: `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
-    parse: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
-  }));
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
+    () => ({
+      url: `/api/suppliers?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Supplier>>).data,
+    },
+  );
 
   displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'actions'];
 

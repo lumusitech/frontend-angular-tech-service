@@ -203,10 +203,14 @@ export class ExpensesListComponent {
   readonly currentPage = signal(1);
   readonly categoryFilter = signal<ExpenseCategory | ''>('');
 
-  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
-    url: `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
-    parse: (res: ApiResponse<PaginatedResponse<Expense>>) => res.data,
-  }));
+  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(
+    () => ({
+      url: `/api/finances/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Expense>>).data,
+    },
+  );
 
   displayedColumns = ['description', 'category', 'amount', 'date', 'isRecurring', 'actions'];
 

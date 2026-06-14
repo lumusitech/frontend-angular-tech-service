@@ -91,10 +91,14 @@ export class AddTaskDialogComponent {
   readonly assignedToId = signal('');
   readonly saving = signal(false);
 
-  readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
-    url: '/api/users?role=technician&limit=100',
-    parse: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
-  }));
+  readonly techniciansResource = httpResource<PaginatedResponse<User>>(
+    () => ({
+      url: '/api/users?role=technician&limit=100',
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<User>>).data,
+    },
+  );
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;

@@ -106,10 +106,14 @@ export class AddMaterialDialogComponent {
   readonly supplierId = signal('');
   readonly saving = signal(false);
 
-  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
-    url: '/api/suppliers?limit=100',
-    parse: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
-  }));
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
+    () => ({
+      url: '/api/suppliers?limit=100',
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Supplier>>).data,
+    },
+  );
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
