@@ -10,6 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ServiceTypeFormComponent } from './service-type-form.component';
 
 @Component({
@@ -22,19 +25,18 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Tipos de Servicio</h1>
-          <p class="text-gray-500 mt-1">Gestiona el catálogo de servicios</p>
-        </div>
-        <button mat-flat-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Nuevo Servicio
-        </button>
-      </div>
+      <app-page-header
+        title="Tipos de Servicio"
+        subtitle="Gestiona el catálogo de servicios"
+        actionLabel="Nuevo Servicio"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
+      />
 
       @if (serviceTypesResource.isLoading()) {
         <div class="flex justify-center py-12">
@@ -104,19 +106,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
                 Estado
               </th>
               <td mat-cell *matCellDef="let serviceType" class="px-4 py-3">
-                @if (serviceType.isActive) {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                  >
-                    Activo
-                  </span>
-                } @else {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                  >
-                    Inactivo
-                  </span>
-                }
+                <app-status-badge [value]="serviceType.isActive" type="activeInactive" />
               </td>
             </ng-container>
 
@@ -200,10 +190,22 @@ export class ServiceTypesListComponent {
   }
 
   deleteServiceType(serviceType: ServiceType): void {
-    if (confirm(`¿Estás seguro de eliminar "${serviceType.name}"?`)) {
-      this.serviceTypesService.delete(serviceType.id).subscribe({
-        next: () => this.serviceTypesResource.reload(),
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar tipo de servicio',
+        message: `¿Estás seguro de eliminar "${serviceType.name}"?`,
+        confirmLabel: 'Eliminar',
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.serviceTypesService.delete(serviceType.id).subscribe({
+          next: () => this.serviceTypesResource.reload(),
+        });
+      }
+    });
   }
 }

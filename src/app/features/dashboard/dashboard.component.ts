@@ -5,7 +5,7 @@ import { DashboardKPIs } from '../../core/models/dashboard.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
@@ -16,7 +16,6 @@ import { ChartConfiguration, ChartData } from 'chart.js';
     MatButtonModule,
     MatProgressSpinnerModule,
     CurrencyPipe,
-    DecimalPipe,
     BaseChartDirective,
   ],
   template: `
