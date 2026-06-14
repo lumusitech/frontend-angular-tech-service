@@ -349,10 +349,14 @@ export class WorkOrderDetailComponent {
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
 
-  readonly workOrderResource = httpResource<WorkOrder>(() => ({
-    url: `/api/work-orders/${this.orderId()}`,
-    parse: (res: ApiResponse<WorkOrder>) => res.data,
-  }));
+  readonly workOrderResource = httpResource<WorkOrder>(
+    () => ({
+      url: `/api/work-orders/${this.orderId()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<WorkOrder>).data,
+    },
+  );
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks.filter((t) => t.isCompleted).length || 0;

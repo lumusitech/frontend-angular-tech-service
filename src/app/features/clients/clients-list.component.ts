@@ -154,10 +154,14 @@ export class ClientsListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
-    url: `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
-    parse: (res: ApiResponse<PaginatedResponse<Client>>) => res.data,
-  }));
+  readonly clientsResource = httpResource<PaginatedResponse<Client>>(
+    () => ({
+      url: `/api/clients?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Client>>).data,
+    },
+  );
 
   displayedColumns = ['name', 'email', 'phone', 'isActive', 'actions'];
 

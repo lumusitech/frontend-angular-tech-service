@@ -225,10 +225,14 @@ export class WorkOrdersListComponent {
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
-    url: `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
-    parse: (res: ApiResponse<PaginatedResponse<WorkOrder>>) => res.data,
-  }));
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
+    () => ({
+      url: `/api/work-orders?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&priority=${this.priorityFilter()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<WorkOrder>>).data,
+    },
+  );
 
   displayedColumns = [
     'trackingCode',

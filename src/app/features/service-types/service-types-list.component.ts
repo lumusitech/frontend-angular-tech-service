@@ -161,10 +161,14 @@ export class ServiceTypesListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
-  readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
-    url: `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
-    parse: (res: ApiResponse<PaginatedResponse<ServiceType>>) => res.data,
-  }));
+  readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(
+    () => ({
+      url: `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<ServiceType>>).data,
+    },
+  );
 
   displayedColumns = ['name', 'description', 'estimatedDuration', 'isActive', 'actions'];
 

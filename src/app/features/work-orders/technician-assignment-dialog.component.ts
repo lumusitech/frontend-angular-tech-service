@@ -72,10 +72,14 @@ export class TechnicianAssignmentDialogComponent {
   readonly selectedIds: string[] = [...this.data.currentTechnicianIds];
   readonly saving = signal(false);
 
-  readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
-    url: '/api/users?role=technician&limit=100',
-    parse: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
-  }));
+  readonly techniciansResource = httpResource<PaginatedResponse<User>>(
+    () => ({
+      url: '/api/users?role=technician&limit=100',
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<User>>).data,
+    },
+  );
 
   onSelectionChange(event: MatSelectionListChange): void {
     this.selectedIds.length = 0;
