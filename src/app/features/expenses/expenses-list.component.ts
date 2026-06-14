@@ -205,7 +205,12 @@ export class ExpensesListComponent {
 
   readonly expensesResource = httpResource<PaginatedResponse<Expense>>(
     () => ({
-      url: `/api/expenses?page=${this.currentPage()}&limit=${this.pageSize()}&category=${this.categoryFilter()}`,
+      url: '/api/expenses',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
+      },
     }),
     {
       parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Expense>>).data,
