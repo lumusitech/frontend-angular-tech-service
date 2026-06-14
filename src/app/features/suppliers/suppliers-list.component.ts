@@ -10,6 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { SupplierFormComponent } from './supplier-form.component';
 
 @Component({
@@ -22,19 +25,18 @@ import { SupplierFormComponent } from './supplier-form.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Proveedores</h1>
-          <p class="text-gray-500 mt-1">Gestiona tus proveedores</p>
-        </div>
-        <button mat-flat-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Nuevo Proveedor
-        </button>
-      </div>
+      <app-page-header
+        title="Proveedores"
+        subtitle="Gestiona tus proveedores"
+        actionLabel="Nuevo Proveedor"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
+      />
 
       @if (suppliersResource.isLoading()) {
         <div class="flex justify-center py-12">
@@ -111,19 +113,7 @@ import { SupplierFormComponent } from './supplier-form.component';
                 Estado
               </th>
               <td mat-cell *matCellDef="let supplier" class="px-4 py-3">
-                @if (supplier.isActive) {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                  >
-                    Activo
-                  </span>
-                } @else {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                  >
-                    Inactivo
-                  </span>
-                }
+                <app-status-badge [value]="supplier.isActive" type="activeInactive" />
               </td>
             </ng-container>
 
@@ -207,10 +197,22 @@ export class SuppliersListComponent {
   }
 
   deleteSupplier(supplier: Supplier): void {
-    if (confirm(`¿Estás seguro de eliminar a ${supplier.name}?`)) {
-      this.suppliersService.delete(supplier.id).subscribe({
-        next: () => this.suppliersResource.reload(),
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar proveedor',
+        message: `¿Estás seguro de eliminar a ${supplier.name}?`,
+        confirmLabel: 'Eliminar',
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.suppliersService.delete(supplier.id).subscribe({
+          next: () => this.suppliersResource.reload(),
+        });
+      }
+    });
   }
 }

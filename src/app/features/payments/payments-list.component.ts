@@ -11,7 +11,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
-import { DatePipe, CurrencyPipe } from '@angular/common';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
+import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-payments-list',
@@ -24,17 +28,15 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
+    TrackingCodeComponent,
+    CurrencyArsPipe,
     DatePipe,
-    CurrencyPipe,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Pagos</h1>
-          <p class="text-gray-500 mt-1">Historial de pagos del sistema</p>
-        </div>
-      </div>
+      <app-page-header title="Pagos" subtitle="Historial de pagos del sistema" />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
@@ -79,9 +81,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Orden
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
-                <span class="font-mono text-sm font-medium text-blue-600">{{
-                  payment.workOrder.trackingCode
-                }}</span>
+                <app-tracking-code [code]="payment.workOrder.trackingCode" />
               </td>
             </ng-container>
 
@@ -94,7 +94,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Monto
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm font-medium">
-                {{ payment.amount | currency: 'ARS' }}
+                {{ payment.amount | currencyArs }}
               </td>
             </ng-container>
 
@@ -106,8 +106,8 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
               >
                 Método
               </th>
-              <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm text-gray-500">
-                {{ getMethodLabel(payment.method) }}
+              <td mat-cell *matCellDef="let payment" class="px-4 py-3">
+                <app-status-badge [value]="payment.method" type="paymentMethod" />
               </td>
             </ng-container>
 
@@ -133,12 +133,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Estado
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
-                <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="getStatusClass(payment.status)"
-                >
-                  {{ getStatusLabel(payment.status) }}
-                </span>
+                <app-status-badge [value]="payment.status" type="paymentStatus" />
               </td>
             </ng-container>
 
@@ -230,37 +225,5 @@ export class PaymentsListComponent {
       .subscribe({
         next: () => this.paymentsResource.reload(),
       });
-  }
-
-  getStatusClass(status: PaymentStatus): string {
-    const classes: Record<PaymentStatus, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-green-100 text-green-800',
-      rejected: 'bg-red-100 text-red-800',
-      refunded: 'bg-blue-100 text-blue-800',
-      cancelled: 'bg-gray-100 text-gray-800',
-    };
-    return classes[status] || 'bg-gray-100 text-gray-800';
-  }
-
-  getStatusLabel(status: PaymentStatus): string {
-    const labels: Record<PaymentStatus, string> = {
-      pending: 'Pendiente',
-      approved: 'Aprobado',
-      rejected: 'Rechazado',
-      refunded: 'Reembolsado',
-      cancelled: 'Cancelado',
-    };
-    return labels[status] || status;
-  }
-
-  getMethodLabel(method: PaymentMethod): string {
-    const labels: Record<PaymentMethod, string> = {
-      cash: 'Efectivo',
-      transfer: 'Transferencia',
-      credit_card: 'Tarjeta Crédito',
-      debit_card: 'Tarjeta Débito',
-    };
-    return labels[method] || method;
   }
 }

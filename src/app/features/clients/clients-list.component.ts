@@ -9,6 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ClientFormComponent } from './client-form.component';
 
 @Component({
@@ -21,19 +24,18 @@ import { ClientFormComponent } from './client-form.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Clientes</h1>
-          <p class="text-gray-500 mt-1">Gestiona tus clientes</p>
-        </div>
-        <button mat-flat-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Nuevo Cliente
-        </button>
-      </div>
+      <app-page-header
+        title="Clientes"
+        subtitle="Gestiona tus clientes"
+        actionLabel="Nuevo Cliente"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
+      />
 
       @if (clientsResource.isLoading()) {
         <div class="flex justify-center py-12">
@@ -97,19 +99,7 @@ import { ClientFormComponent } from './client-form.component';
                 Estado
               </th>
               <td mat-cell *matCellDef="let client" class="px-4 py-3">
-                @if (client.isActive) {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                  >
-                    Activo
-                  </span>
-                } @else {
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                  >
-                    Inactivo
-                  </span>
-                }
+                <app-status-badge [value]="client.isActive" type="activeInactive" />
               </td>
             </ng-container>
 
@@ -193,10 +183,22 @@ export class ClientsListComponent {
   }
 
   deleteClient(client: Client): void {
-    if (confirm(`¿Estás seguro de eliminar a ${client.name}?`)) {
-      this.clientsService.delete(client.id).subscribe({
-        next: () => this.clientsResource.reload(),
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar cliente',
+        message: `¿Estás seguro de eliminar a ${client.name}?`,
+        confirmLabel: 'Eliminar',
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.clientsService.delete(client.id).subscribe({
+          next: () => this.clientsResource.reload(),
+        });
+      }
+    });
   }
 }

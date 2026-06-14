@@ -17,6 +17,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { WorkOrderFormComponent } from './work-order-form.component';
 import { DatePipe } from '@angular/common';
 
@@ -32,20 +35,20 @@ import { DatePipe } from '@angular/common';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
+    TrackingCodeComponent,
     DatePipe,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Órdenes de Trabajo</h1>
-          <p class="text-gray-500 mt-1">Gestiona las órdenes de servicio técnico</p>
-        </div>
-        <button mat-flat-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Nueva Orden
-        </button>
-      </div>
+      <app-page-header
+        title="Órdenes de Trabajo"
+        subtitle="Gestiona las órdenes de servicio técnico"
+        actionLabel="Nueva Orden"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
+      />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
@@ -99,9 +102,7 @@ import { DatePipe } from '@angular/common';
                 Código
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
-                <span class="font-mono text-sm font-medium text-blue-600">{{
-                  order.trackingCode
-                }}</span>
+                <app-tracking-code [code]="order.trackingCode" />
               </td>
             </ng-container>
 
@@ -114,12 +115,7 @@ import { DatePipe } from '@angular/common';
                 Estado
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
-                <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="getStatusClass(order.status)"
-                >
-                  {{ getStatusLabel(order.status) }}
-                </span>
+                <app-status-badge [value]="order.status" type="workOrderStatus" />
               </td>
             </ng-container>
 
@@ -132,12 +128,7 @@ import { DatePipe } from '@angular/common';
                 Prioridad
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
-                <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="getPriorityClass(order.priority)"
-                >
-                  {{ getPriorityLabel(order.priority) }}
-                </span>
+                <app-status-badge [value]="order.priority" type="workOrderPriority" />
               </td>
             </ng-container>
 
@@ -262,51 +253,5 @@ export class WorkOrdersListComponent {
 
   viewDetail(order: WorkOrder): void {
     this.router.navigate(['/admin/work-orders', order.id]);
-  }
-
-  getStatusClass(status: WorkOrderStatus): string {
-    const classes: Record<WorkOrderStatus, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      assigned: 'bg-blue-100 text-blue-800',
-      in_progress: 'bg-indigo-100 text-indigo-800',
-      postponed: 'bg-gray-100 text-gray-800',
-      completed: 'bg-green-100 text-green-800',
-      delivered: 'bg-emerald-100 text-emerald-800',
-      cancelled: 'bg-red-100 text-red-800',
-    };
-    return classes[status] || 'bg-gray-100 text-gray-800';
-  }
-
-  getStatusLabel(status: WorkOrderStatus): string {
-    const labels: Record<WorkOrderStatus, string> = {
-      pending: 'Pendiente',
-      assigned: 'Asignada',
-      in_progress: 'En Progreso',
-      postponed: 'Pospuesta',
-      completed: 'Completada',
-      delivered: 'Entregada',
-      cancelled: 'Cancelada',
-    };
-    return labels[status] || status;
-  }
-
-  getPriorityClass(priority: WorkOrderPriority): string {
-    const classes: Record<WorkOrderPriority, string> = {
-      low: 'bg-gray-100 text-gray-800',
-      medium: 'bg-blue-100 text-blue-800',
-      high: 'bg-orange-100 text-orange-800',
-      urgent: 'bg-red-100 text-red-800',
-    };
-    return classes[priority] || 'bg-gray-100 text-gray-800';
-  }
-
-  getPriorityLabel(priority: WorkOrderPriority): string {
-    const labels: Record<WorkOrderPriority, string> = {
-      low: 'Baja',
-      medium: 'Media',
-      high: 'Alta',
-      urgent: 'Urgente',
-    };
-    return labels[priority] || priority;
   }
 }

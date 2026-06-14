@@ -12,8 +12,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { ExpenseFormComponent } from './expense-form.component';
-import { DatePipe, CurrencyPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-expenses-list',
@@ -27,21 +31,20 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    PageHeaderComponent,
+    StatusBadgeComponent,
+    CurrencyArsPipe,
     DatePipe,
-    CurrencyPipe,
   ],
   template: `
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Gastos Operativos</h1>
-          <p class="text-gray-500 mt-1">Gestiona los gastos del negocio</p>
-        </div>
-        <button mat-flat-button color="primary" (click)="openCreateDialog()">
-          <mat-icon>add</mat-icon>
-          Nuevo Gasto
-        </button>
-      </div>
+      <app-page-header
+        title="Gastos Operativos"
+        subtitle="Gestiona los gastos del negocio"
+        actionLabel="Nuevo Gasto"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
+      />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-48">
@@ -101,12 +104,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Categoría
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3">
-                <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="getCategoryClass(expense.category)"
-                >
-                  {{ getCategoryLabel(expense.category) }}
-                </span>
+                <app-status-badge [value]="expense.category" type="expenseCategory" />
               </td>
             </ng-container>
 
@@ -119,7 +117,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
                 Monto
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-sm font-medium">
-                {{ expense.amount | currency: 'ARS' }}
+                {{ expense.amount | currencyArs }}
               </td>
             </ng-container>
 
@@ -235,42 +233,22 @@ export class ExpensesListComponent {
   }
 
   deleteExpense(expense: Expense): void {
-    if (confirm(`¿Estás seguro de eliminar "${expense.description}"?`)) {
-      this.expensesService.delete(expense.id).subscribe({
-        next: () => this.expensesResource.reload(),
-      });
-    }
-  }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar gasto',
+        message: `¿Estás seguro de eliminar "${expense.description}"?`,
+        confirmLabel: 'Eliminar',
+        color: 'warn',
+      },
+    });
 
-  getCategoryClass(category: ExpenseCategory): string {
-    const classes: Record<ExpenseCategory, string> = {
-      rent: 'bg-purple-100 text-purple-800',
-      utilities: 'bg-blue-100 text-blue-800',
-      salaries: 'bg-green-100 text-green-800',
-      tools: 'bg-orange-100 text-orange-800',
-      transport: 'bg-yellow-100 text-yellow-800',
-      advertising: 'bg-pink-100 text-pink-800',
-      supplies: 'bg-indigo-100 text-indigo-800',
-      maintenance: 'bg-red-100 text-red-800',
-      hosting: 'bg-cyan-100 text-cyan-800',
-      other: 'bg-gray-100 text-gray-800',
-    };
-    return classes[category] || 'bg-gray-100 text-gray-800';
-  }
-
-  getCategoryLabel(category: ExpenseCategory): string {
-    const labels: Record<ExpenseCategory, string> = {
-      rent: 'Alquiler',
-      utilities: 'Servicios',
-      salaries: 'Sueldos',
-      tools: 'Herramientas',
-      transport: 'Transporte',
-      advertising: 'Publicidad',
-      supplies: 'Insumos',
-      maintenance: 'Mantenimiento',
-      hosting: 'Hosting',
-      other: 'Otros',
-    };
-    return labels[category] || category;
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.expensesService.delete(expense.id).subscribe({
+          next: () => this.expensesResource.reload(),
+        });
+      }
+    });
   }
 }
