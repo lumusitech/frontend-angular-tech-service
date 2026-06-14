@@ -86,7 +86,7 @@ import { DatePipe } from '@angular/common';
                 Orden
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
-                <app-tracking-code [code]="payment.workOrder.trackingCode" />
+                <app-tracking-code [code]="payment.workOrder?.trackingCode ?? '-'" />
               </td>
             </ng-container>
 
