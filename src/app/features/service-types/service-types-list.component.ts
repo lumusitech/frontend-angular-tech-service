@@ -57,7 +57,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
         />
       } @else if (serviceTypesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="serviceTypesResource.value().data" class="w-full">
+          <table mat-table [dataSource]="serviceTypesResource.value()?.data ?? []" class="w-full">
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -142,7 +142,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
           </table>
 
           <mat-paginator
-            [length]="serviceTypesResource.value().total"
+            [length]="serviceTypesResource.value()?.total ?? 0"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
