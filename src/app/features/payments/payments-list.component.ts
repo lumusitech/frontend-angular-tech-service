@@ -203,7 +203,7 @@ export class PaymentsListComponent {
 
   readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
     url: `/api/payments?page=${this.currentPage()}&limit=${this.pageSize()}&status=${this.statusFilter()}&method=${this.methodFilter()}`,
-    transform: (res: ApiResponse<PaginatedResponse<Payment>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<Payment>>) => res.data,
   }));
 
   displayedColumns = [

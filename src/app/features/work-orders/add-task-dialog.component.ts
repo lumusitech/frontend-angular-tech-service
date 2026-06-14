@@ -93,7 +93,7 @@ export class AddTaskDialogComponent {
 
   readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users?role=technician&limit=100',
-    transform: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<User>>) => res.data,
   }));
 
   getInputValue(event: Event): string {

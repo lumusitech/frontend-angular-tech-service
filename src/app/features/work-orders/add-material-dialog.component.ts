@@ -108,7 +108,7 @@ export class AddMaterialDialogComponent {
 
   readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
     url: '/api/suppliers?limit=100',
-    transform: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
+    parse: (res: ApiResponse<PaginatedResponse<Supplier>>) => res.data,
   }));
 
   getInputValue(event: Event): string {
