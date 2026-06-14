@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -25,6 +26,7 @@ import { SupplierFormComponent } from './supplier-form.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
   ],
@@ -42,6 +44,8 @@ import { SupplierFormComponent } from './supplier-form.component';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (suppliersResource.error()) {
+        <app-error-state (retry)="suppliersResource.reload()" />
       } @else if (suppliersResource.hasValue() && suppliersResource.value().data.length === 0) {
         <app-empty-state
           title="Sin proveedores"

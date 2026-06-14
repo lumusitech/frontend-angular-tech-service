@@ -5,6 +5,7 @@ import { DashboardKPIs } from '../../core/models/dashboard.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { CurrencyPipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -15,6 +16,7 @@ import { ChartConfiguration, ChartData } from 'chart.js';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    ErrorStateComponent,
     CurrencyPipe,
     BaseChartDirective,
   ],
@@ -29,6 +31,8 @@ import { ChartConfiguration, ChartData } from 'chart.js';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (loadError()) {
+        <app-error-state (retry)="loadKPIs()" />
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -173,6 +177,7 @@ export class DashboardComponent implements OnInit {
 
   readonly kpis = signal<DashboardKPIs | null>(null);
   readonly loading = signal(true);
+  readonly loadError = signal(false);
 
   lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
@@ -238,6 +243,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadKPIs(): void {
+    this.loading.set(true);
+    this.loadError.set(false);
     this.dashboardService.getKPIs().subscribe({
       next: (kpis) => {
         this.kpis.set(kpis);
@@ -245,6 +252,7 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
+        this.loadError.set(true);
       },
     });
   }

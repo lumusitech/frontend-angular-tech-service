@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { DatePipe } from '@angular/common';
 import { StatusTransitionComponent } from './status-transition.component';
@@ -30,6 +31,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
     MatTabsModule,
     MatProgressSpinnerModule,
     StatusBadgeComponent,
+    ErrorStateComponent,
     TrackingCodeComponent,
     CurrencyArsPipe,
     DatePipe,
@@ -40,6 +42,12 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
       <div class="flex justify-center py-12">
         <mat-spinner diameter="48" />
       </div>
+    } @else if (workOrderResource.error()) {
+      <app-error-state
+        title="Error al cargar la orden"
+        message="No se pudo obtener el detalle de la orden de trabajo."
+        (retry)="workOrderResource.reload()"
+      />
     } @else if (workOrderResource.hasValue()) {
       <div class="space-y-6">
         <div class="flex items-center justify-between">

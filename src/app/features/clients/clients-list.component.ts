@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -24,6 +25,7 @@ import { ClientFormComponent } from './client-form.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
+    ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
   ],
@@ -41,6 +43,8 @@ import { ClientFormComponent } from './client-form.component';
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
+      } @else if (clientsResource.error()) {
+        <app-error-state (retry)="clientsResource.reload()" />
       } @else if (clientsResource.hasValue() && clientsResource.value().data.length === 0) {
         <app-empty-state
           title="Sin clientes"
