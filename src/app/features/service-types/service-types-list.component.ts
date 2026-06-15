@@ -6,6 +6,7 @@ import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -16,12 +17,14 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ServiceTypeFormComponent } from './service-type-form.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-service-types-list',
   imports: [
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
@@ -30,6 +33,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
+    DatePipe,
   ],
   template: `
     <div class="space-y-4">
@@ -58,10 +62,17 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
         />
       } @else if (serviceTypesResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="serviceTypesResource.value().data" class="w-full">
+          <table
+            mat-table
+            matSort
+            [dataSource]="serviceTypesResource.value().data"
+            (matSortChange)="onSortChange($event)"
+            class="w-full"
+          >
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -75,6 +86,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
             <ng-container matColumnDef="description">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -88,6 +100,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
             <ng-container matColumnDef="estimatedDuration">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -105,6 +118,7 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
             <ng-container matColumnDef="isActive">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -112,6 +126,20 @@ import { ServiceTypeFormComponent } from './service-type-form.component';
               </th>
               <td mat-cell *matCellDef="let serviceType" class="px-4 py-3">
                 <app-status-badge [value]="serviceType.isActive" type="activeInactive" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th
+                mat-header-cell
+                mat-sort-header
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Creado
+              </th>
+              <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-sm text-gray-500">
+                {{ serviceType.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
 
@@ -160,21 +188,40 @@ export class ServiceTypesListComponent {
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
+  readonly sortBy = signal('');
+  readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
   readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(
     () => ({
-      url: `/api/service-types?page=${this.currentPage()}&limit=${this.pageSize()}`,
+      url: '/api/service-types',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      },
     }),
     {
       parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<ServiceType>>).data,
     },
   );
 
-  displayedColumns = ['name', 'description', 'estimatedDuration', 'isActive', 'actions'];
+  displayedColumns = [
+    'name',
+    'description',
+    'estimatedDuration',
+    'isActive',
+    'createdAt',
+    'actions',
+  ];
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active);
+    this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
   }
 
   openCreateDialog(): void {

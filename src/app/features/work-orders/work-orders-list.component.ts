@@ -11,6 +11,7 @@ import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,6 +31,7 @@ import { DatePipe } from '@angular/common';
   imports: [
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
@@ -97,10 +99,17 @@ import { DatePipe } from '@angular/common';
         />
       } @else if (workOrdersResource.hasValue()) {
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table mat-table [dataSource]="workOrdersResource.value().data" class="w-full">
+          <table
+            mat-table
+            matSort
+            [dataSource]="workOrdersResource.value().data"
+            (matSortChange)="onSortChange($event)"
+            class="w-full"
+          >
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -114,6 +123,7 @@ import { DatePipe } from '@angular/common';
             <ng-container matColumnDef="status">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -127,6 +137,7 @@ import { DatePipe } from '@angular/common';
             <ng-container matColumnDef="priority">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -140,6 +151,7 @@ import { DatePipe } from '@angular/common';
             <ng-container matColumnDef="client">
               <th
                 mat-header-cell
+                mat-sort-header="client"
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -153,6 +165,7 @@ import { DatePipe } from '@angular/common';
             <ng-container matColumnDef="serviceType">
               <th
                 mat-header-cell
+                mat-sort-header="serviceType"
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -166,6 +179,7 @@ import { DatePipe } from '@angular/common';
             <ng-container matColumnDef="scheduledDate">
               <th
                 mat-header-cell
+                mat-sort-header
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
               >
@@ -177,6 +191,20 @@ import { DatePipe } from '@angular/common';
                 } @else {
                   -
                 }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th
+                mat-header-cell
+                mat-sort-header
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              >
+                Creado
+              </th>
+              <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500">
+                {{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
 
@@ -224,6 +252,8 @@ export class WorkOrdersListComponent {
   readonly currentPage = signal(1);
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
+  readonly sortBy = signal('');
+  readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
     () => ({
@@ -233,6 +263,7 @@ export class WorkOrdersListComponent {
         limit: this.pageSize(),
         ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
         ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
       },
     }),
     {
@@ -247,12 +278,18 @@ export class WorkOrdersListComponent {
     'client',
     'serviceType',
     'scheduledDate',
+    'createdAt',
     'actions',
   ];
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active);
+    this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
   }
 
   openCreateDialog(): void {
