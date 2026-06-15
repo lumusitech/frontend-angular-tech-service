@@ -48,6 +48,7 @@ export class TranslationService {
   }
 
   async setLocale(locale: string): Promise<void> {
+    this.locale.set(locale);
     await this.loadLocale(locale);
   }
 
