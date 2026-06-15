@@ -218,5 +218,22 @@
     "internal": "Interna",
     "workshop": "Taller",
     "on_site": "En domicilio"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza la apariencia y el comportamiento",
+    "appearance": "Apariencia",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "language": "Idioma",
+    "dashboard": "Dashboard",
+    "visibleWidgets": "Widgets visibles",
+    "resetLayout": "Restaurar orden por defecto",
+    "widgetKpis": "KPIs",
+    "widgetPendingItems": "Pendientes",
+    "widgetCharts": "Gráficos",
+    "widgetQuickActions": "Acciones rápidas",
+    "widgetTopClients": "Top Clientes"
   }
 }

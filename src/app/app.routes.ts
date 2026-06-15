@@ -106,9 +106,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () =>
-          import('./features/settings/settings-placeholder.component').then(
-            (m) => m.SettingsPlaceholderComponent,
-          ),
+          import('./features/settings/settings.component').then((m) => m.SettingsComponent),
       },
       {
         path: 'pending-items',
