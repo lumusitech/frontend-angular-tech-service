@@ -1,11 +1,13 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, output, computed } from '@angular/core';
+import { UpperCasePipe } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 interface LanguageOption {
   code: string;
@@ -15,7 +17,7 @@ interface LanguageOption {
 
 @Component({
   selector: 'app-header',
-  imports: [TranslatePipe, MatFormFieldModule, MatSelectModule],
+  imports: [TranslatePipe, UpperCasePipe, MatMenuModule, MatButtonModule, MatIconModule],
   template: `
     <header
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
@@ -101,16 +103,17 @@ interface LanguageOption {
           }
         </button>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="!m-0 !min-w-0">
-          <mat-select
-            [value]="translationService.locale()"
-            (selectionChange)="onLanguageChange($event.value)"
-          >
-            @for (lang of availableLanguages; track lang.code) {
-              <mat-option [value]="lang.code"> {{ lang.flag }} {{ lang.label }} </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <button mat-button [matMenuTriggerFor]="langMenu" class="!min-w-0 !px-2 !text-sm">
+          {{ currentFlag() }} {{ translationService.locale() | uppercase }}
+        </button>
+
+        <mat-menu #langMenu="matMenu">
+          @for (lang of availableLanguages; track lang.code) {
+            <button mat-menu-item (click)="onLanguageChange(lang.code)">
+              <span>{{ lang.flag }} {{ lang.label }}</span>
+            </button>
+          }
+        </mat-menu>
 
         <div class="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-700">
           <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -162,6 +165,11 @@ export class HeaderComponent {
     { code: 'es', label: 'Español', flag: '🇦🇷' },
     { code: 'en', label: 'English', flag: '🇺🇸' },
   ];
+
+  currentFlag = computed(() => {
+    const lang = this.availableLanguages.find((l) => l.code === this.translationService.locale());
+    return lang?.flag || '🌐';
+  });
 
   onLanguageChange(locale: string): void {
     this.translationService.setLocale(locale);

@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
+import { UpperCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ThemeService } from '../../core/services/theme.service';
@@ -30,10 +30,10 @@ interface WidgetOption {
     MatIconModule,
     MatButtonModule,
     MatButtonToggleModule,
-    MatSelectModule,
-    MatFormFieldModule,
+    MatMenuModule,
     MatCheckboxModule,
     TranslatePipe,
+    UpperCasePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -101,16 +101,18 @@ interface WidgetOption {
         </div>
 
         <div class="ml-13">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-select
-              [value]="translationService.locale()"
-              (selectionChange)="onLanguageChange($event.value)"
-            >
-              @for (lang of availableLanguages; track lang.code) {
-                <mat-option [value]="lang.code"> {{ lang.flag }} {{ lang.label }} </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+          <button mat-stroked-button [matMenuTriggerFor]="langMenu">
+            {{ currentFlag() }} {{ translationService.locale() | uppercase }}
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+
+          <mat-menu #langMenu="matMenu">
+            @for (lang of availableLanguages; track lang.code) {
+              <button mat-menu-item (click)="onLanguageChange(lang.code)">
+                <span>{{ lang.flag }} {{ lang.label }}</span>
+              </button>
+            }
+          </mat-menu>
         </div>
       </div>
 
@@ -172,6 +174,11 @@ export class SettingsComponent {
     { id: 'quickActions', labelKey: 'settings.widgetQuickActions' },
     { id: 'topClients', labelKey: 'settings.widgetTopClients' },
   ];
+
+  currentFlag = computed(() => {
+    const lang = this.availableLanguages.find((l) => l.code === this.translationService.locale());
+    return lang?.flag || '🌐';
+  });
 
   onLanguageChange(locale: string): void {
     this.translationService.setLocale(locale);
