@@ -68,7 +68,7 @@ import { DatePipe } from '@angular/common';
         </mat-form-field>
       </div>
 
-      @if (paymentsResource.isLoading()) {
+      @if (paymentsResource.status() === 'loading' && !paymentsResource.hasValue()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
@@ -81,6 +81,7 @@ import { DatePipe } from '@angular/common';
           <table
             mat-table
             matSort
+            matSortDisableClear
             [dataSource]="paymentsResource.value().data"
             (matSortChange)="onSortChange($event)"
             class="w-full"
