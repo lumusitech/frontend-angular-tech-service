@@ -4,10 +4,18 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
+interface LanguageOption {
+  code: string;
+  label: string;
+  flag: string;
+}
 
 @Component({
   selector: 'app-header',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, MatFormFieldModule, MatSelectModule],
   template: `
     <header
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
@@ -93,38 +101,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           }
         </button>
 
-        <div class="flex items-center gap-1">
-          <button
-            (click)="translationService.setLocale('es')"
-            class="px-2 py-1 text-xs rounded transition-colors"
-            [class.font-bold]="translationService.locale() === 'es'"
-            [class.bg-blue-100]="translationService.locale() === 'es'"
-            [class.dark:bg-blue-900/30]="translationService.locale() === 'es'"
-            [class.text-blue-700]="translationService.locale() === 'es'"
-            [class.dark:text-blue-400]="translationService.locale() === 'es'"
-            [class.text-gray-500]="translationService.locale() !== 'es'"
-            [class.dark:text-gray-400]="translationService.locale() !== 'es'"
-            [class.hover:bg-gray-100]="translationService.locale() !== 'es'"
-            [class.dark:hover:bg-gray-700]="translationService.locale() !== 'es'"
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="!m-0 !min-w-0">
+          <mat-select
+            [value]="translationService.locale()"
+            (selectionChange)="onLanguageChange($event.value)"
           >
-            ES
-          </button>
-          <button
-            (click)="translationService.setLocale('en')"
-            class="px-2 py-1 text-xs rounded transition-colors"
-            [class.font-bold]="translationService.locale() === 'en'"
-            [class.bg-blue-100]="translationService.locale() === 'en'"
-            [class.dark:bg-blue-900/30]="translationService.locale() === 'en'"
-            [class.text-blue-700]="translationService.locale() === 'en'"
-            [class.dark:text-blue-400]="translationService.locale() === 'en'"
-            [class.text-gray-500]="translationService.locale() !== 'en'"
-            [class.dark:text-gray-400]="translationService.locale() !== 'en'"
-            [class.hover:bg-gray-100]="translationService.locale() !== 'en'"
-            [class.dark:hover:bg-gray-700]="translationService.locale() !== 'en'"
-          >
-            EN
-          </button>
-        </div>
+            @for (lang of availableLanguages; track lang.code) {
+              <mat-option [value]="lang.code"> {{ lang.flag }} {{ lang.label }} </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
         <div class="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-700">
           <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -171,4 +157,13 @@ export class HeaderComponent {
   readonly router = inject(Router);
 
   toggleSidebar = output<void>();
+
+  availableLanguages: LanguageOption[] = [
+    { code: 'es', label: 'Español', flag: '🇦🇷' },
+    { code: 'en', label: 'English', flag: '🇺🇸' },
+  ];
+
+  onLanguageChange(locale: string): void {
+    this.translationService.setLocale(locale);
+  }
 }

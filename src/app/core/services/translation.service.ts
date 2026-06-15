@@ -6,33 +6,25 @@ export class TranslationService {
   readonly translations = signal<Record<string, unknown>>({});
 
   private loaded = new Set<string>();
-  private loading: Promise<void> | null = null;
 
   async init(locale = 'es'): Promise<void> {
-    if (typeof window === 'undefined') return;
-
-    const stored = localStorage.getItem('locale');
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
     const target = stored || locale;
     await this.loadLocale(target);
   }
 
   async loadLocale(locale: string): Promise<void> {
+    if (typeof window === 'undefined') return;
+
     if (this.loaded.has(locale)) {
       this.locale.set(locale);
+      try {
+        localStorage.setItem('locale', locale);
+      } catch {}
       return;
     }
 
-    if (this.loading) {
-      await this.loading;
-      if (this.loaded.has(locale)) {
-        this.locale.set(locale);
-        return;
-      }
-    }
-
-    this.loading = this.doLoad(locale);
-    await this.loading;
-    this.loading = null;
+    await this.doLoad(locale);
   }
 
   private async doLoad(locale: string): Promise<void> {

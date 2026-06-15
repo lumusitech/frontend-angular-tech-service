@@ -218,5 +218,22 @@
     "internal": "Internal",
     "workshop": "Workshop",
     "on_site": "On site"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize appearance and behavior",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "dashboard": "Dashboard",
+    "visibleWidgets": "Visible widgets",
+    "resetLayout": "Reset to default layout",
+    "widgetKpis": "KPIs",
+    "widgetPendingItems": "Pending",
+    "widgetCharts": "Charts",
+    "widgetQuickActions": "Quick Actions",
+    "widgetTopClients": "Top Clients"
   }
 }
