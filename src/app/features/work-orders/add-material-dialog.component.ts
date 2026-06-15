@@ -10,6 +10,7 @@ import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { Supplier } from '../../core/models/supplier.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
@@ -24,28 +25,29 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>build</mat-icon>
-      Agregar Material
+      {{ 'workOrders.materials.addMaterial' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción</mat-label>
+          <mat-label>{{ 'workOrders.materials.description' | translate }}</mat-label>
           <input
             matInput
             [value]="description()"
             (input)="description.set(getInputValue($event))"
-            placeholder="Ej: Cable UTP Cat6 - 50m"
+            [placeholder]="'workOrders.materials.descriptionPlaceholder' | translate"
           />
         </mat-form-field>
 
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Cantidad</mat-label>
+            <mat-label>{{ 'workOrders.materials.quantity' | translate }}</mat-label>
             <input
               matInput
               type="number"
@@ -56,7 +58,7 @@ interface DialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Costo Unitario</mat-label>
+            <mat-label>{{ 'workOrders.materials.unitCost' | translate }}</mat-label>
             <input
               matInput
               type="number"
@@ -69,9 +71,9 @@ interface DialogData {
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Proveedor (opcional)</mat-label>
+          <mat-label>{{ 'workOrders.materials.supplierOptional' | translate }}</mat-label>
           <mat-select [value]="supplierId()" (selectionChange)="supplierId.set($event.value)">
-            <mat-option>Sin proveedor</mat-option>
+            <mat-option>{{ 'workOrders.materials.noSupplier' | translate }}</mat-option>
             @if (suppliersResource.hasValue()) {
               @for (supplier of suppliersResource.value().data; track supplier.id) {
                 <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
@@ -83,14 +85,18 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button
         mat-flat-button
         color="primary"
         (click)="onSubmit($event)"
         [disabled]="saving() || !description() || quantity() <= 0"
       >
-        {{ saving() ? 'Guardando...' : 'Guardar Material' }}
+        {{
+          saving()
+            ? ('common.saving' | translate)
+            : ('workOrders.materials.saveMaterial' | translate)
+        }}
       </button>
     </mat-dialog-actions>
   `,

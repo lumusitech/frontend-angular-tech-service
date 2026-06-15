@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkOrderStatus } from '../../core/models/work-order.interfaces';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface StatusAction {
   label: string;
@@ -49,13 +50,13 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
 
 @Component({
   selector: 'app-status-transition',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, TranslatePipe],
   template: `
     <div class="flex items-center gap-2">
       @for (action of actions(); track action.nextStatus) {
         <button mat-flat-button [color]="action.color" (click)="onAction(action)" class="gap-1">
           <mat-icon>{{ action.icon }}</mat-icon>
-          {{ action.label }}
+          {{ getActionLabel(action.label) | translate }}
         </button>
       }
     </div>
@@ -70,6 +71,19 @@ export class StatusTransitionComponent {
 
   actions(): StatusAction[] {
     return ACTIONS_BY_STATUS[this.status()] || [];
+  }
+
+  getActionLabel(label: string): string {
+    const labelMap: Record<string, string> = {
+      'Asignar Técnicos': 'workOrders.actions.assignTechnicians',
+      'Iniciar Trabajo': 'workOrders.actions.startWork',
+      Completar: 'workOrders.actions.complete',
+      Pausar: 'workOrders.actions.pause',
+      Cancelar: 'workOrders.actions.cancel',
+      Reanudar: 'workOrders.actions.resume',
+      Entregar: 'workOrders.actions.deliver',
+    };
+    return labelMap[label] || label;
   }
 
   onAction(action: StatusAction): void {

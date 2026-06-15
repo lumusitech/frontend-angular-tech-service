@@ -1,11 +1,20 @@
 import { Component, input } from '@angular/core';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-empty-state',
+  imports: [TranslatePipe],
   template: `
     <div class="flex flex-col items-center justify-center py-12 px-4">
-      <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div
+        class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4"
+      >
+        <svg
+          class="w-8 h-8 text-gray-400 dark:text-gray-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -14,8 +23,12 @@ import { Component, input } from '@angular/core';
           />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-1">{{ title() }}</h3>
-      <p class="text-sm text-gray-500 text-center max-w-sm mb-6">{{ message() }}</p>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+        {{ title() || ('common.noResults' | translate) }}
+      </h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-6">
+        {{ message() || ('common.noResultsMessage' | translate) }}
+      </p>
       @if (actionLabel()) {
         <button
           (click)="onAction()"
@@ -28,8 +41,8 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class EmptyStateComponent {
-  title = input<string>('Sin resultados');
-  message = input<string>('No se encontraron elementos para mostrar.');
+  title = input<string>('');
+  message = input<string>('');
   actionLabel = input<string>('');
   action = input<() => void>();
 

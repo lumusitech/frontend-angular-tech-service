@@ -13,6 +13,7 @@ import {
   UpdateExpenseDto,
   ExpenseCategory,
 } from '../../core/models/expense.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -29,17 +30,22 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>receipt_long</mat-icon>
-      {{ data.mode === 'create' ? 'Nuevo Gasto' : 'Editar Gasto' }}
+      {{
+        data.mode === 'create'
+          ? ('expenses.newExpense' | translate)
+          : ('expenses.editExpense' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción</mat-label>
+          <mat-label>{{ 'expenses.description' | translate }}</mat-label>
           <input
             matInput
             [value]="description()"
@@ -50,7 +56,7 @@ interface DialogData {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Monto</mat-label>
+            <mat-label>{{ 'expenses.amount' | translate }}</mat-label>
             <input
               matInput
               type="number"
@@ -63,7 +69,7 @@ interface DialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Fecha</mat-label>
+            <mat-label>{{ 'expenses.date' | translate }}</mat-label>
             <input
               matInput
               type="date"
@@ -75,23 +81,35 @@ interface DialogData {
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Categoría</mat-label>
+          <mat-label>{{ 'expenses.category' | translate }}</mat-label>
           <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-            <mat-option value="rent">Alquiler</mat-option>
-            <mat-option value="utilities">Servicios</mat-option>
-            <mat-option value="salaries">Sueldos</mat-option>
-            <mat-option value="tools">Herramientas</mat-option>
-            <mat-option value="transport">Transporte</mat-option>
-            <mat-option value="advertising">Publicidad</mat-option>
-            <mat-option value="supplies">Insumos</mat-option>
-            <mat-option value="maintenance">Mantenimiento</mat-option>
-            <mat-option value="hosting">Hosting</mat-option>
-            <mat-option value="other">Otros</mat-option>
+            <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
+            <mat-option value="utilities">{{
+              'expenses.categories.utilities' | translate
+            }}</mat-option>
+            <mat-option value="salaries">{{
+              'expenses.categories.salaries' | translate
+            }}</mat-option>
+            <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
+            <mat-option value="transport">{{
+              'expenses.categories.transport' | translate
+            }}</mat-option>
+            <mat-option value="advertising">{{
+              'expenses.categories.advertising' | translate
+            }}</mat-option>
+            <mat-option value="supplies">{{
+              'expenses.categories.supplies' | translate
+            }}</mat-option>
+            <mat-option value="maintenance">{{
+              'expenses.categories.maintenance' | translate
+            }}</mat-option>
+            <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
+            <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Notas</mat-label>
+          <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
             [value]="notes()"
@@ -101,15 +119,15 @@ interface DialogData {
         </mat-form-field>
 
         <mat-checkbox [checked]="isRecurring()" (change)="isRecurring.set($event.checked)">
-          Gasto recurrente
+          {{ 'expenses.recurringExpense' | translate }}
         </mat-checkbox>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

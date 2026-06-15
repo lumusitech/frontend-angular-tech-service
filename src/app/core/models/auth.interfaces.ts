@@ -1,3 +1,5 @@
+import { LoginPreferencesResponse } from './user-preferences.interfaces';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -8,6 +10,7 @@ export interface LoginResponse {
   data: {
     accessToken: string;
     user: User;
+    preferences?: LoginPreferencesResponse;
   };
   timestamp: string;
 }

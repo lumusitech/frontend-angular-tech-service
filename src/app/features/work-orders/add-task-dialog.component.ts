@@ -10,6 +10,7 @@ import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { User } from '../../core/models/user.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
@@ -24,40 +25,41 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>add_task</mat-icon>
-      Agregar Tarea
+      {{ 'workOrders.tasks.addTask' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Título</mat-label>
+          <mat-label>{{ 'workOrders.tasks.title' | translate }}</mat-label>
           <input
             matInput
             [value]="title()"
             (input)="title.set(getInputValue($event))"
-            placeholder="Ej: Verificar fuente de poder"
+            [placeholder]="'workOrders.tasks.titlePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción (opcional)</mat-label>
+          <mat-label>{{ 'workOrders.tasks.descriptionOptional' | translate }}</mat-label>
           <textarea
             matInput
             [value]="taskDescription()"
             (input)="taskDescription.set(getInputValue($event))"
             rows="3"
-            placeholder="Detalles adicionales..."
+            [placeholder]="'workOrders.tasks.descriptionPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Asignar a técnico (opcional)</mat-label>
+          <mat-label>{{ 'workOrders.tasks.assignTechnician' | translate }}</mat-label>
           <mat-select [value]="assignedToId()" (selectionChange)="assignedToId.set($event.value)">
-            <mat-option>Sin asignar</mat-option>
+            <mat-option>{{ 'workOrders.tasks.unassigned' | translate }}</mat-option>
             @if (techniciansResource.hasValue()) {
               @for (tech of techniciansResource.value().data; track tech.id) {
                 <mat-option [value]="tech.id">{{ tech.name }}</mat-option>
@@ -69,14 +71,18 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button
         mat-flat-button
         color="primary"
         (click)="onSubmit($event)"
         [disabled]="saving() || !title()"
       >
-        {{ saving() ? 'Creando...' : 'Crear Tarea' }}
+        {{
+          saving()
+            ? ('workOrders.tasks.creating' | translate)
+            : ('workOrders.tasks.createTask' | translate)
+        }}
       </button>
     </mat-dialog-actions>
   `,

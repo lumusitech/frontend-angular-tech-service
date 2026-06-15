@@ -21,6 +21,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { ExpenseFormComponent } from './expense-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-expenses-list',
@@ -40,35 +41,48 @@ import { DatePipe } from '@angular/common';
     StatusBadgeComponent,
     CurrencyArsPipe,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Gastos Operativos"
-        subtitle="Gestiona los gastos del negocio"
-        actionLabel="Nuevo Gasto"
+        [title]="'expenses.title' | translate"
+        [subtitle]="'expenses.subtitle' | translate"
+        [actionLabel]="'expenses.newExpense' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-48">
-          <mat-label>Categoría</mat-label>
+          <mat-label>{{ 'expenses.category' | translate }}</mat-label>
           <mat-select
             [value]="categoryFilter()"
             (selectionChange)="categoryFilter.set($event.value)"
           >
-            <mat-option>Todas</mat-option>
-            <mat-option value="rent">Alquiler</mat-option>
-            <mat-option value="utilities">Servicios</mat-option>
-            <mat-option value="salaries">Sueldos</mat-option>
-            <mat-option value="tools">Herramientas</mat-option>
-            <mat-option value="transport">Transporte</mat-option>
-            <mat-option value="advertising">Publicidad</mat-option>
-            <mat-option value="supplies">Insumos</mat-option>
-            <mat-option value="maintenance">Mantenimiento</mat-option>
-            <mat-option value="hosting">Hosting</mat-option>
-            <mat-option value="other">Otros</mat-option>
+            <mat-option>{{ 'expenses.filters.allCategories' | translate }}</mat-option>
+            <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
+            <mat-option value="utilities">{{
+              'expenses.categories.utilities' | translate
+            }}</mat-option>
+            <mat-option value="salaries">{{
+              'expenses.categories.salaries' | translate
+            }}</mat-option>
+            <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
+            <mat-option value="transport">{{
+              'expenses.categories.transport' | translate
+            }}</mat-option>
+            <mat-option value="advertising">{{
+              'expenses.categories.advertising' | translate
+            }}</mat-option>
+            <mat-option value="supplies">{{
+              'expenses.categories.supplies' | translate
+            }}</mat-option>
+            <mat-option value="maintenance">{{
+              'expenses.categories.maintenance' | translate
+            }}</mat-option>
+            <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
+            <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -81,13 +95,15 @@ import { DatePipe } from '@angular/common';
         <app-error-state (retry)="expensesResource.reload()" />
       } @else if (expensesResource.hasValue() && expensesResource.value().data.length === 0) {
         <app-empty-state
-          title="Sin gastos"
-          message="No hay gastos registrados. Crea tu primer gasto para comenzar."
-          actionLabel="Crear Gasto"
+          [title]="'expenses.noExpenses' | translate"
+          [message]="'expenses.noExpensesMessage' | translate"
+          [actionLabel]="'expenses.createExpense' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (expensesResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -101,11 +117,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Descripción
+                {{ 'expenses.description' | translate }}
               </th>
-              <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let expense"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ expense.description }}
               </td>
             </ng-container>
@@ -115,9 +135,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Categoría
+                {{ 'expenses.category' | translate }}
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3">
                 <app-status-badge [value]="expense.category" type="expenseCategory" />
@@ -129,9 +149,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Monto
+                {{ 'expenses.amount' | translate }}
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-sm font-medium">
                 {{ expense.amount | currencyArs }}
@@ -143,11 +163,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Fecha
+                {{ 'expenses.date' | translate }}
               </th>
-              <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let expense"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ expense.date | date: 'dd/MM/yyyy' }}
               </td>
             </ng-container>
@@ -157,15 +181,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Recurrente
+                {{ 'expenses.recurring' | translate }}
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3">
                 @if (expense.isRecurring) {
                   <mat-icon class="text-green-500">check_circle</mat-icon>
                 } @else {
-                  <mat-icon class="text-gray-300">cancel</mat-icon>
+                  <mat-icon class="text-gray-300 dark:text-gray-600">cancel</mat-icon>
                 }
               </td>
             </ng-container>
@@ -175,11 +199,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let expense"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ expense.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -188,18 +216,22 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(expense)" title="Editar">
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(expense)"
+                  [title]="'common.edit' | translate"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="deleteExpense(expense)"
-                  title="Eliminar"
+                  [title]="'common.delete' | translate"
                   color="warn"
                 >
                   <mat-icon>delete</mat-icon>

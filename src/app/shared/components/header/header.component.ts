@@ -1,19 +1,28 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-header',
+  imports: [TranslatePipe],
   template: `
     <header
-      class="bg-white border-b border-gray-200 px-4 lg:px-6 h-16 flex items-center justify-between"
+      class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
     >
       <div class="flex items-center gap-4">
         <button
           (click)="toggleSidebar.emit()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden"
         >
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-5 h-5 text-gray-600 dark:text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -23,9 +32,11 @@ import { Router } from '@angular/router';
           </svg>
         </button>
 
-        <div class="hidden sm:flex items-center bg-gray-100 rounded-lg px-3 py-2 w-64">
+        <div
+          class="hidden sm:flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 w-64"
+        >
           <svg
-            class="w-4 h-4 text-gray-400 mr-2"
+            class="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -39,46 +50,103 @@ import { Router } from '@angular/router';
           </svg>
           <input
             type="text"
-            placeholder="Buscar..."
-            class="bg-transparent outline-none text-sm text-gray-700 w-full"
+            [placeholder]="'common.search' | translate"
+            class="bg-transparent outline-none text-sm text-gray-700 dark:text-gray-300 w-full"
           />
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <button class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+        <button
+          (click)="themeService.toggle()"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          [title]="themeService.isDark() ? 'Light mode' : 'Dark mode'"
+        >
+          @if (themeService.isDark()) {
+            <svg
+              class="w-5 h-5 text-gray-600 dark:text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          } @else {
+            <svg
+              class="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          }
         </button>
 
-        <div class="flex items-center gap-2 pl-3 border-l border-gray-200">
+        <div class="flex items-center gap-1">
+          <button
+            (click)="translationService.setLocale('es')"
+            class="px-2 py-1 text-xs rounded transition-colors"
+            [class.font-bold]="translationService.locale() === 'es'"
+            [class.bg-blue-100]="translationService.locale() === 'es'"
+            [class.dark:bg-blue-900/30]="translationService.locale() === 'es'"
+            [class.text-blue-700]="translationService.locale() === 'es'"
+            [class.dark:text-blue-400]="translationService.locale() === 'es'"
+            [class.text-gray-500]="translationService.locale() !== 'es'"
+            [class.dark:text-gray-400]="translationService.locale() !== 'es'"
+            [class.hover:bg-gray-100]="translationService.locale() !== 'es'"
+            [class.dark:hover:bg-gray-700]="translationService.locale() !== 'es'"
+          >
+            ES
+          </button>
+          <button
+            (click)="translationService.setLocale('en')"
+            class="px-2 py-1 text-xs rounded transition-colors"
+            [class.font-bold]="translationService.locale() === 'en'"
+            [class.bg-blue-100]="translationService.locale() === 'en'"
+            [class.dark:bg-blue-900/30]="translationService.locale() === 'en'"
+            [class.text-blue-700]="translationService.locale() === 'en'"
+            [class.dark:text-blue-400]="translationService.locale() === 'en'"
+            [class.text-gray-500]="translationService.locale() !== 'en'"
+            [class.dark:text-gray-400]="translationService.locale() !== 'en'"
+            [class.hover:bg-gray-100]="translationService.locale() !== 'en'"
+            [class.dark:hover:bg-gray-700]="translationService.locale() !== 'en'"
+          >
+            EN
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-700">
           <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
             <span class="text-white text-sm font-medium">
               {{ authService.user()?.name?.charAt(0) || 'U' }}
             </span>
           </div>
           <div class="hidden md:block">
-            <p class="text-sm font-medium text-gray-900">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
               {{ authService.user()?.name || 'Usuario' }}
             </p>
-            <p class="text-xs text-gray-500 capitalize">
+            <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">
               {{ authService.user()?.role || 'admin' }}
             </p>
           </div>
           <button
             (click)="authService.logout()"
-            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors ml-1"
-            title="Cerrar sesión"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ml-1"
+            [title]="'auth.logout' | translate"
           >
             <svg
-              class="w-4 h-4 text-gray-500"
+              class="w-4 h-4 text-gray-500 dark:text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -98,6 +166,8 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
   readonly authService = inject(AuthService);
+  readonly themeService = inject(ThemeService);
+  readonly translationService = inject(TranslationService);
   readonly router = inject(Router);
 
   toggleSidebar = output<void>();

@@ -25,6 +25,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { WorkOrderFormComponent } from './work-order-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -44,42 +45,53 @@ import { DatePipe } from '@angular/common';
     StatusBadgeComponent,
     TrackingCodeComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Órdenes de Trabajo"
-        subtitle="Gestiona las órdenes de servicio técnico"
-        actionLabel="Nueva Orden"
+        [title]="'workOrders.title' | translate"
+        [subtitle]="'workOrders.subtitle' | translate"
+        [actionLabel]="'workOrders.newOrder' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
-          <mat-label>Estado</mat-label>
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
           <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-            <mat-option>Todos</mat-option>
-            <mat-option value="pending">Pendiente</mat-option>
-            <mat-option value="assigned">Asignada</mat-option>
-            <mat-option value="in_progress">En Progreso</mat-option>
-            <mat-option value="completed">Completada</mat-option>
-            <mat-option value="delivered">Entregada</mat-option>
-            <mat-option value="cancelled">Cancelada</mat-option>
+            <mat-option>{{ 'workOrders.filters.all' | translate }}</mat-option>
+            <mat-option value="pending">{{ 'workOrders.statuses.pending' | translate }}</mat-option>
+            <mat-option value="assigned">{{
+              'workOrders.statuses.assigned' | translate
+            }}</mat-option>
+            <mat-option value="in_progress">{{
+              'workOrders.statuses.inProgress' | translate
+            }}</mat-option>
+            <mat-option value="completed">{{
+              'workOrders.statuses.completed' | translate
+            }}</mat-option>
+            <mat-option value="delivered">{{
+              'workOrders.statuses.delivered' | translate
+            }}</mat-option>
+            <mat-option value="cancelled">{{
+              'workOrders.statuses.cancelled' | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-40">
-          <mat-label>Prioridad</mat-label>
+          <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
           <mat-select
             [value]="priorityFilter()"
             (selectionChange)="priorityFilter.set($event.value)"
           >
-            <mat-option>Todas</mat-option>
-            <mat-option value="low">Baja</mat-option>
-            <mat-option value="medium">Media</mat-option>
-            <mat-option value="high">Alta</mat-option>
-            <mat-option value="urgent">Urgente</mat-option>
+            <mat-option>{{ 'workOrders.filters.allPriorities' | translate }}</mat-option>
+            <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
+            <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
+            <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
+            <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -92,13 +104,15 @@ import { DatePipe } from '@angular/common';
         <app-error-state (retry)="workOrdersResource.reload()" />
       } @else if (workOrdersResource.hasValue() && workOrdersResource.value().data.length === 0) {
         <app-empty-state
-          title="Sin órdenes"
-          message="No hay órdenes de trabajo registradas. Crea tu primera orden para comenzar."
-          actionLabel="Crear Orden"
+          [title]="'workOrders.noOrders' | translate"
+          [message]="'workOrders.noOrdersMessage' | translate"
+          [actionLabel]="'workOrders.createOrder' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (workOrdersResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -112,9 +126,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Código
+                {{ 'workOrders.code' | translate }}
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
                 <app-tracking-code [code]="order.trackingCode" />
@@ -126,9 +140,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
                 <app-status-badge [value]="order.status" type="workOrderStatus" />
@@ -140,9 +154,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Prioridad
+                {{ 'workOrders.priority' | translate }}
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3">
                 <app-status-badge [value]="order.priority" type="workOrderPriority" />
@@ -154,11 +168,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header="client"
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Cliente
+                {{ 'workOrders.client' | translate }}
               </th>
-              <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ order.client.name }}
               </td>
             </ng-container>
@@ -168,11 +186,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header="serviceType"
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Servicio
+                {{ 'workOrders.service' | translate }}
               </th>
-              <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ order.serviceType.name }}
               </td>
             </ng-container>
@@ -182,11 +204,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Fecha
+                {{ 'workOrders.date' | translate }}
               </th>
-              <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 @if (order.scheduledDate) {
                   {{ order.scheduledDate | date: 'dd/MM/yyyy' }}
                 } @else {
@@ -200,11 +226,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -213,12 +243,16 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="viewDetail(order)" title="Ver detalle">
+                <button
+                  mat-icon-button
+                  (click)="viewDetail(order)"
+                  [title]="'common.view' | translate"
+                >
                   <mat-icon>visibility</mat-icon>
                 </button>
               </td>
@@ -228,7 +262,7 @@ import { DatePipe } from '@angular/common';
             <tr
               mat-row
               *matRowDef="let row; columns: displayedColumns"
-              class="hover:bg-gray-50 cursor-pointer"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
               (click)="viewDetail(row)"
             ></tr>
           </table>

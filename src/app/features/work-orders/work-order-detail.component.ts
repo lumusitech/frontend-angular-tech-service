@@ -18,6 +18,7 @@ import { TrackingCodeComponent } from '../../shared/components/tracking-code/tra
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusTransitionComponent } from './status-transition.component';
 import { AddNoteDialogComponent } from './add-note-dialog.component';
 import { AddMaterialDialogComponent } from './add-material-dialog.component';
@@ -36,6 +37,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
     TrackingCodeComponent,
     CurrencyArsPipe,
     DatePipe,
+    TranslatePipe,
     StatusTransitionComponent,
   ],
   template: `
@@ -45,8 +47,8 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
       </div>
     } @else if (workOrderResource.error()) {
       <app-error-state
-        title="Error al cargar la orden"
-        message="No se pudo obtener el detalle de la orden de trabajo."
+        [title]="'workOrders.detail.loadError' | translate"
+        [message]="'workOrders.detail.loadErrorMessage' | translate"
         (retry)="workOrderResource.reload()"
       />
     } @else if (workOrderResource.hasValue()) {
@@ -58,7 +60,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
             </button>
             <div>
               <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-gray-900">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   <app-tracking-code [code]="workOrderResource.value().trackingCode" />
                 </h1>
                 <app-status-badge
@@ -70,7 +72,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                   type="workOrderPriority"
                 />
               </div>
-              <p class="text-gray-500 mt-1">
+              <p class="text-gray-500 dark:text-gray-400 mt-1">
                 {{ workOrderResource.value().serviceType.name }} -
                 {{ workOrderResource.value().client.name }}
               </p>
@@ -90,30 +92,38 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">info</mat-icon>
-                  Info General
+                  {{ 'workOrders.detail.generalInfo' | translate }}
                 </ng-template>
                 <div class="p-4 space-y-4">
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <p class="text-sm text-gray-500">Cliente</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.detail.client' | translate }}
+                      </p>
                       <p class="font-medium">{{ workOrderResource.value().client.name }}</p>
-                      <p class="text-sm text-gray-500">
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
                         {{ workOrderResource.value().client.email }}
                       </p>
-                      <p class="text-sm text-gray-500">
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
                         {{ workOrderResource.value().client.phone }}
                       </p>
                     </div>
                     <div>
-                      <p class="text-sm text-gray-500">Ubicación</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.detail.location' | translate }}
+                      </p>
                       <p class="font-medium">
                         {{
-                          workOrderResource.value().location === 'workshop' ? 'Taller' : 'En sitio'
+                          workOrderResource.value().location === 'workshop'
+                            ? ('workOrders.locations.workshop' | translate)
+                            : ('workOrders.locations.onSite' | translate)
                         }}
                       </p>
                     </div>
                     <div>
-                      <p class="text-sm text-gray-500">Fecha Programada</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.detail.scheduledDate' | translate }}
+                      </p>
                       <p class="font-medium">
                         {{
                           workOrderResource.value().scheduledDate
@@ -123,7 +133,9 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                       </p>
                     </div>
                     <div>
-                      <p class="text-sm text-gray-500">Garantía hasta</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.detail.warrantyUntil' | translate }}
+                      </p>
                       <p class="font-medium">
                         {{
                           workOrderResource.value().warrantyUntil
@@ -135,8 +147,10 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                   </div>
                   @if (workOrderResource.value().diagnosis) {
                     <div>
-                      <p class="text-sm text-gray-500">Diagnóstico</p>
-                      <p class="mt-1 p-3 bg-gray-50 rounded-lg">
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.detail.diagnosis' | translate }}
+                      </p>
+                      <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                         {{ workOrderResource.value().diagnosis }}
                       </p>
                     </div>
@@ -147,21 +161,27 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">checklist</mat-icon>
-                  Tareas ({{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }})
+                  {{ 'workOrders.detail.tasks' | translate }} ({{ getCompletedTasks() }}/{{
+                    workOrderResource.value().tasks.length
+                  }})
                 </ng-template>
                 <div class="p-4">
                   <div class="flex justify-end mb-4">
                     <button mat-stroked-button color="primary" (click)="openAddTaskDialog()">
                       <mat-icon>add</mat-icon>
-                      Agregar Tarea
+                      {{ 'workOrders.tasks.addTask' | translate }}
                     </button>
                   </div>
                   @if (workOrderResource.value().tasks.length === 0) {
-                    <p class="text-gray-500 text-center py-8">No hay tareas asignadas</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                      {{ 'workOrders.tasks.noTasks' | translate }}
+                    </p>
                   } @else {
                     <div class="space-y-3">
                       @for (task of workOrderResource.value().tasks; track task.id) {
-                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div
+                          class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                        >
                           <button mat-icon-button (click)="toggleTask(task.id, !task.isCompleted)">
                             <mat-icon>
                               {{ task.isCompleted ? 'check_circle' : 'radio_button_unchecked' }}
@@ -175,11 +195,15 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                               {{ task.title }}
                             </p>
                             @if (task.description) {
-                              <p class="text-sm text-gray-500">{{ task.description }}</p>
+                              <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ task.description }}
+                              </p>
                             }
                           </div>
                           @if (task.assignedTo) {
-                            <span class="text-xs text-gray-400">{{ task.assignedTo.name }}</span>
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{{
+                              task.assignedTo.name
+                            }}</span>
                           }
                         </div>
                       }
@@ -191,31 +215,49 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">build</mat-icon>
-                  Materiales
+                  {{ 'workOrders.detail.materials' | translate }}
                 </ng-template>
                 <div class="p-4">
                   <div class="flex justify-end mb-4">
                     <button mat-stroked-button color="primary" (click)="openAddMaterialDialog()">
                       <mat-icon>add</mat-icon>
-                      Agregar Material
+                      {{ 'workOrders.materials.addMaterial' | translate }}
                     </button>
                   </div>
                   @if (workOrderResource.value().materials.length === 0) {
-                    <p class="text-gray-500 text-center py-8">No hay materiales registrados</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                      {{ 'workOrders.materials.noMaterials' | translate }}
+                    </p>
                   } @else {
                     <div class="overflow-x-auto">
                       <table class="w-full text-sm">
                         <thead>
-                          <tr class="border-b">
-                            <th class="text-left py-2 px-3 font-medium text-gray-500">
-                              Descripción
+                          <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th
+                              class="text-left py-2 px-3 font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              {{ 'workOrders.materials.description' | translate }}
                             </th>
-                            <th class="text-left py-2 px-3 font-medium text-gray-500">Proveedor</th>
-                            <th class="text-right py-2 px-3 font-medium text-gray-500">Cant.</th>
-                            <th class="text-right py-2 px-3 font-medium text-gray-500">
-                              Costo Unit.
+                            <th
+                              class="text-left py-2 px-3 font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              {{ 'workOrders.materials.supplier' | translate }}
                             </th>
-                            <th class="text-right py-2 px-3 font-medium text-gray-500">Total</th>
+                            <th
+                              class="text-right py-2 px-3 font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              {{ 'workOrders.materials.qty' | translate }}
+                            </th>
+                            <th
+                              class="text-right py-2 px-3 font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              {{ 'workOrders.materials.unitCost' | translate }}
+                            </th>
+                            <th
+                              class="text-right py-2 px-3 font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              {{ 'workOrders.materials.total' | translate }}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -223,9 +265,9 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                             material of workOrderResource.value().materials;
                             track material.id
                           ) {
-                            <tr class="border-b">
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
                               <td class="py-2 px-3">{{ material.description }}</td>
-                              <td class="py-2 px-3 text-sm text-gray-500">
+                              <td class="py-2 px-3 text-sm text-gray-500 dark:text-gray-400">
                                 {{ material.supplier?.name || '-' }}
                               </td>
                               <td class="py-2 px-3 text-right">{{ material.quantity }}</td>
@@ -240,7 +282,9 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                         </tbody>
                         <tfoot>
                           <tr class="font-medium">
-                            <td colspan="4" class="py-2 px-3 text-right">Total Materiales:</td>
+                            <td colspan="4" class="py-2 px-3 text-right">
+                              {{ 'workOrders.materials.totalMaterials' | translate }}:
+                            </td>
                             <td class="py-2 px-3 text-right">
                               {{ getMaterialsTotal() | currencyArs }}
                             </td>
@@ -255,24 +299,26 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">notes</mat-icon>
-                  Notas
+                  {{ 'workOrders.detail.notes' | translate }}
                 </ng-template>
                 <div class="p-4">
                   <div class="flex justify-end mb-4">
                     <button mat-stroked-button color="primary" (click)="openAddNoteDialog()">
                       <mat-icon>add</mat-icon>
-                      Agregar Nota
+                      {{ 'workOrders.notes.addNote' | translate }}
                     </button>
                   </div>
                   @if (workOrderResource.value().notes.length === 0) {
-                    <p class="text-gray-500 text-center py-8">No hay notas</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                      {{ 'workOrders.notes.noNotes' | translate }}
+                    </p>
                   } @else {
                     <div class="space-y-3">
                       @for (note of workOrderResource.value().notes; track note.id) {
-                        <div class="p-3 bg-gray-50 rounded-lg">
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                           <div class="flex items-center gap-2 mb-1">
                             <app-status-badge [value]="note.type" type="noteType" />
-                            <span class="text-xs text-gray-400">
+                            <span class="text-xs text-gray-400 dark:text-gray-500">
                               {{ note.createdBy.name }} -
                               {{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}
                             </span>
@@ -288,24 +334,30 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
           </div>
 
           <div class="space-y-4">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+            >
               <div class="flex items-center justify-between mb-3">
-                <h3 class="font-medium text-gray-900">Técnicos Asignados</h3>
+                <h3 class="font-medium text-gray-900 dark:text-gray-100">
+                  {{ 'workOrders.detail.assignedTechnicians' | translate }}
+                </h3>
                 <button mat-button color="primary" (click)="openTechnicianDialog()">
                   <mat-icon>edit</mat-icon>
-                  Editar
+                  {{ 'common.edit' | translate }}
                 </button>
               </div>
               @if (workOrderResource.value().technicians.length === 0) {
-                <p class="text-sm text-gray-500">Sin técnicos asignados</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {{ 'workOrders.technicians.noTechnicians' | translate }}
+                </p>
               } @else {
                 <div class="space-y-2">
                   @for (tech of workOrderResource.value().technicians; track tech.id) {
                     <div class="flex items-center gap-2">
                       <div
-                        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
+                        class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center"
                       >
-                        <span class="text-blue-600 text-sm font-medium">{{
+                        <span class="text-blue-600 dark:text-blue-400 text-sm font-medium">{{
                           tech.name.charAt(0)
                         }}</span>
                       </div>
@@ -316,21 +368,31 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
               }
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <h3 class="font-medium text-gray-900 mb-3">Resumen</h3>
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+            >
+              <h3 class="font-medium text-gray-900 dark:text-gray-100 mb-3">
+                {{ 'workOrders.detail.summary' | translate }}
+              </h3>
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-500">Tareas completadas</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{
+                    'workOrders.detail.completedTasks' | translate
+                  }}</span>
                   <span class="font-medium"
                     >{{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }}</span
                   >
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-500">Costo materiales</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{
+                    'workOrders.detail.materialsCost' | translate
+                  }}</span>
                   <span class="font-medium">{{ getMaterialsTotal() | currencyArs }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-500">Creada</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{
+                    'workOrders.detail.created' | translate
+                  }}</span>
                   <span>{{ workOrderResource.value().createdAt | date: 'dd/MM/yyyy' }}</span>
                 </div>
               </div>

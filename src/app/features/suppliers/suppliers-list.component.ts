@@ -18,6 +18,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { SupplierFormComponent } from './supplier-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-suppliers-list',
@@ -34,13 +35,14 @@ import { DatePipe } from '@angular/common';
     PageHeaderComponent,
     StatusBadgeComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Proveedores"
-        subtitle="Gestiona tus proveedores"
-        actionLabel="Nuevo Proveedor"
+        [title]="'suppliers.title' | translate"
+        [subtitle]="'suppliers.subtitle' | translate"
+        [actionLabel]="'suppliers.newSupplier' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
@@ -53,13 +55,15 @@ import { DatePipe } from '@angular/common';
         <app-error-state (retry)="suppliersResource.reload()" />
       } @else if (suppliersResource.hasValue() && suppliersResource.value().data.length === 0) {
         <app-empty-state
-          title="Sin proveedores"
-          message="No hay proveedores registrados. Crea tu primer proveedor para comenzar."
-          actionLabel="Crear Proveedor"
+          [title]="'suppliers.noSuppliers' | translate"
+          [message]="'suppliers.noSuppliersMessage' | translate"
+          [actionLabel]="'suppliers.createSupplier' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (suppliersResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -73,11 +77,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Nombre
+                {{ 'suppliers.name' | translate }}
               </th>
-              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let supplier"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ supplier.name }}
               </td>
             </ng-container>
@@ -87,11 +95,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Contacto
+                {{ 'suppliers.contact' | translate }}
               </th>
-              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let supplier"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ supplier.contact }}
               </td>
             </ng-container>
@@ -101,11 +113,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Teléfono
+                {{ 'suppliers.phone' | translate }}
               </th>
-              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let supplier"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ supplier.phone }}
               </td>
             </ng-container>
@@ -115,11 +131,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Email
+                {{ 'suppliers.email' | translate }}
               </th>
-              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let supplier"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ supplier.email || '-' }}
               </td>
             </ng-container>
@@ -129,9 +149,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let supplier" class="px-4 py-3">
                 <app-status-badge [value]="supplier.isActive" type="activeInactive" />
@@ -143,11 +163,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let supplier"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ supplier.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -156,18 +180,22 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(supplier)" title="Editar">
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(supplier)"
+                  [title]="'common.edit' | translate"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="deleteSupplier(supplier)"
-                  title="Eliminar"
+                  [title]="'common.delete' | translate"
                   color="warn"
                 >
                   <mat-icon>delete</mat-icon>

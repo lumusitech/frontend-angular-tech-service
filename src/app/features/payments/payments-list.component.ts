@@ -19,6 +19,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-payments-list',
@@ -38,32 +39,42 @@ import { DatePipe } from '@angular/common';
     TrackingCodeComponent,
     CurrencyArsPipe,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
-      <app-page-header title="Pagos" subtitle="Historial de pagos del sistema" />
+      <app-page-header
+        [title]="'payments.title' | translate"
+        [subtitle]="'payments.subtitle' | translate"
+      />
 
       <div class="flex gap-3 flex-wrap">
         <mat-form-field appearance="outline" class="w-40">
-          <mat-label>Estado</mat-label>
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
           <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-            <mat-option>Todos</mat-option>
-            <mat-option value="pending">Pendiente</mat-option>
-            <mat-option value="approved">Aprobado</mat-option>
-            <mat-option value="rejected">Rechazado</mat-option>
-            <mat-option value="refunded">Reembolsado</mat-option>
-            <mat-option value="cancelled">Cancelado</mat-option>
+            <mat-option>{{ 'payments.filters.all' | translate }}</mat-option>
+            <mat-option value="pending">{{ 'payments.statuses.pending' | translate }}</mat-option>
+            <mat-option value="approved">{{ 'payments.statuses.approved' | translate }}</mat-option>
+            <mat-option value="rejected">{{ 'payments.statuses.rejected' | translate }}</mat-option>
+            <mat-option value="refunded">{{ 'payments.statuses.refunded' | translate }}</mat-option>
+            <mat-option value="cancelled">{{
+              'payments.statuses.cancelled' | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-40">
-          <mat-label>Método</mat-label>
+          <mat-label>{{ 'payments.method' | translate }}</mat-label>
           <mat-select [value]="methodFilter()" (selectionChange)="methodFilter.set($event.value)">
-            <mat-option>Todos</mat-option>
-            <mat-option value="cash">Efectivo</mat-option>
-            <mat-option value="transfer">Transferencia</mat-option>
-            <mat-option value="credit_card">Tarjeta Crédito</mat-option>
-            <mat-option value="debit_card">Tarjeta Débito</mat-option>
+            <mat-option>{{ 'payments.filters.allMethods' | translate }}</mat-option>
+            <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
+            <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
+            <mat-option value="credit_card">{{
+              'payments.methods.creditCard' | translate
+            }}</mat-option>
+            <mat-option value="debit_card">{{
+              'payments.methods.debitCard' | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -75,9 +86,14 @@ import { DatePipe } from '@angular/common';
       } @else if (paymentsResource.error()) {
         <app-error-state (retry)="paymentsResource.reload()" />
       } @else if (paymentsResource.hasValue() && paymentsResource.value().data.length === 0) {
-        <app-empty-state title="Sin pagos" message="No hay pagos registrados en el sistema." />
+        <app-empty-state
+          [title]="'payments.noPayments' | translate"
+          [message]="'payments.noPaymentsMessage' | translate"
+        />
       } @else if (paymentsResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -91,9 +107,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header="trackingCode"
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Orden
+                {{ 'payments.order' | translate }}
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
                 <app-tracking-code [code]="payment.workOrder?.trackingCode ?? '-'" />
@@ -105,9 +121,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Monto
+                {{ 'payments.amount' | translate }}
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm font-medium">
                 {{ payment.amount | currencyArs }}
@@ -119,9 +135,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Método
+                {{ 'payments.method' | translate }}
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
                 <app-status-badge [value]="payment.method" type="paymentMethod" />
@@ -133,11 +149,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Proveedor
+                {{ 'payments.provider' | translate }}
               </th>
-              <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let payment"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ payment.provider }}
               </td>
             </ng-container>
@@ -147,9 +167,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3">
                 <app-status-badge [value]="payment.status" type="paymentStatus" />
@@ -161,11 +181,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Fecha Pago
+                {{ 'payments.paymentDate' | translate }}
               </th>
-              <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let payment"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ payment.paidAt ? (payment.paidAt | date: 'dd/MM/yyyy HH:mm') : '-' }}
               </td>
             </ng-container>
@@ -175,11 +199,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let payment"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ payment.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -188,16 +216,16 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-right">
                 @if (payment.status === 'pending') {
                   <button
                     mat-icon-button
                     (click)="approvePayment(payment)"
-                    title="Aprobar"
+                    [title]="'payments.approve' | translate"
                     color="primary"
                   >
                     <mat-icon>check_circle</mat-icon>

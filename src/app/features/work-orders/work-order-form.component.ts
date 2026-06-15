@@ -16,6 +16,7 @@ import {
 } from '../../core/models/work-order.interfaces';
 import { Client } from '../../core/models/client.interfaces';
 import { ServiceType } from '../../core/models/service-type.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create';
@@ -31,17 +32,18 @@ interface DialogData {
     MatSelectModule,
     MatIconModule,
     MatAutocompleteModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>assignment</mat-icon>
-      Nueva Orden de Trabajo
+      {{ 'workOrders.newOrder' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Cliente</mat-label>
+          <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
           <mat-select [value]="clientId()" (selectionChange)="clientId.set($event.value)">
             @for (client of clients(); track client.id) {
               <mat-option [value]="client.id">
@@ -52,7 +54,7 @@ interface DialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tipo de Servicio</mat-label>
+          <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
           <mat-select [value]="serviceTypeId()" (selectionChange)="serviceTypeId.set($event.value)">
             @for (serviceType of serviceTypes(); track serviceType.id) {
               <mat-option [value]="serviceType.id">
@@ -64,26 +66,34 @@ interface DialogData {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Prioridad</mat-label>
+            <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
             <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
-              <mat-option value="low">Baja</mat-option>
-              <mat-option value="medium">Media</mat-option>
-              <mat-option value="high">Alta</mat-option>
-              <mat-option value="urgent">Urgente</mat-option>
+              <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
+              <mat-option value="medium">{{
+                'workOrders.priorities.medium' | translate
+              }}</mat-option>
+              <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
+              <mat-option value="urgent">{{
+                'workOrders.priorities.urgent' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Ubicación</mat-label>
+            <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
             <mat-select [value]="location()" (selectionChange)="location.set($event.value)">
-              <mat-option value="workshop">Taller</mat-option>
-              <mat-option value="on_site">En sitio</mat-option>
+              <mat-option value="workshop">{{
+                'workOrders.locations.workshop' | translate
+              }}</mat-option>
+              <mat-option value="on_site">{{
+                'workOrders.locations.onSite' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha Programada</mat-label>
+          <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
           <input
             matInput
             type="date"
@@ -93,7 +103,7 @@ interface DialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Garantía hasta</mat-label>
+          <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
           <input
             matInput
             type="date"
@@ -103,7 +113,7 @@ interface DialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Diagnóstico Inicial</mat-label>
+          <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
           <textarea
             matInput
             [value]="diagnosis()"
@@ -115,9 +125,11 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Creando...' : 'Crear Orden' }}
+        {{
+          saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate)
+        }}
       </button>
     </mat-dialog-actions>
   `,

@@ -18,6 +18,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ServiceTypeFormComponent } from './service-type-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-service-types-list',
@@ -34,13 +35,14 @@ import { DatePipe } from '@angular/common';
     PageHeaderComponent,
     StatusBadgeComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Tipos de Servicio"
-        subtitle="Gestiona el catálogo de servicios"
-        actionLabel="Nuevo Servicio"
+        [title]="'serviceTypes.title' | translate"
+        [subtitle]="'serviceTypes.subtitle' | translate"
+        [actionLabel]="'serviceTypes.newServiceType' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
@@ -55,13 +57,15 @@ import { DatePipe } from '@angular/common';
         serviceTypesResource.hasValue() && serviceTypesResource.value().data.length === 0
       ) {
         <app-empty-state
-          title="Sin servicios"
-          message="No hay tipos de servicio registrados. Crea tu primer servicio para comenzar."
-          actionLabel="Crear Servicio"
+          [title]="'serviceTypes.noServiceTypes' | translate"
+          [message]="'serviceTypes.noServiceTypesMessage' | translate"
+          [actionLabel]="'serviceTypes.createServiceType' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (serviceTypesResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -75,11 +79,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Nombre
+                {{ 'serviceTypes.name' | translate }}
               </th>
-              <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let serviceType"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ serviceType.name }}
               </td>
             </ng-container>
@@ -89,11 +97,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Descripción
+                {{ 'serviceTypes.description' | translate }}
               </th>
-              <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let serviceType"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ serviceType.description || '-' }}
               </td>
             </ng-container>
@@ -103,11 +115,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Duración Est.
+                {{ 'serviceTypes.estimatedDuration' | translate }}
               </th>
-              <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let serviceType"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 @if (serviceType.estimatedDuration) {
                   {{ serviceType.estimatedDuration }} min
                 } @else {
@@ -121,9 +137,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let serviceType" class="px-4 py-3">
                 <app-status-badge [value]="serviceType.isActive" type="activeInactive" />
@@ -135,11 +151,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let serviceType"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ serviceType.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -148,18 +168,22 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(serviceType)" title="Editar">
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(serviceType)"
+                  [title]="'common.edit' | translate"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="deleteServiceType(serviceType)"
-                  title="Eliminar"
+                  [title]="'common.delete' | translate"
                   color="warn"
                 >
                   <mat-icon>delete</mat-icon>
