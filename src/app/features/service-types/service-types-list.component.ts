@@ -45,7 +45,7 @@ import { DatePipe } from '@angular/common';
         [action]="openCreateDialog.bind(this)"
       />
 
-      @if (serviceTypesResource.isLoading()) {
+      @if (serviceTypesResource.status() === 'loading' && !serviceTypesResource.hasValue()) {
         <div class="flex justify-center py-12">
           <mat-spinner diameter="48" />
         </div>
@@ -65,6 +65,7 @@ import { DatePipe } from '@angular/common';
           <table
             mat-table
             matSort
+            matSortDisableClear
             [dataSource]="serviceTypesResource.value().data"
             (matSortChange)="onSortChange($event)"
             class="w-full"

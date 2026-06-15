@@ -39,7 +39,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
     StatusTransitionComponent,
   ],
   template: `
-    @if (workOrderResource.isLoading()) {
+    @if (workOrderResource.status() === 'loading' && !workOrderResource.hasValue()) {
       <div class="flex justify-center py-12">
         <mat-spinner diameter="48" />
       </div>
