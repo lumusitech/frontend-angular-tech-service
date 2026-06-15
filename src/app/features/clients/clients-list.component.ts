@@ -17,6 +17,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ClientFormComponent } from './client-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-clients-list',
@@ -33,13 +34,14 @@ import { DatePipe } from '@angular/common';
     PageHeaderComponent,
     StatusBadgeComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Clientes"
-        subtitle="Gestiona tus clientes"
-        actionLabel="Nuevo Cliente"
+        [title]="'clients.title' | translate"
+        [subtitle]="'clients.subtitle' | translate"
+        [actionLabel]="'clients.newClient' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
@@ -52,13 +54,15 @@ import { DatePipe } from '@angular/common';
         <app-error-state (retry)="clientsResource.reload()" />
       } @else if (clientsResource.hasValue() && clientsResource.value().data.length === 0) {
         <app-empty-state
-          title="Sin clientes"
-          message="No hay clientes registrados. Crea tu primer cliente para comenzar."
-          actionLabel="Crear Cliente"
+          [title]="'clients.noClients' | translate"
+          [message]="'clients.noClientsMessage' | translate"
+          [actionLabel]="'clients.createClient' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (clientsResource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -72,11 +76,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Nombre
+                {{ 'clients.name' | translate }}
               </th>
-              <td mat-cell *matCellDef="let client" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ client.name }}
               </td>
             </ng-container>
@@ -86,11 +94,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Email
+                {{ 'clients.email' | translate }}
               </th>
-              <td mat-cell *matCellDef="let client" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ client.email }}
               </td>
             </ng-container>
@@ -100,11 +112,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Teléfono
+                {{ 'clients.phone' | translate }}
               </th>
-              <td mat-cell *matCellDef="let client" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ client.phone }}
               </td>
             </ng-container>
@@ -114,9 +130,9 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let client" class="px-4 py-3">
                 <app-status-badge [value]="client.isActive" type="activeInactive" />
@@ -128,11 +144,15 @@ import { DatePipe } from '@angular/common';
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let client" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ client.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -141,18 +161,22 @@ import { DatePipe } from '@angular/common';
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let client" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(client)" title="Editar">
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(client)"
+                  [title]="'common.edit' | translate"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="deleteClient(client)"
-                  title="Eliminar"
+                  [title]="'common.delete' | translate"
                   color="warn"
                 >
                   <mat-icon>delete</mat-icon>

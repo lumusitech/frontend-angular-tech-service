@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { TranslationService } from '../../core/services/translation.service';
 
 type LabelType =
   | 'workOrderStatus'
@@ -9,63 +10,59 @@ type LabelType =
   | 'noteType'
   | 'activeInactive';
 
-const LABELS: Record<LabelType, Record<string, string>> = {
-  workOrderStatus: {
-    pending: 'Pendiente',
-    assigned: 'Asignada',
-    in_progress: 'En Progreso',
-    postponed: 'Pospuesta',
-    completed: 'Completada',
-    delivered: 'Entregada',
-    cancelled: 'Cancelada',
-  },
-  workOrderPriority: {
-    low: 'Baja',
-    medium: 'Media',
-    high: 'Alta',
-    urgent: 'Urgente',
-  },
-  paymentStatus: {
-    pending: 'Pendiente',
-    approved: 'Aprobado',
-    rejected: 'Rechazado',
-    refunded: 'Reembolsado',
-    cancelled: 'Cancelado',
-  },
-  paymentMethod: {
-    cash: 'Efectivo',
-    transfer: 'Transferencia',
-    credit_card: 'Tarjeta Crédito',
-    debit_card: 'Tarjeta Débito',
-  },
-  expenseCategory: {
-    rent: 'Alquiler',
-    utilities: 'Servicios',
-    salaries: 'Sueldos',
-    tools: 'Herramientas',
-    transport: 'Transporte',
-    advertising: 'Publicidad',
-    supplies: 'Insumos',
-    maintenance: 'Mantenimiento',
-    hosting: 'Hosting',
-    other: 'Otros',
-  },
-  noteType: {
-    diagnosis: 'Diagnóstico',
-    issue: 'Problema',
-    observation: 'Observación',
-    internal: 'Interna',
-  },
-  activeInactive: {
-    true: 'Activo',
-    false: 'Inactivo',
-  },
+const VALUE_TO_KEY: Record<string, string> = {
+  pending: 'statusLabels.pending',
+  assigned: 'statusLabels.assigned',
+  in_progress: 'statusLabels.in_progress',
+  postponed: 'statusLabels.postponed',
+  completed: 'statusLabels.completed',
+  delivered: 'statusLabels.delivered',
+  cancelled: 'statusLabels.cancelled',
+  low: 'statusLabels.low',
+  medium: 'statusLabels.medium',
+  high: 'statusLabels.high',
+  urgent: 'statusLabels.urgent',
+  approved: 'statusLabels.approved',
+  rejected: 'statusLabels.rejected',
+  refunded: 'statusLabels.refunded',
+  cash: 'statusLabels.cash',
+  transfer: 'statusLabels.transfer',
+  credit_card: 'statusLabels.credit_card',
+  debit_card: 'statusLabels.debit_card',
+  rent: 'statusLabels.rent',
+  utilities: 'statusLabels.utilities',
+  salaries: 'statusLabels.salaries',
+  tools: 'statusLabels.tools',
+  transport: 'statusLabels.transport',
+  advertising: 'statusLabels.advertising',
+  supplies: 'statusLabels.supplies',
+  maintenance: 'statusLabels.maintenance',
+  hosting: 'statusLabels.hosting',
+  other: 'statusLabels.other',
+  diagnosis: 'statusLabels.diagnosis',
+  issue: 'statusLabels.issue',
+  observation: 'statusLabels.observation',
+  internal: 'statusLabels.internal',
+  workshop: 'statusLabels.workshop',
+  on_site: 'statusLabels.on_site',
 };
 
-@Pipe({ name: 'statusLabel' })
+@Pipe({ name: 'statusLabel', pure: false })
 export class StatusLabelPipe implements PipeTransform {
-  transform(value: string | boolean, type: LabelType): string {
-    const key = String(value);
-    return LABELS[type]?.[key] ?? key;
+  private readonly translationService = inject(TranslationService);
+
+  transform(value: string | boolean, _type: LabelType): string {
+    if (typeof value === 'boolean') {
+      return value
+        ? this.translationService.instant('common.active')
+        : this.translationService.instant('common.inactive');
+    }
+
+    const key = VALUE_TO_KEY[value];
+    if (key) {
+      return this.translationService.instant(key);
+    }
+
+    return value;
   }
 }

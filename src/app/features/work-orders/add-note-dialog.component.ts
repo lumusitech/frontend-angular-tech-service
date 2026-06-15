@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { NoteType } from '../../core/models/work-order.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
@@ -21,47 +22,54 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>note_add</mat-icon>
-      Agregar Nota
+      {{ 'workOrders.notes.addNote' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tipo de Nota</mat-label>
+          <mat-label>{{ 'workOrders.notes.noteType' | translate }}</mat-label>
           <mat-select [value]="noteType()" (selectionChange)="noteType.set($event.value)">
-            <mat-option value="diagnosis">Diagnóstico</mat-option>
-            <mat-option value="issue">Problema</mat-option>
-            <mat-option value="observation">Observación</mat-option>
-            <mat-option value="internal">Interna</mat-option>
+            <mat-option value="diagnosis">{{
+              'workOrders.notes.types.diagnosis' | translate
+            }}</mat-option>
+            <mat-option value="issue">{{ 'workOrders.notes.types.issue' | translate }}</mat-option>
+            <mat-option value="observation">{{
+              'workOrders.notes.types.observation' | translate
+            }}</mat-option>
+            <mat-option value="internal">{{
+              'workOrders.notes.types.internal' | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Contenido</mat-label>
+          <mat-label>{{ 'workOrders.notes.content' | translate }}</mat-label>
           <textarea
             matInput
             [value]="content()"
             (input)="content.set(getInputValue($event))"
             rows="4"
-            placeholder="Escribí el contenido de la nota..."
+            [placeholder]="'workOrders.notes.contentPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button
         mat-flat-button
         color="primary"
         (click)="onSubmit($event)"
         [disabled]="saving() || !content()"
       >
-        {{ saving() ? 'Guardando...' : 'Guardar Nota' }}
+        {{ saving() ? ('common.saving' | translate) : ('workOrders.notes.saveNote' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

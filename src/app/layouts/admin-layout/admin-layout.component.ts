@@ -7,7 +7,7 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
   selector: 'app-admin-layout',
   imports: [RouterOutlet, HeaderComponent, SidebarComponent],
   template: `
-    <div class="h-dvh flex overflow-hidden bg-gray-50">
+    <div class="h-dvh flex overflow-hidden bg-gray-50 dark:bg-gray-900">
       <app-sidebar
         [collapsed]="sidebarCollapsed()"
         (toggleCollapse)="sidebarCollapsed.set(!sidebarCollapsed())"

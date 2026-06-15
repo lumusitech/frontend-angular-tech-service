@@ -8,6 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, CreateClientDto, UpdateClientDto } from '../../core/models/client.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -24,23 +25,28 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>person</mat-icon>
-      {{ data.mode === 'create' ? 'Nuevo Cliente' : 'Editar Cliente' }}
+      {{
+        data.mode === 'create'
+          ? ('clients.newClient' | translate)
+          : ('clients.editClient' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Nombre</mat-label>
+            <mat-label>{{ 'clients.name' | translate }}</mat-label>
             <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Email</mat-label>
+            <mat-label>{{ 'clients.email' | translate }}</mat-label>
             <input
               matInput
               type="email"
@@ -51,18 +57,18 @@ interface DialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Teléfono</mat-label>
+            <mat-label>{{ 'clients.phone' | translate }}</mat-label>
             <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>CUIT</mat-label>
+            <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
             <input matInput [value]="cuit()" (input)="cuit.set(getInputValue($event))" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Dirección</mat-label>
+          <mat-label>{{ 'clients.address' | translate }}</mat-label>
           <input
             matInput
             [value]="address()"
@@ -73,7 +79,7 @@ interface DialogData {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Proveedor de Internet</mat-label>
+            <mat-label>{{ 'clients.internetProvider' | translate }}</mat-label>
             <input
               matInput
               [value]="internetProvider()"
@@ -82,7 +88,7 @@ interface DialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Plan de Internet</mat-label>
+            <mat-label>{{ 'clients.internetPlan' | translate }}</mat-label>
             <input
               matInput
               [value]="internetPlan()"
@@ -92,25 +98,31 @@ interface DialogData {
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Condición IVA</mat-label>
+          <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
           <mat-select [value]="ivaCondition()" (selectionChange)="ivaCondition.set($event.value)">
-            <mat-option value="responsable_inscripto">Responsable Inscripto</mat-option>
-            <mat-option value="consumidor_final">Consumidor Final</mat-option>
-            <mat-option value="monotributo">Monotributo</mat-option>
-            <mat-option value="exento">Exento</mat-option>
+            <mat-option value="responsable_inscripto">{{
+              'clients.ivaConditions.responsableInscripto' | translate
+            }}</mat-option>
+            <mat-option value="consumidor_final">{{
+              'clients.ivaConditions.consumidorFinal' | translate
+            }}</mat-option>
+            <mat-option value="monotributo">{{
+              'clients.ivaConditions.monotributo' | translate
+            }}</mat-option>
+            <mat-option value="exento">{{ 'clients.ivaConditions.exento' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-checkbox [checked]="isActive()" (change)="isActive.set($event.checked)">
-          Cliente activo
+          {{ 'clients.activeClient' | translate }}
         </mat-checkbox>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

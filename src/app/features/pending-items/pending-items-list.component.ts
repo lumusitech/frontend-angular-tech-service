@@ -23,6 +23,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PendingItemFormComponent } from './pending-item-form.component';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 const PRIORITY_LABELS: Record<string, string> = {
   low: 'Baja',
@@ -32,10 +33,10 @@ const PRIORITY_LABELS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: 'text-gray-600 bg-gray-100',
-  medium: 'text-blue-600 bg-blue-100',
-  high: 'text-orange-600 bg-orange-100',
-  urgent: 'text-red-600 bg-red-100',
+  low: 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700',
+  medium: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+  high: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30',
+  urgent: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -46,10 +47,10 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'text-yellow-700 bg-yellow-100',
-  in_progress: 'text-blue-700 bg-blue-100',
-  completed: 'text-green-700 bg-green-100',
-  cancelled: 'text-gray-700 bg-gray-100',
+  pending: 'text-yellow-700 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30',
+  in_progress: 'text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+  completed: 'text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
+  cancelled: 'text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700',
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -75,13 +76,14 @@ const TYPE_LABELS: Record<string, string> = {
     ErrorStateComponent,
     PageHeaderComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Trabajo Pendiente"
-        subtitle="Gestiona tus tareas y pendientes"
-        actionLabel="Nuevo Pendiente"
+        [title]="'pendingItems.title' | translate"
+        [subtitle]="'pendingItems.subtitle' | translate"
+        [actionLabel]="'pendingItems.newPendingItem' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
@@ -94,13 +96,15 @@ const TYPE_LABELS: Record<string, string> = {
         <app-error-state (retry)="resource.reload()" />
       } @else if (resource.hasValue() && resource.value().data.length === 0) {
         <app-empty-state
-          title="Sin pendientes"
-          message="No hay trabajos pendientes. Crea tu primer pendiente para comenzar."
-          actionLabel="Crear Pendiente"
+          [title]="'pendingItems.noPendingItems' | translate"
+          [message]="'pendingItems.noPendingItemsMessage' | translate"
+          [actionLabel]="'pendingItems.createPendingItem' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (resource.hasValue()) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -114,11 +118,15 @@ const TYPE_LABELS: Record<string, string> = {
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Título
+                {{ 'pendingItems.titleColumn' | translate }}
               </th>
-              <td mat-cell *matCellDef="let item" class="px-4 py-3 text-sm text-gray-900">
+              <td
+                mat-cell
+                *matCellDef="let item"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+              >
                 {{ item.title }}
               </td>
             </ng-container>
@@ -127,13 +135,13 @@ const TYPE_LABELS: Record<string, string> = {
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Tipo
+                {{ 'pendingItems.type' | translate }}
               </th>
               <td mat-cell *matCellDef="let item" class="px-4 py-3">
                 <span
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                 >
                   {{ getTypeLabel(item.type) }}
                 </span>
@@ -145,9 +153,9 @@ const TYPE_LABELS: Record<string, string> = {
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Prioridad
+                {{ 'pendingItems.priority' | translate }}
               </th>
               <td mat-cell *matCellDef="let item" class="px-4 py-3">
                 <span
@@ -164,9 +172,9 @@ const TYPE_LABELS: Record<string, string> = {
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let item" class="px-4 py-3">
                 <span
@@ -183,11 +191,15 @@ const TYPE_LABELS: Record<string, string> = {
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Vencimiento
+                {{ 'pendingItems.dueDate' | translate }}
               </th>
-              <td mat-cell *matCellDef="let item" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let item"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ item.dueDate | date: 'dd/MM/yyyy' }}
               </td>
             </ng-container>
@@ -196,11 +208,15 @@ const TYPE_LABELS: Record<string, string> = {
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Asignado a
+                {{ 'pendingItems.assignedTo' | translate }}
               </th>
-              <td mat-cell *matCellDef="let item" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let item"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ item.assignedTo?.name || '-' }}
               </td>
             </ng-container>
@@ -210,11 +226,15 @@ const TYPE_LABELS: Record<string, string> = {
                 mat-header-cell
                 mat-sort-header
                 *matHeaderCellDef
-                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Creado
+                {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let item" class="px-4 py-3 text-sm text-gray-500">
+              <td
+                mat-cell
+                *matCellDef="let item"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}
               </td>
             </ng-container>
@@ -223,15 +243,24 @@ const TYPE_LABELS: Record<string, string> = {
               <th
                 mat-header-cell
                 *matHeaderCellDef
-                class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let item" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(item)" title="Editar">
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(item)"
+                  [title]="'common.edit' | translate"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteItem(item)" title="Eliminar" color="warn">
+                <button
+                  mat-icon-button
+                  (click)="deleteItem(item)"
+                  [title]="'common.delete' | translate"
+                  color="warn"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -293,7 +322,9 @@ export class PendingItemsListComponent {
   }
 
   getPriorityColor(priority: string): string {
-    return PRIORITY_COLORS[priority] || 'text-gray-600 bg-gray-100';
+    return (
+      PRIORITY_COLORS[priority] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700'
+    );
   }
 
   getStatusLabel(status: string): string {
@@ -301,7 +332,7 @@ export class PendingItemsListComponent {
   }
 
   getStatusColor(status: string): string {
-    return STATUS_COLORS[status] || 'text-gray-600 bg-gray-100';
+    return STATUS_COLORS[status] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700';
   }
 
   getTypeLabel(type: string): string {

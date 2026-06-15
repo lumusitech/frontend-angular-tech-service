@@ -11,6 +11,7 @@ import {
   CreateSupplierDto,
   UpdateSupplierDto,
 } from '../../core/models/supplier.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -26,23 +27,28 @@ interface DialogData {
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>local_shipping</mat-icon>
-      {{ data.mode === 'create' ? 'Nuevo Proveedor' : 'Editar Proveedor' }}
+      {{
+        data.mode === 'create'
+          ? ('suppliers.newSupplier' | translate)
+          : ('suppliers.editSupplier' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Nombre</mat-label>
+            <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
             <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Contacto</mat-label>
+            <mat-label>{{ 'suppliers.contact' | translate }}</mat-label>
             <input
               matInput
               [value]="contact()"
@@ -52,12 +58,12 @@ interface DialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Teléfono</mat-label>
+            <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
             <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Email</mat-label>
+            <mat-label>{{ 'suppliers.email' | translate }}</mat-label>
             <input
               matInput
               type="email"
@@ -68,7 +74,7 @@ interface DialogData {
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Dirección</mat-label>
+          <mat-label>{{ 'suppliers.address' | translate }}</mat-label>
           <input
             matInput
             [value]="address()"
@@ -78,7 +84,7 @@ interface DialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Notas</mat-label>
+          <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
           <textarea
             matInput
             [value]="notes()"
@@ -88,15 +94,15 @@ interface DialogData {
         </mat-form-field>
 
         <mat-checkbox [checked]="isActive()" (change)="isActive.set($event.checked)">
-          Proveedor activo
+          {{ 'suppliers.activeSupplier' | translate }}
         </mat-checkbox>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

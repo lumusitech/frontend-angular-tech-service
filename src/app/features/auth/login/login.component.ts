@@ -1,51 +1,65 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
+  imports: [TranslatePipe],
   template: `
-    <div class="min-h-svh flex items-center justify-center bg-gray-50 px-4">
+    <div class="min-h-svh flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div class="w-full max-w-md">
-        <div class="bg-white rounded-2xl shadow-lg p-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
           <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Tech Service</h1>
-            <p class="text-gray-500 mt-2">Ingresa a tu cuenta</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {{ 'auth.appTitle' | translate }}
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">
+              {{ 'auth.loginSubtitle' | translate }}
+            </p>
           </div>
 
           <form (submit)="onSubmit($event)" class="space-y-5">
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                Email
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                {{ 'auth.email' | translate }}
               </label>
               <input
                 id="email"
                 type="email"
                 [value]="email()"
                 (input)="email.set(getInputValue($event))"
-                placeholder="tu@email.com"
+                [placeholder]="'auth.emailPlaceholder' | translate"
                 required
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               />
             </div>
 
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-                Contraseña
+              <label
+                for="password"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                {{ 'auth.password' | translate }}
               </label>
               <input
                 id="password"
                 type="password"
                 [value]="password()"
                 (input)="password.set(getInputValue($event))"
-                placeholder="••••••••"
+                [placeholder]="'auth.passwordPlaceholder' | translate"
                 required
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               />
             </div>
 
             @if (error()) {
-              <div class="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+              <div
+                class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm"
+              >
                 {{ error() }}
               </div>
             }
@@ -72,10 +86,10 @@ import { AuthService } from '../../../core/services/auth.service';
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                     />
                   </svg>
-                  Ingresando...
+                  {{ 'auth.loggingIn' | translate }}
                 </span>
               } @else {
-                Ingresar
+                {{ 'auth.login' | translate }}
               }
             </button>
           </form>

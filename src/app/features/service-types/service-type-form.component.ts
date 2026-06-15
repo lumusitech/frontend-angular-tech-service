@@ -11,6 +11,7 @@ import {
   CreateServiceTypeDto,
   UpdateServiceTypeDto,
 } from '../../core/models/service-type.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -26,22 +27,27 @@ interface DialogData {
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>build</mat-icon>
-      {{ data.mode === 'create' ? 'Nuevo Tipo de Servicio' : 'Editar Tipo de Servicio' }}
+      {{
+        data.mode === 'create'
+          ? ('serviceTypes.newServiceType' | translate)
+          : ('serviceTypes.editServiceType' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Nombre</mat-label>
+          <mat-label>{{ 'serviceTypes.name' | translate }}</mat-label>
           <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción</mat-label>
+          <mat-label>{{ 'serviceTypes.description' | translate }}</mat-label>
           <textarea
             matInput
             [value]="description()"
@@ -51,7 +57,7 @@ interface DialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Duración Estimada (minutos)</mat-label>
+          <mat-label>{{ 'serviceTypes.estimatedDurationLabel' | translate }}</mat-label>
           <input
             matInput
             type="number"
@@ -62,15 +68,15 @@ interface DialogData {
         </mat-form-field>
 
         <mat-checkbox [checked]="isActive()" (change)="isActive.set($event.checked)">
-          Servicio activo
+          {{ 'serviceTypes.activeService' | translate }}
         </mat-checkbox>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

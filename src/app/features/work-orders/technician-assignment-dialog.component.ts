@@ -10,6 +10,7 @@ import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { User } from '../../core/models/user.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
@@ -25,11 +26,12 @@ interface DialogData {
     MatListModule,
     MatProgressSpinnerModule,
     FormsModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>engineering</mat-icon>
-      Asignar Técnicos
+      {{ 'workOrders.technicians.assign' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
@@ -42,12 +44,16 @@ interface DialogData {
           @for (tech of techniciansResource.value().data; track tech.id) {
             <mat-list-option [value]="tech.id">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span class="text-blue-600 text-sm font-medium">{{ tech.name.charAt(0) }}</span>
+                <div
+                  class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center"
+                >
+                  <span class="text-blue-600 dark:text-blue-400 text-sm font-medium">{{
+                    tech.name.charAt(0)
+                  }}</span>
                 </div>
                 <div>
                   <p class="font-medium">{{ tech.name }}</p>
-                  <p class="text-xs text-gray-500">{{ tech.email }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">{{ tech.email }}</p>
                 </div>
               </div>
             </mat-list-option>
@@ -57,9 +63,13 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar Técnicos' }}
+        {{
+          saving()
+            ? ('common.saving' | translate)
+            : ('workOrders.technicians.saveTechnicians' | translate)
+        }}
       </button>
     </mat-dialog-actions>
   `,

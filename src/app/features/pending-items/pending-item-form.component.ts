@@ -16,6 +16,7 @@ import {
   CreatePendingItemDto,
   UpdatePendingItemDto,
 } from '../../core/models/pending-item.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -33,22 +34,27 @@ interface DialogData {
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>pending_actions</mat-icon>
-      {{ data.mode === 'create' ? 'Nuevo Pendiente' : 'Editar Pendiente' }}
+      {{
+        data.mode === 'create'
+          ? ('pendingItems.newPendingItem' | translate)
+          : ('pendingItems.editPendingItem' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Título</mat-label>
+          <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
           <input matInput [value]="title()" (input)="title.set(getInputValue($event))" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción</mat-label>
+          <mat-label>{{ 'pendingItems.description' | translate }}</mat-label>
           <textarea
             matInput
             rows="3"
@@ -59,29 +65,41 @@ interface DialogData {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Tipo</mat-label>
+            <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
             <mat-select [value]="type()" (selectionChange)="type.set($event.value)" required>
-              <mat-option value="work_order">Orden de trabajo</mat-option>
-              <mat-option value="inquiry">Consulta</mat-option>
-              <mat-option value="maintenance">Mantenimiento</mat-option>
-              <mat-option value="follow_up">Seguimiento</mat-option>
-              <mat-option value="other">Otro</mat-option>
+              <mat-option value="work_order">{{
+                'pendingItems.types.workOrder' | translate
+              }}</mat-option>
+              <mat-option value="inquiry">{{
+                'pendingItems.types.inquiry' | translate
+              }}</mat-option>
+              <mat-option value="maintenance">{{
+                'pendingItems.types.maintenance' | translate
+              }}</mat-option>
+              <mat-option value="follow_up">{{
+                'pendingItems.types.followUp' | translate
+              }}</mat-option>
+              <mat-option value="other">{{ 'pendingItems.types.other' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Prioridad</mat-label>
+            <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
             <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
-              <mat-option value="low">Baja</mat-option>
-              <mat-option value="medium">Media</mat-option>
-              <mat-option value="high">Alta</mat-option>
-              <mat-option value="urgent">Urgente</mat-option>
+              <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
+              <mat-option value="medium">{{
+                'pendingItems.priorities.medium' | translate
+              }}</mat-option>
+              <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
+              <mat-option value="urgent">{{
+                'pendingItems.priorities.urgent' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha de vencimiento</mat-label>
+          <mat-label>{{ 'pendingItems.dueDate' | translate }}</mat-label>
           <input
             matInput
             [matDatepicker]="picker"
@@ -95,12 +113,20 @@ interface DialogData {
 
         @if (data.mode === 'edit') {
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Estado</mat-label>
+            <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="status()" (selectionChange)="status.set($event.value)">
-              <mat-option value="pending">Pendiente</mat-option>
-              <mat-option value="in_progress">En progreso</mat-option>
-              <mat-option value="completed">Completado</mat-option>
-              <mat-option value="cancelled">Cancelado</mat-option>
+              <mat-option value="pending">{{
+                'pendingItems.statuses.pending' | translate
+              }}</mat-option>
+              <mat-option value="in_progress">{{
+                'pendingItems.statuses.inProgress' | translate
+              }}</mat-option>
+              <mat-option value="completed">{{
+                'pendingItems.statuses.completed' | translate
+              }}</mat-option>
+              <mat-option value="cancelled">{{
+                'pendingItems.statuses.cancelled' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         }
@@ -108,9 +134,9 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
