@@ -110,6 +110,13 @@ export const routes: Routes = [
             (m) => m.SettingsPlaceholderComponent,
           ),
       },
+      {
+        path: 'pending-items',
+        loadComponent: () =>
+          import('./features/pending-items/pending-items-list.component').then(
+            (m) => m.PendingItemsListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
