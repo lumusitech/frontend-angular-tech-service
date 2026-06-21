@@ -67,7 +67,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
-            <mat-select [(value)]="type" required>
+            <mat-select [(ngModel)]="type" [ngModelOptions]="{standalone: true}" required>
               <mat-option value="work_order">{{
                 'pendingItems.types.workOrder' | translate
               }}</mat-option>
@@ -86,7 +86,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-            <mat-select [(value)]="priority">
+            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
               <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{
                 'pendingItems.priorities.medium' | translate
@@ -115,7 +115,7 @@ interface DialogData {
         @if (data.mode === 'edit') {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [(value)]="status">
+            <mat-select [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
               <mat-option value="pending">{{
                 'pendingItems.statuses.pending' | translate
               }}</mat-option>

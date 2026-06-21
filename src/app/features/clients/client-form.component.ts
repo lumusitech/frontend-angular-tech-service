@@ -101,7 +101,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
-          <mat-select [(value)]="ivaCondition">
+          <mat-select [(ngModel)]="ivaCondition" [ngModelOptions]="{standalone: true}">
             <mat-option value="responsable_inscripto">{{
               'clients.ivaConditions.responsableInscripto' | translate
             }}</mat-option>

@@ -84,7 +84,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-          <mat-select [(value)]="category">
+          <mat-select [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
             <mat-option value="utilities">{{
               'expenses.categories.utilities' | translate

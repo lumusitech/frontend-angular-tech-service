@@ -46,7 +46,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [(value)]="clientId">
+          <mat-select [(ngModel)]="clientId" [ngModelOptions]="{standalone: true}">
             @for (client of clients(); track client.id) {
               <mat-option [value]="client.id">
                 {{ client.name }}
@@ -57,7 +57,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
-          <mat-select [(value)]="serviceTypeId">
+          <mat-select [(ngModel)]="serviceTypeId" [ngModelOptions]="{standalone: true}">
             @for (serviceType of serviceTypes(); track serviceType.id) {
               <mat-option [value]="serviceType.id">
                 {{ serviceType.name }}
@@ -69,59 +69,36 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
-            <mat-select [(value)]="priority">
+            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
               <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{
-                'workOrders.priorities.medium' | translate
-              }}</mat-option>
+              <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{
-                'workOrders.priorities.urgent' | translate
-              }}</mat-option>
+              <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
-            <mat-select [(value)]="location">
-              <mat-option value="workshop">{{
-                'workOrders.locations.workshop' | translate
-              }}</mat-option>
-              <mat-option value="on_site">{{
-                'workOrders.locations.onSite' | translate
-              }}</mat-option>
+            <mat-select [(ngModel)]="location" [ngModelOptions]="{standalone: true}">
+              <mat-option value="workshop">{{ 'workOrders.locations.workshop' | translate }}</mat-option>
+              <mat-option value="on_site">{{ 'workOrders.locations.onSite' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
-          <input
-            matInput
-            type="date"
-            [value]="scheduledDate()"
-            (input)="scheduledDate.set(getInputValue($event))"
-          />
+          <input matInput type="date" [value]="scheduledDate()" (input)="scheduledDate.set(getInputValue($event))" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
-          <input
-            matInput
-            type="date"
-            [value]="warrantyUntil()"
-            (input)="warrantyUntil.set(getInputValue($event))"
-          />
+          <input matInput type="date" [value]="warrantyUntil()" (input)="warrantyUntil.set(getInputValue($event))" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
-          <textarea
-            matInput
-            [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}"
-            [ngModelOptions]="{standalone: true}"
-            rows="3"
-          ></textarea>
+          <textarea matInput [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}" rows="3"></textarea>
         </mat-form-field>
       </form>
     </mat-dialog-content>
@@ -129,9 +106,7 @@ interface DialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{
-          saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate)
-        }}
+        {{ saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
