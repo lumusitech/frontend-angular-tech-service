@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '../../core/services/payments.service';
 import { Payment, PaymentStatus, PaymentMethod } from '../../core/models/payment.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
@@ -235,7 +236,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id"></tr>
           </table>
 
           <mat-paginator
@@ -250,9 +251,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     </div>
   `,
 })
-export class PaymentsListComponent {
+export class PaymentsListComponent implements OnInit {
   private readonly paymentsService = inject(PaymentsService);
+  private readonly route = inject(ActivatedRoute);
 
+  readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly statusFilter = signal<PaymentStatus | ''>('');
@@ -286,6 +289,14 @@ export class PaymentsListComponent {
     'createdAt',
     'actions',
   ];
+
+  ngOnInit(): void {
+    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+    if (highlightId) {
+      this.highlightedId.set(highlightId);
+      setTimeout(() => this.highlightedId.set(null), 3000);
+    }
+  }
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);

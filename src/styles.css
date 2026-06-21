@@ -35,3 +35,15 @@ body {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   opacity: 0.9;
 }
+
+/* Notification highlight pulse */
+@keyframes highlight-pulse {
+  0%, 100% { background-color: transparent; }
+  25% { background-color: rgba(59, 130, 246, 0.15); }
+  50% { background-color: rgba(59, 130, 246, 0.05); }
+  75% { background-color: rgba(59, 130, 246, 0.12); }
+}
+
+.highlight-pulse {
+  animation: highlight-pulse 2s ease-in-out;
+}

@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
@@ -263,6 +263,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               mat-row
               *matRowDef="let row; columns: displayedColumns"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+              [class.highlight-pulse]="highlightedId() === row.id"
               (click)="viewDetail(row)"
             ></tr>
           </table>
@@ -279,8 +280,9 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     </div>
   `,
 })
-export class WorkOrdersListComponent {
+export class WorkOrdersListComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
 
   readonly pageSize = signal(10);
@@ -289,6 +291,15 @@ export class WorkOrdersListComponent {
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly highlightedId = signal<string | null>(null);
+
+  ngOnInit(): void {
+    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+    if (highlightId) {
+      this.highlightedId.set(highlightId);
+      setTimeout(() => this.highlightedId.set(null), 3000);
+    }
+  }
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
     () => ({
