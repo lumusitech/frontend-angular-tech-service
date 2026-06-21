@@ -10,6 +10,7 @@ import {
 import {
   DashboardSummary,
   PendingItemSummary,
+  InquirySummary,
   PaginatedResponse,
 } from '../../core/models/dashboard.interfaces';
 import { ApiResponse } from '../../core/models/api-response.interfaces';
@@ -17,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, SlicePipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -32,6 +33,7 @@ import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
     ErrorStateComponent,
     CurrencyPipe,
     DatePipe,
+    SlicePipe,
     BaseChartDirective,
     DragDropModule,
     TranslatePipe,
@@ -301,6 +303,56 @@ import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
                       </div>
                     }
                   }
+                  @case ('inquiries') {
+                    @if (
+                      inquiriesResource.hasValue() &&
+                      inquiriesResource.value().data.length > 0
+                    ) {
+                      <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                      >
+                        <div class="flex items-center justify-between mb-4">
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            {{ 'dashboard.newInquiries' | translate }}
+                          </h3>
+                          <button
+                            mat-button
+                            color="primary"
+                            (click)="navigateTo('/admin/inquiries')"
+                          >
+                            {{ 'dashboard.viewInquiries' | translate }}
+                            <mat-icon>arrow_forward</mat-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-3">
+                          @for (inquiry of inquiriesResource.value().data; track inquiry.id) {
+                            <div
+                              class="flex items-center justify-between p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
+                            >
+                              <div class="flex items-center gap-3">
+                                <mat-icon class="text-blue-500">help_outline</mat-icon>
+                                <div>
+                                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {{ inquiry.clientName }}
+                                  </p>
+                                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ 'statusLabels.' + inquiry.source | translate }}
+                                    &middot;
+                                    {{ inquiry.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                                  </p>
+                                </div>
+                              </div>
+                              <span
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30"
+                              >
+                                {{ inquiry.description | slice: 0:30 }}{{ inquiry.description.length > 30 ? '...' : '' }}
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  }
                   @case ('charts') {
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <div
@@ -451,6 +503,16 @@ export class DashboardComponent implements OnInit {
     }),
     {
       parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<PendingItemSummary>>).data,
+    },
+  );
+
+  readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(
+    () => ({
+      url: '/api/inquiries',
+      params: { status: 'new', limit: '5', sortBy: 'createdAt', order: 'DESC' },
+    }),
+    {
+      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<InquirySummary>>).data,
     },
   );
 

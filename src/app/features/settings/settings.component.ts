@@ -170,6 +170,7 @@ export class SettingsComponent {
   widgetOptions: WidgetOption[] = [
     { id: 'kpis', labelKey: 'settings.widgetKpis' },
     { id: 'pendingItems', labelKey: 'settings.widgetPendingItems' },
+    { id: 'inquiries', labelKey: 'settings.widgetInquiries' },
     { id: 'charts', labelKey: 'settings.widgetCharts' },
     { id: 'quickActions', labelKey: 'settings.widgetQuickActions' },
     { id: 'topClients', labelKey: 'settings.widgetTopClients' },
