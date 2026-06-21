@@ -236,7 +236,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" class="hover:bg-gray-100 dark:hover:bg-gray-700"></tr>
           </table>
 
           <mat-paginator
@@ -309,6 +309,8 @@ export class PaymentsListComponent implements OnInit {
   }
 
   approvePayment(payment: Payment): void {
+    if (payment.status !== 'pending') return;
+
     this.paymentsService
       .update(payment.id, {
         status: 'approved',
