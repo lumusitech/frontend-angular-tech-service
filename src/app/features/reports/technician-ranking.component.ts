@@ -1,11 +1,12 @@
 import { Component, input } from '@angular/core';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TechnicianRanking } from '../../core/models/report.interfaces';
+import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-technician-ranking',
-  imports: [CurrencyPipe, DecimalPipe, TranslatePipe],
+  imports: [DecimalPipe, CurrencyArsPipe, TranslatePipe],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
@@ -30,7 +31,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.completedOrders }}</td>
                 <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.averageResolutionDays | number: '1.1-1' }}d</td>
                 <td class="py-2.5 text-right font-medium text-gray-900 dark:text-gray-100">
-                  {{ tech.totalRevenue | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                  {{ tech.totalRevenue | currencyArs: '1.0-0' }}
                 </td>
               </tr>
             }

@@ -19,8 +19,9 @@ import { IncomeChartComponent } from './income-chart.component';
 import { ExpensesChartComponent } from './expenses-chart.component';
 import { ServicesRankingComponent } from './services-ranking.component';
 import { TechnicianRankingComponent } from './technician-ranking.component';
-import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 
 @Component({
   selector: 'app-reports-dashboard',
@@ -35,10 +36,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ExpensesChartComponent,
     ServicesRankingComponent,
     TechnicianRankingComponent,
-    CurrencyPipe,
     DecimalPipe,
     DatePipe,
     TranslatePipe,
+    CurrencyArsPipe,
   ],
   template: `
     <div class="space-y-6">
@@ -90,7 +91,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalIncome' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.totalIncome | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.totalIncome | currencyArs: '1.0-0' }}
               </p>
               <p class="text-xs mt-1" [class]="s.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'">
                 {{ s.trends.incomeChange >= 0 ? '+' : '' }}{{ s.trends.incomeChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
@@ -99,13 +100,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalExpenses' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.totalExpenses | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.totalExpenses | currencyArs: '1.0-0' }}
               </p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.netProfit' | translate }}</p>
               <p class="text-2xl font-bold mt-1" [class]="s.kpis.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                {{ s.kpis.netProfit | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.netProfit | currencyArs: '1.0-0' }}
               </p>
               <p class="text-xs mt-1" [class]="s.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'">
                 {{ s.trends.profitChange >= 0 ? '+' : '' }}{{ s.trends.profitChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
@@ -114,7 +115,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.averageTicket' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.averageTicket | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.averageTicket | currencyArs: '1.0-0' }}
               </p>
             </div>
           </div>

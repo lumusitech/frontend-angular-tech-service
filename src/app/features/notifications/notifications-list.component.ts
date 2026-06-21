@@ -229,7 +229,7 @@ export class NotificationsListComponent {
       this.notificationsService.markAsRead(notification.id).subscribe();
     }
 
-    if (notification.referenceType && notification.referenceId) {
+    if (notification.referenceType) {
       const routes: Record<string, string> = {
         work_order: '/admin/work-orders',
         task: '/admin/work-orders',
@@ -239,7 +239,7 @@ export class NotificationsListComponent {
       };
       const baseRoute = routes[notification.referenceType];
       if (baseRoute) {
-        this.router.navigate([baseRoute, notification.referenceId]);
+        this.router.navigate([baseRoute]);
       }
     }
   }
