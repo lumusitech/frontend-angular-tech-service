@@ -1,5 +1,5 @@
 import { Component, input, effect } from '@angular/core';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { ExpenseReport } from '../../core/models/report.interfaces';
@@ -7,7 +7,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-expenses-chart',
-  imports: [BaseChartDirective, CurrencyPipe, DecimalPipe, TranslatePipe],
+  imports: [BaseChartDirective, DecimalPipe, TranslatePipe],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div class="flex items-center justify-between mb-4">
@@ -16,7 +16,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         </h3>
         <div class="text-right">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            {{ data().totalExpenses | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ data().totalExpenses | number: '1.0-0' }}
           </p>
           <p class="text-xs" [class]="data().changePercentage <= 0 ? 'text-green-600' : 'text-red-600'">
             {{ data().changePercentage >= 0 ? '+' : '' }}{{ data().changePercentage | number: '1.1-1' }}%

@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { ServicesReport } from '../../core/models/report.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-services-ranking',
-  imports: [CurrencyPipe, TranslatePipe],
+  imports: [CurrencyArsPipe, TranslatePipe],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
@@ -23,7 +23,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                   {{ service.name }}
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 ml-2">
-                  {{ service.revenue | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                  {{ service.revenue | currencyArs: '1.0-0' }}
                 </p>
               </div>
               <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
