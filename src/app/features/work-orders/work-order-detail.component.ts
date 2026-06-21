@@ -319,7 +319,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                           <div class="flex items-center gap-2 mb-1">
                             <app-status-badge [value]="note.type" type="noteType" />
                             <span class="text-xs text-gray-400 dark:text-gray-500">
-                              {{ note.createdBy.name }} -
+                              {{ note.createdBy?.name }} -
                               {{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}
                             </span>
                           </div>
@@ -421,11 +421,11 @@ export class WorkOrderDetailComponent {
   );
 
   getCompletedTasks(): number {
-    return this.workOrderResource.value()?.tasks.filter((t) => t.isCompleted).length || 0;
+    return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
   }
 
   getMaterialsTotal(): number {
-    return this.workOrderResource.value()?.materials.reduce((sum, m) => sum + m.totalCost, 0) || 0;
+    return this.workOrderResource.value()?.materials?.reduce((sum, m) => sum + m.totalCost, 0) || 0;
   }
 
   goBack(): void {
