@@ -21,7 +21,8 @@
     "inactive": "Inactivo",
     "details": "Detalles",
     "back": "Volver",
-    "view": "Ver"
+    "view": "Ver",
+    "notifications": "Notificaciones"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -70,7 +71,10 @@
     "topClients": "Top Clientes",
     "orders": "órdenes",
     "incomes": "Ingresos",
-    "expenses": "Gastos"
+    "expenses": "Gastos",
+    "newInquiries": "Consultas nuevas",
+    "viewInquiries": "Ver consultas",
+    "widgetInquiries": "Consultas"
   },
   "clients": {
     "title": "Clientes",
@@ -384,6 +388,7 @@
     "resetLayout": "Restaurar orden por defecto",
     "widgetKpis": "KPIs",
     "widgetPendingItems": "Pendientes",
+    "widgetInquiries": "Consultas",
     "widgetCharts": "Gráficos",
     "widgetQuickActions": "Acciones rápidas",
     "widgetTopClients": "Top Clientes"

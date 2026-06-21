@@ -98,3 +98,13 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface InquirySummary {
+  id: string;
+  clientName: string;
+  description: string;
+  source: string;
+  status: string;
+  priority: string | null;
+  createdAt: string;
+}
