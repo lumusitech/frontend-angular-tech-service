@@ -134,6 +134,13 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/notifications/notifications-list.component').then(
+            (m) => m.NotificationsListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

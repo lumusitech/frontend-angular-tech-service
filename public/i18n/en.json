@@ -352,6 +352,20 @@
     "downloadBudget": "Download Budget",
     "downloadReceipt": "Download Receipt"
   },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Your notifications",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "noNotifications": "No notifications",
+    "noNotificationsMessage": "You have no new notifications",
+    "unread": "Unread",
+    "viewAll": "View all",
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    }
+  },
   "technician": {
     "title": "My Orders",
     "subtitle": "Assigned orders",

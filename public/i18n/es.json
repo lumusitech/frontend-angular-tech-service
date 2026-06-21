@@ -352,6 +352,20 @@
     "downloadBudget": "Descargar Presupuesto",
     "downloadReceipt": "Descargar Comprobante"
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "subtitle": "Tus notificaciones",
+    "markAllRead": "Marcar todas como leídas",
+    "markRead": "Marcar como leída",
+    "noNotifications": "Sin notificaciones",
+    "noNotificationsMessage": "No tenés notificaciones nuevas",
+    "unread": "No leída",
+    "viewAll": "Ver todas",
+    "filters": {
+      "all": "Todas",
+      "unread": "No leídas"
+    }
+  },
   "technician": {
     "title": "Mis Órdenes",
     "subtitle": "Órdenes asignadas",
