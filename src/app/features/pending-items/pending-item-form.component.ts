@@ -52,7 +52,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
-          <input matInput [(ngModel)]="title" required />
+          <input matInput [(ngModel)]="title" [ngModelOptions]="{standalone: true}" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -60,7 +60,7 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [(ngModel)]="description"
+            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
           ></textarea>
         </mat-form-field>
 

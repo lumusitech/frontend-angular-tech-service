@@ -45,14 +45,14 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.name' | translate }}</mat-label>
-          <input matInput [(ngModel)]="name" required />
+          <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.description' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="description"
+            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
             rows="3"
           ></textarea>
         </mat-form-field>

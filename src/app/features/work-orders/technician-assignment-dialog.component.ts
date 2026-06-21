@@ -40,7 +40,7 @@ interface DialogData {
           <mat-spinner diameter="36" />
         </div>
       } @else if (techniciansResource.hasValue()) {
-        <mat-selection-list [(ngModel)]="selectedIds" (selectionChange)="onSelectionChange($event)">
+        <mat-selection-list [(ngModel)]="selectedIds" [ngModelOptions]="{standalone: true}" (selectionChange)="onSelectionChange($event)">
           @for (tech of techniciansResource.value().data; track tech.id) {
             <mat-list-option [value]="tech.id">
               <div class="flex items-center gap-3">

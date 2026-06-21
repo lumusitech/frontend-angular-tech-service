@@ -118,7 +118,8 @@ interface DialogData {
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="diagnosis"
+            [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{standalone: true}"
             rows="3"
           ></textarea>
         </mat-form-field>

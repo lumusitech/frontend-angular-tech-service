@@ -42,24 +42,24 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
-          <input matInput [(ngModel)]="clientName" required />
+          <input matInput [(ngModel)]="clientName" [ngModelOptions]="{standalone: true}" required />
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="clientPhone" />
+            <input matInput [(ngModel)]="clientPhone" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.email' | translate }}</mat-label>
-            <input matInput type="email" [(ngModel)]="clientEmail" />
+            <input matInput type="email" [(ngModel)]="clientEmail" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
-          <input matInput [(ngModel)]="clientAddress" />
+          <input matInput [(ngModel)]="clientAddress" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -67,7 +67,7 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [(ngModel)]="description"
+            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
             required
           ></textarea>
         </mat-form-field>

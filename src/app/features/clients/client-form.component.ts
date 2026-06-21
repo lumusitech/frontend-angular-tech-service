@@ -44,7 +44,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" required />
+            <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -60,12 +60,12 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" required />
+            <input matInput [(ngModel)]="phone" [ngModelOptions]="{standalone: true}" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
-            <input matInput [(ngModel)]="cuit" />
+            <input matInput [(ngModel)]="cuit" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
         </div>
 

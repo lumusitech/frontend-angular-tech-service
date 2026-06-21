@@ -114,7 +114,7 @@ interface DialogData {
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="notes"
+            [(ngModel)]="notes" [ngModelOptions]="{standalone: true}"
             rows="3"
           ></textarea>
         </mat-form-field>

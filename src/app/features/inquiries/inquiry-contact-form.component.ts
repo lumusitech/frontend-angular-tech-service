@@ -39,7 +39,7 @@ interface DialogData {
           <textarea
             matInput
             rows="4"
-            [(ngModel)]="technicianNotes"
+            [(ngModel)]="technicianNotes" [ngModelOptions]="{standalone: true}"
             [placeholder]="'inquiries.technicianNotesPlaceholder' | translate"
             required
           ></textarea>
@@ -48,12 +48,12 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedCost' | translate }} ($)</mat-label>
-            <input matInput type="number" [(ngModel)]="estimatedCost" />
+            <input matInput type="number" [(ngModel)]="estimatedCost" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedDuration' | translate }} (h)</mat-label>
-            <input matInput type="number" [(ngModel)]="estimatedDuration" />
+            <input matInput type="number" [(ngModel)]="estimatedDuration" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
         </div>
 
@@ -62,7 +62,7 @@ interface DialogData {
           <textarea
             matInput
             rows="2"
-            [(ngModel)]="materialsNeeded"
+            [(ngModel)]="materialsNeeded" [ngModelOptions]="{standalone: true}"
             [placeholder]="'inquiries.materialsPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
