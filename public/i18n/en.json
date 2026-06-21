@@ -20,7 +20,8 @@
     "active": "Active",
     "inactive": "Inactive",
     "details": "Details",
-    "back": "Back"
+    "back": "Back",
+    "view": "View"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -98,10 +99,14 @@
     "subtitle": "Manage your suppliers",
     "newSupplier": "New Supplier",
     "name": "Name",
+    "contact": "Contact",
     "email": "Email",
     "phone": "Phone",
     "address": "Address",
     "cuit": "CUIT",
+    "noSuppliers": "No suppliers",
+    "noSuppliersMessage": "No suppliers registered",
+    "createSupplier": "Create supplier",
     "deleteTitle": "Delete supplier",
     "deleteMessage": "Are you sure you want to delete {{name}}?"
   },
@@ -111,7 +116,11 @@
     "newServiceType": "New Service Type",
     "name": "Name",
     "description": "Description",
+    "estimatedDuration": "Estimated duration",
     "basePrice": "Base price",
+    "noServiceTypes": "No service types",
+    "noServiceTypesMessage": "No service types registered",
+    "createServiceType": "Create service type",
     "deleteTitle": "Delete service type",
     "deleteMessage": "Are you sure you want to delete \"{{name}}\"?"
   },
@@ -120,9 +129,11 @@
     "subtitle": "Manage technical service orders",
     "newOrder": "New Order",
     "trackingCode": "Code",
+    "code": "Code",
     "client": "Client",
     "service": "Service",
     "priority": "Priority",
+    "date": "Date",
     "technicians": "Technicians",
     "assignedTo": "Assigned to",
     "diagnosis": "Diagnosis",
@@ -138,13 +149,35 @@
     "addTask": "Add task",
     "assignTechnicians": "Assign technicians",
     "changeStatus": "Change status",
+    "noOrders": "No orders",
+    "noOrdersMessage": "No work orders",
+    "createOrder": "Create order",
     "deleteTitle": "Delete order",
-    "deleteMessage": "Are you sure you want to delete order {{code}}?"
+    "deleteMessage": "Are you sure you want to delete order {{code}}?",
+    "filters": {
+      "all": "All",
+      "allPriorities": "All priorities"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "assigned": "Assigned",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    }
   },
   "pendingItems": {
     "title": "Pending Work",
     "subtitle": "Manage your tasks and pending items",
     "newItem": "New Pending Item",
+    "titleColumn": "Title",
     "dueDate": "Due date",
     "type": "Type",
     "priority": "Priority",
@@ -157,6 +190,10 @@
     "other": "Other",
     "newItemTitle": "New Pending Item",
     "editItemTitle": "Edit Pending Item",
+    "newPendingItem": "New Pending Item",
+    "noPendingItems": "No pending items",
+    "noPendingItemsMessage": "No pending items registered",
+    "createPendingItem": "Create pending item",
     "deleteTitle": "Delete pending item",
     "deleteMessage": "Are you sure you want to delete \"{{title}}\"?"
   },
@@ -169,7 +206,30 @@
     "status": "Status",
     "description": "Description",
     "workOrder": "Work order",
-    "paidAt": "Payment date"
+    "order": "Order",
+    "provider": "Provider",
+    "paymentDate": "Payment date",
+    "approve": "Approve",
+    "paidAt": "Payment date",
+    "noPayments": "No payments",
+    "noPaymentsMessage": "No payments registered",
+    "filters": {
+      "all": "All",
+      "allMethods": "All methods"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "methods": {
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "creditCard": "Credit Card",
+      "debitCard": "Debit Card"
+    }
   },
   "expenses": {
     "title": "Expenses",
@@ -180,9 +240,28 @@
     "date": "Date",
     "category": "Category",
     "isRecurring": "Recurring expense",
+    "recurring": "Recurring",
     "notes": "Notes",
+    "noExpenses": "No expenses",
+    "noExpensesMessage": "No expenses registered",
+    "createExpense": "Create expense",
     "deleteTitle": "Delete expense",
-    "deleteMessage": "Are you sure you want to delete \"{{description}}\"?"
+    "deleteMessage": "Are you sure you want to delete \"{{description}}\"?",
+    "filters": {
+      "allCategories": "All categories"
+    },
+    "categories": {
+      "rent": "Rent",
+      "utilities": "Utilities",
+      "salaries": "Salaries",
+      "tools": "Tools",
+      "transport": "Transport",
+      "advertising": "Advertising",
+      "supplies": "Supplies",
+      "maintenance": "Maintenance",
+      "hosting": "Hosting",
+      "other": "Other"
+    }
   },
   "statusLabels": {
     "pending": "Pending",
@@ -233,6 +312,18 @@
     "replacement": "Replacement",
     "inspection": "Inspection",
     "no_action": "No action"
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Billing management",
+    "comingSoon": "Coming soon",
+    "comingSoonMessage": "This feature is under development"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Financial reports and statistics",
+    "comingSoon": "Coming soon",
+    "comingSoonMessage": "This feature is under development"
   },
   "inquiries": {
     "title": "Inquiries",
