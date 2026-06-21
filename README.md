@@ -22,7 +22,7 @@ Consume la API del backend NestJS. Documentacion interactiva: `http://localhost:
 ## Requisitos
 
 - Node.js 20+
-- npm 10+
+- pnpm
 - Backend NestJS corriendo en `http://localhost:3000/api/`
 
 ## Instalacion
@@ -33,10 +33,10 @@ git clone https://github.com/lumusitech/frontend-angular-tech-service.git
 cd frontend-angular-tech-service
 
 # Instalar dependencias
-npm install
+pnpm install
 
 # Generar tipos desde Swagger (backend tiene que estar corriendo)
-npm run sync:types
+pnpm sync:types
 
 # Iniciar servidor de desarrollo (con SSR)
 ng serve --open
@@ -79,7 +79,7 @@ ng serve                    # Dev server con SSR (localhost:4200)
 ng build                    # Build con SSR + prerender
 ng test                     # Unit tests (Vitest)
 ng extract-i18n             # Extraer mensajes para i18n
-npm run sync:types          # Generar interfaces desde Swagger
+pnpm sync:types          # Generar interfaces desde Swagger
 firebase deploy             # Deploy a Firebase
 ```
 
@@ -200,7 +200,7 @@ La app es instalable como PWA en dispositivos mobiles. El primer request es serv
 ## Sync de tipos con Backend
 
 ```bash
-npm run sync:types
+pnpm sync:types
 ```
 
 Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del backend desde el spec OpenAPI.

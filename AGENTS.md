@@ -181,5 +181,5 @@ export class ClientFormComponent {
 ng serve                    # Dev server con SSR
 ng build                    # Build con SSR + prerender
 ng test                     # Unit tests (Vitest)
-npm run sync:types          # Generar interfaces desde Swagger
+pnpm sync:types          # Generar interfaces desde Swagger
 ```

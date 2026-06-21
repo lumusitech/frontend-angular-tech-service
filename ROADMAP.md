@@ -176,7 +176,7 @@ server.ts                          # Express server (SSR entry point)
 - [ ] Configure PWA (`ng add @angular/pwa`)
 - [ ] Setup environment files with API URL
 - [ ] Configure proxy para desarrollo (`proxy.conf.json` → localhost:3000)
-- [ ] Generate types from Swagger (`npm run sync:types`)
+- [ ] Generate types from Swagger (`pnpm sync:types`)
 - [ ] Setup CLAUDE.md with project conventions
 - [ ] Verify `ng build` funciona (SSR + prerender + PWA)
 - [ ] Push a GitHub
@@ -521,7 +521,7 @@ ng g guard core/auth/admin
 ng g interceptor core/interceptors/auth
 
 # Types from Swagger
-npm run sync:types          # Genera interfaces desde OpenAPI spec
+pnpm sync:types          # Genera interfaces desde OpenAPI spec
 
 # Tests
 ng test                     # Unit tests
