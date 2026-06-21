@@ -21,56 +21,56 @@
 
 ### Backend: pending-items (módulo nuevo)
 
-- [ ] Instalar @nestjs/schedule
-- [ ] Crear módulo pending-items:
-  - [ ] Entity PendingItem (title, description, dueDate, type, priority, status, referenceType, referenceId, assignedToId, createdById)
-  - [ ] Enums: PendingItemType, PendingItemPriority, PendingItemStatus
-  - [ ] DTOs: CreatePendingItemDto, UpdatePendingItemDto, FilterPendingItemDto
-  - [ ] Service: CRUD + validación por rol (technician solo de sus órdenes)
-  - [ ] Controller: endpoints REST con guards
-  - [ ] Cron job diario (8:00 AM) para notificar pendientes próximos/vencidos
-- [ ] Nuevos tipos de notificación: pending_item.created, pending_item.due_today, pending_item.overdue
-- [ ] Tests unitarios
+- [x] Instalar @nestjs/schedule
+- [x] Crear módulo pending-items:
+  - [x] Entity PendingItem (title, description, dueDate, type, priority, status, referenceType, referenceId, assignedToId, createdById)
+  - [x] Enums: PendingItemType, PendingItemPriority, PendingItemStatus
+  - [x] DTOs: CreatePendingItemDto, UpdatePendingItemDto, FilterPendingItemDto
+  - [x] Service: CRUD + validación por rol (technician solo de sus órdenes)
+  - [x] Controller: endpoints REST con guards
+  - [x] Cron job diario (8:00 AM) para notificar pendientes próximos/vencidos
+- [x] Nuevos tipos de notificación: pending_item.created, pending_item.due_today, pending_item.overdue
+- [x] Tests unitarios
 
 ### Backend: inquiries (módulo nuevo)
 
-- [ ] Crear módulo inquiries:
-  - [ ] Entity Inquiry (clientName, clientPhone, clientEmail, description, source, status, priority, assignedToId, createdById, technicianNotes, estimatedCost, recommendation, adminDecision, workOrderId)
-  - [ ] Enums: InquirySource, InquiryStatus, InquiryRecommendation, InquiryDecision
-  - [ ] DTOs: CreateInquiryDto, UpdateInquiryDto, FilterInquiryDto, ContactInquiryDto
-  - [ ] Service: CRUD + workflow de estados + lógica de convert (crear Work Order)
-  - [ ] Controller: endpoints REST con guards
-- [ ] Nuevos tipos de notificación: inquiry.created, inquiry.assigned, inquiry.contacted, inquiry.reviewed
-- [ ] Tests unitarios
+- [x] Crear módulo inquiries:
+  - [x] Entity Inquiry (clientName, clientPhone, clientEmail, description, source, status, priority, assignedToId, createdById, technicianNotes, estimatedCost, recommendation, adminDecision, workOrderId)
+  - [x] Enums: InquirySource, InquiryStatus, InquiryRecommendation, InquiryDecision
+  - [x] DTOs: CreateInquiryDto, UpdateInquiryDto, FilterInquiryDto, ContactInquiryDto
+  - [x] Service: CRUD + workflow de estados + lógica de convert (crear Work Order)
+  - [x] Controller: endpoints REST con guards
+- [x] Nuevos tipos de notificación: inquiry.created, inquiry.assigned, inquiry.contacted, inquiry.reviewed
+- [x] Tests unitarios
 
 ### Frontend: pending-items
 
-- [ ] Interfaces en core/models/pending-item.interfaces.ts
-- [ ] Servicio en core/services/pending-items.service.ts
-- [ ] PendingItemsListComponent (lista con filtros: status, type, priority, assignedTo)
-- [ ] PendingItemFormComponent (dialog crear/editar)
+- [x] Interfaces en core/models/pending-item.interfaces.ts
+- [x] Servicio en core/services/pending-items.service.ts
+- [x] PendingItemsListComponent (lista con filtros: status, type, priority, assignedTo)
+- [x] PendingItemFormComponent (dialog crear/editar)
 
 ### Frontend: inquiries
 
-- [ ] Interfaces en core/models/inquiry.interfaces.ts
-- [ ] Servicio en core/services/inquiries.service.ts
-- [ ] InquiriesListComponent (lista con filtros: status, assignedTo, source)
-- [ ] InquiryFormComponent (dialog crear consulta)
-- [ ] InquiryDetailComponent (detalle con workflow de estados)
-- [ ] InquiryContactFormComponent (técnico carga resultado de llamada)
+- [x] Interfaces en core/models/inquiry.interfaces.ts
+- [x] Servicio en core/services/inquiries.service.ts
+- [x] InquiriesListComponent (lista con filtros: status, assignedTo, source)
+- [x] InquiryFormComponent (dialog crear consulta)
+- [x] InquiryDetailComponent (detalle con workflow de estados)
+- [x] InquiryContactFormComponent (técnico carga resultado de llamada)
 
 ### Frontend: Dashboard unificado
 
 - [ ] PendingWorkWidgetComponent (muestra pendientes vencidos/hoy/próximos + consultas pendientes)
-- [ ] Integración en dashboard.component.ts
-- [ ] Nuevo item en sidebar: "Trabajo Pendiente" (/admin/pending-work)
+- [x] Integración en dashboard.component.ts (pending items widget)
+- [x] Nuevo item en sidebar: "Trabajo Pendiente" (/admin/pending-items)
 - [ ] Badge en header: count de items vencidos + consultas nuevas
 
 ## Documentación por actualizar
 
-- [ ] ROADMAP.md: marcar ~80+ items como completados
-- [ ] ROADMAP.md: agregar componentes no documentados (PageHeader, ErrorState, TrackingCode, StatusLabelPipe, StatusClassPipe, SafeHtmlPipe, CurrencyArsPipe, dashboard.service, loading.service)
-- [ ] ROADMAP.md: agregar secciones 22-23 (pending-items, inquiries)
+- [x] ROADMAP.md: marcar ~80+ items como completados
+- [x] ROADMAP.md: agregar componentes no documentados (PageHeader, ErrorState, TrackingCode, StatusLabelPipe, StatusClassPipe, SafeHtmlPipe, CurrencyArsPipe, dashboard.service, loading.service)
+- [x] ROADMAP.md: agregar secciones 22-23 (pending-items, inquiries)
 - [ ] README.md: corregir tabla de rutas (/clients → /admin/clients)
 - [ ] README.md: marcar PWA/i18n como "planificado, no implementado"
 
