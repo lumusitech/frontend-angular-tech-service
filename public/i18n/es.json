@@ -20,7 +20,8 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "details": "Detalles",
-    "back": "Volver"
+    "back": "Volver",
+    "view": "Ver"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -98,10 +99,14 @@
     "subtitle": "Gestiona tus proveedores",
     "newSupplier": "Nuevo Proveedor",
     "name": "Nombre",
+    "contact": "Contacto",
     "email": "Email",
     "phone": "Teléfono",
     "address": "Dirección",
     "cuit": "CUIT",
+    "noSuppliers": "Sin proveedores",
+    "noSuppliersMessage": "No hay proveedores registrados",
+    "createSupplier": "Crear proveedor",
     "deleteTitle": "Eliminar proveedor",
     "deleteMessage": "¿Estás seguro de eliminar a {{name}}?"
   },
@@ -111,7 +116,11 @@
     "newServiceType": "Nuevo Tipo de Servicio",
     "name": "Nombre",
     "description": "Descripción",
+    "estimatedDuration": "Duración estimada",
     "basePrice": "Precio base",
+    "noServiceTypes": "Sin tipos de servicio",
+    "noServiceTypesMessage": "No hay tipos de servicio registrados",
+    "createServiceType": "Crear tipo de servicio",
     "deleteTitle": "Eliminar tipo de servicio",
     "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?"
   },
@@ -120,9 +129,11 @@
     "subtitle": "Gestiona las órdenes de servicio técnico",
     "newOrder": "Nueva Orden",
     "trackingCode": "Código",
+    "code": "Código",
     "client": "Cliente",
     "service": "Servicio",
     "priority": "Prioridad",
+    "date": "Fecha",
     "technicians": "Técnicos",
     "assignedTo": "Asignado a",
     "diagnosis": "Diagnóstico",
@@ -138,13 +149,35 @@
     "addTask": "Agregar tarea",
     "assignTechnicians": "Asignar técnicos",
     "changeStatus": "Cambiar estado",
+    "noOrders": "Sin órdenes",
+    "noOrdersMessage": "No hay órdenes de trabajo",
+    "createOrder": "Crear orden",
     "deleteTitle": "Eliminar orden",
-    "deleteMessage": "¿Estás seguro de eliminar la orden {{code}}?"
+    "deleteMessage": "¿Estás seguro de eliminar la orden {{code}}?",
+    "filters": {
+      "all": "Todas",
+      "allPriorities": "Todas"
+    },
+    "statuses": {
+      "pending": "Pendiente",
+      "assigned": "Asignada",
+      "inProgress": "En Progreso",
+      "completed": "Completada",
+      "delivered": "Entregada",
+      "cancelled": "Cancelada"
+    },
+    "priorities": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
   },
   "pendingItems": {
     "title": "Trabajo Pendiente",
     "subtitle": "Gestiona tus tareas y pendientes",
     "newItem": "Nuevo Pendiente",
+    "titleColumn": "Título",
     "dueDate": "Vencimiento",
     "type": "Tipo",
     "priority": "Prioridad",
@@ -157,6 +190,10 @@
     "other": "Otro",
     "newItemTitle": "Nuevo Pendiente",
     "editItemTitle": "Editar Pendiente",
+    "newPendingItem": "Nuevo Pendiente",
+    "noPendingItems": "Sin pendientes",
+    "noPendingItemsMessage": "No hay pendientes registrados",
+    "createPendingItem": "Crear pendiente",
     "deleteTitle": "Eliminar pendiente",
     "deleteMessage": "¿Estás seguro de eliminar \"{{title}}\"?"
   },
@@ -169,7 +206,30 @@
     "status": "Estado",
     "description": "Descripción",
     "workOrder": "Orden de trabajo",
-    "paidAt": "Fecha de pago"
+    "order": "Orden",
+    "provider": "Proveedor",
+    "paymentDate": "Fecha de pago",
+    "approve": "Aprobar",
+    "paidAt": "Fecha de pago",
+    "noPayments": "Sin pagos",
+    "noPaymentsMessage": "No hay pagos registrados",
+    "filters": {
+      "all": "Todos",
+      "allMethods": "Todos los métodos"
+    },
+    "statuses": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "refunded": "Reembolsado",
+      "cancelled": "Cancelado"
+    },
+    "methods": {
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "creditCard": "Tarjeta Crédito",
+      "debitCard": "Tarjeta Débito"
+    }
   },
   "expenses": {
     "title": "Gastos",
@@ -180,9 +240,28 @@
     "date": "Fecha",
     "category": "Categoría",
     "isRecurring": "Gasto recurrente",
+    "recurring": "Recurrente",
     "notes": "Notas",
+    "noExpenses": "Sin gastos",
+    "noExpensesMessage": "No hay gastos registrados",
+    "createExpense": "Crear gasto",
     "deleteTitle": "Eliminar gasto",
-    "deleteMessage": "¿Estás seguro de eliminar \"{{description}}\"?"
+    "deleteMessage": "¿Estás seguro de eliminar \"{{description}}\"?",
+    "filters": {
+      "allCategories": "Todas las categorías"
+    },
+    "categories": {
+      "rent": "Alquiler",
+      "utilities": "Servicios",
+      "salaries": "Sueldos",
+      "tools": "Herramientas",
+      "transport": "Transporte",
+      "advertising": "Publicidad",
+      "supplies": "Insumos",
+      "maintenance": "Mantenimiento",
+      "hosting": "Hosting",
+      "other": "Otros"
+    }
   },
   "statusLabels": {
     "pending": "Pendiente",
@@ -233,6 +312,18 @@
     "replacement": "Reemplazo",
     "inspection": "Inspección",
     "no_action": "Sin acción"
+  },
+  "billing": {
+    "title": "Facturación",
+    "subtitle": "Gestión de facturación",
+    "comingSoon": "Próximamente",
+    "comingSoonMessage": "Esta funcionalidad está en desarrollo"
+  },
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Reportes financieros y estadísticas",
+    "comingSoon": "Próximamente",
+    "comingSoonMessage": "Esta funcionalidad está en desarrollo"
   },
   "inquiries": {
     "title": "Consultas",
