@@ -99,8 +99,8 @@ export const routes: Routes = [
       {
         path: 'reports',
         loadComponent: () =>
-          import('./features/reports/reports-placeholder.component').then(
-            (m) => m.ReportsPlaceholderComponent,
+          import('./features/reports/reports-dashboard.component').then(
+            (m) => m.ReportsDashboardComponent,
           ),
       },
       {
