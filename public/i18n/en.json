@@ -153,6 +153,15 @@
     "addTask": "Add task",
     "assignTechnicians": "Assign technicians",
     "changeStatus": "Change status",
+    "actions": {
+      "assignTechnicians": "Assign Technicians",
+      "startWork": "Start Work",
+      "complete": "Complete",
+      "pause": "Pause",
+      "cancel": "Cancel",
+      "resume": "Resume",
+      "deliver": "Deliver"
+    },
     "noOrders": "No orders",
     "noOrdersMessage": "No work orders",
     "createOrder": "Create order",

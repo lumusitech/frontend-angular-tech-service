@@ -153,6 +153,15 @@
     "addTask": "Agregar tarea",
     "assignTechnicians": "Asignar técnicos",
     "changeStatus": "Cambiar estado",
+    "actions": {
+      "assignTechnicians": "Asignar Técnicos",
+      "startWork": "Iniciar Trabajo",
+      "complete": "Completar",
+      "pause": "Pausar",
+      "cancel": "Cancelar",
+      "resume": "Reanudar",
+      "deliver": "Entregar"
+    },
     "noOrders": "Sin órdenes",
     "noOrdersMessage": "No hay órdenes de trabajo",
     "createOrder": "Crear orden",
