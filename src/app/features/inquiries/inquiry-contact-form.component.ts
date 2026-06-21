@@ -7,7 +7,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ContactInquiryDto, InquiryRecommendation } from '../../core/models/inquiry.interfaces';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   inquiryId: string;
@@ -22,7 +21,6 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">

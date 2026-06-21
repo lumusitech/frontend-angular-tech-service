@@ -23,7 +23,6 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InquiryFormComponent } from './inquiry-form.component';
 import { DatePipe } from '@angular/common';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 const STATUS_LABELS: Record<string, string> = {
   new: 'Nueva',
@@ -67,7 +66,6 @@ const SOURCE_LABELS: Record<string, string> = {
     ErrorStateComponent,
     PageHeaderComponent,
     DatePipe,
-    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">

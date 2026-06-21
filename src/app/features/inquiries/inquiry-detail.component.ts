@@ -19,7 +19,6 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { InquiryContactFormComponent } from './inquiry-contact-form.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 const STATUS_LABELS: Record<string, string> = {
   new: 'Nueva',
@@ -69,7 +68,6 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
     ErrorStateComponent,
     DatePipe,
     DecimalPipe,
-    TranslatePipe,
   ],
   template: `
     @if (resource.status() === 'loading' && !resource.hasValue()) {
