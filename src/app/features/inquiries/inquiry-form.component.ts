@@ -12,7 +12,6 @@ import {
   CreateInquiryDto,
   UpdateInquiryDto,
 } from '../../core/models/inquiry.interfaces';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -28,7 +27,6 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
