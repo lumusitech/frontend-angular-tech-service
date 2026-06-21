@@ -115,6 +115,25 @@ export const routes: Routes = [
             (m) => m.PendingItemsListComponent,
           ),
       },
+      {
+        path: 'inquiries',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/inquiries/inquiries-list.component').then(
+                (m) => m.InquiriesListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/inquiries/inquiry-detail.component').then(
+                (m) => m.InquiryDetailComponent,
+              ),
+          },
+        ],
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
