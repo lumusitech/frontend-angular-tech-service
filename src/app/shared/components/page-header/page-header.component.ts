@@ -7,11 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatButtonModule, MatIconModule],
   template: `
     <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ title() }}</h1>
-        @if (subtitle()) {
-          <p class="text-gray-500 dark:text-gray-400 mt-1">{{ subtitle() }}</p>
-        }
+      <div class="flex items-center gap-3">
+        <ng-content></ng-content>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ title() }}</h1>
+          @if (subtitle()) {
+            <p class="text-gray-500 dark:text-gray-400 mt-1">{{ subtitle() }}</p>
+          }
+        </div>
       </div>
       @if (actionLabel()) {
         <button mat-flat-button color="primary" (click)="onAction()">
