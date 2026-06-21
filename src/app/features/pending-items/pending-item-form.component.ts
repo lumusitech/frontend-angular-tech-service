@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { PendingItemsService } from '../../core/services/pending-items.service';
@@ -32,6 +33,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    FormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
     TranslatePipe,
@@ -50,7 +52,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
-          <input matInput [value]="title()" (input)="title.set(getInputValue($event))" required />
+          <input matInput [(ngModel)]="title" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -58,8 +60,7 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [value]="description()"
-            (input)="description.set(getInputValue($event))"
+            [(ngModel)]="description"
           ></textarea>
         </mat-form-field>
 

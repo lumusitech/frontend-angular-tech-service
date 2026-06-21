@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { ServiceTypesService } from '../../core/services/service-types.service';
 import {
   ServiceType,
@@ -27,6 +28,7 @@ interface DialogData {
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -43,15 +45,14 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.name' | translate }}</mat-label>
-          <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
+          <input matInput [(ngModel)]="name" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.description' | translate }}</mat-label>
           <textarea
             matInput
-            [value]="description()"
-            (input)="description.set(getInputValue($event))"
+            [(ngModel)]="description"
             rows="3"
           ></textarea>
         </mat-form-field>

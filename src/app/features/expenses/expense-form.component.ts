@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { ExpensesService } from '../../core/services/expenses.service';
 import {
   Expense,
@@ -30,6 +31,7 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -112,8 +114,7 @@ interface DialogData {
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [value]="notes()"
-            (input)="notes.set(getInputValue($event))"
+            [(ngModel)]="notes"
             rows="3"
           ></textarea>
         </mat-form-field>

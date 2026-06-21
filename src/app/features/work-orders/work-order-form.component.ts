@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ClientsService } from '../../core/services/clients.service';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -32,6 +33,7 @@ interface DialogData {
     MatSelectModule,
     MatIconModule,
     MatAutocompleteModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -116,8 +118,7 @@ interface DialogData {
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
           <textarea
             matInput
-            [value]="diagnosis()"
-            (input)="diagnosis.set(getInputValue($event))"
+            [(ngModel)]="diagnosis"
             rows="3"
           ></textarea>
         </mat-form-field>

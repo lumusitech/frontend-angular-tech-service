@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, CreateClientDto, UpdateClientDto } from '../../core/models/client.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -25,6 +26,7 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -42,7 +44,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.name' | translate }}</mat-label>
-            <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
+            <input matInput [(ngModel)]="name" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -58,12 +60,12 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.phone' | translate }}</mat-label>
-            <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" required />
+            <input matInput [(ngModel)]="phone" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
-            <input matInput [value]="cuit()" (input)="cuit.set(getInputValue($event))" />
+            <input matInput [(ngModel)]="cuit" />
           </mat-form-field>
         </div>
 
