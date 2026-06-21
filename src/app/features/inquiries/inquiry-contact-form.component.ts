@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ContactInquiryDto, InquiryRecommendation } from '../../core/models/inquiry.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   inquiryId: string;
@@ -21,67 +22,68 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>phone</mat-icon>
-      Contactar cliente
+      {{ 'inquiries.contactClient' | translate }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Notas del técnico</mat-label>
+          <mat-label>{{ 'inquiries.technicianNotes' | translate }}</mat-label>
           <textarea
             matInput
             rows="4"
             [value]="technicianNotes()"
             (input)="technicianNotes.set(getInputValue($event))"
-            placeholder="Describe lo que encontraste al contactar al cliente..."
+            [placeholder]="'inquiries.technicianNotesPlaceholder' | translate"
             required
           ></textarea>
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Costo estimado ($)</mat-label>
+            <mat-label>{{ 'inquiries.estimatedCost' | translate }} ($)</mat-label>
             <input matInput type="number" [value]="estimatedCost()" (input)="estimatedCost.set(getInputValue($event))" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Duración estimada (horas)</mat-label>
+            <mat-label>{{ 'inquiries.estimatedDuration' | translate }} (h)</mat-label>
             <input matInput type="number" [value]="estimatedDuration()" (input)="estimatedDuration.set(getInputValue($event))" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Materiales necesarios</mat-label>
+          <mat-label>{{ 'inquiries.materialsNeeded' | translate }}</mat-label>
           <textarea
             matInput
             rows="2"
             [value]="materialsNeeded()"
             (input)="materialsNeeded.set(getInputValue($event))"
-            placeholder="Lista de materiales requeridos..."
+            [placeholder]="'inquiries.materialsPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Recomendación</mat-label>
+          <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
           <mat-select [value]="recommendation()" (selectionChange)="recommendation.set($event.value)">
-            <mat-option value="repair">Reparación</mat-option>
-            <mat-option value="replacement">Reemplazo</mat-option>
-            <mat-option value="maintenance">Mantenimiento</mat-option>
-            <mat-option value="inspection">Inspección</mat-option>
-            <mat-option value="no_action">Sin acción</mat-option>
+            <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
+            <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
+            <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>
+            <mat-option value="inspection">{{ 'statusLabels.inspection' | translate }}</mat-option>
+            <mat-option value="no_action">{{ 'statusLabels.no_action' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar contacto' }}
+        {{ saving() ? ('common.saving' | translate) : ('inquiries.saveContact' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
