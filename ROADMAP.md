@@ -17,7 +17,7 @@ Documentacion de la API: `http://localhost:3000/api/docs`
 | UI Components | Angular Material                                 | 22+ (componentes accesibles, sin tema custom) |
 | Estilos       | Tailwind CSS                                     | 4 (primario, utility-first)                   |
 | Graficas      | Chart.js + ng2-charts                            | latest                                        |
-| i18n          | `@angular/localize`                              | built-in                                      |
+| i18n          | Custom JSON (TranslatePipe + TranslationService) | ES (default) + EN, archivos en public/i18n/    |
 | PWA           | `@angular/pwa`                                   | built-in                                      |
 | HTTP          | Angular HttpClient + interceptors                | built-in                                      |
 | Estado        | Angular Signals                                  | built-in                                      |
@@ -37,7 +37,7 @@ Documentacion de la API: `http://localhost:3000/api/docs`
 | Hosting        | Firebase App Hosting (1ro) / Vercel (2do)            | Gratuito para trafico bajo (~8 usuarios/dia). Auto-deploy via GitHub. SSR soportado nativamente                             |
 | Tecnico UX     | Lista con urgencia                                   | Sin calendario. Indicadores claros: dias restantes, color coding                                                            |
 | Viewport units | `dvh` layouts, `svh` above-the-fold, `rem` espaciado | Evita bug de `vh` en mobile                                                                                                 |
-| i18n           | Espanol (default), Ingles (futuro)                   | `@angular/localize` con archivos `.xlf`                                                                                     |
+| i18n           | Espanol (default), Ingles (futuro)                   | Custom JSON + TranslatePipe (no @angular/localize)                                                          |
 | Codegen        | `swagger-typescript-api`                             | Genera interfaces TypeScript desde OpenAPI spec                                                                             |
 
 ## Paleta de Colores (default, configurable por tenant)
@@ -163,71 +163,80 @@ server.ts                          # Express server (SSR entry point)
 
 ### 0. Setup Inicial
 
-- [ ] `npx @angular/cli@latest new frontend-angular-tech-service --ssr --routing --style=css`
-- [ ] `git init` + commit inicial
-- [ ] Configure hybrid rendering (`app.routes.server.ts` con RenderMode por ruta)
-- [ ] Install Angular Material (`ng add @angular/material`) — componentes, sin tema custom
-- [ ] Configure Tailwind CSS 4 como estilos primarios (`@import 'tailwindcss'` en styles.css)
-- [ ] Import Material prebuilt theme despues de Tailwind en styles.css
+- [x] `npx @angular/cli@latest new frontend-angular-tech-service --ssr --routing --style=css`
+- [x] `git init` + commit inicial
+- [x] Configure hybrid rendering (`app.routes.server.ts` con RenderMode por ruta)
+- [x] Install Angular Material (`ng add @angular/material`) — componentes, sin tema custom
+- [x] Configure Tailwind CSS 4 como estilos primarios (`@import 'tailwindcss'` en styles.css)
+- [x] Import Material prebuilt theme despues de Tailwind en styles.css
 - [ ] Install Chart.js + ng2-charts
-- [ ] Install `swagger-typescript-api` (dev dependency)
-- [ ] Configure fonts (Inter + JetBrains Mono via Google Fonts)
-- [ ] Configure i18n (`@angular/localize`)
-- [ ] Configure PWA (`ng add @angular/pwa`)
-- [ ] Setup environment files with API URL
-- [ ] Configure proxy para desarrollo (`proxy.conf.json` → localhost:3000)
-- [ ] Generate types from Swagger (`pnpm sync:types`)
-- [ ] Setup CLAUDE.md with project conventions
-- [ ] Verify `ng build` funciona (SSR + prerender + PWA)
-- [ ] Push a GitHub
+- [x] Install `swagger-typescript-api` (dev dependency)
+- [x] Configure fonts (Inter + JetBrains Mono via Google Fonts)
+- [ ] Configure i18n (`@angular/localize`) — Implementado con approach custom (JSON + TranslatePipe)
+- [ ] Configure PWA (`ng add @angular/pwa`) — Planificado, no implementado
+- [x] Setup environment files with API URL
+- [x] Configure proxy para desarrollo (`proxy.conf.json` → localhost:3000)
+- [x] Generate types from Swagger (`pnpm sync:types`)
+- [x] Setup CLAUDE.md with project conventions
+- [x] Verify `ng build` funciona (SSR + prerender + PWA)
+- [x] Push a GitHub
 
 ### 1. `core/` — Nucleo de la App
 
-- [ ] Auth service (login, logout, token storage, isAuthenticated)
-- [ ] Auth guard (admin, technician roles)
-- [ ] HTTP interceptor (JWT token, error handling, base URL `/api/`)
-- [ ] HTTP interceptor (loading spinner global)
-- [ ] API services (typed, one per backend module):
-  - [ ] AuthService
-  - [ ] UsersService
-  - [ ] ClientsService
-  - [ ] SuppliersService
-  - [ ] ServiceTypesService
-  - [ ] WorkOrdersService
-  - [ ] PaymentsService
-  - [ ] ExpensesService
+- [x] Auth service (login, logout, token storage, isAuthenticated)
+- [x] Auth guard (admin, technician roles)
+- [x] HTTP interceptor (JWT token, error handling, base URL `/api/`)
+- [x] HTTP interceptor (loading spinner global)
+- [x] API services (typed, one per backend module):
+  - [x] AuthService
+  - [x] UsersService
+  - [x] ClientsService
+  - [x] SuppliersService
+  - [x] ServiceTypesService
+  - [x] WorkOrdersService
+  - [x] PaymentsService
+  - [x] ExpensesService
   - [ ] BillingService
   - [ ] ReportsService
   - [ ] NotificationsService
   - [ ] PortalService
-  - [ ] SettingsService (business config)
-- [ ] Models/interfaces (generated from Swagger or manual)
-- [ ] Route definitions (lazy-loaded feature modules)
+  - [x] SettingsService (dashboard layout, theme, user preferences)
+  - [x] DashboardService
+  - [x] PendingItemsService
+  - [x] InquiriesService
+- [x] Models/interfaces (generated from Swagger or manual)
+- [x] Route definitions (lazy-loaded feature modules)
 
 ### 2. `shared/` — Componentes Reutilizables
 
-- [ ] HeaderComponent (topbar with search, notifications bell, user avatar)
-- [ ] SidebarComponent (collapsible, icon-only on mobile, text on desktop)
+- [x] HeaderComponent (topbar with search, dark mode toggle, language switcher, user avatar)
+- [x] SidebarComponent (collapsible, icon-only on mobile, text on desktop)
 - [ ] BottomNavComponent (5 tabs max for technician view)
-- [ ] CardComponent (Material card with header, content, actions)
-- [ ] DataTableComponent (Material table with sorting, pagination, filters)
-- [ ] StatusBadgeComponent (colored badge: pending, in_progress, completed, cancelled)
+- [ ] CardComponent (Material card with header, content, actions) — No implementado, se usan cards inline con Tailwind
+- [ ] DataTableComponent (Material table with sorting, pagination, filters) — No implementado, se usa MatTable directamente
+- [x] StatusBadgeComponent (colored badge: pending, in_progress, completed, cancelled)
 - [ ] UrgencyIndicatorComponent (days remaining + color: red/yellow/green/white)
-- [ ] LoadingSpinnerComponent (full-page and inline)
-- [ ] EmptyStateComponent (icon + message + action button)
-- [ ] ConfirmDialogComponent (Material dialog with confirm/cancel)
-- [ ] TrackingCodePipe (format: `TS-XXXXX`)
+- [x] LoadingSpinnerComponent (full-page and inline)
+- [x] EmptyStateComponent (icon + message + action button)
+- [x] ConfirmDialogComponent (Material dialog with confirm/cancel)
+- [x] PageHeaderComponent (title + subtitle + action button)
+- [x] ErrorStateComponent (error icon + message + retry button)
+- [ ] TrackingCodePipe (format: `TS-XXXXX`) — Implementado como TrackingCodeComponent
 - [ ] RelativeDatePipe (hace 2 dias, en 3 dias)
-- [ ] CurrencyArsPipe (formato argentino: $1.234,56)
+- [x] CurrencyArsPipe (formato argentino: $1.234,56)
+- [x] StatusLabelPipe (traduce estados a labels)
+- [x] StatusClassPipe (retorna clases CSS para badges)
+- [x] SafeHtmlPipe (bypass sanitizer para SVG icons)
+- [x] TranslatePipe (i18n custom con JSON files)
 - [ ] RoleDirective (show/hide based on role)
 
 ### 3. `layouts/` — Layouts
 
-- [ ] AdminLayoutComponent
-  - [ ] Sidebar (collapsible, navigation items with icons)
-  - [ ] Topbar (search, notifications, user menu)
-  - [ ] Content area with breadcrumbs
-  - [ ] Responsive: sidebar collapses to icon-only on tablet, hidden on mobile
+- [x] AdminLayoutComponent
+  - [x] Sidebar (collapsible, navigation items with icons)
+  - [x] Topbar (search, dark mode toggle, language switcher, user menu)
+  - [x] Content area with breadcrumbs
+  - [x] Responsive: sidebar collapses to icon-only on tablet, hidden on mobile
 - [ ] TechLayoutComponent
   - [ ] Bottom tab bar (5 tabs: Ordenes, Calendario, Notificaciones, Perfil)
   - [ ] Header with business name + avatar
@@ -239,117 +248,114 @@ server.ts                          # Express server (SSR entry point)
 
 ### 4. `features/auth/` — Autenticacion
 
-- [ ] LoginComponent (CSR — no necesita SEO)
-  - [ ] Email + password form (Tailwind styled, Material form fields opcionales)
-  - [ ] Login button
-  - [ ] Error display (invalid credentials)
-  - [ ] Redirect to dashboard on success
-  - [ ] `min-h-svh` (above the fold)
-- [ ] Auth flow
-  - [ ] Store token in localStorage
-  - [ ] Attach token to all requests via interceptor
-  - [ ] Redirect to login on 401
-  - [ ] Role-based route guards
+- [x] LoginComponent (CSR — no necesita SEO)
+  - [x] Email + password form (Tailwind styled, Material form fields opcionales)
+  - [x] Login button
+  - [x] Error display (invalid credentials)
+  - [x] Redirect to dashboard on success
+  - [x] `min-h-svh` (above the fold)
+- [x] Auth flow
+  - [x] Store token in localStorage
+  - [x] Attach token to all requests via interceptor
+  - [x] Redirect to login on 401
+  - [x] Role-based route guards
 
 ### 5. `features/dashboard/` — Dashboard Admin
 
-- [ ] KPIs cards
-  - [ ] Ordenes activas / completadas hoy
-  - [ ] Ingresos del mes vs mes anterior (trend arrow)
-  - [ ] Tecnicos disponibles
-  - [ ] Pagos pendientes
-- [ ] Charts
-  - [ ] Monthly income trend (line chart, 6 months)
-  - [ ] Work orders by status (donut chart)
-  - [ ] Top 5 services (bar chart)
-  - [ ] Payment method distribution (pie chart)
-- [ ] Quick actions
-  - [ ] Nueva orden de trabajo
-  - [ ] Nuevo cliente
-  - [ ] Ver reportes
-- [ ] Recent activity feed
+- [x] KPIs cards
+  - [x] Ordenes activas / completadas hoy
+  - [x] Ingresos del mes vs mes anterior (trend arrow)
+  - [x] Ganancia neta
+  - [x] Ticket promedio
+- [x] Charts
+  - [x] Monthly income trend (line chart, 6 months)
+  - [x] Work orders by status (donut chart)
+  - [x] Top 5 services (bar chart)
+- [x] Quick actions
+  - [x] Nueva orden de trabajo
+  - [x] Nuevo cliente
+  - [x] Pendientes
+  - [x] Ver gastos
+- [x] Top Clients widget
+- [x] Pending Items widget
+- [x] Dashboard layout customization (drag-drop widget reorder, toggle visibility)
 
 ### 6. `features/clients/` — Clientes
 
-- [ ] ClientsListComponent
-  - [ ] DataTable with columns: name, email, phone, isActive
-  - [ ] Search/filter bar
-  - [ ] Pagination
-  - [ ] Actions: edit, delete, view detail
-- [ ] ClientFormComponent (create/edit dialog or page)
-  - [ ] Form fields: name, email, phone, address, internetProvider, internetPlan, cuit, ivaCondition
-  - [ ] Validation (required, email format, CUIT format)
-- [ ] ClientDetailComponent
-  - [ ] Client info
-  - [ ] Work orders list (related)
-  - [ ] Payment history
+- [x] ClientsListComponent
+  - [x] DataTable with columns: name, email, phone, isActive, createdAt
+  - [x] Search/filter bar
+  - [x] Server-side pagination
+  - [x] Server-side sorting
+  - [x] Actions: edit, delete, view detail
+- [x] ClientFormComponent (create/edit dialog)
+  - [x] Form fields: name, email, phone, address, internetProvider, internetPlan, cuit, ivaCondition, isActive
+  - [x] Validation (required, email format, CUIT format)
+- [ ] ClientDetailComponent — No implementado
 
 ### 7. `features/suppliers/` — Proveedores
 
-- [ ] SuppliersListComponent (DataTable)
-- [ ] SupplierFormComponent (create/edit)
-- [ ] Same CRUD pattern as clients
+- [x] SuppliersListComponent (DataTable)
+- [x] SupplierFormComponent (create/edit)
+- [x] Same CRUD pattern as clients
+
+---
 
 ### 8. `features/service-types/` — Tipos de Servicio
 
-- [ ] ServiceTypesListComponent (DataTable)
-- [ ] ServiceTypeFormComponent (create/edit)
-- [ ] Same CRUD pattern
+- [x] ServiceTypesListComponent (DataTable)
+- [x] ServiceTypeFormComponent (create/edit)
+- [x] Same CRUD pattern
 
 ### 9. `features/work-orders/` — Ordenes de Trabajo (CORE)
 
-- [ ] WorkOrdersListComponent
-  - [ ] DataTable with columns: trackingCode, status, priority, client, serviceType, scheduledDate, assignedTechnicians
-  - [ ] Filters: status, priority, date range, technician, client
-  - [ ] Color-coded status badges
-  - [ ] Priority icons
-- [ ] WorkOrderDetailComponent
-  - [ ] Header: trackingCode, status badge, priority, client info
-  - [ ] Tabs or sections:
-    - [ ] Info general (diagnosis, dates, warranty)
-    - [ ] Timeline (status history, notes)
-    - [ ] Tasks (checklist with progress bar)
-    - [ ] Materials (table with costs, supplier)
-    - [ ] Payments (list, create payment)
-    - [ ] Notes (internal + public)
-  - [ ] Actions: change status, assign technicians, add note, add material, add task
-- [ ] WorkOrderFormComponent (create/edit)
-  - [ ] Client selector (autocomplete)
-  - [ ] Service type selector
-  - [ ] Priority selector
-  - [ ] Location selector (workshop/client)
-  - [ ] Scheduled date
-  - [ ] Diagnosis (optional)
-- [ ] StatusTransitionComponent
-  - [ ] Visual flow: pending -> assigned -> in_progress -> completed -> delivered
-  - [ ] Only valid transitions shown as buttons
-  - [ ] Confirmation dialog for cancel
-- [ ] TechnicianAssignmentComponent
-  - [ ] Multi-select of technicians
-  - [ ] Replace all technicians on save
-- [ ] TimelineComponent
-  - [ ] Vertical timeline with status changes, notes, payments
-  - [ ] Color-coded by type
+- [x] WorkOrdersListComponent
+  - [x] DataTable with columns: trackingCode, status, priority, client, serviceType, scheduledDate, createdAt
+  - [x] Filters: status, priority
+  - [x] Color-coded status badges
+  - [x] Server-side sorting + pagination
+- [x] WorkOrderDetailComponent
+  - [x] Header: trackingCode, status badge, priority, client info
+  - [x] Tabs or sections:
+    - [x] Info general (diagnosis, dates, warranty, location)
+    - [x] Tasks (checklist with progress)
+    - [x] Materials (table with costs, supplier)
+    - [x] Notes (internal + public)
+  - [x] Actions: change status, assign technicians, add note, add material, add task
+- [x] WorkOrderFormComponent (create/edit dialog)
+  - [x] Client selector (autocomplete)
+  - [x] Service type selector
+  - [x] Priority selector
+  - [x] Location selector (workshop/client)
+  - [x] Scheduled date
+  - [x] Diagnosis (optional)
+- [x] StatusTransitionComponent
+  - [x] Visual flow: pending -> assigned -> in_progress -> completed -> delivered
+  - [x] Only valid transitions shown as buttons
+  - [x] Confirmation dialog for cancel
+- [x] TechnicianAssignmentComponent (dialog multi-select)
+- [x] AddNoteDialogComponent
+- [x] AddMaterialDialogComponent
+- [x] AddTaskDialogComponent
 
 ### 10. `features/payments/` — Pagos
 
-- [ ] PaymentsListComponent
-  - [ ] DataTable: amount, method, status, provider, workOrder trackingCode, paidAt
-  - [ ] Filters: status, method, date range
-- [ ] PaymentFormComponent
-  - [ ] Amount, method selector, provider, description
-  - [ ] Installments (for credit card)
-- [ ] PaymentStatusBadgeComponent (pending, approved, rejected, refunded, cancelled)
+- [x] PaymentsListComponent
+  - [x] DataTable: amount, method, status, provider, workOrder trackingCode, paidAt, createdAt
+  - [x] Filters: status, method
+  - [x] Server-side sorting + pagination
+  - [x] Approve button for pending payments
+- [ ] PaymentFormComponent — No implementado (pagos se crean desde work order detail)
 
 ### 11. `features/expenses/` — Gastos
 
-- [ ] ExpensesListComponent
-  - [ ] DataTable: description, amount, category, date, isRecurring
-  - [ ] Filters: category, date range, isRecurring
-  - [ ] Category icons
-- [ ] ExpenseFormComponent
-  - [ ] Category selector (enum), amount, date, description, isRecurring
-  - [ ] Notes (optional)
+- [x] ExpensesListComponent
+  - [x] DataTable: description, amount, category, date, isRecurring, createdAt
+  - [x] Filters: category
+  - [x] Server-side sorting + pagination
+- [x] ExpenseFormComponent
+  - [x] Category selector (enum), amount, date, description, isRecurring
+  - [x] Notes (optional)
 
 ### 12. `features/billing/` — Facturacion
 
@@ -397,19 +403,11 @@ server.ts                          # Express server (SSR entry point)
 
 ### 15. `features/settings/` — Configuracion
 
-- [ ] BusinessSettingsComponent (multi-tenant)
-  - [ ] Business name
-  - [ ] Logo upload (preview)
-  - [ ] Primary color picker
-  - [ ] Address, phone, email
-  - [ ] CUIT
-- [ ] ProfileSettingsComponent
-  - [ ] Change password
-  - [ ] Update name/email
-- [ ] ThemeService
-  - [ ] Apply primary color as CSS custom property
-  - [ ] Light/dark mode toggle
-  - [ ] Persist in localStorage
+- [ ] BusinessSettingsComponent (multi-tenant) — No implementado
+- [ ] ProfileSettingsComponent — No implementado
+- [x] ThemeService
+  - [x] Light/dark mode toggle
+  - [x] Persist in localStorage + API
 
 ### 16. `features/technician/` — Vista Tecnico
 
@@ -466,11 +464,12 @@ server.ts                          # Express server (SSR entry point)
 
 ### 19. i18n
 
-- [ ] Configure `@angular/localize`
-- [ ] Extract messages (`ng extract-i18n`)
-- [ ] Spanish (`messages.es.xlf`) — default
-- [ ] English (`messages.en.xlf`) — future
-- [ ] All user-facing strings marked with `$localize`
+- [x] Implementado con approach custom (JSON + TranslatePipe + TranslationService)
+- [x] Spanish (`public/i18n/es.json`) — default, completo
+- [x] English (`public/i18n/en.json`) — completo
+- [x] Language switcher in header
+- [x] Persist locale in localStorage
+- [ ] `@angular/localize` — No implementado (se usó approach custom)
 
 ### 20. Testing
 
@@ -496,6 +495,28 @@ server.ts                          # Express server (SSR entry point)
   - [ ] Todo en Tailwind CSS, responsive mobile-first
   - [ ] SEO meta tags (title, description, og:image)
   - [ ] SSR: contenido visible sin JavaScript
+
+### 22. `features/pending-items/` — Trabajo Pendiente
+
+- [x] Interfaces en core/models/pending-item.interfaces.ts
+- [x] Servicio en core/services/pending-items.service.ts
+- [x] PendingItemsListComponent (DataTable con sort, pagination, filtros: status, type, priority, assignedTo)
+- [x] PendingItemFormComponent (dialog crear/editar)
+- [x] Ruta /admin/pending-items
+- [x] Sidebar nav item
+- [x] Dashboard widget (muestra top 5 pendientes por dueDate)
+
+### 23. `features/inquiries/` — Consultas
+
+- [x] Interfaces en core/models/inquiry.interfaces.ts (Inquiry, enums, DTOs, filters)
+- [x] Servicio en core/services/inquiries.service.ts (CRUD + contact + review + convert)
+- [x] InquiriesListComponent (DataTable con sort, pagination, badges de status/source)
+- [x] InquiryFormComponent (dialog crear/editar)
+- [x] InquiryDetailComponent (detalle con workflow de estados: new → contacted → reviewed → approved/rejected → converted)
+- [x] InquiryContactFormComponent (técnico carga resultado de llamada)
+- [x] Rutas /admin/inquiries + /admin/inquiries/:id
+- [x] Sidebar nav item con icono help
+- [x] i18n completo (es.json + en.json)
 
 ---
 

@@ -11,12 +11,12 @@ Consume la API del backend NestJS. Documentacion interactiva: `http://localhost:
 | ------------- | ---------------------- | ------------------------------------------------------ |
 | Framework     | Angular 22             | Standalone, signals, signal forms, resource API        |
 | SSR           | `@angular/ssr`         | Hibrido: SSG landing, SSR portal, CSR admin            |
-| PWA           | `@angular/pwa`         | Instalable, offline parcial                            |
+| PWA           | `@angular/pwa`         | Planificado, no implementado                            |
 | Styling       | Tailwind CSS 4         | Utility-first, mobile-first (primario)                 |
 | UI Components | Angular Material 22    | Dialog, Table, Autocomplete, Sidenav (sin tema custom) |
 | Charts        | Chart.js + ng2-charts  | Line, bar, donut, pie                                  |
 | Testing       | Vitest                 | Unit tests                                             |
-| i18n          | `@angular/localize`    | Espanol (default), Ingles (futuro)                     |
+| i18n          | Custom JSON + TranslatePipe | ES (default) + EN, archivos en public/i18n/       |
 | Fonts         | Inter + JetBrains Mono | Google Fonts                                           |
 
 ## Requisitos
@@ -128,25 +128,27 @@ server.ts                    Express server (SSR entry)
 
 ## Rutas principales
 
-| Ruta               | Rol        | Descripcion                          |
-| ------------------ | ---------- | ------------------------------------ |
-| `/`                | Publico    | Landing page informativa del sistema |
-| `/login`           | Publico    | Inicio de sesion                     |
-| `/dashboard`       | Admin      | KPIs y resumen                       |
-| `/clients`         | Admin      | Gestion de clientes                  |
-| `/suppliers`       | Admin      | Gestion de proveedores               |
-| `/service-types`   | Admin      | Catalogo de servicios                |
-| `/work-orders`     | Admin/Tech | Ordenes de trabajo                   |
-| `/work-orders/:id` | Admin/Tech | Detalle de orden                     |
-| `/payments`        | Admin      | Historial de pagos                   |
-| `/expenses`        | Admin      | Gastos operativos                    |
-| `/billing`         | Admin      | Facturacion                          |
-| `/reports`         | Admin      | Reportes financieros                 |
-| `/notifications`   | Admin/Tech | Notificaciones                       |
-| `/settings`        | Admin      | Configuracion del negocio            |
-| `/tech`            | Tech       | Mis ordenes del dia                  |
-| `/track`           | Publico    | Buscar orden por codigo              |
-| `/track/:code`     | Publico    | Tracking de orden                    |
+| Ruta                  | Rol        | Descripcion                          |
+| --------------------- | ---------- | ------------------------------------ |
+| `/`                   | Publico    | Landing page informativa del sistema |
+| `/login`              | Publico    | Inicio de sesion                     |
+| `/admin/dashboard`    | Admin      | KPIs y resumen                       |
+| `/admin/clients`      | Admin      | Gestion de clientes                  |
+| `/admin/suppliers`    | Admin      | Gestion de proveedores               |
+| `/admin/service-types`| Admin      | Catalogo de servicios                |
+| `/admin/work-orders`  | Admin/Tech | Ordenes de trabajo                   |
+| `/admin/work-orders/:id` | Admin/Tech | Detalle de orden                  |
+| `/admin/pending-items`| Admin      | Trabajo pendiente                    |
+| `/admin/inquiries`    | Admin      | Consultas de clientes                |
+| `/admin/inquiries/:id`| Admin      | Detalle de consulta                  |
+| `/admin/payments`     | Admin      | Historial de pagos                   |
+| `/admin/expenses`     | Admin      | Gastos operativos                    |
+| `/admin/billing`      | Admin      | Facturacion (placeholder)           |
+| `/admin/reports`      | Admin      | Reportes financieros (placeholder)  |
+| `/admin/settings`     | Admin      | Configuracion del negocio            |
+| `/tech`               | Tech       | Mis ordenes del dia                  |
+| `/track`              | Publico    | Buscar orden por codigo              |
+| `/track/:code`        | Publico    | Tracking de orden                    |
 
 ## API del Backend
 
