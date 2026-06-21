@@ -239,7 +239,9 @@ export class NotificationsListComponent {
       };
       const baseRoute = routes[notification.referenceType];
       if (baseRoute) {
-        this.router.navigate([baseRoute]);
+        this.router.navigate([baseRoute], {
+          queryParams: notification.referenceId ? { highlight: notification.referenceId } : {},
+        });
       }
     }
   }

@@ -162,7 +162,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">checklist</mat-icon>
                   {{ 'workOrders.detail.tasks' | translate }} ({{ getCompletedTasks() }}/{{
-                    workOrderResource.value().tasks.length
+                    workOrderResource.value().tasks?.length || 0
                   }})
                 </ng-template>
                 <div class="p-4">
@@ -172,7 +172,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                       {{ 'workOrders.tasks.addTask' | translate }}
                     </button>
                   </div>
-                  @if (workOrderResource.value().tasks.length === 0) {
+                  @if (!workOrderResource.value().tasks || workOrderResource.value().tasks.length === 0) {
                     <p class="text-gray-500 dark:text-gray-400 text-center py-8">
                       {{ 'workOrders.tasks.noTasks' | translate }}
                     </p>
@@ -224,7 +224,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                       {{ 'workOrders.materials.addMaterial' | translate }}
                     </button>
                   </div>
-                  @if (workOrderResource.value().materials.length === 0) {
+                  @if (!workOrderResource.value().materials || workOrderResource.value().materials.length === 0) {
                     <p class="text-gray-500 dark:text-gray-400 text-center py-8">
                       {{ 'workOrders.materials.noMaterials' | translate }}
                     </p>
@@ -308,7 +308,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                       {{ 'workOrders.notes.addNote' | translate }}
                     </button>
                   </div>
-                  @if (workOrderResource.value().notes.length === 0) {
+                  @if (!workOrderResource.value().notes || workOrderResource.value().notes.length === 0) {
                     <p class="text-gray-500 dark:text-gray-400 text-center py-8">
                       {{ 'workOrders.notes.noNotes' | translate }}
                     </p>
@@ -319,7 +319,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                           <div class="flex items-center gap-2 mb-1">
                             <app-status-badge [value]="note.type" type="noteType" />
                             <span class="text-xs text-gray-400 dark:text-gray-500">
-                              {{ note.createdBy.name }} -
+                              {{ note.createdBy?.name }} -
                               {{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}
                             </span>
                           </div>
@@ -380,7 +380,7 @@ import { TechnicianAssignmentDialogComponent } from './technician-assignment-dia
                     'workOrders.detail.completedTasks' | translate
                   }}</span>
                   <span class="font-medium"
-                    >{{ getCompletedTasks() }}/{{ workOrderResource.value().tasks.length }}</span
+                    >{{ getCompletedTasks() }}/{{ workOrderResource.value().tasks?.length || 0 }}</span
                   >
                 </div>
                 <div class="flex justify-between">
@@ -421,11 +421,11 @@ export class WorkOrderDetailComponent {
   );
 
   getCompletedTasks(): number {
-    return this.workOrderResource.value()?.tasks.filter((t) => t.isCompleted).length || 0;
+    return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
   }
 
   getMaterialsTotal(): number {
-    return this.workOrderResource.value()?.materials.reduce((sum, m) => sum + m.totalCost, 0) || 0;
+    return this.workOrderResource.value()?.materials?.reduce((sum, m) => sum + m.totalCost, 0) || 0;
   }
 
   goBack(): void {

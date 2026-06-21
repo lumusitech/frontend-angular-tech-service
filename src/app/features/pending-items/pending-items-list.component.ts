@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
 import {
   PendingItem,
@@ -267,7 +268,7 @@ const TYPE_LABELS: Record<string, string> = {
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
           </table>
 
           <mat-paginator
@@ -282,10 +283,12 @@ const TYPE_LABELS: Record<string, string> = {
     </div>
   `,
 })
-export class PendingItemsListComponent {
+export class PendingItemsListComponent implements OnInit {
   private readonly pendingItemsService = inject(PendingItemsService);
   private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
 
+  readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly sortBy = signal('dueDate');
@@ -316,6 +319,14 @@ export class PendingItemsListComponent {
     'createdAt',
     'actions',
   ];
+
+  ngOnInit(): void {
+    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+    if (highlightId) {
+      this.highlightedId.set(highlightId);
+      setTimeout(() => this.highlightedId.set(null), 3000);
+    }
+  }
 
   getPriorityLabel(priority: string): string {
     return PRIORITY_LABELS[priority] || priority;
