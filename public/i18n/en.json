@@ -175,6 +175,49 @@
       "medium": "Medium",
       "high": "High",
       "urgent": "Urgent"
+    },
+    "locations": {
+      "workshop": "Workshop",
+      "onSite": "On site"
+    },
+    "detail": {
+      "generalInfo": "General Information",
+      "client": "Client",
+      "location": "Location",
+      "scheduledDate": "Scheduled date",
+      "warrantyUntil": "Warranty until",
+      "diagnosis": "Diagnosis",
+      "tasks": "Tasks",
+      "materials": "Materials",
+      "notes": "Notes",
+      "assignedTechnicians": "Assigned technicians",
+      "summary": "Summary",
+      "completedTasks": "Completed tasks",
+      "materialsCost": "Materials cost",
+      "created": "Created",
+      "loadError": "Error loading",
+      "loadErrorMessage": "Could not load the work order"
+    },
+    "tasks": {
+      "addTask": "Add task",
+      "noTasks": "No tasks"
+    },
+    "materials": {
+      "addMaterial": "Add material",
+      "noMaterials": "No materials",
+      "description": "Description",
+      "supplier": "Supplier",
+      "qty": "Qty",
+      "unitCost": "Unit cost",
+      "total": "Total",
+      "totalMaterials": "Total materials"
+    },
+    "notes": {
+      "addNote": "Add note",
+      "noNotes": "No notes"
+    },
+    "technicians": {
+      "noTechnicians": "No technicians assigned"
     }
   },
   "pendingItems": {

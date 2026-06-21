@@ -175,6 +175,49 @@
       "medium": "Media",
       "high": "Alta",
       "urgent": "Urgente"
+    },
+    "locations": {
+      "workshop": "Taller",
+      "onSite": "En domicilio"
+    },
+    "detail": {
+      "generalInfo": "Información General",
+      "client": "Cliente",
+      "location": "Ubicación",
+      "scheduledDate": "Fecha programada",
+      "warrantyUntil": "Garantía hasta",
+      "diagnosis": "Diagnóstico",
+      "tasks": "Tareas",
+      "materials": "Materiales",
+      "notes": "Notas",
+      "assignedTechnicians": "Técnicos asignados",
+      "summary": "Resumen",
+      "completedTasks": "Tareas completadas",
+      "materialsCost": "Costo materiales",
+      "created": "Creada",
+      "loadError": "Error al cargar",
+      "loadErrorMessage": "No se pudo cargar la orden de trabajo"
+    },
+    "tasks": {
+      "addTask": "Agregar tarea",
+      "noTasks": "Sin tareas"
+    },
+    "materials": {
+      "addMaterial": "Agregar material",
+      "noMaterials": "Sin materiales",
+      "description": "Descripción",
+      "supplier": "Proveedor",
+      "qty": "Cant.",
+      "unitCost": "Costo unitario",
+      "total": "Total",
+      "totalMaterials": "Total materiales"
+    },
+    "notes": {
+      "addNote": "Agregar nota",
+      "noNotes": "Sin notas"
+    },
+    "technicians": {
+      "noTechnicians": "Sin técnicos asignados"
     }
   },
   "pendingItems": {
