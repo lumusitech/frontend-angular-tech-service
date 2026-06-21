@@ -12,6 +12,7 @@ import {
   CreateInquiryDto,
   UpdateInquiryDto,
 } from '../../core/models/inquiry.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -27,39 +28,40 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslatePipe,
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>help_outline</mat-icon>
-      {{ data.mode === 'create' ? 'Nueva consulta' : 'Editar consulta' }}
+      {{ data.mode === 'create' ? ('inquiries.newInquiry' | translate) : ('inquiries.editInquiry' | translate) }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Nombre del cliente</mat-label>
+          <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
           <input matInput [value]="clientName()" (input)="clientName.set(getInputValue($event))" required />
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Teléfono</mat-label>
+            <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
             <input matInput [value]="clientPhone()" (input)="clientPhone.set(getInputValue($event))" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Email</mat-label>
+            <mat-label>{{ 'inquiries.email' | translate }}</mat-label>
             <input matInput type="email" [value]="clientEmail()" (input)="clientEmail.set(getInputValue($event))" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Dirección</mat-label>
+          <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
           <input matInput [value]="clientAddress()" (input)="clientAddress.set(getInputValue($event))" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Descripción del problema</mat-label>
+          <mat-label>{{ 'inquiries.description' | translate }}</mat-label>
           <textarea
             matInput
             rows="3"
@@ -71,24 +73,24 @@ interface DialogData {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Origen</mat-label>
+            <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
             <mat-select [value]="source()" (selectionChange)="source.set($event.value)" required>
-              <mat-option value="phone">Teléfono</mat-option>
-              <mat-option value="whatsapp">WhatsApp</mat-option>
-              <mat-option value="email">Email</mat-option>
-              <mat-option value="walk_in">Presencial</mat-option>
-              <mat-option value="social_media">Redes sociales</mat-option>
-              <mat-option value="referral">Referido</mat-option>
+              <mat-option value="phone">{{ 'statusLabels.phone' | translate }}</mat-option>
+              <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
+              <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
+              <mat-option value="walk_in">{{ 'statusLabels.walk_in' | translate }}</mat-option>
+              <mat-option value="social_media">{{ 'statusLabels.social_media' | translate }}</mat-option>
+              <mat-option value="referral">{{ 'statusLabels.referral' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Prioridad</mat-label>
+            <mat-label>{{ 'inquiries.priority' | translate }}</mat-label>
             <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
-              <mat-option value="low">Baja</mat-option>
-              <mat-option value="medium">Media</mat-option>
-              <mat-option value="high">Alta</mat-option>
-              <mat-option value="urgent">Urgente</mat-option>
+              <mat-option value="low">{{ 'statusLabels.low' | translate }}</mat-option>
+              <mat-option value="medium">{{ 'statusLabels.medium' | translate }}</mat-option>
+              <mat-option value="high">{{ 'statusLabels.high' | translate }}</mat-option>
+              <mat-option value="urgent">{{ 'statusLabels.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -96,9 +98,9 @@ interface DialogData {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{ saving() ? 'Guardando...' : 'Guardar' }}
+        {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
   `,

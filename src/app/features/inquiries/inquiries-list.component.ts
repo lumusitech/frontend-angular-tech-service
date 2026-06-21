@@ -16,22 +16,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InquiryFormComponent } from './inquiry-form.component';
 import { DatePipe } from '@angular/common';
-
-const STATUS_LABELS: Record<string, string> = {
-  new: 'Nueva',
-  contacted: 'Contactada',
-  reviewed: 'Revisada',
-  approved: 'Aprobada',
-  rejected: 'Rechazada',
-  converted: 'Convertida',
-};
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
@@ -40,15 +31,6 @@ const STATUS_COLORS: Record<string, string> = {
   approved: 'text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
   rejected: 'text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/30',
   converted: 'text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700',
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  phone: 'Teléfono',
-  whatsapp: 'WhatsApp',
-  email: 'Email',
-  walk_in: 'Presencial',
-  social_media: 'Redes sociales',
-  referral: 'Referido',
 };
 
 @Component({
@@ -61,18 +43,18 @@ const SOURCE_LABELS: Record<string, string> = {
     MatButtonModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatChipsModule,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
     DatePipe,
+    TranslatePipe,
   ],
   template: `
     <div class="space-y-4">
       <app-page-header
-        title="Consultas"
-        subtitle="Gestión de consultas de clientes"
-        actionLabel="Nueva consulta"
+        [title]="'inquiries.title' | translate"
+        [subtitle]="'inquiries.subtitle' | translate"
+        [actionLabel]="'inquiries.newInquiry' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
@@ -85,9 +67,9 @@ const SOURCE_LABELS: Record<string, string> = {
         <app-error-state (retry)="resource.reload()" />
       } @else if (resource.hasValue() && resource.value().data.length === 0) {
         <app-empty-state
-          title="Sin consultas"
-          message="No hay consultas registradas"
-          actionLabel="Crear consulta"
+          [title]="'inquiries.noInquiries' | translate"
+          [message]="'inquiries.noInquiriesMessage' | translate"
+          [actionLabel]="'inquiries.newInquiry' | translate"
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (resource.hasValue()) {
@@ -109,7 +91,7 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Cliente
+                {{ 'inquiries.clientName' | translate }}
               </th>
               <td
                 mat-cell
@@ -126,13 +108,13 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Origen
+                {{ 'inquiries.source' | translate }}
               </th>
               <td mat-cell *matCellDef="let inquiry" class="px-4 py-3">
                 <span
                   class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                 >
-                  {{ getSourceLabel(inquiry.source) }}
+                  {{ 'statusLabels.' + inquiry.source | translate }}
                 </span>
               </td>
             </ng-container>
@@ -144,14 +126,14 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Estado
+                {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let inquiry" class="px-4 py-3">
                 <span
                   class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                   [class]="getStatusColor(inquiry.status)"
                 >
-                  {{ getStatusLabel(inquiry.status) }}
+                  {{ 'statusLabels.' + inquiry.status | translate }}
                 </span>
               </td>
             </ng-container>
@@ -162,7 +144,7 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Asignado a
+                {{ 'inquiries.assignedTo' | translate }}
               </th>
               <td
                 mat-cell
@@ -180,7 +162,7 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Fecha
+                {{ 'common.created' | translate }}
               </th>
               <td
                 mat-cell
@@ -197,27 +179,27 @@ const SOURCE_LABELS: Record<string, string> = {
                 *matHeaderCellDef
                 class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
               >
-                Acciones
+                {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let inquiry" class="px-4 py-3 text-right">
                 <button
                   mat-icon-button
                   (click)="viewDetail(inquiry)"
-                  title="Ver detalle"
+                  [title]="'common.details' | translate"
                 >
                   <mat-icon>visibility</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="openEditDialog(inquiry)"
-                  title="Editar"
+                  [title]="'common.edit' | translate"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="deleteItem(inquiry)"
-                  title="Eliminar"
+                  [title]="'common.delete' | translate"
                   color="warn"
                 >
                   <mat-icon>delete</mat-icon>
@@ -268,16 +250,8 @@ export class InquiriesListComponent {
 
   displayedColumns = ['clientName', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
 
-  getStatusLabel(status: string): string {
-    return STATUS_LABELS[status] || status;
-  }
-
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700';
-  }
-
-  getSourceLabel(source: string): string {
-    return SOURCE_LABELS[source] || source;
   }
 
   onPageChange(event: PageEvent): void {
@@ -320,8 +294,9 @@ export class InquiriesListComponent {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Eliminar consulta',
-        message: `¿Estás seguro de eliminar la consulta de "${inquiry.clientName}"?`,
+        titleKey: 'inquiries.deleteTitle',
+        messageKey: 'inquiries.deleteMessage',
+        messageParams: { name: inquiry.clientName },
         confirmLabel: 'Eliminar',
         color: 'warn',
       },
