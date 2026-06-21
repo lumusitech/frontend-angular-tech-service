@@ -329,6 +329,21 @@
     "comingSoon": "Próximamente",
     "comingSoonMessage": "Esta funcionalidad está en desarrollo"
   },
+  "technician": {
+    "title": "Mis Órdenes",
+    "subtitle": "Órdenes asignadas",
+    "noOrders": "Sin órdenes asignadas",
+    "noOrdersMessage": "No tenés órdenes de trabajo asignadas",
+    "tasks": "Tareas",
+    "materials": "Materiales",
+    "notes": "Notas",
+    "addNote": "Agregar nota",
+    "completed": "completadas",
+    "daysRemaining": "días restantes",
+    "dueToday": "Vence hoy",
+    "overdue": "Vencida",
+    "noDate": "Sin fecha"
+  },
   "inquiries": {
     "title": "Consultas",
     "subtitle": "Gestión de consultas de clientes",

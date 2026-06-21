@@ -329,6 +329,21 @@
     "comingSoon": "Coming soon",
     "comingSoonMessage": "This feature is under development"
   },
+  "technician": {
+    "title": "My Orders",
+    "subtitle": "Assigned orders",
+    "noOrders": "No assigned orders",
+    "noOrdersMessage": "You have no work orders assigned",
+    "tasks": "Tasks",
+    "materials": "Materials",
+    "notes": "Notes",
+    "addNote": "Add note",
+    "completed": "completed",
+    "daysRemaining": "days remaining",
+    "dueToday": "Due today",
+    "overdue": "Overdue",
+    "noDate": "No date"
+  },
   "inquiries": {
     "title": "Inquiries",
     "subtitle": "Client inquiry management",
