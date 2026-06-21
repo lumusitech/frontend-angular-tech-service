@@ -137,6 +137,30 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
+  {
+    path: 'tech',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./layouts/tech-layout/tech-layout.component').then(
+        (m) => m.TechLayoutComponent,
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/technician/tech-work-orders.component').then(
+            (m) => m.TechWorkOrdersComponent,
+          ),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/technician/tech-work-order-detail.component').then(
+            (m) => m.TechWorkOrderDetailComponent,
+          ),
+      },
+    ],
+  },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' },
 ];
