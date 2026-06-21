@@ -1,18 +1,15 @@
-import { Component, inject, output, computed } from '@angular/core';
+import { Component, inject, output, computed, OnInit } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslationService } from '../../../core/services/translation.service';
-import { InquiriesService } from '../../../core/services/inquiries.service';
-import { PendingItemsService } from '../../../core/services/pending-items.service';
+import { NotificationsService } from '../../../core/services/notifications.service';
+import { WebsocketService } from '../../../core/services/websocket.service';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ApiResponse } from '../../../core/models/api-response.interfaces';
-import { PaginatedResponse } from '../../../core/models/dashboard.interfaces';
 
 interface LanguageOption {
   code: string;
@@ -127,9 +124,9 @@ interface LanguageOption {
           class="relative"
         >
           <mat-icon>notifications</mat-icon>
-          @if (notificationCount() > 0) {
+          @if (notificationsService.unreadCount() > 0) {
             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              {{ notificationCount() > 99 ? '99+' : notificationCount() }}
+              {{ notificationsService.unreadCount() > 99 ? '99+' : notificationsService.unreadCount() }}
             </span>
           }
         </button>
@@ -172,39 +169,15 @@ interface LanguageOption {
     </header>
   `,
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   readonly authService = inject(AuthService);
   readonly themeService = inject(ThemeService);
   readonly translationService = inject(TranslationService);
-  readonly router = inject(Router);
+  readonly notificationsService = inject(NotificationsService);
+  private readonly websocketService = inject(WebsocketService);
+  private readonly router = inject(Router);
 
   toggleSidebar = output<void>();
-
-  readonly pendingItemsResource = httpResource<PaginatedResponse<{ id: string }>>(
-    () => ({
-      url: '/api/pending-items',
-      params: { status: 'pending', limit: '1', sortBy: 'dueDate', order: 'ASC' },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<{ id: string }>>).data,
-    },
-  );
-
-  readonly inquiriesResource = httpResource<PaginatedResponse<{ id: string }>>(
-    () => ({
-      url: '/api/inquiries',
-      params: { status: 'new', limit: '1', sortBy: 'createdAt', order: 'DESC' },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<{ id: string }>>).data,
-    },
-  );
-
-  readonly notificationCount = computed(() => {
-    const pendingCount = this.pendingItemsResource.hasValue() ? this.pendingItemsResource.value().total : 0;
-    const inquiriesCount = this.inquiriesResource.hasValue() ? this.inquiriesResource.value().total : 0;
-    return pendingCount + inquiriesCount;
-  });
 
   availableLanguages: LanguageOption[] = [
     { code: 'es', label: 'Español', flag: '🇦🇷' },
@@ -216,11 +189,18 @@ export class HeaderComponent {
     return lang?.flag || '🌐';
   });
 
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.notificationsService.getUnreadCount().subscribe();
+      this.websocketService.connect();
+    }
+  }
+
   onLanguageChange(locale: string): void {
     this.translationService.setLocale(locale);
   }
 
   navigateToNotifications(): void {
-    this.router.navigate(['/admin/pending-items']);
+    this.router.navigate(['/admin/notifications']);
   }
 }
