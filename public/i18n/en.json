@@ -96,7 +96,14 @@
     "responsableInscripto": "Registered Taxpayer",
     "consumidorFinal": "Final Consumer",
     "monotributo": "Monotax",
-    "exento": "Exempt"
+    "exento": "Exempt",
+    "editClient": "Edit Client",
+    "ivaConditions": {
+      "responsableInscripto": "Registered Taxpayer",
+      "consumidorFinal": "Final Consumer",
+      "monotributo": "Monotax",
+      "exento": "Exempt"
+    }
   },
   "suppliers": {
     "title": "Suppliers",
@@ -112,7 +119,10 @@
     "noSuppliersMessage": "No suppliers registered",
     "createSupplier": "Create supplier",
     "deleteTitle": "Delete supplier",
-    "deleteMessage": "Are you sure you want to delete {{name}}?"
+    "deleteMessage": "Are you sure you want to delete {{name}}?",
+    "editSupplier": "Edit Supplier",
+    "notes": "Notes",
+    "activeSupplier": "Active supplier"
   },
   "serviceTypes": {
     "title": "Service Types",
@@ -126,7 +136,10 @@
     "noServiceTypesMessage": "No service types registered",
     "createServiceType": "Create service type",
     "deleteTitle": "Delete service type",
-    "deleteMessage": "Are you sure you want to delete \"{{name}}\"?"
+    "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
+    "editServiceType": "Edit Service Type",
+    "estimatedDurationLabel": "Estimated duration (minutes)",
+    "activeService": "Active service"
   },
   "workOrders": {
     "title": "Work Orders",
@@ -162,6 +175,9 @@
       "resume": "Resume",
       "deliver": "Deliver"
     },
+    "serviceType": "Service Type",
+    "initialDiagnosis": "Initial diagnosis",
+    "creating": "Creating...",
     "noOrders": "No orders",
     "noOrdersMessage": "No work orders",
     "createOrder": "Create order",
@@ -209,24 +225,46 @@
     },
     "tasks": {
       "addTask": "Add task",
-      "noTasks": "No tasks"
+      "noTasks": "No tasks",
+      "title": "Title",
+      "titlePlaceholder": "Task title...",
+      "descriptionOptional": "Description (optional)",
+      "descriptionPlaceholder": "Task description...",
+      "assignTechnician": "Assign technician",
+      "unassigned": "Unassigned",
+      "creating": "Creating...",
+      "createTask": "Create task"
     },
     "materials": {
       "addMaterial": "Add material",
       "noMaterials": "No materials",
       "description": "Description",
-      "supplier": "Supplier",
-      "qty": "Qty",
+      "descriptionPlaceholder": "Material description...",
+      "quantity": "Quantity",
       "unitCost": "Unit cost",
       "total": "Total",
-      "totalMaterials": "Total materials"
+      "totalMaterials": "Total materials",
+      "supplierOptional": "Supplier (optional)",
+      "noSupplier": "No supplier",
+      "saveMaterial": "Save material"
     },
     "notes": {
       "addNote": "Add note",
-      "noNotes": "No notes"
+      "noNotes": "No notes",
+      "noteType": "Note type",
+      "content": "Content",
+      "contentPlaceholder": "Write the note content...",
+      "saveNote": "Save note",
+      "types": {
+        "diagnosis": "Diagnosis",
+        "issue": "Issue",
+        "observation": "Observation",
+        "internal": "Internal"
+      }
     },
     "technicians": {
-      "noTechnicians": "No technicians assigned"
+      "noTechnicians": "No technicians assigned",
+      "assign": "Assign Technicians"
     }
   },
   "pendingItems": {
@@ -251,7 +289,27 @@
     "noPendingItemsMessage": "No pending items registered",
     "createPendingItem": "Create pending item",
     "deleteTitle": "Delete pending item",
-    "deleteMessage": "Are you sure you want to delete \"{{title}}\"?"
+    "deleteMessage": "Are you sure you want to delete \"{{title}}\"?",
+    "editPendingItem": "Edit Pending Item",
+    "types": {
+      "workOrder": "Work order",
+      "inquiry": "Inquiry",
+      "maintenance": "Maintenance",
+      "followUp": "Follow up",
+      "other": "Other"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   },
   "payments": {
     "title": "Payments",
@@ -303,6 +361,8 @@
     "createExpense": "Create expense",
     "deleteTitle": "Delete expense",
     "deleteMessage": "Are you sure you want to delete \"{{description}}\"?",
+    "editExpense": "Edit Expense",
+    "recurringExpense": "Recurring expense",
     "filters": {
       "allCategories": "All categories"
     },
@@ -458,6 +518,8 @@
     "estimatedDuration": "Estimated duration",
     "materialsNeeded": "Materials needed",
     "recommendation": "Recommendation",
+    "materialsPlaceholder": "List of required materials...",
+    "technicianNotesPlaceholder": "Describe what you found when contacting the client...",
     "materialsPlaceholder": "List of required materials...",
     "saveContact": "Save contact",
     "approve": "Approve",
