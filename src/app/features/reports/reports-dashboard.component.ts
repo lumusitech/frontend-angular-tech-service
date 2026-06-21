@@ -85,36 +85,36 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         <app-error-state (retry)="loadAll()" />
       } @else {
         <!-- KPI Cards -->
-        @if (summary()) {
+        @if (summary(); as s) {
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalIncome' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ summary()!.kpis.totalIncome | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.totalIncome | currency: 'ARS' : 'symbol' : '1.0-0' }}
               </p>
-              <p class="text-xs mt-1" [class]="summary()!.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'">
-                {{ summary()!.trends.incomeChange >= 0 ? '+' : '' }}{{ summary()!.trends.incomeChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
+              <p class="text-xs mt-1" [class]="s.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                {{ s.trends.incomeChange >= 0 ? '+' : '' }}{{ s.trends.incomeChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
               </p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalExpenses' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ summary()!.kpis.totalExpenses | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.totalExpenses | currency: 'ARS' : 'symbol' : '1.0-0' }}
               </p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.netProfit' | translate }}</p>
-              <p class="text-2xl font-bold mt-1" [class]="summary()!.kpis.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                {{ summary()!.kpis.netProfit | currency: 'ARS' : 'symbol' : '1.0-0' }}
+              <p class="text-2xl font-bold mt-1" [class]="s.kpis.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                {{ s.kpis.netProfit | currency: 'ARS' : 'symbol' : '1.0-0' }}
               </p>
-              <p class="text-xs mt-1" [class]="summary()!.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'">
-                {{ summary()!.trends.profitChange >= 0 ? '+' : '' }}{{ summary()!.trends.profitChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
+              <p class="text-xs mt-1" [class]="s.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                {{ s.trends.profitChange >= 0 ? '+' : '' }}{{ s.trends.profitChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
               </p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.averageTicket' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ summary()!.kpis.averageTicket | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ s.kpis.averageTicket | currency: 'ARS' : 'symbol' : '1.0-0' }}
               </p>
             </div>
           </div>
@@ -122,21 +122,21 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
         <!-- Charts row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          @if (incomeReport()) {
-            <app-income-chart [data]="incomeReport()!" />
+          @if (incomeReport(); as income) {
+            <app-income-chart [data]="income" />
           }
-          @if (expenseReport()) {
-            <app-expenses-chart [data]="expenseReport()!" />
+          @if (expenseReport(); as expense) {
+            <app-expenses-chart [data]="expense" />
           }
         </div>
 
         <!-- Rankings row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          @if (servicesReport()) {
-            <app-services-ranking [data]="servicesReport()!" />
+          @if (servicesReport(); as services) {
+            <app-services-ranking [data]="services" />
           }
-          @if (technicianRanking()) {
-            <app-technician-ranking [data]="technicianRanking()!" />
+          @if (technicianRanking(); as technicians) {
+            <app-technician-ranking [data]="technicians" />
           }
         </div>
       }
