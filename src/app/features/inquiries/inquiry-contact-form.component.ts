@@ -69,7 +69,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
-          <mat-select [value]="recommendation()" (selectionChange)="recommendation.set($event.value)">
+          <mat-select [(value)]="recommendation">
             <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
             <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
             <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>

@@ -66,7 +66,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
-            <mat-select [value]="type()" (selectionChange)="type.set($event.value)" required>
+            <mat-select [(value)]="type" required>
               <mat-option value="work_order">{{
                 'pendingItems.types.workOrder' | translate
               }}</mat-option>
@@ -85,7 +85,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(value)]="priority">
               <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{
                 'pendingItems.priorities.medium' | translate
@@ -114,7 +114,7 @@ interface DialogData {
         @if (data.mode === 'edit') {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="status()" (selectionChange)="status.set($event.value)">
+            <mat-select [(value)]="status">
               <mat-option value="pending">{{
                 'pendingItems.statuses.pending' | translate
               }}</mat-option>

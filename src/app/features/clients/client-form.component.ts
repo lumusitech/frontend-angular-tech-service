@@ -99,7 +99,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
-          <mat-select [value]="ivaCondition()" (selectionChange)="ivaCondition.set($event.value)">
+          <mat-select [(value)]="ivaCondition">
             <mat-option value="responsable_inscripto">{{
               'clients.ivaConditions.responsableInscripto' | translate
             }}</mat-option>

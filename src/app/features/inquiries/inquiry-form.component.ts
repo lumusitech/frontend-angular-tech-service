@@ -74,7 +74,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-            <mat-select [value]="source()" (selectionChange)="source.set($event.value)" required>
+            <mat-select [(value)]="source" required>
               <mat-option value="phone">{{ 'statusLabels.phone' | translate }}</mat-option>
               <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
               <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
@@ -86,7 +86,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(value)]="priority">
               <mat-option value="low">{{ 'statusLabels.low' | translate }}</mat-option>
               <mat-option value="medium">{{ 'statusLabels.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'statusLabels.high' | translate }}</mat-option>

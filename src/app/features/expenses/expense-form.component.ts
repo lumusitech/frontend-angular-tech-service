@@ -82,7 +82,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+          <mat-select [(value)]="category">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
             <mat-option value="utilities">{{
               'expenses.categories.utilities' | translate

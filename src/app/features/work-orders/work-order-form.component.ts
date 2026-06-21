@@ -44,7 +44,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [value]="clientId()" (selectionChange)="clientId.set($event.value)">
+          <mat-select [(value)]="clientId">
             @for (client of clients(); track client.id) {
               <mat-option [value]="client.id">
                 {{ client.name }}
@@ -55,7 +55,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
-          <mat-select [value]="serviceTypeId()" (selectionChange)="serviceTypeId.set($event.value)">
+          <mat-select [(value)]="serviceTypeId">
             @for (serviceType of serviceTypes(); track serviceType.id) {
               <mat-option [value]="serviceType.id">
                 {{ serviceType.name }}
@@ -67,7 +67,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(value)]="priority">
               <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{
                 'workOrders.priorities.medium' | translate
@@ -81,7 +81,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
-            <mat-select [value]="location()" (selectionChange)="location.set($event.value)">
+            <mat-select [(value)]="location">
               <mat-option value="workshop">{{
                 'workOrders.locations.workshop' | translate
               }}</mat-option>
