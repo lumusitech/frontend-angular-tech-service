@@ -91,10 +91,22 @@ export const routes: Routes = [
       },
       {
         path: 'billing',
-        loadComponent: () =>
-          import('./features/billing/billing-placeholder.component').then(
-            (m) => m.BillingPlaceholderComponent,
-          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/billing/invoices-list.component').then(
+                (m) => m.InvoicesListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/billing/invoice-detail.component').then(
+                (m) => m.InvoiceDetailComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'reports',

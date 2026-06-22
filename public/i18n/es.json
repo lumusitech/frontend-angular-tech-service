@@ -427,13 +427,70 @@
     "repair": "Reparación",
     "replacement": "Reemplazo",
     "inspection": "Inspección",
-    "no_action": "Sin acción"
+    "no_action": "Sin acción",
+    "draft": "Borrador",
+    "issued": "Emitida",
+    "rejected": "Rechazada",
+    "invoiceTypeA": "Factura A",
+    "invoiceTypeB": "Factura B",
+    "invoiceTypeC": "Factura C"
   },
   "billing": {
     "title": "Facturación",
-    "subtitle": "Gestión de facturación",
-    "comingSoon": "Próximamente",
-    "comingSoonMessage": "Esta funcionalidad está en desarrollo"
+    "subtitle": "Gestión de facturas",
+    "newInvoice": "Nueva Factura",
+    "invoiceNumber": "Número",
+    "invoiceType": "Tipo",
+    "concept": "Concepto",
+    "clientName": "Cliente",
+    "clientCuit": "CUIT/DNI",
+    "clientAddress": "Dirección",
+    "clientIvaCondition": "Condición IVA",
+    "subtotal": "Subtotal",
+    "ivaAmount": "IVA",
+    "total": "Total",
+    "workOrder": "Orden de Trabajo",
+    "cae": "CAE",
+    "caeExpiry": "Venc. CAE",
+    "issuedAt": "Emitida",
+    "cancelledAt": "Anulada",
+    "createdAt": "Creada",
+    "issue": "Emitir",
+    "cancel": "Anular",
+    "downloadPdf": "Descargar PDF",
+    "issueConfirmTitle": "Emitir factura",
+    "issueConfirmMessage": "Se generará el CAE para esta factura.",
+    "cancelConfirmTitle": "Anular factura",
+    "cancelConfirmMessage": "Esta acción no se puede deshacer.",
+    "noInvoices": "Sin facturas",
+    "noInvoicesMessage": "No hay facturas registradas",
+    "createInvoice": "Crear factura",
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allTypes": "Todos los tipos"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "issued": "Emitida",
+      "cancelled": "Anulada",
+      "rejected": "Rechazada"
+    },
+    "types": {
+      "A": "Factura A",
+      "B": "Factura B",
+      "C": "Factura C"
+    },
+    "concepts": {
+      "products": "Productos",
+      "services": "Servicios",
+      "both": "Productos y Servicios"
+    },
+    "ivaConditions": {
+      "responsableInscripto": "Responsable Inscripto",
+      "consumidorFinal": "Consumidor Final",
+      "monotributo": "Monotributo",
+      "exento": "Exento"
+    }
   },
   "reports": {
     "title": "Reportes",

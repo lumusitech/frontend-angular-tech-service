@@ -427,13 +427,70 @@
     "repair": "Repair",
     "replacement": "Replacement",
     "inspection": "Inspection",
-    "no_action": "No action"
+    "no_action": "No action",
+    "draft": "Draft",
+    "issued": "Issued",
+    "rejected": "Rejected",
+    "invoiceTypeA": "Invoice A",
+    "invoiceTypeB": "Invoice B",
+    "invoiceTypeC": "Invoice C"
   },
   "billing": {
     "title": "Billing",
-    "subtitle": "Billing management",
-    "comingSoon": "Coming soon",
-    "comingSoonMessage": "This feature is under development"
+    "subtitle": "Invoice management",
+    "newInvoice": "New Invoice",
+    "invoiceNumber": "Number",
+    "invoiceType": "Type",
+    "concept": "Concept",
+    "clientName": "Client",
+    "clientCuit": "CUIT/DNI",
+    "clientAddress": "Address",
+    "clientIvaCondition": "Tax Condition",
+    "subtotal": "Subtotal",
+    "ivaAmount": "VAT",
+    "total": "Total",
+    "workOrder": "Work Order",
+    "cae": "CAE",
+    "caeExpiry": "CAE Expiry",
+    "issuedAt": "Issued",
+    "cancelledAt": "Cancelled",
+    "createdAt": "Created",
+    "issue": "Issue",
+    "cancel": "Cancel",
+    "downloadPdf": "Download PDF",
+    "issueConfirmTitle": "Issue invoice",
+    "issueConfirmMessage": "The CAE will be generated for this invoice.",
+    "cancelConfirmTitle": "Cancel invoice",
+    "cancelConfirmMessage": "This action cannot be undone.",
+    "noInvoices": "No invoices",
+    "noInvoicesMessage": "No invoices registered",
+    "createInvoice": "Create invoice",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allTypes": "All types"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "issued": "Issued",
+      "cancelled": "Cancelled",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "A": "Invoice A",
+      "B": "Invoice B",
+      "C": "Invoice C"
+    },
+    "concepts": {
+      "products": "Products",
+      "services": "Services",
+      "both": "Products and Services"
+    },
+    "ivaConditions": {
+      "responsableInscripto": "Registered Taxpayer",
+      "consumidorFinal": "Final Consumer",
+      "monotributo": "Monotax",
+      "exento": "Exempt"
+    }
   },
   "reports": {
     "title": "Reports",
