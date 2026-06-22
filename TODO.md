@@ -106,3 +106,26 @@
 - Configurar PWA (service worker, offline, install prompt)
 - Technician View: BottomNavComponent para mobile
 - Tests unitarios y E2E
+
+## Mejoras a futuro
+
+### Seguridad
+- [ ] CORS abierto (*) en WebSocket gateway
+- [ ] Sin rate limiting (@nestjs/throttler)
+- [ ] Sin Helmet para headers de seguridad
+- [ ] Sin refresh tokens
+
+### Arquitectura
+- [ ] Sin validación de config en ConfigModule (fallas silenciosas en runtime)
+- [ ] sortBy en paginación sin whitelist de columnas permitidas
+- [ ] no-explicit-any: off en ESLint contradice la convención del proyecto
+- [ ] Listener de notificaciones de 379 líneas, podría dividirse por dominio
+
+### Testing
+- [ ] Sin threshold mínimo de cobertura
+- [ ] Controllers, guards, interceptors y filters sin unit tests
+
+### Operaciones
+- [ ] Sin health check endpoint (/health)
+- [ ] Sin graceful shutdown (SIGTERM/SIGINT)
+- [ ] Sin logging estructurado con requestId/userId
