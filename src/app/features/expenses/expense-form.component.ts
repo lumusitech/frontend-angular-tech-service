@@ -6,6 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { ExpensesService } from '../../core/services/expenses.service';
 import {
   Expense,
@@ -30,6 +33,9 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -70,19 +76,22 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'expenses.date' | translate }}</mat-label>
-            <input
+              <input
               matInput
-              type="date"
-              [value]="date()"
-              (input)="date.set(getInputValue($event))"
+              [matDatepicker]="datePicker"
+              [value]="dateValue()"
+              (dateChange)="onDateChange($event)"
+              (click)="datePicker.open()"
               required
             />
+            <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker></mat-datepicker>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+          <mat-select [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
             <mat-option value="utilities">{{
               'expenses.categories.utilities' | translate
@@ -112,8 +121,7 @@ interface DialogData {
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [value]="notes()"
-            (input)="notes.set(getInputValue($event))"
+            [(ngModel)]="notes" [ngModelOptions]="{standalone: true}"
             rows="3"
           ></textarea>
         </mat-form-field>
@@ -147,6 +155,15 @@ export class ExpenseFormComponent {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  dateValue(): Date | null {
+    const v = this.date();
+    return v ? new Date(v) : null;
+  }
+
+  onDateChange(event: { value: Date | null }): void {
+    this.date.set(event.value ? event.value.toISOString().split('T')[0] : '');
   }
 
   onSubmit(event: Event): void {

@@ -6,6 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ClientsService } from '../../core/services/clients.service';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -32,6 +35,9 @@ interface DialogData {
     MatSelectModule,
     MatIconModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -44,7 +50,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [value]="clientId()" (selectionChange)="clientId.set($event.value)">
+          <mat-select [(ngModel)]="clientId" [ngModelOptions]="{standalone: true}">
             @for (client of clients(); track client.id) {
               <mat-option [value]="client.id">
                 {{ client.name }}
@@ -55,7 +61,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
-          <mat-select [value]="serviceTypeId()" (selectionChange)="serviceTypeId.set($event.value)">
+          <mat-select [(ngModel)]="serviceTypeId" [ngModelOptions]="{standalone: true}">
             @for (serviceType of serviceTypes(); track serviceType.id) {
               <mat-option [value]="serviceType.id">
                 {{ serviceType.name }}
@@ -67,59 +73,40 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
               <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{
-                'workOrders.priorities.medium' | translate
-              }}</mat-option>
+              <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{
-                'workOrders.priorities.urgent' | translate
-              }}</mat-option>
+              <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
-            <mat-select [value]="location()" (selectionChange)="location.set($event.value)">
-              <mat-option value="workshop">{{
-                'workOrders.locations.workshop' | translate
-              }}</mat-option>
-              <mat-option value="on_site">{{
-                'workOrders.locations.onSite' | translate
-              }}</mat-option>
+            <mat-select [(ngModel)]="location" [ngModelOptions]="{standalone: true}">
+              <mat-option value="workshop">{{ 'workOrders.locations.workshop' | translate }}</mat-option>
+              <mat-option value="on_site">{{ 'workOrders.locations.onSite' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
-          <input
-            matInput
-            type="date"
-            [value]="scheduledDate()"
-            (input)="scheduledDate.set(getInputValue($event))"
-          />
+          <input matInput [matDatepicker]="scheduledPicker" [value]="scheduledDateValue()" (dateChange)="onScheduledDateChange($event)" (click)="scheduledPicker.open()" />
+          <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
+          <mat-datepicker #scheduledPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
-          <input
-            matInput
-            type="date"
-            [value]="warrantyUntil()"
-            (input)="warrantyUntil.set(getInputValue($event))"
-          />
+          <input matInput [matDatepicker]="warrantyPicker" [value]="warrantyUntilValue()" (dateChange)="onWarrantyUntilChange($event)" (click)="warrantyPicker.open()" />
+          <mat-datepicker-toggle matIconSuffix [for]="warrantyPicker"></mat-datepicker-toggle>
+          <mat-datepicker #warrantyPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
-          <textarea
-            matInput
-            [value]="diagnosis()"
-            (input)="diagnosis.set(getInputValue($event))"
-            rows="3"
-          ></textarea>
+          <textarea matInput [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}" rows="3"></textarea>
         </mat-form-field>
       </form>
     </mat-dialog-content>
@@ -127,9 +114,7 @@ interface DialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
-        {{
-          saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate)
-        }}
+        {{ saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
@@ -154,12 +139,30 @@ export class WorkOrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.clientsService.getAll({ limit: 100 }).subscribe({
-      next: (response) => this.clients.set(response.data),
+      next: (data) => this.clients.set(data.data),
     });
 
     this.serviceTypesService.getAll({ limit: 100 }).subscribe({
-      next: (response) => this.serviceTypes.set(response.data),
+      next: (data) => this.serviceTypes.set(data.data),
     });
+  }
+
+  scheduledDateValue(): Date | null {
+    const v = this.scheduledDate();
+    return v ? new Date(v) : null;
+  }
+
+  warrantyUntilValue(): Date | null {
+    const v = this.warrantyUntil();
+    return v ? new Date(v) : null;
+  }
+
+  onScheduledDateChange(event: { value: Date | null }): void {
+    this.scheduledDate.set(event.value ? event.value.toISOString().split('T')[0] : '');
+  }
+
+  onWarrantyUntilChange(event: { value: Date | null }): void {
+    this.warrantyUntil.set(event.value ? event.value.toISOString().split('T')[0] : '');
   }
 
   getInputValue(event: Event): string {
@@ -181,9 +184,9 @@ export class WorkOrderFormComponent implements OnInit {
     };
 
     this.workOrdersService.create(dto).subscribe({
-      next: (workOrder) => {
+      next: () => {
         this.saving.set(false);
-        this.dialogRef.close(workOrder);
+        this.dialogRef.close(true);
       },
       error: () => {
         this.saving.set(false);

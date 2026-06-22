@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ContactInquiryDto, InquiryRecommendation } from '../../core/models/inquiry.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -22,6 +23,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -37,8 +39,7 @@ interface DialogData {
           <textarea
             matInput
             rows="4"
-            [value]="technicianNotes()"
-            (input)="technicianNotes.set(getInputValue($event))"
+            [(ngModel)]="technicianNotes" [ngModelOptions]="{standalone: true}"
             [placeholder]="'inquiries.technicianNotesPlaceholder' | translate"
             required
           ></textarea>
@@ -47,12 +48,12 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedCost' | translate }} ($)</mat-label>
-            <input matInput type="number" [value]="estimatedCost()" (input)="estimatedCost.set(getInputValue($event))" />
+            <input matInput type="number" [(ngModel)]="estimatedCost" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedDuration' | translate }} (h)</mat-label>
-            <input matInput type="number" [value]="estimatedDuration()" (input)="estimatedDuration.set(getInputValue($event))" />
+            <input matInput type="number" [(ngModel)]="estimatedDuration" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
         </div>
 
@@ -61,15 +62,14 @@ interface DialogData {
           <textarea
             matInput
             rows="2"
-            [value]="materialsNeeded()"
-            (input)="materialsNeeded.set(getInputValue($event))"
+            [(ngModel)]="materialsNeeded" [ngModelOptions]="{standalone: true}"
             [placeholder]="'inquiries.materialsPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
-          <mat-select [value]="recommendation()" (selectionChange)="recommendation.set($event.value)">
+          <mat-select [(ngModel)]="recommendation" [ngModelOptions]="{standalone: true}">
             <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
             <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
             <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>

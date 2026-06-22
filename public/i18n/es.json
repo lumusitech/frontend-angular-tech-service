@@ -96,7 +96,14 @@
     "responsableInscripto": "Responsable Inscripto",
     "consumidorFinal": "Consumidor Final",
     "monotributo": "Monotributo",
-    "exento": "Exento"
+    "exento": "Exento",
+    "editClient": "Editar Cliente",
+    "ivaConditions": {
+      "responsableInscripto": "Responsable Inscripto",
+      "consumidorFinal": "Consumidor Final",
+      "monotributo": "Monotributo",
+      "exento": "Exento"
+    }
   },
   "suppliers": {
     "title": "Proveedores",
@@ -112,7 +119,10 @@
     "noSuppliersMessage": "No hay proveedores registrados",
     "createSupplier": "Crear proveedor",
     "deleteTitle": "Eliminar proveedor",
-    "deleteMessage": "¿Estás seguro de eliminar a {{name}}?"
+    "deleteMessage": "¿Estás seguro de eliminar a {{name}}?",
+    "editSupplier": "Editar Proveedor",
+    "notes": "Notas",
+    "activeSupplier": "Proveedor activo"
   },
   "serviceTypes": {
     "title": "Tipos de Servicio",
@@ -126,7 +136,10 @@
     "noServiceTypesMessage": "No hay tipos de servicio registrados",
     "createServiceType": "Crear tipo de servicio",
     "deleteTitle": "Eliminar tipo de servicio",
-    "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?"
+    "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
+    "editServiceType": "Editar Tipo de Servicio",
+    "estimatedDurationLabel": "Duración estimada (minutos)",
+    "activeService": "Servicio activo"
   },
   "workOrders": {
     "title": "Órdenes de Trabajo",
@@ -162,6 +175,9 @@
       "resume": "Reanudar",
       "deliver": "Entregar"
     },
+    "serviceType": "Tipo de Servicio",
+    "initialDiagnosis": "Diagnóstico inicial",
+    "creating": "Creando...",
     "noOrders": "Sin órdenes",
     "noOrdersMessage": "No hay órdenes de trabajo",
     "createOrder": "Crear orden",
@@ -209,24 +225,46 @@
     },
     "tasks": {
       "addTask": "Agregar tarea",
-      "noTasks": "Sin tareas"
+      "noTasks": "Sin tareas",
+      "title": "Título",
+      "titlePlaceholder": "Título de la tarea...",
+      "descriptionOptional": "Descripción (opcional)",
+      "descriptionPlaceholder": "Descripción de la tarea...",
+      "assignTechnician": "Asignar técnico",
+      "unassigned": "Sin asignar",
+      "creating": "Creando...",
+      "createTask": "Crear tarea"
     },
     "materials": {
       "addMaterial": "Agregar material",
       "noMaterials": "Sin materiales",
       "description": "Descripción",
-      "supplier": "Proveedor",
-      "qty": "Cant.",
+      "descriptionPlaceholder": "Descripción del material...",
+      "quantity": "Cantidad",
       "unitCost": "Costo unitario",
       "total": "Total",
-      "totalMaterials": "Total materiales"
+      "totalMaterials": "Total materiales",
+      "supplierOptional": "Proveedor (opcional)",
+      "noSupplier": "Sin proveedor",
+      "saveMaterial": "Guardar material"
     },
     "notes": {
       "addNote": "Agregar nota",
-      "noNotes": "Sin notas"
+      "noNotes": "Sin notas",
+      "noteType": "Tipo de nota",
+      "content": "Contenido",
+      "contentPlaceholder": "Escribí el contenido de la nota...",
+      "saveNote": "Guardar nota",
+      "types": {
+        "diagnosis": "Diagnóstico",
+        "issue": "Problema",
+        "observation": "Observación",
+        "internal": "Interna"
+      }
     },
     "technicians": {
-      "noTechnicians": "Sin técnicos asignados"
+      "noTechnicians": "Sin técnicos asignados",
+      "assign": "Asignar Técnicos"
     }
   },
   "pendingItems": {
@@ -251,7 +289,27 @@
     "noPendingItemsMessage": "No hay pendientes registrados",
     "createPendingItem": "Crear pendiente",
     "deleteTitle": "Eliminar pendiente",
-    "deleteMessage": "¿Estás seguro de eliminar \"{{title}}\"?"
+    "deleteMessage": "¿Estás seguro de eliminar \"{{title}}\"?",
+    "editPendingItem": "Editar Pendiente",
+    "types": {
+      "workOrder": "Orden de trabajo",
+      "inquiry": "Consulta",
+      "maintenance": "Mantenimiento",
+      "followUp": "Seguimiento",
+      "other": "Otro"
+    },
+    "priorities": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "statuses": {
+      "pending": "Pendiente",
+      "inProgress": "En Progreso",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    }
   },
   "payments": {
     "title": "Pagos",
@@ -303,6 +361,8 @@
     "createExpense": "Crear gasto",
     "deleteTitle": "Eliminar gasto",
     "deleteMessage": "¿Estás seguro de eliminar \"{{description}}\"?",
+    "editExpense": "Editar Gasto",
+    "recurringExpense": "Gasto recurrente",
     "filters": {
       "allCategories": "Todas las categorías"
     },
@@ -458,6 +518,8 @@
     "estimatedDuration": "Duración estimada",
     "materialsNeeded": "Materiales necesarios",
     "recommendation": "Recomendación",
+    "materialsPlaceholder": "Lista de materiales requeridos...",
+    "technicianNotesPlaceholder": "Describí lo que encontraste al contactar al cliente...",
     "materialsPlaceholder": "Lista de materiales requeridos...",
     "saveContact": "Guardar contacto",
     "approve": "Aprobar",

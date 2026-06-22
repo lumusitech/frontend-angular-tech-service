@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { PendingItemsService } from '../../core/services/pending-items.service';
@@ -32,6 +33,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    FormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
     TranslatePipe,
@@ -50,7 +52,7 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
-          <input matInput [value]="title()" (input)="title.set(getInputValue($event))" required />
+          <input matInput [(ngModel)]="title" [ngModelOptions]="{standalone: true}" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -58,15 +60,14 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [value]="description()"
-            (input)="description.set(getInputValue($event))"
+            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
           ></textarea>
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
-            <mat-select [value]="type()" (selectionChange)="type.set($event.value)" required>
+            <mat-select [(ngModel)]="type" [ngModelOptions]="{standalone: true}" required>
               <mat-option value="work_order">{{
                 'pendingItems.types.workOrder' | translate
               }}</mat-option>
@@ -85,7 +86,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
               <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{
                 'pendingItems.priorities.medium' | translate
@@ -105,6 +106,7 @@ interface DialogData {
             [matDatepicker]="picker"
             [value]="dueDate()"
             (dateChange)="onDateChange($event)"
+            (click)="picker.open()"
             required
           />
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
@@ -114,7 +116,7 @@ interface DialogData {
         @if (data.mode === 'edit') {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="status()" (selectionChange)="status.set($event.value)">
+            <mat-select [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
               <mat-option value="pending">{{
                 'pendingItems.statuses.pending' | translate
               }}</mat-option>

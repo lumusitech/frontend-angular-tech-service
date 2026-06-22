@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import {
   Inquiry,
@@ -28,6 +29,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -40,24 +42,24 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
-          <input matInput [value]="clientName()" (input)="clientName.set(getInputValue($event))" required />
+          <input matInput [(ngModel)]="clientName" [ngModelOptions]="{standalone: true}" required />
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
-            <input matInput [value]="clientPhone()" (input)="clientPhone.set(getInputValue($event))" />
+            <input matInput [(ngModel)]="clientPhone" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.email' | translate }}</mat-label>
-            <input matInput type="email" [value]="clientEmail()" (input)="clientEmail.set(getInputValue($event))" />
+            <input matInput type="email" [(ngModel)]="clientEmail" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
-          <input matInput [value]="clientAddress()" (input)="clientAddress.set(getInputValue($event))" />
+          <input matInput [(ngModel)]="clientAddress" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -65,8 +67,7 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [value]="description()"
-            (input)="description.set(getInputValue($event))"
+            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
             required
           ></textarea>
         </mat-form-field>
@@ -74,7 +75,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-            <mat-select [value]="source()" (selectionChange)="source.set($event.value)" required>
+            <mat-select [(ngModel)]="source" [ngModelOptions]="{standalone: true}" required>
               <mat-option value="phone">{{ 'statusLabels.phone' | translate }}</mat-option>
               <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
               <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
@@ -86,7 +87,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
               <mat-option value="low">{{ 'statusLabels.low' | translate }}</mat-option>
               <mat-option value="medium">{{ 'statusLabels.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'statusLabels.high' | translate }}</mat-option>

@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { SuppliersService } from '../../core/services/suppliers.service';
 import {
   Supplier,
@@ -27,6 +28,7 @@ interface DialogData {
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
+    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -44,7 +46,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
-            <input matInput [value]="name()" (input)="name.set(getInputValue($event))" required />
+            <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -59,7 +61,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
-            <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" required />
+            <input matInput [(ngModel)]="phone" [ngModelOptions]="{standalone: true}" required />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -87,8 +89,7 @@ interface DialogData {
           <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [value]="notes()"
-            (input)="notes.set(getInputValue($event))"
+            [(ngModel)]="notes" [ngModelOptions]="{standalone: true}"
             rows="3"
           ></textarea>
         </mat-form-field>
