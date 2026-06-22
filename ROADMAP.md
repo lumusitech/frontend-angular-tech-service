@@ -359,20 +359,23 @@ server.ts                          # Express server (SSR entry point)
 
 ### 12. `features/billing/` — Facturacion
 
-- [ ] InvoicesListComponent
-  - [ ] DataTable: invoiceNumber, invoiceType (A/B/C), status, clientName, total, issuedAt
-  - [ ] Filters: status, type, date range, client
-- [ ] InvoiceDetailComponent
-  - [ ] Full invoice data (formatted like an Argentine invoice)
-  - [ ] CAE info
-  - [ ] Actions: issue, cancel, download PDF
-- [ ] InvoiceFormComponent (create draft)
-  - [ ] Invoice type selector (A, B, C)
-  - [ ] Client info (auto-fill from client data)
-  - [ ] Subtotal, IVA, total
-  - [ ] Work order selector
-- [ ] IssueInvoiceButton (draft -> issued, calls ARCA stub)
-- [ ] DownloadPdfButton (GET /billing/invoices/:id/pdf)
+- [x] InvoicesListComponent
+  - [x] DataTable: invoiceNumber, invoiceType (A/B/C), status, clientName, total, createdAt
+  - [x] Filters: status, type, client name (accent-insensitive)
+- [x] InvoiceDetailComponent
+  - [x] Full invoice data (number, type, concept, client info, totals)
+  - [x] CAE info (for issued invoices)
+  - [x] Actions: issue (draft → issued), cancel (issued → cancelled), download PDF
+- [x] InvoiceFormComponent (create draft)
+  - [x] Invoice type selector (A, B, C)
+  - [x] Client autocomplete (server-side search with unaccent)
+  - [x] Work order autocomplete (server-side search with unaccent)
+  - [x] Auto-fill client data on select (CUIT, address, IVA condition)
+  - [x] Subtotal, IVA, total
+- [x] BillingService (CRUD + issue + cancel + downloadPdf)
+- [x] Invoice interfaces (entity, filters, enums)
+- [x] Status badge for invoiceStatus and invoiceType
+- [x] i18n keys (es.json + en.json, ~45 keys)
 
 ### 13. `features/reports/` — Reportes
 
