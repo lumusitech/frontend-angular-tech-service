@@ -76,11 +76,12 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'expenses.date' | translate }}</mat-label>
-            <input
+              <input
               matInput
               [matDatepicker]="datePicker"
               [value]="dateValue()"
               (dateChange)="onDateChange($event)"
+              (click)="datePicker.open()"
               required
             />
             <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>

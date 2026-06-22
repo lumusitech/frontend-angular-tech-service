@@ -92,14 +92,14 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
-          <input matInput [matDatepicker]="scheduledPicker" [value]="scheduledDateValue()" (dateChange)="onScheduledDateChange($event)" />
+          <input matInput [matDatepicker]="scheduledPicker" [value]="scheduledDateValue()" (dateChange)="onScheduledDateChange($event)" (click)="scheduledPicker.open()" />
           <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
           <mat-datepicker #scheduledPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
-          <input matInput [matDatepicker]="warrantyPicker" [value]="warrantyUntilValue()" (dateChange)="onWarrantyUntilChange($event)" />
+          <input matInput [matDatepicker]="warrantyPicker" [value]="warrantyUntilValue()" (dateChange)="onWarrantyUntilChange($event)" (click)="warrantyPicker.open()" />
           <mat-datepicker-toggle matIconSuffix [for]="warrantyPicker"></mat-datepicker-toggle>
           <mat-datepicker #warrantyPicker></mat-datepicker>
         </mat-form-field>

@@ -106,6 +106,7 @@ interface DialogData {
             [matDatepicker]="picker"
             [value]="dueDate()"
             (dateChange)="onDateChange($event)"
+            (click)="picker.open()"
             required
           />
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
