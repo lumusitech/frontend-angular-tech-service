@@ -7,6 +7,8 @@
 - Backend response wrapper: { statusCode, data, timestamp } → httpResource usa `parse` en 2do arg
 - Loading spinner global con debounce 300ms
 - SSR híbrido: landing/portal → SSR, admin/tech → CSR
+- pnpm como gestor de paquetes
+- socket.io-client para WebSocket real-time
 
 ## PRs Abiertos (pendientes de merge)
 
@@ -17,41 +19,21 @@
 | 30  | Loading spinner inteligente + preloading | perf/loading-spinner-preloading           | Open   |
 | 31  | Debounce 300ms loading spinner           | perf/loading-spinner-debounce             | Open   |
 
-## Próxima Feature: Pending Items + Inquiries + Dashboard unificado
+## Feature completada: Pending Items + Inquiries + Dashboard unificado
 
-### Backend: pending-items (módulo nuevo)
-
-- [x] Instalar @nestjs/schedule
-- [x] Crear módulo pending-items:
-  - [x] Entity PendingItem (title, description, dueDate, type, priority, status, referenceType, referenceId, assignedToId, createdById)
-  - [x] Enums: PendingItemType, PendingItemPriority, PendingItemStatus
-  - [x] DTOs: CreatePendingItemDto, UpdatePendingItemDto, FilterPendingItemDto
-  - [x] Service: CRUD + validación por rol (technician solo de sus órdenes)
-  - [x] Controller: endpoints REST con guards
-  - [x] Cron job diario (8:00 AM) para notificar pendientes próximos/vencidos
-- [x] Nuevos tipos de notificación: pending_item.created, pending_item.due_today, pending_item.overdue
-- [x] Tests unitarios
-
-### Backend: inquiries (módulo nuevo)
-
-- [x] Crear módulo inquiries:
-  - [x] Entity Inquiry (clientName, clientPhone, clientEmail, description, source, status, priority, assignedToId, createdById, technicianNotes, estimatedCost, recommendation, adminDecision, workOrderId)
-  - [x] Enums: InquirySource, InquiryStatus, InquiryRecommendation, InquiryDecision
-  - [x] DTOs: CreateInquiryDto, UpdateInquiryDto, FilterInquiryDto, ContactInquiryDto
-  - [x] Service: CRUD + workflow de estados + lógica de convert (crear Work Order)
-  - [x] Controller: endpoints REST con guards
-- [x] Nuevos tipos de notificación: inquiry.created, inquiry.assigned, inquiry.contacted, inquiry.reviewed
-- [x] Tests unitarios
+### Backend (completado via PRs separados)
+- [x] pending-items module
+- [x] inquiries module
+- [x] notifications seed
+- [x] technician task completion
 
 ### Frontend: pending-items
-
 - [x] Interfaces en core/models/pending-item.interfaces.ts
 - [x] Servicio en core/services/pending-items.service.ts
 - [x] PendingItemsListComponent (lista con filtros: status, type, priority, assignedTo)
 - [x] PendingItemFormComponent (dialog crear/editar)
 
 ### Frontend: inquiries
-
 - [x] Interfaces en core/models/inquiry.interfaces.ts
 - [x] Servicio en core/services/inquiries.service.ts
 - [x] InquiriesListComponent (lista con filtros: status, assignedTo, source)
@@ -60,25 +42,67 @@
 - [x] InquiryContactFormComponent (técnico carga resultado de llamada)
 
 ### Frontend: Dashboard unificado
+- [x] PendingItems widget en dashboard
+- [x] Inquiries widget en dashboard (top 5 consultas nuevas)
+- [x] Sidebar item "Trabajo Pendiente" (/admin/pending-items)
+- [x] Sidebar item "Consultas" (/admin/inquiries)
+- [x] Badge en header con count de notificaciones (WebSocket real-time)
 
-- [ ] PendingWorkWidgetComponent (muestra pendientes vencidos/hoy/próximos + consultas pendientes)
-- [x] Integración en dashboard.component.ts (pending items widget)
-- [x] Nuevo item en sidebar: "Trabajo Pendiente" (/admin/pending-items)
-- [ ] Badge en header: count de items vencidos + consultas nuevas
+### Frontend: Notifications
+- [x] NotificationsListComponent (lista paginada con filtros)
+- [x] NotificationsService (HTTP + unreadCount signal)
+- [x] WebsocketService (Socket.IO con JWT auth)
+- [x] Badge en header con count real
+- [x] Highlight pulse animation al hacer click en notificación
+- [x] Ruta /admin/notifications
 
-## Documentación por actualizar
+### Frontend: Reports
+- [x] ReportsDashboardComponent (selector de período + KPI cards)
+- [x] IncomeChartComponent (line chart)
+- [x] ExpensesChartComponent (bar chart)
+- [x] ServicesRankingComponent (tabla + barras)
+- [x] TechnicianRankingComponent (leaderboard)
+- [x] ReportsService con 8 endpoints + 2 PDFs
+- [x] CurrencyArsPipe para formato ARS consistente
 
-- [x] ROADMAP.md: marcar ~80+ items como completados
-- [x] ROADMAP.md: agregar componentes no documentados (PageHeader, ErrorState, TrackingCode, StatusLabelPipe, StatusClassPipe, SafeHtmlPipe, CurrencyArsPipe, dashboard.service, loading.service)
-- [x] ROADMAP.md: agregar secciones 22-23 (pending-items, inquiries)
-- [ ] README.md: corregir tabla de rutas (/clients → /admin/clients)
-- [ ] README.md: marcar PWA/i18n como "planificado, no implementado"
+### Frontend: Technician View
+- [x] TechLayoutComponent (header mínimo, mobile-first)
+- [x] TechWorkOrdersComponent (cards con urgencia, filtros)
+- [x] TechWorkOrderDetailComponent (tasks checklist, materials, notes, status transitions)
+- [x] UrgencyIndicatorComponent (colores por días restantes)
+- [x] Rutas /tech + /tech/:id
 
-## Notas técnicas importantes
+### Frontend: UI Fixes
+- [x] mat-select: [(value)] → [(ngModel)] + standalone
+- [x] textarea: [value] → [(ngModel)] + standalone
+- [x] MatDatepicker para todos los campos de fecha
+- [x] DateAdapter provider global (app.config.ts)
+- [x] Clickable rows en todas las listas CRUD
+- [x] PageHeaderComponent con ng-content para botones
+- [x] CurrencyArsPipe en reports para formato ARS consistente
 
-- httpResource usa `parse` en el 2do argumento, NO `transform` (no existe)
-- Sort server-side: sortBy + order en params del httpResource
-- matSortDisableClear en todas las tablas
-- Loading spinner: resource.status() === 'loading' && !hasValue() (no isLoading())
-- ConfirmDialog solo para acciones destructivas (cancelar)
-- ConfirmDialog se importa en TS (no en template) para MatDialog.open()
+### Frontend: i18n
+- [x] 56 keys faltantes en formularios agregadas
+- [x] workOrders.actions.* (botones de transición)
+- [x] workOrders.detail.*, tasks.*, materials.*, notes.*, locations.*, technicians.*
+- [x] notifications.* keys
+- [x] pendingItems.types.*, priorities.*, statuses.*
+- [x] reports.* keys
+- [x] technician.* keys
+
+## Documentación actualizada
+
+- [x] ROADMAP.md: ~80+ items marcados como completados
+- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician
+- [x] README.md: tabla de rutas corregida (/admin/*)
+- [x] README.md: i18n marcado como implementado (custom JSON)
+- [x] TODO.md: este archivo
+
+## Próximos pasos (frontend)
+
+- Completar Billing (facturas CRUD + PDFs)
+- Completar Portal tracking (reemplazar stub)
+- Agregar Landing Page (SSG/prerender)
+- Configurar PWA (service worker, offline, install prompt)
+- Technician View: BottomNavComponent para mobile
+- Tests unitarios y E2E
