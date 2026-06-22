@@ -6,6 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ClientsService } from '../../core/services/clients.service';
@@ -33,6 +35,8 @@ interface DialogData {
     MatSelectModule,
     MatIconModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     FormsModule,
     TranslatePipe,
   ],
@@ -88,12 +92,16 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
-          <input matInput type="date" [value]="scheduledDate()" (input)="scheduledDate.set(getInputValue($event))" />
+          <input matInput [matDatepicker]="scheduledPicker" [value]="scheduledDateValue()" (dateChange)="onScheduledDateChange($event)" />
+          <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
+          <mat-datepicker #scheduledPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
-          <input matInput type="date" [value]="warrantyUntil()" (input)="warrantyUntil.set(getInputValue($event))" />
+          <input matInput [matDatepicker]="warrantyPicker" [value]="warrantyUntilValue()" (dateChange)="onWarrantyUntilChange($event)" />
+          <mat-datepicker-toggle matIconSuffix [for]="warrantyPicker"></mat-datepicker-toggle>
+          <mat-datepicker #warrantyPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -131,12 +139,30 @@ export class WorkOrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.clientsService.getAll({ limit: 100 }).subscribe({
-      next: (response) => this.clients.set(response.data),
+      next: (data) => this.clients.set(data.data),
     });
 
     this.serviceTypesService.getAll({ limit: 100 }).subscribe({
-      next: (response) => this.serviceTypes.set(response.data),
+      next: (data) => this.serviceTypes.set(data.data),
     });
+  }
+
+  scheduledDateValue(): Date | null {
+    const v = this.scheduledDate();
+    return v ? new Date(v) : null;
+  }
+
+  warrantyUntilValue(): Date | null {
+    const v = this.warrantyUntil();
+    return v ? new Date(v) : null;
+  }
+
+  onScheduledDateChange(event: { value: Date | null }): void {
+    this.scheduledDate.set(event.value ? event.value.toISOString().split('T')[0] : '');
+  }
+
+  onWarrantyUntilChange(event: { value: Date | null }): void {
+    this.warrantyUntil.set(event.value ? event.value.toISOString().split('T')[0] : '');
   }
 
   getInputValue(event: Event): string {
@@ -158,9 +184,9 @@ export class WorkOrderFormComponent implements OnInit {
     };
 
     this.workOrdersService.create(dto).subscribe({
-      next: (workOrder) => {
+      next: () => {
         this.saving.set(false);
-        this.dialogRef.close(workOrder);
+        this.dialogRef.close(true);
       },
       error: () => {
         this.saving.set(false);

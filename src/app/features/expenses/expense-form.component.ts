@@ -6,6 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { ExpensesService } from '../../core/services/expenses.service';
 import {
@@ -31,6 +33,8 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     FormsModule,
     TranslatePipe,
   ],
@@ -74,11 +78,13 @@ interface DialogData {
             <mat-label>{{ 'expenses.date' | translate }}</mat-label>
             <input
               matInput
-              type="date"
-              [value]="date()"
-              (input)="date.set(getInputValue($event))"
+              [matDatepicker]="datePicker"
+              [value]="dateValue()"
+              (dateChange)="onDateChange($event)"
               required
             />
+            <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker></mat-datepicker>
           </mat-form-field>
         </div>
 
@@ -148,6 +154,15 @@ export class ExpenseFormComponent {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  dateValue(): Date | null {
+    const v = this.date();
+    return v ? new Date(v) : null;
+  }
+
+  onDateChange(event: { value: Date | null }): void {
+    this.date.set(event.value ? event.value.toISOString().split('T')[0] : '');
   }
 
   onSubmit(event: Event): void {
