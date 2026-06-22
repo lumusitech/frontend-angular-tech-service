@@ -144,9 +144,11 @@ server.ts                    Express server (SSR entry)
 | `/admin/payments`     | Admin      | Historial de pagos                   |
 | `/admin/expenses`     | Admin      | Gastos operativos                    |
 | `/admin/billing`      | Admin      | Facturacion (placeholder)           |
-| `/admin/reports`      | Admin      | Reportes financieros (placeholder)  |
+| `/admin/reports`      | Admin      | Reportes financieros                |
+| `/admin/notifications`| Admin      | Notificaciones in-app               |
 | `/admin/settings`     | Admin      | Configuracion del negocio            |
-| `/tech`               | Tech       | Mis ordenes del dia                  |
+| `/tech`               | Tech       | Órdenes asignadas (cards)           |
+| `/tech/:id`           | Tech       | Detalle de orden del técnico        |
 | `/track`              | Publico    | Buscar orden por codigo              |
 | `/track/:code`        | Publico    | Tracking de orden                    |
 
