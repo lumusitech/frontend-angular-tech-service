@@ -8,7 +8,9 @@ type LabelType =
   | 'paymentMethod'
   | 'expenseCategory'
   | 'noteType'
-  | 'activeInactive';
+  | 'activeInactive'
+  | 'invoiceStatus'
+  | 'invoiceType';
 
 const VALUE_TO_KEY: Record<string, string> = {
   pending: 'statusLabels.pending',
@@ -45,6 +47,11 @@ const VALUE_TO_KEY: Record<string, string> = {
   internal: 'statusLabels.internal',
   workshop: 'statusLabels.workshop',
   on_site: 'statusLabels.on_site',
+  draft: 'statusLabels.draft',
+  issued: 'statusLabels.issued',
+  A: 'statusLabels.invoiceTypeA',
+  B: 'statusLabels.invoiceTypeB',
+  C: 'statusLabels.invoiceTypeC',
 };
 
 @Pipe({ name: 'statusLabel', pure: false })

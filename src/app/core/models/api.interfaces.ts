@@ -30,6 +30,15 @@ export interface LoginDto {
   password: string;
 }
 
+export interface UpdatePreferenceDto {
+  /** @example "dark" */
+  theme?: string;
+  /** @example "en" */
+  language?: string;
+  /** @example {"dashboardLayout":["kpis","pendingItems","charts"],"dashboardWidgets":{"kpis":true,"pendingItems":true}} */
+  preferences?: object;
+}
+
 export interface CreateClientDto {
   /** @example "Juan Pérez" */
   name: string;
@@ -250,4 +259,98 @@ export interface CreateInvoiceDto {
   workOrderId: string;
   /** @example "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22" */
   paymentId?: string;
+}
+
+export interface CreatePendingItemDto {
+  /** @example "Revisar garantía de repuesto" */
+  title: string;
+  /** @example "Verificar si el repuesto aún tiene garantía del proveedor" */
+  description?: string;
+  /** @example "2026-06-20" */
+  dueDate: string;
+  /** @example "work_order" */
+  type: "work_order" | "inquiry" | "maintenance" | "follow_up" | "other";
+  /** @example "high" */
+  priority?: "low" | "medium" | "high" | "urgent";
+  /** @example "work_order" */
+  referenceType?: string;
+  /** @example "e5f6a7b8-c9d0-1234-efab-345678901234" */
+  referenceId?: string;
+  /** @example "c3d4e5f6-a7b8-9012-cdef-123456789012" */
+  assignedToId?: string;
+}
+
+export interface UpdatePendingItemDto {
+  /** @example "in_progress" */
+  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  /** @example "2026-06-15T10:00:00.000Z" */
+  completedAt?: string;
+}
+
+export interface CreateInquiryDto {
+  /** @example "Juan Pérez" */
+  clientName: string;
+  /** @example "+54 11 1234-5678" */
+  clientPhone?: string;
+  /** @example "juan@email.com" */
+  clientEmail?: string;
+  /** @example "Av. Corrientes 1234, CABA" */
+  clientAddress?: string;
+  /** @example "La notebook no prende, hace ruido raro el ventilador" */
+  description: string;
+  /** @example "phone" */
+  source:
+    | "phone"
+    | "whatsapp"
+    | "email"
+    | "walk_in"
+    | "social_media"
+    | "referral";
+  /** @example "high" */
+  priority?: string;
+  /** @example "c3d4e5f6-a7b8-9012-cdef-123456789012" */
+  assignedToId?: string;
+}
+
+export interface UpdateInquiryDto {
+  status?:
+    | "new"
+    | "contacted"
+    | "reviewed"
+    | "approved"
+    | "rejected"
+    | "converted";
+  technicianNotes?: string;
+  /** @example 15000 */
+  estimatedCost?: number;
+  /** @example 2 */
+  estimatedDuration?: number;
+  /** @example "Pasta térmica, limpieza de ventiladores" */
+  materialsNeeded?: string;
+  recommendation?:
+    | "repair"
+    | "replacement"
+    | "maintenance"
+    | "inspection"
+    | "no_action";
+  adminDecision?: "approved" | "rejected" | "pending";
+  adminNotes?: string;
+  assignedToId?: string;
+}
+
+export interface ContactInquiryDto {
+  /** @example "El ventilador está sucio, necesita limpieza general y cambio de pasta térmica" */
+  technicianNotes: string;
+  /** @example 15000 */
+  estimatedCost?: number;
+  /** @example 2 */
+  estimatedDuration?: number;
+  /** @example "Pasta térmica Arctic MX-4, aire comprimido" */
+  materialsNeeded?: string;
+  recommendation?:
+    | "repair"
+    | "replacement"
+    | "maintenance"
+    | "inspection"
+    | "no_action";
 }

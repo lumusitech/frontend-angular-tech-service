@@ -4,8 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface ConfirmDialogData {
-  title: string;
-  message: string;
+  title?: string;
+  titleKey?: string;
+  message?: string;
+  messageKey?: string;
   confirmLabel?: string;
   cancelLabel?: string;
   color?: 'primary' | 'warn';
@@ -15,8 +17,8 @@ export interface ConfirmDialogData {
   selector: 'app-confirm-dialog',
   imports: [MatDialogModule, MatButtonModule, TranslatePipe],
   template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>{{ data.message }}</mat-dialog-content>
+    <h2 mat-dialog-title>{{ data.titleKey ? (data.titleKey | translate) : data.title }}</h2>
+    <mat-dialog-content>{{ data.messageKey ? (data.messageKey | translate) : data.message }}</mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button [mat-dialog-close]="false">
         {{ data.cancelLabel || ('common.cancel' | translate) }}

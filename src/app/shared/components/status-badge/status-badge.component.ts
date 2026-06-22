@@ -24,5 +24,7 @@ export class StatusBadgeComponent {
     | 'expenseCategory'
     | 'noteType'
     | 'activeInactive'
+    | 'invoiceStatus'
+    | 'invoiceType'
   >();
 }
