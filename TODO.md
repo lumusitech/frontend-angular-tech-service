@@ -9,15 +9,28 @@
 - SSR híbrido: landing/portal → SSR, admin/tech → CSR
 - pnpm como gestor de paquetes
 - socket.io-client para WebSocket real-time
+- Billing module completo (CRUD + PDF + workflow de estados)
 
 ## PRs Abiertos (pendientes de merge)
 
-| #   | Título                                   | Branch                                    | Estado |
-| --- | ---------------------------------------- | ----------------------------------------- | ------ |
-| 28  | Locale es-AR + optional chaining         | fix/locale-and-payments-optional-chaining | Open   |
-| 29  | Sortable tables + createdAt              | feat/sortable-tables-createdat            | Open   |
-| 30  | Loading spinner inteligente + preloading | perf/loading-spinner-preloading           | Open   |
-| 31  | Debounce 300ms loading spinner           | perf/loading-spinner-debounce             | Open   |
+| #   | Título                      | Branch               | Estado |
+| --- | --------------------------- | -------------------- | ------ |
+| 56  | feat: billing module        | feat/billing-module  | Open   |
+
+## Feature completada: Billing
+
+### Frontend: billing
+- [x] Interfaces en core/models/invoice.interfaces.ts
+- [x] Servicio en core/services/billing.service.ts
+- [x] InvoicesListComponent (tabla con filtros: status, tipo, cliente)
+- [x] InvoiceFormComponent (dialog crear factura con autocomplete signals + httpResource)
+- [x] InvoiceDetailComponent (detalle con workflow de estados: draft → issued → cancelled)
+- [x] PDF download (blob response)
+- [x] Status badge extendido para invoiceStatus e invoiceType
+- [x] ConfirmDialogComponent soporta titleKey/messageKey para i18n
+- [x] i18n completo (es.json + en.json, ~45 keys)
+- [x] Ruta /admin/billing con children (list + :id detail)
+- [x] Sidebar item "Facturación" ya existente
 
 ## Feature completada: Pending Items + Inquiries + Dashboard unificado
 
@@ -89,18 +102,18 @@
 - [x] pendingItems.types.*, priorities.*, statuses.*
 - [x] reports.* keys
 - [x] technician.* keys
+- [x] billing.* keys (~45 keys)
 
 ## Documentación actualizada
 
 - [x] ROADMAP.md: ~80+ items marcados como completados
-- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician
+- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician, billing
 - [x] README.md: tabla de rutas corregida (/admin/*)
 - [x] README.md: i18n marcado como implementado (custom JSON)
 - [x] TODO.md: este archivo
 
 ## Próximos pasos (frontend)
 
-- Completar Billing (facturas CRUD + PDFs)
 - Completar Portal tracking (reemplazar stub)
 - Agregar Landing Page (SSG/prerender)
 - Configurar PWA (service worker, offline, install prompt)
