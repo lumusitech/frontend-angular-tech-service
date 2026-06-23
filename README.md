@@ -11,7 +11,7 @@ Consume la API del backend NestJS. Documentacion interactiva: `http://localhost:
 | ------------- | ---------------------- | ------------------------------------------------------ |
 | Framework     | Angular 22             | Standalone, signals, signal forms, resource API        |
 | SSR           | `@angular/ssr`         | Hibrido: SSG landing, SSR portal, CSR admin            |
-| PWA           | `@angular/pwa`         | Planificado, no implementado                            |
+| PWA           | `@angular/pwa`         | Implementado (service worker, manifest, install prompt) |
 | Styling       | Tailwind CSS 4         | Utility-first, mobile-first (primario)                 |
 | UI Components | Angular Material 22    | Dialog, Table, Autocomplete, Sidenav (sin tema custom) |
 | Charts        | Chart.js + ng2-charts  | Line, bar, donut, pie                                  |
@@ -143,7 +143,7 @@ server.ts                    Express server (SSR entry)
 | `/admin/inquiries/:id`| Admin      | Detalle de consulta                  |
 | `/admin/payments`     | Admin      | Historial de pagos                   |
 | `/admin/expenses`     | Admin      | Gastos operativos                    |
-| `/admin/billing`      | Admin      | Facturacion (placeholder)           |
+| `/admin/billing`      | Admin      | Facturacion                         |
 | `/admin/reports`      | Admin      | Reportes financieros                |
 | `/admin/notifications`| Admin      | Notificaciones in-app               |
 | `/admin/settings`     | Admin      | Configuracion del negocio            |
@@ -192,14 +192,19 @@ El portal y los PDFs usan la configuracion del negocio (nombre, logo, colores) q
 
 ## PWA
 
-La app es instalable como PWA en dispositivos mobiles. El primer request es server-rendered (SSR/SSG), las siguientes navegaciones las maneja el service worker (CSR). El service worker cachea respuestas de API para soporte offline parcial.
+La app es instalable como PWA en dispositivos moviles.
+
+- **Service worker:** `@angular/service-worker` generado en build de produccion (`ngsw-worker.js`, `ngsw.json`).
+- **Manifest:** `public/manifest.webmanifest` con nombre, iconos, tema y colores.
+- **Install prompt:** banner flotante que aparece cuando el navegador permite instalar la app.
+- **Cache:** assets, fuentes, i18n JSON y respuestas de `/api/**` (estrategia `networkFirst` con fallback de 1h).
+- **Comportamiento:** el primer request es server-rendered (SSR/SSG); las siguientes navegaciones las maneja el service worker (CSR).
 
 ## i18n
 
 - Idioma default: Espanol (Argentina)
-- Archivos de traduccion: `src/i18n/messages.es.xlf`
-- Generar mensajes: `ng extract-i18n`
-- Build con idiomas: `ng build --localize`
+- Archivos de traduccion: `public/i18n/es.json`, `public/i18n/en.json`
+- Approach custom JSON + TranslatePipe (sin `@angular/localize`)
 
 ## Sync de tipos con Backend
 
