@@ -19,7 +19,7 @@ import { IncomeChartComponent } from './income-chart.component';
 import { ExpensesChartComponent } from './expenses-chart.component';
 import { ServicesRankingComponent } from './services-ranking.component';
 import { TechnicianRankingComponent } from './technician-ranking.component';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 
@@ -37,7 +37,6 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
     ServicesRankingComponent,
     TechnicianRankingComponent,
     DecimalPipe,
-    DatePipe,
     TranslatePipe,
     CurrencyArsPipe,
   ],

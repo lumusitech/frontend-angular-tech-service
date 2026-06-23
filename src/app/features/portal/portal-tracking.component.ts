@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../core/services/theme.service';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { PortalSearchComponent } from './portal-search.component';
 import { PortalResultComponent } from './portal-result.component';
 
@@ -10,7 +9,6 @@ import { PortalResultComponent } from './portal-result.component';
   selector: 'app-portal-tracking',
   imports: [
     MatIconModule,
-    TranslatePipe,
     PortalSearchComponent,
     PortalResultComponent,
   ],
