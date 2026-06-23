@@ -169,11 +169,11 @@ server.ts                          # Express server (SSR entry point)
 - [x] Install Angular Material (`ng add @angular/material`) — componentes, sin tema custom
 - [x] Configure Tailwind CSS 4 como estilos primarios (`@import 'tailwindcss'` en styles.css)
 - [x] Import Material prebuilt theme despues de Tailwind en styles.css
-- [ ] Install Chart.js + ng2-charts
+- [x] Install Chart.js + ng2-charts
 - [x] Install `swagger-typescript-api` (dev dependency)
 - [x] Configure fonts (Inter + JetBrains Mono via Google Fonts)
-- [ ] Configure i18n (`@angular/localize`) — Implementado con approach custom (JSON + TranslatePipe)
-- [ ] Configure PWA (`ng add @angular/pwa`) — Planificado, no implementado
+- [x] Configure i18n (`@angular/localize`) — Implementado con approach custom (JSON + TranslatePipe)
+- [x] Configure PWA (`ng add @angular/pwa`) — Implementado
 - [x] Setup environment files with API URL
 - [x] Configure proxy para desarrollo (`proxy.conf.json` → localhost:3000)
 - [x] Generate types from Swagger (`pnpm sync:types`)
@@ -196,10 +196,10 @@ server.ts                          # Express server (SSR entry point)
   - [x] WorkOrdersService
   - [x] PaymentsService
   - [x] ExpensesService
-  - [ ] BillingService
-  - [ ] ReportsService
-  - [ ] NotificationsService
-  - [ ] PortalService
+  - [x] BillingService
+  - [x] ReportsService
+  - [x] NotificationsService
+  - [x] PortalService
   - [x] SettingsService (dashboard layout, theme, user preferences)
   - [x] DashboardService
   - [x] PendingItemsService
@@ -211,17 +211,17 @@ server.ts                          # Express server (SSR entry point)
 
 - [x] HeaderComponent (topbar with search, dark mode toggle, language switcher, user avatar)
 - [x] SidebarComponent (collapsible, icon-only on mobile, text on desktop)
-- [ ] BottomNavComponent (5 tabs max for technician view)
+- [x] BottomNavComponent (5 tabs max for technician view)
 - [ ] CardComponent (Material card with header, content, actions) — No implementado, se usan cards inline con Tailwind
 - [ ] DataTableComponent (Material table with sorting, pagination, filters) — No implementado, se usa MatTable directamente
 - [x] StatusBadgeComponent (colored badge: pending, in_progress, completed, cancelled)
-- [ ] UrgencyIndicatorComponent (days remaining + color: red/yellow/green/white)
+- [x] UrgencyIndicatorComponent (days remaining + color: red/yellow/green/white)
 - [x] LoadingSpinnerComponent (full-page and inline)
 - [x] EmptyStateComponent (icon + message + action button)
 - [x] ConfirmDialogComponent (Material dialog with confirm/cancel)
 - [x] PageHeaderComponent (title + subtitle + action button)
 - [x] ErrorStateComponent (error icon + message + retry button)
-- [ ] TrackingCodePipe (format: `TS-XXXXX`) — Implementado como TrackingCodeComponent
+- [x] TrackingCodeComponent (format: `TS-XXXXX`) — Implementado como componente
 - [ ] RelativeDatePipe (hace 2 dias, en 3 dias)
 - [x] CurrencyArsPipe (formato argentino: $1.234,56)
 - [x] StatusLabelPipe (traduce estados a labels)
@@ -237,7 +237,7 @@ server.ts                          # Express server (SSR entry point)
   - [x] Topbar (search, dark mode toggle, language switcher, user menu)
   - [x] Content area with breadcrumbs
   - [x] Responsive: sidebar collapses to icon-only on tablet, hidden on mobile
-- [ ] TechLayoutComponent
+- [x] TechLayoutComponent
       - [x] Bottom tab bar (5 tabs max: Órdenes, Notificaciones, Perfil)
       - [x] Header with business name + avatar
       - [x] Content area
@@ -380,30 +380,30 @@ server.ts                          # Express server (SSR entry point)
 
 ### 13. `features/reports/` — Reportes
 
-- [ ] ReportsDashboardComponent
-  - [ ] Period selector (daily, weekly, monthly, yearly, custom range)
-  - [ ] KPI summary cards
-- [ ] IncomeChartComponent (line chart, monthly trend)
-- [ ] ExpensesChartComponent (bar chart by category)
+- [x] ReportsDashboardComponent
+  - [x] Period selector (daily, weekly, monthly, yearly, custom range)
+  - [x] KPI summary cards
+- [x] IncomeChartComponent (line chart, monthly trend)
+- [x] ExpensesChartComponent (bar chart by category)
 - [ ] ProfitChartComponent (income - expenses - materials)
-- [ ] ServicesRankingComponent (top services table + chart)
-- [ ] TechnicianRankingComponent (leaderboard: completed, avg time, revenue)
+- [x] ServicesRankingComponent (top services table + chart)
+- [x] TechnicianRankingComponent (leaderboard: completed, avg time, revenue)
 - [ ] TechnicianDetailComponent (individual performance)
 - [ ] ClientReportComponent (client history: orders, payments, KPIs)
 - [ ] ExportButtons (PDF download for budget/receipt)
 
 ### 14. `features/notifications/` — Notificaciones
 
-- [ ] NotificationsListComponent
-  - [ ] List with type icon, title, message, timestamp
-  - [ ] Unread indicator
-  - [ ] Mark as read / mark all as read
+- [x] NotificationsListComponent
+  - [x] List with type icon, title, message, timestamp
+  - [x] Unread indicator
+  - [x] Mark as read / mark all as read
 - [ ] NotificationBellComponent (topbar badge with unread count)
-- [ ] WebSocketService
-  - [ ] Connect with JWT token
-  - [ ] Listen for new notifications
-  - [ ] Update unread count in real-time
-  - [ ] Reconnect on disconnect
+- [x] WebSocketService
+  - [x] Connect with JWT token
+  - [x] Listen for new notifications
+  - [x] Update unread count in real-time
+  - [x] Reconnect on disconnect
 
 ### 15. `features/settings/` — Configuracion
 
@@ -415,29 +415,29 @@ server.ts                          # Express server (SSR entry point)
 
 ### 16. `features/technician/` — Vista Tecnico
 
-- [ ] TechWorkOrdersComponent (my assigned orders)
-  - [ ] Card-based layout (not table)
-  - [ ] Each card shows:
-    - [ ] Tracking code
-    - [ ] Client name
-    - [ ] Service type
-    - [ ] Status badge
-    - [ ] Urgency indicator (days remaining + color)
-    - [ ] Progress bar (tasks completed / total)
-    - [ ] Scheduled date
-  - [ ] Filters: status, urgency
-  - [ ] Sort by: urgency (most urgent first)
-- [ ] TechWorkOrderDetailComponent
-  - [ ] Tasks checklist (mark complete)
-  - [ ] Add materials used
-  - [ ] Add notes
-  - [ ] View diagnosis
-  - [ ] Status transition (in_progress -> completed)
-- [ ] UrgencyColorCoding:
-  - [ ] Red (#DC2626): overdue or due today
-  - [ ] Yellow (#D97706): 1-3 days remaining
-  - [ ] Green (#059669): 4+ days remaining
-  - [ ] Gray (#6B7280): no date set
+- [x] TechWorkOrdersComponent (my assigned orders)
+  - [x] Card-based layout (not table)
+  - [x] Each card shows:
+    - [x] Tracking code
+    - [x] Client name
+    - [x] Service type
+    - [x] Status badge
+    - [x] Urgency indicator (days remaining + color)
+    - [x] Progress bar (tasks completed / total)
+    - [x] Scheduled date
+  - [x] Filters: status, urgency
+  - [x] Sort by: urgency (most urgent first)
+- [x] TechWorkOrderDetailComponent
+  - [x] Tasks checklist (mark complete)
+  - [x] Add materials used
+  - [x] Add notes
+  - [x] View diagnosis
+  - [x] Status transition (in_progress -> completed)
+- [x] UrgencyColorCoding:
+  - [x] Red (#DC2626): overdue or due today
+  - [x] Yellow (#D97706): 1-3 days remaining
+  - [x] Green (#059669): 4+ days remaining
+  - [x] Gray (#6B7280): no date set
 
 ### 17. `features/portal/` — Portal Publico
 
