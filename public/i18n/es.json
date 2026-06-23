@@ -672,6 +672,13 @@
     "widgetQuickActions": "Acciones rápidas",
     "widgetTopClients": "Top Clientes"
   },
+  "pwa": {
+    "title": "Instalar Tech Service",
+    "subtitle": "Accedé más rápido desde tu pantalla de inicio.",
+    "install": "Instalar",
+    "dismiss": "Ahora no",
+    "installAriaLabel": "Instalar aplicación"
+  },
   "landing": {
     "header": {
       "features": "Funcionalidades",

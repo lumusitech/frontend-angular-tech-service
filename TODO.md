@@ -13,9 +13,7 @@
 
 ## PRs Abiertos (pendientes de merge)
 
-| #   | Título                      | Branch               | Estado |
-| --- | --------------------------- | -------------------- | ------ |
-| 56  | feat: billing module        | feat/billing-module  | Open   |
+Ninguno — todos los PRs mergeados.
 
 ## Feature completada: Billing
 
@@ -143,14 +141,26 @@
 ## Documentación actualizada
 
 - [x] ROADMAP.md: ~80+ items marcados como completados
-- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician, billing, portal
-- [x] README.md: tabla de rutas corregida (/admin/*)
-- [x] README.md: i18n marcado como implementado (custom JSON)
+- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician, billing, portal, pwa
+- [x] README.md: tabla de rutas corregida (/admin/*), billing ya no es placeholder
+- [x] README.md: i18n path corregido a `public/i18n/*.json`
+- [x] README.md: sección PWA actualizada como implementada
 - [x] TODO.md: este archivo
+
+## Feature completada: PWA
+
+### Frontend: PWA
+- [x] `ng add @angular/pwa` (service worker + manifest + iconos)
+- [x] `ngsw-config.json` con cacheo de assets, i18n JSON y API `/api/**` (networkFirst)
+- [x] `manifest.webmanifest` con nombre, descripción, iconos, theme/background color
+- [x] Meta tags `theme-color` y `apple-mobile-web-app-*` en `index.html`
+- [x] `PwaService` con listener de `beforeinstallprompt` y `appinstalled`
+- [x] `InstallPromptComponent` (banner flotante con i18n)
+- [x] Ajuste de budgets de bundle en `angular.json`
+- [x] Build de producción exitoso con `ngsw-worker.js` y `ngsw.json`
 
 ## Próximos pasos (frontend)
 
-- Configurar PWA (service worker, offline, install prompt)
 - Technician View: BottomNavComponent para mobile
 - Tests unitarios y E2E
 

@@ -35,6 +35,9 @@ importers:
       '@angular/router':
         specifier: ^22.0.0
         version: 22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@angular/service-worker':
+        specifier: ^22.0.0
+        version: 22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/ssr':
         specifier: ^22.0.0
         version: 22.0.3(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-server@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/compiler@22.0.2)(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2))(@angular/router@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2))
@@ -59,13 +62,16 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^22.0.0
-        version: 22.0.3(h7at6tfihuzojj4adad5n4qdry)
+        version: 22.0.3(pxnyvor34pknsfwjxvpxm7whaa)
       '@angular/cli':
         specifier: ^22.0.0
         version: 22.0.3(@types/node@20.19.43)(chokidar@5.0.0)
       '@angular/compiler-cli':
         specifier: ^22.0.0
         version: 22.0.2(@angular/compiler@22.0.2)(typescript@6.0.3)
+      '@angular/pwa':
+        specifier: ^22.0.3
+        version: 22.0.3(@angular/cli@22.0.3(@types/node@20.19.43)(chokidar@5.0.0))(chokidar@5.0.0)
       '@tailwindcss/postcss':
         specifier: ^4.1.12
         version: 4.3.1
@@ -321,6 +327,15 @@ packages:
       '@angular/platform-browser': 22.0.2
       rxjs: ^6.5.3 || ^7.4.0
 
+  '@angular/pwa@22.0.3':
+    resolution: {integrity: sha512-uq4VPoLOf6sYzfXEZSnQCGRQ8BTbhgQU1MChI8lliIWroPUE/2QeDBmfluiCMAD1zXXH1qKhSdVLKopOIKX/jw==}
+    engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    peerDependencies:
+      '@angular/cli': ^22.0.3
+    peerDependenciesMeta:
+      '@angular/cli':
+        optional: true
+
   '@angular/router@22.0.2':
     resolution: {integrity: sha512-uiYlcbOyBliFq1v7O3nMyZtM8scDBurjk4AU2wEPWxSVAXuEjyfnAvowyPzVzGYAEKrsYtcg2TWSsQraqHUbnA==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
@@ -328,6 +343,14 @@ packages:
       '@angular/common': 22.0.2
       '@angular/core': 22.0.2
       '@angular/platform-browser': 22.0.2
+      rxjs: ^6.5.3 || ^7.4.0
+
+  '@angular/service-worker@22.0.2':
+    resolution: {integrity: sha512-mUGA3PwTltRI2i3/fbJrlprqdtzD/qRZeoGc70Z9fL/4kVYUfz9lC2PNkKf5vgsl3Z4om5BXKM11uZGWtI9urQ==}
+    engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
+    hasBin: true
+    peerDependencies:
+      '@angular/core': 22.0.2
       rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/ssr@22.0.3':
@@ -3472,7 +3495,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@22.0.3(h7at6tfihuzojj4adad5n4qdry)':
+  '@angular/build@22.0.3(pxnyvor34pknsfwjxvpxm7whaa)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.3(chokidar@5.0.0)
@@ -3507,6 +3530,7 @@ snapshots:
       '@angular/core': 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)
       '@angular/platform-browser': 22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))
       '@angular/platform-server': 22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/compiler@22.0.2)(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@angular/service-worker': 22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/ssr': 22.0.3(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-server@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/compiler@22.0.2)(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2))(@angular/router@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2))
       lmdb: 3.5.4
       postcss: 8.5.15
@@ -3629,11 +3653,27 @@ snapshots:
       tslib: 2.8.1
       xhr2: 0.2.1
 
+  '@angular/pwa@22.0.3(@angular/cli@22.0.3(@types/node@20.19.43)(chokidar@5.0.0))(chokidar@5.0.0)':
+    dependencies:
+      '@angular-devkit/schematics': 22.0.3(chokidar@5.0.0)
+      '@schematics/angular': 22.0.3(chokidar@5.0.0)
+      parse5-html-rewriting-stream: 8.0.1
+    optionalDependencies:
+      '@angular/cli': 22.0.3(@types/node@20.19.43)(chokidar@5.0.0)
+    transitivePeerDependencies:
+      - chokidar
+
   '@angular/router@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(@angular/platform-browser@22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)))(rxjs@7.8.2)':
     dependencies:
       '@angular/common': 22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/core': 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)
       '@angular/platform-browser': 22.0.2(@angular/common@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))
+      rxjs: 7.8.2
+      tslib: 2.8.1
+
+  '@angular/service-worker@22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/core': 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
 

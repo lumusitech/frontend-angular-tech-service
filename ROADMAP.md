@@ -467,11 +467,11 @@ server.ts                          # Express server (SSR entry point)
 
 ### 18. PWA Configuration
 
-- [ ] Service worker setup (`ng add @angular/pwa`)
-- [ ] SSR + PWA interaction: primer request es SSR/SSG, siguientes son CSR via service worker
-- [ ] Offline support (cache API responses con ngsw-config.json data groups)
-- [ ] Install prompt (add to home screen)
-- [ ] App manifest (name, icons, theme color)
+- [x] Service worker setup (`ng add @angular/pwa`)
+- [x] SSR + PWA interaction: primer request es SSR/SSG, siguientes son CSR via service worker
+- [x] Offline support (cache API responses con ngsw-config.json data groups)
+- [x] Install prompt (add to home screen)
+- [x] App manifest (name, icons, theme color)
 - [ ] Push notifications setup (future)
 
 ### 19. i18n
