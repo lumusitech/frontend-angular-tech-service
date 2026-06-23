@@ -598,6 +598,62 @@
     "contactedAt": "Contactada",
     "reviewedAt": "Revisada"
   },
+  "portal": {
+    "search": {
+      "title": "Rastree su orden de trabajo",
+      "subtitle": "Ingrese el código que recibió en su comprobante",
+      "placeholder": "Código de seguimiento",
+      "button": "Rastrear",
+      "newSearch": "Nueva búsqueda",
+      "example": "Ejemplo: TS-A1B2C3"
+    },
+    "info": {
+      "serviceType": "Tipo de servicio",
+      "client": "Cliente",
+      "diagnosis": "Diagnóstico",
+      "location": "Ubicación",
+      "locationWorkshop": "Taller",
+      "locationOnSite": "A domicilio",
+      "created": "Creada",
+      "scheduled": "Programada",
+      "started": "Iniciada",
+      "completed": "Completada",
+      "warranty": "Garantía hasta"
+    },
+    "timeline": {
+      "pending": "Pendiente",
+      "assigned": "Asignada",
+      "inProgress": "En progreso",
+      "completed": "Completada",
+      "delivered": "Entregada",
+      "postponed": "Pospuesta",
+      "cancelled": "Cancelada"
+    },
+    "tasks": {
+      "title": "Tareas",
+      "progress": "{{completed}} de {{total}} completadas"
+    },
+    "notes": {
+      "title": "Notas y actualizaciones",
+      "types": {
+        "diagnosis": "Diagnóstico",
+        "issue": "Problema",
+        "observation": "Observación"
+      }
+    },
+    "payments": {
+      "title": "Resumen de pagos",
+      "total": "Total pagado",
+      "fullyPaid": "Pagado completamente",
+      "partial": "Pago parcial",
+      "installments": "{{pending}} cuotas pendientes de {{total}}"
+    },
+    "notFound": {
+      "title": "Orden no encontrada",
+      "message": "No se encontró ninguna orden con ese código. Verifique e intente nuevamente.",
+      "retry": "Reintentar"
+    }
+  },
   "settings": {
     "title": "Configuración",
     "subtitle": "Personaliza la apariencia y el comportamiento",
