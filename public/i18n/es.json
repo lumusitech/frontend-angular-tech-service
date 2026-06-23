@@ -671,5 +671,79 @@
     "widgetCharts": "Gráficos",
     "widgetQuickActions": "Acciones rápidas",
     "widgetTopClients": "Top Clientes"
+  },
+  "landing": {
+    "header": {
+      "features": "Funcionalidades",
+      "howItWorks": "Cómo funciona",
+      "login": "Iniciar Sesión"
+    },
+    "hero": {
+      "title": "Gestión de servicios técnicos simplificada",
+      "subtitle": "Órdenes de trabajo, tracking público, pagos y reportes en un solo lugar. Centralizá y optimizá tus operaciones de instalación, mantenimiento y reparación.",
+      "cta": "Comenzar"
+    },
+    "features": {
+      "title": "Todo lo que necesitás",
+      "subtitle": "Una plataforma completa para gestionar tu negocio de servicios técnicos.",
+      "items": {
+        "workOrders": {
+          "title": "Órdenes de Trabajo",
+          "description": "Creá, asigná y seguí cada trabajo con código de tracking único, estados, técnicos y materiales."
+        },
+        "tracking": {
+          "title": "Tracking Público",
+          "description": "Tus clientes rastrean su orden con un código o escaneando un QR, sin necesidad de login."
+        },
+        "payments": {
+          "title": "Pagos y Facturación",
+          "description": "Cobrá con MercadoPago, tarjetas o efectivo. Facturá electrónicamente con ARCA/AFIP."
+        },
+        "dashboard": {
+          "title": "Dashboard y Reportes",
+          "description": "KPIs en tiempo real, gráficos de tendencia, ranking de técnicos y reportes financieros."
+        },
+        "multiTenant": {
+          "title": "Multi-tenant",
+          "description": "Configurá logo, nombre y colores de tu negocio. Preparado para crecer."
+        },
+        "notifications": {
+          "title": "Notificaciones en Tiempo Real",
+          "description": "Alertas instantáneas vía WebSocket para nuevos trabajos, pagos y cambios de estado."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "¿Cómo funciona?",
+      "subtitle": "Cuatro pasos simples para digitalizar tu negocio.",
+      "steps": {
+        "1": {
+          "title": "Crear Orden",
+          "description": "Registrá el trabajo con cliente, tipo de servicio y prioridad."
+        },
+        "2": {
+          "title": "Asignar Técnico",
+          "description": "Elegí el técnico o técnicos que van a realizar el trabajo."
+        },
+        "3": {
+          "title": "Cliente Trackea",
+          "description": "El cliente rastrea el estado con su código de seguimiento."
+        },
+        "4": {
+          "title": "Cobrar y Facturar",
+          "description": "Registrá el pago y emití la factura electrónica."
+        }
+      }
+    },
+    "cta": {
+      "title": "¿Listo para digitalizar tu negocio?",
+      "subtitle": "Empezá a gestionar tus servicios técnicos de forma integral.",
+      "button": "Comenzar ahora"
+    },
+    "footer": {
+      "login": "Iniciar Sesión",
+      "track": "Rastrear Orden",
+      "copyright": "© 2026 Tech Service. Todos los derechos reservados."
+    }
   }
 }
