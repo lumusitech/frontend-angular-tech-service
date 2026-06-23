@@ -145,6 +145,7 @@ Ninguno — todos los PRs mergeados.
 - [x] README.md: tabla de rutas corregida (/admin/*), billing ya no es placeholder
 - [x] README.md: i18n path corregido a `public/i18n/*.json`
 - [x] README.md: sección PWA actualizada como implementada
+- [x] ROADMAP.md: bottom nav de tech layout marcado como completado
 - [x] TODO.md: este archivo
 
 ## Feature completada: PWA
@@ -159,9 +160,19 @@ Ninguno — todos los PRs mergeados.
 - [x] Ajuste de budgets de bundle en `angular.json`
 - [x] Build de producción exitoso con `ngsw-worker.js` y `ngsw.json`
 
+## Feature completada: BottomNav para vista técnico
+
+### Frontend: technician bottom nav
+- [x] `BottomNavComponent` con 3 tabs: Órdenes, Notificaciones, Perfil
+- [x] Navegación manual con detección de tab activo por URL
+- [x] Badge de notificaciones no leídas en tab correspondiente
+- [x] Integrado en `TechLayoutComponent` con padding inferior para el contenido
+- [x] Rutas `/tech/notifications` y `/tech/settings` agregadas
+- [x] i18n keys `technician.nav.*` en `es.json` y `en.json`
+- [x] Build de producción exitoso
+
 ## Próximos pasos (frontend)
 
-- Technician View: BottomNavComponent para mobile
 - Tests unitarios y E2E
 
 ## Mejoras a futuro

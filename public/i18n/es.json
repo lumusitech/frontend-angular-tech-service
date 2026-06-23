@@ -548,7 +548,12 @@
     "daysRemaining": "días restantes",
     "dueToday": "Vence hoy",
     "overdue": "Vencida",
-    "noDate": "Sin fecha"
+    "noDate": "Sin fecha",
+    "nav": {
+      "orders": "Órdenes",
+      "notifications": "Notificaciones",
+      "profile": "Perfil"
+    }
   },
   "inquiries": {
     "title": "Consultas",

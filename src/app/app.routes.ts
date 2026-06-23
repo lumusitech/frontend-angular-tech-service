@@ -178,6 +178,18 @@ export const routes: Routes = [
             (m) => m.TechWorkOrderDetailComponent,
           ),
       },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/notifications/notifications-list.component').then(
+            (m) => m.NotificationsListComponent,
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+      },
     ],
   },
   { path: '', loadComponent: () => import('./features/landing/landing.component').then((m) => m.LandingComponent) },
