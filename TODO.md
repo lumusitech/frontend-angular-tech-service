@@ -104,17 +104,35 @@
 - [x] technician.* keys
 - [x] billing.* keys (~45 keys)
 
+## Feature completada: Portal Tracking
+
+### Frontend: portal
+- [x] Interfaces en core/models/portal.interfaces.ts (PortalResponse, PortalTask, PortalNote, PortalPaymentSummary)
+- [x] Servicio en core/services/portal.service.ts (track by code)
+- [x] PortalTrackingComponent (contenedor orquestador: search vs result)
+- [x] PortalSearchComponent (form con input + botón rastrear)
+- [x] PortalResultComponent (httpResource fetch + layout de resultados)
+- [x] PortalStatusTimelineComponent (timeline vertical: pending → assigned → in_progress → completed → delivered)
+- [x] PortalTasksComponent (progress bar + checklist de tareas)
+- [x] PortalNotesComponent (notas públicas con icono por tipo)
+- [x] PortalPaymentSummaryComponent (total pagado + estado + cuotas)
+- [x] Rutas /track y /track/:code (SSR RenderMode.Server)
+- [x] i18n completo (es.json + en.json, ~40 keys portal.*)
+- [x] Build exitoso (browser + server bundles)
+
+### Backend: portal controller
+- [x] Agregado @ApiOkResponse({ type: PortalResponseDto }) para codegen de Swagger
+
 ## Documentación actualizada
 
 - [x] ROADMAP.md: ~80+ items marcados como completados
-- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician, billing
+- [x] ROADMAP.md: secciones pending-items, inquiries, notifications, reports, technician, billing, portal
 - [x] README.md: tabla de rutas corregida (/admin/*)
 - [x] README.md: i18n marcado como implementado (custom JSON)
 - [x] TODO.md: este archivo
 
 ## Próximos pasos (frontend)
 
-- Completar Portal tracking (reemplazar stub)
 - Agregar Landing Page (SSG/prerender)
 - Configurar PWA (service worker, offline, install prompt)
 - Technician View: BottomNavComponent para mobile

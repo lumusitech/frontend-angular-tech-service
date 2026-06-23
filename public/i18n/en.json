@@ -598,6 +598,62 @@
     "contactedAt": "Contacted",
     "reviewedAt": "Reviewed"
   },
+  "portal": {
+    "search": {
+      "title": "Track your work order",
+      "subtitle": "Enter the code you received on your receipt",
+      "placeholder": "Tracking code",
+      "button": "Track",
+      "newSearch": "New search",
+      "example": "Example: TS-A1B2C3"
+    },
+    "info": {
+      "serviceType": "Service type",
+      "client": "Client",
+      "diagnosis": "Diagnosis",
+      "location": "Location",
+      "locationWorkshop": "Workshop",
+      "locationOnSite": "On site",
+      "created": "Created",
+      "scheduled": "Scheduled",
+      "started": "Started",
+      "completed": "Completed",
+      "warranty": "Warranty until"
+    },
+    "timeline": {
+      "pending": "Pending",
+      "assigned": "Assigned",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "delivered": "Delivered",
+      "postponed": "Postponed",
+      "cancelled": "Cancelled"
+    },
+    "tasks": {
+      "title": "Tasks",
+      "progress": "{{completed}} of {{total}} completed"
+    },
+    "notes": {
+      "title": "Notes and updates",
+      "types": {
+        "diagnosis": "Diagnosis",
+        "issue": "Issue",
+        "observation": "Observation"
+      }
+    },
+    "payments": {
+      "title": "Payment summary",
+      "total": "Total paid",
+      "fullyPaid": "Fully paid",
+      "partial": "Partial payment",
+      "installments": "{{pending}} installments pending of {{total}}"
+    },
+    "notFound": {
+      "title": "Order not found",
+      "message": "No order found with that code. Please check and try again.",
+      "retry": "Retry"
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Customize appearance and behavior",

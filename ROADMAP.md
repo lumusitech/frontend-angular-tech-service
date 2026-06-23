@@ -440,21 +440,30 @@ server.ts                          # Express server (SSR entry point)
 
 ### 17. `features/portal/` — Portal Publico
 
-- [ ] PortalTrackingComponent (no auth required)
-  - [ ] Input: tracking code (manual input or from URL `/track/:code`)
-  - [ ] Auto-fetch on URL param
-- [ ] TrackingResultComponent
-  - [ ] Business branding (logo, name, colors from API settings)
-  - [ ] Status timeline (vertical, visual)
-    - [ ] Completed steps: green with checkmark
-    - [ ] Current step: blue with pulse animation
-    - [ ] Pending steps: gray
-  - [ ] Tasks summary (completed count / total)
-  - [ ] Payment summary (total paid, pending)
-  - [ ] Download buttons (budget PDF, receipt PDF)
-- [ ] TrackingNotFoundComponent
-  - [ ] Friendly message: "No se encontro ninguna orden con ese codigo"
-  - [ ] Retry input
+- [x] PortalTrackingComponent (no auth required)
+  - [x] Input: tracking code (manual input or from URL `/track/:code`)
+  - [x] Auto-fetch on URL param
+- [x] PortalSearchComponent (form with input + track button)
+- [x] PortalResultComponent (fetch + layout with httpResource)
+  - [x] Status timeline (vertical, visual)
+    - [x] Completed steps: green with checkmark
+    - [x] Current step: blue with pulse animation
+    - [x] Pending steps: gray
+    - [x] Cancelled: red with X
+    - [x] Postponed: orange
+  - [x] Info card (service type, client, location, dates, diagnosis)
+  - [x] Tasks summary (progress bar + checklist)
+  - [x] Public notes (diagnosis, issue, observation — no internal)
+  - [x] Payment summary (total paid, status, installments)
+  - [x] Error state (404 friendly message + retry)
+- [x] PortalStatusTimelineComponent (visual vertical timeline)
+- [x] PortalTasksComponent (progress bar + task checklist)
+- [x] PortalNotesComponent (notes with type icon + date)
+- [x] PortalPaymentSummaryComponent (total + status + installments)
+- [x] PortalService (track by code)
+- [x] Portal interfaces (PortalResponse, PortalTask, PortalNote, PortalPaymentSummary)
+- [x] i18n (es.json + en.json, ~40 keys)
+- [x] SSR compatible (RenderMode.Server configured in app.routes.server.ts)
 
 ### 18. PWA Configuration
 
