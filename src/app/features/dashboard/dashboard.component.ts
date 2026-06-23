@@ -18,11 +18,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
-import { CurrencyPipe, DatePipe, SlicePipe } from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData } from 'chart.js';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
+import { ChartConfiguration, ChartData } from 'chart.js';
+import { KpiCardsComponent } from './widgets/kpi-cards.component';
+import { PendingItemsWidgetComponent } from './widgets/pending-items-widget.component';
+import { InquiriesWidgetComponent } from './widgets/inquiries-widget.component';
+import { ChartsWidgetComponent } from './widgets/charts-widget.component';
+import { QuickActionsWidgetComponent } from './widgets/quick-actions-widget.component';
+import { TopClientsWidgetComponent } from './widgets/top-clients-widget.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,13 +34,14 @@ import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
     MatButtonModule,
     MatProgressSpinnerModule,
     ErrorStateComponent,
-    CurrencyPipe,
-    DatePipe,
-    SlicePipe,
-    BaseChartDirective,
     DragDropModule,
     TranslatePipe,
-    StatusLabelPipe,
+    KpiCardsComponent,
+    PendingItemsWidgetComponent,
+    InquiriesWidgetComponent,
+    ChartsWidgetComponent,
+    QuickActionsWidgetComponent,
+    TopClientsWidgetComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -89,393 +93,32 @@ import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
                 }
                 @switch (widgetId) {
                   @case ('kpis') {
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                              {{ 'dashboard.totalOrders' | translate }}
-                            </p>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                              {{ summary()!.kpis.workOrderCount }}
-                            </p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {{ summary()!.kpis.completedCount }}
-                              {{ 'dashboard.completed' | translate }}
-                            </p>
-                          </div>
-                          <div
-                            class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center"
-                          >
-                            <mat-icon class="text-blue-600 dark:text-blue-400">assignment</mat-icon>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                              {{ 'dashboard.totalIncome' | translate }}
-                            </p>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                              {{
-                                summary()!.kpis.totalIncome | currency: 'ARS' : 'symbol' : '1.0-0'
-                              }}
-                            </p>
-                            <p
-                              class="text-xs mt-1"
-                              [class.text-green-600]="summary()!.trends.incomeChange >= 0"
-                              [class.text-red-600]="summary()!.trends.incomeChange < 0"
-                            >
-                              {{ summary()!.trends.incomeChange >= 0 ? '+' : ''
-                              }}{{ summary()!.trends.incomeChange }}%
-                              {{ 'dashboard.vsLastMonth' | translate }}
-                            </p>
-                          </div>
-                          <div
-                            class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center"
-                          >
-                            <mat-icon class="text-emerald-600 dark:text-emerald-400"
-                              >payments</mat-icon
-                            >
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                              {{ 'dashboard.netProfit' | translate }}
-                            </p>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                              {{ summary()!.kpis.netProfit | currency: 'ARS' : 'symbol' : '1.0-0' }}
-                            </p>
-                            <p
-                              class="text-xs mt-1"
-                              [class.text-green-600]="summary()!.trends.profitChange >= 0"
-                              [class.text-red-600]="summary()!.trends.profitChange < 0"
-                            >
-                              {{ summary()!.trends.profitChange >= 0 ? '+' : ''
-                              }}{{ summary()!.trends.profitChange }}%
-                              {{ 'dashboard.vsLastMonth' | translate }}
-                            </p>
-                          </div>
-                          <div
-                            class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center"
-                          >
-                            <mat-icon class="text-purple-600 dark:text-purple-400"
-                              >trending_up</mat-icon
-                            >
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                              {{ 'dashboard.avgTicket' | translate }}
-                            </p>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                              {{
-                                summary()!.kpis.averageTicket | currency: 'ARS' : 'symbol' : '1.0-0'
-                              }}
-                            </p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {{ summary()!.kpis.completionRate }}%
-                              {{ 'dashboard.completionRate' | translate }}
-                            </p>
-                          </div>
-                          <div
-                            class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center"
-                          >
-                            <mat-icon class="text-orange-600 dark:text-orange-400"
-                              >receipt</mat-icon
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" />
                   }
                   @case ('pendingItems') {
-                    @if (
-                      pendingItemsResource.hasValue() &&
-                      pendingItemsResource.value().data.length > 0
-                    ) {
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between mb-4">
-                          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {{ 'dashboard.pendingItems' | translate }}
-                          </h3>
-                          <button
-                            mat-button
-                            color="primary"
-                            (click)="navigateTo('/admin/pending-items')"
-                          >
-                            {{ 'common.details' | translate }}
-                            <mat-icon>arrow_forward</mat-icon>
-                          </button>
-                        </div>
-                        <div class="space-y-3">
-                          @for (item of pendingItemsResource.value().data; track item.id) {
-                            <div
-                              class="flex items-center justify-between p-3 rounded-lg border"
-                              [class.border-red-200]="item.priority === 'urgent'"
-                              [class.dark:border-red-800]="item.priority === 'urgent'"
-                              [class.bg-red-50]="item.priority === 'urgent'"
-                              [class.dark:bg-red-900/20]="item.priority === 'urgent'"
-                              [class.border-orange-200]="item.priority === 'high'"
-                              [class.dark:border-orange-800]="item.priority === 'high'"
-                              [class.bg-orange-50]="item.priority === 'high'"
-                              [class.dark:bg-orange-900/20]="item.priority === 'high'"
-                              [class.border-gray-200]="
-                                item.priority !== 'urgent' && item.priority !== 'high'
-                              "
-                              [class.dark:border-gray-700]="
-                                item.priority !== 'urgent' && item.priority !== 'high'
-                              "
-                            >
-                              <div class="flex items-center gap-3">
-                                <mat-icon
-                                  [class.text-red-500]="item.priority === 'urgent'"
-                                  [class.text-orange-500]="item.priority === 'high'"
-                                  [class.text-gray-400]="
-                                    item.priority !== 'urgent' && item.priority !== 'high'
-                                  "
-                                >
-                                  {{
-                                    item.status === 'completed' ? 'check_circle' : 'pending_actions'
-                                  }}
-                                </mat-icon>
-                                <div>
-                                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ item.title }}
-                                  </p>
-                                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ 'pendingItems.dueDate' | translate }}:
-                                    {{ item.dueDate | date: 'dd/MM/yyyy' }}
-                                    @if (item.assignedTo) {
-                                      &middot; {{ item.assignedTo.name }}
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                              <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                                [class.bg-red-100]="item.priority === 'urgent'"
-                                [class.dark:bg-red-900/30]="item.priority === 'urgent'"
-                                [class.text-red-700]="item.priority === 'urgent'"
-                                [class.dark:text-red-400]="item.priority === 'urgent'"
-                                [class.bg-orange-100]="item.priority === 'high'"
-                                [class.dark:bg-orange-900/30]="item.priority === 'high'"
-                                [class.text-orange-700]="item.priority === 'high'"
-                                [class.dark:text-orange-400]="item.priority === 'high'"
-                                [class.bg-gray-100]="
-                                  item.priority !== 'urgent' && item.priority !== 'high'
-                                "
-                                [class.dark:bg-gray-700]="
-                                  item.priority !== 'urgent' && item.priority !== 'high'
-                                "
-                                [class.text-gray-700]="
-                                  item.priority !== 'urgent' && item.priority !== 'high'
-                                "
-                                [class.dark:text-gray-300]="
-                                  item.priority !== 'urgent' && item.priority !== 'high'
-                                "
-                              >
-                                {{ item.priority | statusLabel: 'workOrderPriority' }}
-                              </span>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    }
+                    <app-pending-items-widget
+                      [items]="pendingItems()"
+                      (viewAll)="navigateTo('/admin/pending-items')"
+                    />
                   }
                   @case ('inquiries') {
-                    @if (
-                      inquiriesResource.hasValue() &&
-                      inquiriesResource.value().data.length > 0
-                    ) {
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <div class="flex items-center justify-between mb-4">
-                          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {{ 'dashboard.newInquiries' | translate }}
-                          </h3>
-                          <button
-                            mat-button
-                            color="primary"
-                            (click)="navigateTo('/admin/inquiries')"
-                          >
-                            {{ 'dashboard.viewInquiries' | translate }}
-                            <mat-icon>arrow_forward</mat-icon>
-                          </button>
-                        </div>
-                        <div class="space-y-3">
-                          @for (inquiry of inquiriesResource.value().data; track inquiry.id) {
-                            <div
-                              class="flex items-center justify-between p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
-                            >
-                              <div class="flex items-center gap-3">
-                                <mat-icon class="text-blue-500">help_outline</mat-icon>
-                                <div>
-                                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ inquiry.clientName }}
-                                  </p>
-                                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ 'statusLabels.' + inquiry.source | translate }}
-                                    &middot;
-                                    {{ inquiry.createdAt | date: 'dd/MM/yyyy HH:mm' }}
-                                  </p>
-                                </div>
-                              </div>
-                              <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30"
-                              >
-                                {{ inquiry.description | slice: 0:30 }}{{ inquiry.description.length > 30 ? '...' : '' }}
-                              </span>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    }
+                    <app-inquiries-widget
+                      [items]="inquiries()"
+                      (viewAll)="navigateTo('/admin/inquiries')"
+                    />
                   }
                   @case ('charts') {
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <div
-                        class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                          {{ 'dashboard.monthlyTrend' | translate }}
-                        </h3>
-                        <div class="h-64">
-                          <canvas
-                            baseChart
-                            [data]="lineChartData"
-                            [options]="lineChartOptions"
-                            type="line"
-                          ></canvas>
-                        </div>
-                      </div>
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                          {{ 'dashboard.ordersByStatus' | translate }}
-                        </h3>
-                        <div class="h-64">
-                          <canvas
-                            baseChart
-                            [data]="donutChartData"
-                            [options]="donutChartOptions"
-                            type="doughnut"
-                          ></canvas>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                          {{ 'dashboard.topServices' | translate }}
-                        </h3>
-                        <div class="h-64">
-                          <canvas
-                            baseChart
-                            [data]="barChartData"
-                            [options]="barChartOptions"
-                            type="bar"
-                          ></canvas>
-                        </div>
-                      </div>
-                    </div>
+                    <app-charts-widget
+                      [lineChartData]="lineChartData"
+                      [donutChartData]="donutChartData"
+                      [barChartData]="barChartData"
+                    />
                   }
                   @case ('quickActions') {
-                    <div
-                      class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                    >
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        {{ 'dashboard.quickActions' | translate }}
-                      </h3>
-                      <div class="grid grid-cols-2 gap-3">
-                        <button
-                          mat-stroked-button
-                          class="!h-20 !flex !flex-col !gap-1"
-                          (click)="navigateTo('/admin/work-orders')"
-                        >
-                          <mat-icon>add_circle</mat-icon>
-                          <span class="text-xs">{{ 'dashboard.newOrder' | translate }}</span>
-                        </button>
-                        <button
-                          mat-stroked-button
-                          class="!h-20 !flex !flex-col !gap-1"
-                          (click)="navigateTo('/admin/clients')"
-                        >
-                          <mat-icon>person_add</mat-icon>
-                          <span class="text-xs">{{ 'dashboard.newClient' | translate }}</span>
-                        </button>
-                        <button
-                          mat-stroked-button
-                          class="!h-20 !flex !flex-col !gap-1"
-                          (click)="navigateTo('/admin/pending-items')"
-                        >
-                          <mat-icon>pending_actions</mat-icon>
-                          <span class="text-xs">{{ 'dashboard.pendingItems' | translate }}</span>
-                        </button>
-                        <button
-                          mat-stroked-button
-                          class="!h-20 !flex !flex-col !gap-1"
-                          (click)="navigateTo('/admin/expenses')"
-                        >
-                          <mat-icon>money_off</mat-icon>
-                          <span class="text-xs">{{ 'dashboard.viewExpenses' | translate }}</span>
-                        </button>
-                      </div>
-                    </div>
+                    <app-quick-actions-widget (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    @if (summary()!.topClients.length > 0) {
-                      <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                      >
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                          {{ 'dashboard.topClients' | translate }}
-                        </h3>
-                        <div class="space-y-3">
-                          @for (client of summary()!.topClients; track client.clientId) {
-                            <div
-                              class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50"
-                            >
-                              <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                  {{ client.clientName }}
-                                </p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                  {{ client.workOrderCount }} {{ 'dashboard.orders' | translate }}
-                                </p>
-                              </div>
-                              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                {{ client.totalSpent | currency: 'ARS' : 'symbol' : '1.0-0' }}
-                              </p>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    }
+                    <app-top-clients-widget [clients]="summary()!.topClients" />
                   }
                 }
               </div>
@@ -496,7 +139,7 @@ export class DashboardComponent implements OnInit {
   readonly loadError = signal(false);
   readonly editMode = signal(false);
 
-  readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(
+  private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(
     () => ({
       url: '/api/pending-items',
       params: { status: 'pending', limit: '5', sortBy: 'dueDate', order: 'ASC' },
@@ -506,7 +149,7 @@ export class DashboardComponent implements OnInit {
     },
   );
 
-  readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(
+  private readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(
     () => ({
       url: '/api/inquiries',
       params: { status: 'new', limit: '5', sortBy: 'createdAt', order: 'DESC' },
@@ -516,26 +159,12 @@ export class DashboardComponent implements OnInit {
     },
   );
 
+  readonly pendingItems = signal<PendingItemSummary[]>([]);
+  readonly inquiries = signal<InquirySummary[]>([]);
+
   lineChartData: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
-  lineChartOptions: ChartConfiguration<'line'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-  };
-
   donutChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
-  donutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-  };
-
   barChartData: ChartData<'bar'> = { labels: [], datasets: [] };
-  barChartOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-  };
 
   ngOnInit(): void {
     this.loadSummary();
@@ -555,6 +184,11 @@ export class DashboardComponent implements OnInit {
         this.loadError.set(true);
       },
     });
+
+    this.pendingItemsResource.hasValue() &&
+      this.pendingItems.set(this.pendingItemsResource.value().data);
+    this.inquiriesResource.hasValue() &&
+      this.inquiries.set(this.inquiriesResource.value().data);
   }
 
   onDrop(event: CdkDragDrop<DashboardWidgetId[]>): void {
