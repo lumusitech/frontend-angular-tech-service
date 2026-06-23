@@ -548,7 +548,12 @@
     "daysRemaining": "days remaining",
     "dueToday": "Due today",
     "overdue": "Overdue",
-    "noDate": "No date"
+    "noDate": "No date",
+    "nav": {
+      "orders": "Orders",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    }
   },
   "inquiries": {
     "title": "Inquiries",

@@ -238,9 +238,10 @@ server.ts                          # Express server (SSR entry point)
   - [x] Content area with breadcrumbs
   - [x] Responsive: sidebar collapses to icon-only on tablet, hidden on mobile
 - [ ] TechLayoutComponent
-  - [ ] Bottom tab bar (5 tabs: Ordenes, Calendario, Notificaciones, Perfil)
-  - [ ] Header with business name + avatar
-  - [ ] Content area
+      - [x] Bottom tab bar (5 tabs max: Órdenes, Notificaciones, Perfil)
+      - [x] Header with business name + avatar
+      - [x] Content area
+
 - [ ] PortalLayoutComponent
   - [ ] Minimal header with business logo + name (from API settings)
   - [ ] No sidebar, no navigation
