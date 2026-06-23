@@ -19,7 +19,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { ChartConfiguration, ChartData } from 'chart.js';
 import { KpiCardsComponent } from './widgets/kpi-cards.component';
 import { PendingItemsWidgetComponent } from './widgets/pending-items-widget.component';
 import { InquiriesWidgetComponent } from './widgets/inquiries-widget.component';
@@ -109,9 +108,7 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                   }
                   @case ('charts') {
                     <app-charts-widget
-                      [lineChartData]="lineChartData"
-                      [donutChartData]="donutChartData"
-                      [barChartData]="barChartData"
+                      [summary]="summary()!"
                     />
                   }
                   @case ('quickActions') {
@@ -162,10 +159,6 @@ export class DashboardComponent implements OnInit {
   readonly pendingItems = signal<PendingItemSummary[]>([]);
   readonly inquiries = signal<InquirySummary[]>([]);
 
-  lineChartData: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
-  donutChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
-  barChartData: ChartData<'bar'> = { labels: [], datasets: [] };
-
   ngOnInit(): void {
     this.loadSummary();
   }
@@ -176,7 +169,6 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.getSummary().subscribe({
       next: (data) => {
         this.summary.set(data);
-        this.updateCharts(data);
         this.loading.set(false);
       },
       error: () => {
@@ -197,58 +189,5 @@ export class DashboardComponent implements OnInit {
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
-  }
-
-  private updateCharts(data: DashboardSummary): void {
-    this.lineChartData = {
-      labels: data.monthlyTrend.labels,
-      datasets: [
-        {
-          data: data.monthlyTrend.income,
-          label: 'Ingresos',
-          borderColor: '#1E40AF',
-          backgroundColor: 'rgba(30, 64, 175, 0.1)',
-          fill: true,
-          tension: 0.4,
-        },
-        {
-          data: data.monthlyTrend.expenses,
-          label: 'Gastos',
-          borderColor: '#EF4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          fill: true,
-          tension: 0.4,
-        },
-      ],
-    };
-
-    this.donutChartData = {
-      labels: data.workOrdersByStatus.map((s) => s.label),
-      datasets: [
-        {
-          data: data.workOrdersByStatus.map((s) => s.count),
-          backgroundColor: [
-            '#FCD34D',
-            '#818CF8',
-            '#34D399',
-            '#10B981',
-            '#F87171',
-            '#A78BFA',
-            '#9CA3AF',
-          ],
-        },
-      ],
-    };
-
-    this.barChartData = {
-      labels: data.topServices.map((s) => s.name),
-      datasets: [
-        {
-          data: data.topServices.map((s) => s.count),
-          label: 'Servicios',
-          backgroundColor: '#3B82F6',
-        },
-      ],
-    };
   }
 }
