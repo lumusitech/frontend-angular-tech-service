@@ -671,5 +671,79 @@
     "widgetCharts": "Charts",
     "widgetQuickActions": "Quick Actions",
     "widgetTopClients": "Top Clients"
+  },
+  "landing": {
+    "header": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "login": "Sign In"
+    },
+    "hero": {
+      "title": "Technical service management made simple",
+      "subtitle": "Work orders, public tracking, payments and reports in one place. Centralize and optimize your installation, maintenance and repair operations.",
+      "cta": "Get Started"
+    },
+    "features": {
+      "title": "Everything you need",
+      "subtitle": "A complete platform to manage your technical service business.",
+      "items": {
+        "workOrders": {
+          "title": "Work Orders",
+          "description": "Create, assign and track every job with unique tracking code, statuses, technicians and materials."
+        },
+        "tracking": {
+          "title": "Public Tracking",
+          "description": "Your clients track their order with a code or by scanning a QR, no login required."
+        },
+        "payments": {
+          "title": "Payments & Billing",
+          "description": "Accept payments with MercadoPago, cards or cash. Issue electronic invoices with ARCA/AFIP."
+        },
+        "dashboard": {
+          "title": "Dashboard & Reports",
+          "description": "Real-time KPIs, trend charts, technician rankings and financial reports."
+        },
+        "multiTenant": {
+          "title": "Multi-tenant",
+          "description": "Configure your business logo, name and colors. Ready to grow."
+        },
+        "notifications": {
+          "title": "Real-time Notifications",
+          "description": "Instant WebSocket alerts for new jobs, payments and status changes."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "How it works?",
+      "subtitle": "Four simple steps to digitize your business.",
+      "steps": {
+        "1": {
+          "title": "Create Order",
+          "description": "Register the job with client, service type and priority."
+        },
+        "2": {
+          "title": "Assign Technician",
+          "description": "Choose the technician or technicians who will perform the work."
+        },
+        "3": {
+          "title": "Client Tracks",
+          "description": "The client tracks the status with their tracking code."
+        },
+        "4": {
+          "title": "Charge & Invoice",
+          "description": "Register the payment and issue the electronic invoice."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to digitize your business?",
+      "subtitle": "Start managing your technical services comprehensively.",
+      "button": "Get started now"
+    },
+    "footer": {
+      "login": "Sign In",
+      "track": "Track Order",
+      "copyright": "© 2026 Tech Service. All rights reserved."
+    }
   }
 }

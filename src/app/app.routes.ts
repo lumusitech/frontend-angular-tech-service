@@ -180,6 +180,6 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', loadComponent: () => import('./features/landing/landing.component').then((m) => m.LandingComponent) },
   { path: '**', redirectTo: '/login' },
 ];

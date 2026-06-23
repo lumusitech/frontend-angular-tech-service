@@ -104,6 +104,23 @@
 - [x] technician.* keys
 - [x] billing.* keys (~45 keys)
 
+## Feature completada: Landing Page (SSG/Prerender)
+
+### Frontend: landing
+- [x] LandingComponent (orquestador con 6 sub-componentes)
+- [x] LandingHeaderComponent (logo, nav, dark mode toggle, login button)
+- [x] LandingHeroComponent (título, subtítulo, CTA, mockup SVG inline del dashboard)
+- [x] LandingFeaturesComponent (6 cards: work orders, tracking, payments, dashboard, multi-tenant, notifications)
+- [x] LandingHowItWorksComponent (4 pasos con línea conectora)
+- [x] LandingCtaComponent (CTA final con botón login)
+- [x] LandingFooterComponent (logo, links, copyright)
+- [x] Ruta '' → LandingComponent (reemplaza redirect a /login)
+- [x] SSR: RenderMode.Prerender (HTML estático en build time)
+- [x] i18n completo (es.json + en.json, ~40 keys landing.*)
+- [x] Dark/light mode (ThemeService)
+- [x] SEO: OG meta tags en index.html
+- [x] Build exitoso (prerendered HTML)
+
 ## Feature completada: Portal Tracking
 
 ### Frontend: portal
@@ -133,7 +150,6 @@
 
 ## Próximos pasos (frontend)
 
-- Agregar Landing Page (SSG/prerender)
 - Configurar PWA (service worker, offline, install prompt)
 - Technician View: BottomNavComponent para mobile
 - Tests unitarios y E2E

@@ -492,21 +492,23 @@ server.ts                          # Express server (SSR entry point)
 
 ### 21. `features/landing/` — Landing Page (SSG/Prerender)
 
-- [ ] LandingComponent (prerenderizada en build time)
-  - [ ] Hero section: nombre del sistema, tagline, CTA a login
-  - [ ] Features section: tarjetas con iconos mostrando funcionalidades clave
-    - [ ] Gestion de ordenes de trabajo
-    - [ ] Tracking publico para clientes
-    - [ ] Control de pagos y facturacion
-    - [ ] Dashboard con KPIs y reportes
-    - [ ] Multi-tenant (configurable por negocio)
-  - [ ] How it works: pasos simples (1. Crear orden → 2. Asignar tecnico → 3. Cliente trackea → 4. Cobrar)
-  - [ ] Screenshots/mockups del sistema
-  - [ ] CTA final: boton de login
-  - [ ] Footer con info de contacto
-  - [ ] Todo en Tailwind CSS, responsive mobile-first
-  - [ ] SEO meta tags (title, description, og:image)
-  - [ ] SSR: contenido visible sin JavaScript
+- [x] LandingComponent (orquestador con 6 sub-componentes, prerenderizada en build time)
+  - [x] Hero section: nombre del sistema, tagline, CTA a login, mockup SVG inline
+  - [x] Features section: 6 tarjetas con iconos mostrando funcionalidades clave
+    - [x] Gestion de ordenes de trabajo
+    - [x] Tracking publico para clientes
+    - [x] Control de pagos y facturacion
+    - [x] Dashboard con KPIs y reportes
+    - [x] Multi-tenant (configurable por negocio)
+    - [x] Notificaciones en tiempo real
+  - [x] How it works: 4 pasos con linea conectora (1. Crear orden → 2. Asignar tecnico → 3. Cliente trackea → 4. Cobrar)
+  - [x] CTA final: boton de login
+  - [x] Footer con info de contacto
+  - [x] Todo en Tailwind CSS, responsive mobile-first
+  - [x] Dark/light mode (ThemeService)
+  - [x] SEO meta tags (title, description, og:title, og:description, og:type)
+  - [x] SSR: contenido visible sin JavaScript (RenderMode.Prerender)
+  - [x] i18n (es.json + en.json, ~40 keys landing.*)
 
 ### 22. `features/pending-items/` — Trabajo Pendiente
 
