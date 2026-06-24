@@ -291,6 +291,10 @@
     "deleteTitle": "Delete pending item",
     "deleteMessage": "Are you sure you want to delete \"{{title}}\"?",
     "editPendingItem": "Edit Pending Item",
+    "filters": {
+      "all": "All",
+      "allPriorities": "All"
+    },
     "types": {
       "workOrder": "Work order",
       "inquiry": "Inquiry",
@@ -601,7 +605,26 @@
     "dates": "Dates",
     "created": "Created",
     "contactedAt": "Contacted",
-    "reviewedAt": "Reviewed"
+    "filters": {
+      "all": "All",
+      "allSources": "All"
+    },
+    "statuses": {
+      "new": "New",
+      "contacted": "Contacted",
+      "reviewed": "Reviewed",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "converted": "Converted"
+    },
+    "sources": {
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "referral": "Referral",
+      "socialMedia": "Social media",
+      "walkIn": "Walk in"
+    }
   },
   "portal": {
     "search": {

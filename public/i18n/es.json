@@ -291,6 +291,10 @@
     "deleteTitle": "Eliminar pendiente",
     "deleteMessage": "¿Estás seguro de eliminar \"{{title}}\"?",
     "editPendingItem": "Editar Pendiente",
+    "filters": {
+      "all": "Todos",
+      "allPriorities": "Todas"
+    },
     "types": {
       "workOrder": "Orden de trabajo",
       "inquiry": "Consulta",
@@ -601,6 +605,26 @@
     "dates": "Fechas",
     "created": "Creada",
     "contactedAt": "Contactada",
+    "filters": {
+      "all": "Todos",
+      "allSources": "Todos"
+    },
+    "statuses": {
+      "new": "Nueva",
+      "contacted": "Contactada",
+      "reviewed": "Revisada",
+      "approved": "Aprobada",
+      "rejected": "Rechazada",
+      "converted": "Convertida"
+    },
+    "sources": {
+      "phone": "Teléfono",
+      "email": "Email",
+      "website": "Sitio web",
+      "referral": "Referido",
+      "socialMedia": "Redes sociales",
+      "walkIn": "Presencial"
+    },
     "reviewedAt": "Revisada"
   },
   "portal": {
