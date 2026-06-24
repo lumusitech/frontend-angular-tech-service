@@ -1,6 +1,7 @@
 import { Component, inject, computed, signal, effect } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -23,15 +24,11 @@ interface LanguageOption {
   flag: string;
 }
 
-interface WidgetOption {
-  id: DashboardWidgetId;
-  labelKey: string;
-}
-
 @Component({
   selector: 'app-settings',
   imports: [
     FormsModule,
+    DragDropModule,
     MatIconModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -272,16 +269,27 @@ interface WidgetOption {
 
         <div class="ml-13">
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            {{ 'settings.visibleWidgets' | translate }}
+            {{ 'settings.dashboardOrder' | translate }}
           </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            @for (widget of widgetOptions; track widget.id) {
-              <mat-checkbox
-                [checked]="layoutService.widgets()[widget.id]"
-                (change)="layoutService.toggleWidget(widget.id)"
+          <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="space-y-2">
+            @for (widgetId of layoutService.layout(); track widgetId) {
+              <div
+                cdkDrag
+                class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
               >
-                {{ widget.labelKey | translate }}
-              </mat-checkbox>
+                <div
+                  cdkDragHandle
+                  class="cursor-grab active:cursor-grabbing text-gray-400 dark:text-gray-500"
+                >
+                  <mat-icon>drag_indicator</mat-icon>
+                </div>
+                <mat-checkbox
+                  [checked]="layoutService.widgets()[widgetId]"
+                  (change)="layoutService.toggleWidget(widgetId)"
+                >
+                  {{ ('settings.widget' + widgetId) | translate }}
+                </mat-checkbox>
+              </div>
             }
           </div>
 
@@ -336,15 +344,6 @@ export class SettingsComponent {
     { code: 'en', label: 'English', flag: '🇺🇸' },
   ];
 
-  widgetOptions: WidgetOption[] = [
-    { id: 'kpis', labelKey: 'settings.widgetKpis' },
-    { id: 'pendingItems', labelKey: 'settings.widgetPendingItems' },
-    { id: 'inquiries', labelKey: 'settings.widgetInquiries' },
-    { id: 'charts', labelKey: 'settings.widgetCharts' },
-    { id: 'quickActions', labelKey: 'settings.widgetQuickActions' },
-    { id: 'topClients', labelKey: 'settings.widgetTopClients' },
-  ];
-
   currentFlag = computed(() => {
     const lang = this.availableLanguages.find((l) => l.code === this.translationService.locale());
     return lang?.flag || '🌐';
@@ -360,6 +359,10 @@ export class SettingsComponent {
 
   onLanguageChange(locale: string): void {
     this.translationService.setLocale(locale);
+  }
+
+  onDrop(event: CdkDragDrop<DashboardWidgetId[]>): void {
+    this.layoutService.reorder(event.previousIndex, event.currentIndex);
   }
 
   saveBusiness(): void {
