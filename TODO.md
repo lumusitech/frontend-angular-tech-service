@@ -113,7 +113,7 @@ Patrón a seguir:
 
 ## Próximos pasos priorizados (por valor al proyecto)
 
-### 1. BusinessSettingsComponent — Multi-tenant (diferenciador comercial)
+### 1. ~~BusinessSettingsComponent — Multi-tenant (diferenciador comercial)~~ ✅ COMPLETADO
 
 **Valor:** Permite vender el sistema a otros negocios con su propia marca. Es el feature que diferencia "un sistema más" de "una plataforma multi-tenant".
 
@@ -291,6 +291,7 @@ Patrón a seguir:
 - [x] PWA (service worker, manifest, install prompt)
 - [x] Technician View (cards, urgency, detail, bottom nav)
 - [x] i18n (es + en, ~300+ keys)
+- [x] Business Settings (multi-tenant branding: name, logo, colors, contact info)
 
 ## Archivos de referencia útiles
 

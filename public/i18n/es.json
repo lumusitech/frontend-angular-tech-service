@@ -707,7 +707,22 @@
     "widgetInquiries": "Consultas",
     "widgetCharts": "Gráficos",
     "widgetQuickActions": "Acciones rápidas",
-    "widgetTopClients": "Top Clientes"
+    "widgetTopClients": "Top Clientes",
+    "business": "Negocio",
+    "businessSubtitle": "Configuración de tu marca y datos del negocio",
+    "businessName": "Nombre del negocio",
+    "businessNamePlaceholder": "Mi Negocio",
+    "logoUrl": "URL del logo",
+    "logoUrlPlaceholder": "https://ejemplo.com/logo.png",
+    "primaryColor": "Color primario",
+    "secondaryColor": "Color secundario",
+    "businessAddress": "Dirección",
+    "businessAddressPlaceholder": "Av. San Martín 567, Buenos Aires",
+    "businessPhone": "Teléfono",
+    "businessPhonePlaceholder": "+5491198765432",
+    "businessEmail": "Email del negocio",
+    "businessEmailPlaceholder": "info@minegocio.com",
+    "businessSaved": "Configuración del negocio guardada"
   },
   "pwa": {
     "title": "Instalar Tech Service",

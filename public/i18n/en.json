@@ -706,7 +706,22 @@
     "widgetInquiries": "Inquiries",
     "widgetCharts": "Charts",
     "widgetQuickActions": "Quick Actions",
-    "widgetTopClients": "Top Clients"
+    "widgetTopClients": "Top Clients",
+    "business": "Business",
+    "businessSubtitle": "Configure your brand and business info",
+    "businessName": "Business name",
+    "businessNamePlaceholder": "My Business",
+    "logoUrl": "Logo URL",
+    "logoUrlPlaceholder": "https://example.com/logo.png",
+    "primaryColor": "Primary color",
+    "secondaryColor": "Secondary color",
+    "businessAddress": "Address",
+    "businessAddressPlaceholder": "123 Main St, New York",
+    "businessPhone": "Phone",
+    "businessPhonePlaceholder": "+15551234567",
+    "businessEmail": "Business email",
+    "businessEmailPlaceholder": "info@mybusiness.com",
+    "businessSaved": "Business settings saved"
   },
   "pwa": {
     "title": "Install Tech Service",
