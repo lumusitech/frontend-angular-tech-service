@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-page-header',
   imports: [MatButtonModule, MatIconModule],
   template: `
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
         <ng-content></ng-content>
         <div>
