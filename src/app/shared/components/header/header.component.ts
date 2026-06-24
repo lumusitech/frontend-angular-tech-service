@@ -27,7 +27,7 @@ interface LanguageOption {
       <div class="flex items-center gap-4">
         <button
           (click)="toggleSidebar.emit()"
-          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden cursor-pointer"
         >
           <svg
             class="w-5 h-5 text-gray-600 dark:text-gray-400"
@@ -71,7 +71,7 @@ interface LanguageOption {
       <div class="flex items-center gap-3">
         <button
           (click)="themeService.toggle()"
-          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           [title]="themeService.isDark() ? 'Light mode' : 'Dark mode'"
         >
           @if (themeService.isDark()) {
@@ -147,7 +147,7 @@ interface LanguageOption {
           </div>
           <button
             (click)="authService.logout()"
-            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ml-1"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ml-1 cursor-pointer"
             [title]="'auth.logout' | translate"
           >
             <svg

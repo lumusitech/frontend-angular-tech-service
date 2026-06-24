@@ -11,6 +11,8 @@ export class ThemeService {
   readonly isDark = signal(false);
 
   private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+  private mediaQuery: MediaQueryList | null = null;
+  private osChangeListener: ((e: MediaQueryListEvent) => void) | null = null;
 
   constructor() {
     effect(() => {
@@ -24,11 +26,12 @@ export class ThemeService {
       const stored = localStorage.getItem('theme') as Theme | null;
       if (stored === 'light' || stored === 'dark') {
         this.setTheme(stored, false);
-        return;
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.setTheme(prefersDark ? 'dark' : 'light', false);
       }
 
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.setTheme(prefersDark ? 'dark' : 'light', false);
+      this.listenForOsChanges();
     }
   }
 
@@ -44,6 +47,19 @@ export class ThemeService {
   toggle(): void {
     const next = this.theme() === 'light' ? 'dark' : 'light';
     this.setTheme(next);
+  }
+
+  private listenForOsChanges(): void {
+    this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    this.osChangeListener = (e: MediaQueryListEvent) => {
+      const stored = localStorage.getItem('theme');
+      if (!stored) {
+        this.setTheme(e.matches ? 'dark' : 'light', false);
+      }
+    };
+
+    this.mediaQuery.addEventListener('change', this.osChangeListener);
   }
 
   private applyTheme(theme: Theme): void {
