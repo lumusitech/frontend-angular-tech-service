@@ -44,7 +44,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     TranslatePipe,
   ],
   template: `
-    <div class="space-y-4">
+    <div class="space-y-6">
       <app-page-header
         [title]="'suppliers.title' | translate"
         [subtitle]="'suppliers.subtitle' | translate"
@@ -53,11 +53,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="flex gap-3 flex-wrap">
-        <mat-form-field appearance="outline" class="w-44">
-          <mat-label>{{ 'common.search' | translate }}</mat-label>
-          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-        </mat-form-field>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div class="flex gap-3 flex-wrap">
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'common.search' | translate }}</mat-label>
+            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+          </mat-form-field>
+        </div>
       </div>
 
       @if (suppliersResource.status() === 'loading' && !suppliersResource.hasValue()) {

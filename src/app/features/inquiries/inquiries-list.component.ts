@@ -55,7 +55,7 @@ const STATUS_COLORS: Record<string, string> = {
     TranslatePipe,
   ],
   template: `
-    <div class="space-y-4">
+    <div class="space-y-6">
       <app-page-header
         [title]="'inquiries.title' | translate"
         [subtitle]="'inquiries.subtitle' | translate"
@@ -64,37 +64,39 @@ const STATUS_COLORS: Record<string, string> = {
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="flex gap-3 flex-wrap">
-        <mat-form-field appearance="outline" class="w-44">
-          <mat-label>{{ 'common.status' | translate }}</mat-label>
-          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-            <mat-option value="">{{ 'inquiries.filters.all' | translate }}</mat-option>
-            <mat-option value="new">{{ 'inquiries.statuses.new' | translate }}</mat-option>
-            <mat-option value="contacted">{{ 'inquiries.statuses.contacted' | translate }}</mat-option>
-            <mat-option value="reviewed">{{ 'inquiries.statuses.reviewed' | translate }}</mat-option>
-            <mat-option value="approved">{{ 'inquiries.statuses.approved' | translate }}</mat-option>
-            <mat-option value="rejected">{{ 'inquiries.statuses.rejected' | translate }}</mat-option>
-            <mat-option value="converted">{{ 'inquiries.statuses.converted' | translate }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div class="flex gap-3 flex-wrap">
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'common.status' | translate }}</mat-label>
+            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+              <mat-option value="">{{ 'inquiries.filters.all' | translate }}</mat-option>
+              <mat-option value="new">{{ 'inquiries.statuses.new' | translate }}</mat-option>
+              <mat-option value="contacted">{{ 'inquiries.statuses.contacted' | translate }}</mat-option>
+              <mat-option value="reviewed">{{ 'inquiries.statuses.reviewed' | translate }}</mat-option>
+              <mat-option value="approved">{{ 'inquiries.statuses.approved' | translate }}</mat-option>
+              <mat-option value="rejected">{{ 'inquiries.statuses.rejected' | translate }}</mat-option>
+              <mat-option value="converted">{{ 'inquiries.statuses.converted' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-44">
-          <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-          <mat-select [value]="sourceFilter()" (selectionChange)="sourceFilter.set($event.value)">
-            <mat-option value="">{{ 'inquiries.filters.allSources' | translate }}</mat-option>
-            <mat-option value="phone">{{ 'inquiries.sources.phone' | translate }}</mat-option>
-            <mat-option value="email">{{ 'inquiries.sources.email' | translate }}</mat-option>
-            <mat-option value="website">{{ 'inquiries.sources.website' | translate }}</mat-option>
-            <mat-option value="referral">{{ 'inquiries.sources.referral' | translate }}</mat-option>
-            <mat-option value="social_media">{{ 'inquiries.sources.socialMedia' | translate }}</mat-option>
-            <mat-option value="walk_in">{{ 'inquiries.sources.walkIn' | translate }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
+            <mat-select [value]="sourceFilter()" (selectionChange)="sourceFilter.set($event.value)">
+              <mat-option value="">{{ 'inquiries.filters.allSources' | translate }}</mat-option>
+              <mat-option value="phone">{{ 'inquiries.sources.phone' | translate }}</mat-option>
+              <mat-option value="email">{{ 'inquiries.sources.email' | translate }}</mat-option>
+              <mat-option value="website">{{ 'inquiries.sources.website' | translate }}</mat-option>
+              <mat-option value="referral">{{ 'inquiries.sources.referral' | translate }}</mat-option>
+              <mat-option value="social_media">{{ 'inquiries.sources.socialMedia' | translate }}</mat-option>
+              <mat-option value="walk_in">{{ 'inquiries.sources.walkIn' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-44">
-          <mat-label>{{ 'common.search' | translate }}</mat-label>
-          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'common.search' | translate }}</mat-label>
+            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+          </mat-form-field>
+        </div>
       </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
