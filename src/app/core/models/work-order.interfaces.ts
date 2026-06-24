@@ -17,6 +17,7 @@ export interface WorkOrder {
   priority: WorkOrderPriority;
   location: WorkOrderLocation;
   diagnosis?: string;
+  workAddress?: string;
   warrantyUntil?: string;
   scheduledDate?: string;
   startedAt?: string;
@@ -26,6 +27,7 @@ export interface WorkOrder {
     name: string;
     email: string;
     phone: string;
+    address?: string;
   };
   serviceType: {
     id: string;
@@ -84,6 +86,7 @@ export interface CreateWorkOrderDto {
   priority?: WorkOrderPriority;
   location?: WorkOrderLocation;
   diagnosis?: string;
+  workAddress?: string;
   warrantyUntil?: string;
   scheduledDate?: string;
 }

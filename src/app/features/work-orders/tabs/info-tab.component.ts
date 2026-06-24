@@ -31,6 +31,20 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         </div>
         <div>
           <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ 'workOrders.workAddress' | translate }}
+          </p>
+          <p class="font-medium">{{ workOrder().workAddress || '-' }}</p>
+        </div>
+        @if (workOrder().client.address && workOrder().workAddress && workOrder().client.address !== workOrder().workAddress) {
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'common.address' | translate }} {{ 'workOrders.detail.client' | translate }}
+            </p>
+            <p class="font-medium">{{ workOrder().client.address }}</p>
+          </div>
+        }
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
             {{ 'workOrders.detail.scheduledDate' | translate }}
           </p>
           <p class="font-medium">
