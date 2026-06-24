@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -33,6 +34,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatButtonModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -84,6 +86,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
             <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
           </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
         </mat-form-field>
       </div>
 
@@ -266,6 +273,7 @@ export class ExpensesListComponent implements OnInit {
   readonly categoryFilter = signal<ExpenseCategory | ''>('');
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly searchFilter = signal('');
 
   readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
     url: '/api/expenses',
@@ -274,6 +282,7 @@ export class ExpensesListComponent implements OnInit {
       limit: this.pageSize(),
       ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -303,6 +312,10 @@ export class ExpensesListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   openCreateDialog(): void {

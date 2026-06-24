@@ -116,6 +116,11 @@ const TYPE_LABELS: Record<string, string> = {
             <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
       </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -324,6 +329,7 @@ export class PendingItemsListComponent implements OnInit {
   readonly sortOrder = signal<'ASC' | 'DESC'>('ASC');
   readonly statusFilter = signal('');
   readonly priorityFilter = signal('');
+  readonly searchFilter = signal('');
 
   readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
     url: '/api/pending-items',
@@ -334,6 +340,7 @@ export class PendingItemsListComponent implements OnInit {
       order: this.sortOrder(),
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -386,6 +393,10 @@ export class PendingItemsListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc').toUpperCase() as 'ASC' | 'DESC');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   openCreateDialog(): void {

@@ -90,6 +90,11 @@ const STATUS_COLORS: Record<string, string> = {
             <mat-option value="walk_in">{{ 'inquiries.sources.walkIn' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
       </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -269,6 +274,7 @@ export class InquiriesListComponent implements OnInit {
   readonly sortOrder = signal<'ASC' | 'DESC'>('DESC');
   readonly statusFilter = signal('');
   readonly sourceFilter = signal('');
+  readonly searchFilter = signal('');
 
   readonly resource = httpResource<PaginatedResponse<Inquiry>>(() => ({
     url: '/api/inquiries',
@@ -279,6 +285,7 @@ export class InquiriesListComponent implements OnInit {
       order: this.sortOrder(),
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.sourceFilter() ? { source: this.sourceFilter() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -304,6 +311,10 @@ export class InquiriesListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc').toUpperCase() as 'ASC' | 'DESC');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   openCreateDialog(): void {
