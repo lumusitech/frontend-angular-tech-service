@@ -23,7 +23,10 @@
     "back": "Back",
     "view": "View",
     "address": "Address",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "all": "All",
+    "from": "From",
+    "to": "To"
   },
   "nav": {
     "dashboard": "Dashboard",

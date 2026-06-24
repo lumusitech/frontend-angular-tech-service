@@ -122,6 +122,15 @@ const TYPE_LABELS: Record<string, string> = {
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput type="date" [value]="dueDateFrom()" (input)="dueDateFrom.set(getInputValue($event))" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput type="date" [value]="dueDateTo()" (input)="dueDateTo.set(getInputValue($event))" />
+          </mat-form-field>
         </div>
       </div>
 
@@ -332,6 +341,8 @@ export class PendingItemsListComponent implements OnInit {
   readonly statusFilter = signal('');
   readonly priorityFilter = signal('');
   readonly searchFilter = signal('');
+  readonly dueDateFrom = signal('');
+  readonly dueDateTo = signal('');
 
   readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
     url: '/api/pending-items',
@@ -343,6 +354,8 @@ export class PendingItemsListComponent implements OnInit {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dueDateFrom() ? { dueDateFrom: this.dueDateFrom() } : {}),
+      ...(this.dueDateTo() ? { dueDateTo: this.dueDateTo() } : {}),
     },
   }));
 

@@ -23,7 +23,10 @@
     "back": "Volver",
     "view": "Ver",
     "address": "Dirección",
-    "notifications": "Notificaciones"
+    "notifications": "Notificaciones",
+    "all": "Todos",
+    "from": "Desde",
+    "to": "Hasta"
   },
   "nav": {
     "dashboard": "Dashboard",

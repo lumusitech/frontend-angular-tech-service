@@ -101,6 +101,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateFrom()" (input)="dateFrom.set(getInputValue($event))" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateTo()" (input)="dateTo.set(getInputValue($event))" />
+          </mat-form-field>
         </div>
       </div>
 
@@ -301,6 +310,8 @@ export class WorkOrdersListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly highlightedId = signal<string | null>(null);
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
@@ -319,6 +330,8 @@ export class WorkOrdersListComponent implements OnInit {
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 

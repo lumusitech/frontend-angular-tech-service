@@ -96,6 +96,15 @@ const STATUS_COLORS: Record<string, string> = {
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateFrom()" (input)="dateFrom.set(getInputValue($event))" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateTo()" (input)="dateTo.set(getInputValue($event))" />
+          </mat-form-field>
         </div>
       </div>
 
@@ -294,6 +303,8 @@ export class InquiriesListComponent implements OnInit {
   readonly statusFilter = signal('');
   readonly sourceFilter = signal('');
   readonly searchFilter = signal('');
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
 
   readonly resource = httpResource<PaginatedResponse<Inquiry>>(() => ({
     url: '/api/inquiries',
@@ -305,6 +316,8 @@ export class InquiriesListComponent implements OnInit {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.sourceFilter() ? { source: this.sourceFilter() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 

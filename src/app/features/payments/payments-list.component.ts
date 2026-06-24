@@ -85,6 +85,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateFrom()" (input)="dateFrom.set(getInputValue($event))" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput type="date" [value]="dateTo()" (input)="dateTo.set(getInputValue($event))" />
+          </mat-form-field>
         </div>
       </div>
 
@@ -271,6 +280,8 @@ export class PaymentsListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly searchFilter = signal('');
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
 
   readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
     url: '/api/payments',
@@ -281,6 +292,8 @@ export class PaymentsListComponent implements OnInit {
       ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 
