@@ -14,6 +14,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
@@ -69,6 +72,9 @@ const TYPE_LABELS: Record<string, string> = {
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatChipsModule,
@@ -87,6 +93,30 @@ const TYPE_LABELS: Record<string, string> = {
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
+
+      <div class="flex gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option value="">{{ 'pendingItems.filters.all' | translate }}</mat-option>
+            <mat-option value="pending">{{ 'pendingItems.statuses.pending' | translate }}</mat-option>
+            <mat-option value="in_progress">{{ 'pendingItems.statuses.inProgress' | translate }}</mat-option>
+            <mat-option value="completed">{{ 'pendingItems.statuses.completed' | translate }}</mat-option>
+            <mat-option value="cancelled">{{ 'pendingItems.statuses.cancelled' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
+          <mat-select [value]="priorityFilter()" (selectionChange)="priorityFilter.set($event.value)">
+            <mat-option value="">{{ 'pendingItems.filters.allPriorities' | translate }}</mat-option>
+            <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
+            <mat-option value="medium">{{ 'pendingItems.priorities.medium' | translate }}</mat-option>
+            <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
+            <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
         <div class="flex justify-center py-12">
@@ -292,6 +322,8 @@ export class PendingItemsListComponent implements OnInit {
   readonly currentPage = signal(1);
   readonly sortBy = signal('dueDate');
   readonly sortOrder = signal<'ASC' | 'DESC'>('ASC');
+  readonly statusFilter = signal('');
+  readonly priorityFilter = signal('');
 
   readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
     url: '/api/pending-items',
@@ -300,6 +332,8 @@ export class PendingItemsListComponent implements OnInit {
       limit: this.pageSize(),
       sortBy: this.sortBy(),
       order: this.sortOrder(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
     },
   }));
 

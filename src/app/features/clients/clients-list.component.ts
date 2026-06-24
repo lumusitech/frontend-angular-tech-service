@@ -8,6 +8,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -27,6 +30,9 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -45,6 +51,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
+
+      <div class="flex gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
+      </div>
 
       @if (clientsResource.status() === 'loading' && !clientsResource.hasValue()) {
         <div class="flex justify-center py-12">
@@ -210,6 +223,7 @@ export class ClientsListComponent implements OnInit {
   readonly currentPage = signal(1);
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly searchFilter = signal('');
 
   readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
     url: '/api/clients',
@@ -217,6 +231,7 @@ export class ClientsListComponent implements OnInit {
       page: this.currentPage(),
       limit: this.pageSize(),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -238,6 +253,10 @@ export class ClientsListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   openCreateDialog(): void {

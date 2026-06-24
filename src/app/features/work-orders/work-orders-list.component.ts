@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -36,6 +37,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatButtonModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -57,10 +59,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       />
 
       <div class="flex gap-3 flex-wrap">
-        <mat-form-field appearance="outline" class="w-40">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
           <mat-label>{{ 'common.status' | translate }}</mat-label>
           <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-            <mat-option>{{ 'workOrders.filters.all' | translate }}</mat-option>
+            <mat-option value="">{{ 'workOrders.filters.all' | translate }}</mat-option>
             <mat-option value="pending">{{ 'workOrders.statuses.pending' | translate }}</mat-option>
             <mat-option value="assigned">{{
               'workOrders.statuses.assigned' | translate
@@ -80,13 +87,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-40">
+        <mat-form-field appearance="outline" class="w-44">
           <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
           <mat-select
             [value]="priorityFilter()"
             (selectionChange)="priorityFilter.set($event.value)"
           >
-            <mat-option>{{ 'workOrders.filters.allPriorities' | translate }}</mat-option>
+            <mat-option value="">{{ 'workOrders.filters.allPriorities' | translate }}</mat-option>
             <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
             <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
             <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
@@ -288,6 +295,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly currentPage = signal(1);
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
+  readonly searchFilter = signal('');
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly highlightedId = signal<string | null>(null);
@@ -307,6 +315,7 @@ export class WorkOrdersListComponent implements OnInit {
       limit: this.pageSize(),
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
   }));
@@ -330,6 +339,10 @@ export class WorkOrdersListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   openCreateDialog(): void {

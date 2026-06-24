@@ -13,6 +13,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -40,6 +43,9 @@ const STATUS_COLORS: Record<string, string> = {
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -57,6 +63,34 @@ const STATUS_COLORS: Record<string, string> = {
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
       />
+
+      <div class="flex gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option value="">{{ 'inquiries.filters.all' | translate }}</mat-option>
+            <mat-option value="new">{{ 'inquiries.statuses.new' | translate }}</mat-option>
+            <mat-option value="contacted">{{ 'inquiries.statuses.contacted' | translate }}</mat-option>
+            <mat-option value="reviewed">{{ 'inquiries.statuses.reviewed' | translate }}</mat-option>
+            <mat-option value="approved">{{ 'inquiries.statuses.approved' | translate }}</mat-option>
+            <mat-option value="rejected">{{ 'inquiries.statuses.rejected' | translate }}</mat-option>
+            <mat-option value="converted">{{ 'inquiries.statuses.converted' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
+          <mat-select [value]="sourceFilter()" (selectionChange)="sourceFilter.set($event.value)">
+            <mat-option value="">{{ 'inquiries.filters.allSources' | translate }}</mat-option>
+            <mat-option value="phone">{{ 'inquiries.sources.phone' | translate }}</mat-option>
+            <mat-option value="email">{{ 'inquiries.sources.email' | translate }}</mat-option>
+            <mat-option value="website">{{ 'inquiries.sources.website' | translate }}</mat-option>
+            <mat-option value="referral">{{ 'inquiries.sources.referral' | translate }}</mat-option>
+            <mat-option value="social_media">{{ 'inquiries.sources.socialMedia' | translate }}</mat-option>
+            <mat-option value="walk_in">{{ 'inquiries.sources.walkIn' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
         <div class="flex justify-center py-12">
@@ -233,6 +267,8 @@ export class InquiriesListComponent implements OnInit {
   readonly currentPage = signal(1);
   readonly sortBy = signal('createdAt');
   readonly sortOrder = signal<'ASC' | 'DESC'>('DESC');
+  readonly statusFilter = signal('');
+  readonly sourceFilter = signal('');
 
   readonly resource = httpResource<PaginatedResponse<Inquiry>>(() => ({
     url: '/api/inquiries',
@@ -241,6 +277,8 @@ export class InquiriesListComponent implements OnInit {
       limit: this.pageSize(),
       sortBy: this.sortBy(),
       order: this.sortOrder(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.sourceFilter() ? { source: this.sourceFilter() } : {}),
     },
   }));
 

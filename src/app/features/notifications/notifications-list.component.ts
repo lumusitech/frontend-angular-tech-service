@@ -9,6 +9,9 @@ import {
 } from '../../core/models/notification.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -59,6 +62,9 @@ const TYPE_COLORS: Record<string, string> = {
   imports: [
     MatIconModule,
     MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatButtonToggleModule,
@@ -84,7 +90,7 @@ const TYPE_COLORS: Record<string, string> = {
       </div>
 
       <!-- Filter -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
         <mat-button-toggle-group
           [value]="readFilter()"
           (change)="onFilterChange($event.value)"
@@ -93,6 +99,28 @@ const TYPE_COLORS: Record<string, string> = {
           <mat-button-toggle value="all">{{ 'notifications.filters.all' | translate }}</mat-button-toggle>
           <mat-button-toggle value="unread">{{ 'notifications.filters.unread' | translate }}</mat-button-toggle>
         </mat-button-toggle-group>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'notifications.type' | translate }}</mat-label>
+          <mat-select [value]="typeFilter()" (selectionChange)="onTypeFilterChange($event.value)">
+            <mat-option value="">{{ 'notifications.filters.allTypes' | translate }}</mat-option>
+            <mat-option value="work_order.created">{{ 'notifications.types.workOrderCreated' | translate }}</mat-option>
+            <mat-option value="work_order.status_changed">{{ 'notifications.types.workOrderStatusChanged' | translate }}</mat-option>
+            <mat-option value="work_order.technician_assigned">{{ 'notifications.types.workOrderTechnicianAssigned' | translate }}</mat-option>
+            <mat-option value="task.created">{{ 'notifications.types.taskCreated' | translate }}</mat-option>
+            <mat-option value="task.completed">{{ 'notifications.types.taskCompleted' | translate }}</mat-option>
+            <mat-option value="payment.created">{{ 'notifications.types.paymentCreated' | translate }}</mat-option>
+            <mat-option value="payment.approved">{{ 'notifications.types.paymentApproved' | translate }}</mat-option>
+            <mat-option value="payment.rejected">{{ 'notifications.types.paymentRejected' | translate }}</mat-option>
+            <mat-option value="pending_item.created">{{ 'notifications.types.pendingItemCreated' | translate }}</mat-option>
+            <mat-option value="pending_item.due_today">{{ 'notifications.types.pendingItemDueToday' | translate }}</mat-option>
+            <mat-option value="pending_item.overdue">{{ 'notifications.types.pendingItemOverdue' | translate }}</mat-option>
+            <mat-option value="inquiry.created">{{ 'notifications.types.inquiryCreated' | translate }}</mat-option>
+            <mat-option value="inquiry.assigned">{{ 'notifications.types.inquiryAssigned' | translate }}</mat-option>
+            <mat-option value="inquiry.contacted">{{ 'notifications.types.inquiryContacted' | translate }}</mat-option>
+            <mat-option value="inquiry.reviewed">{{ 'notifications.types.inquiryReviewed' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -174,6 +202,7 @@ export class NotificationsListComponent {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly readFilter = signal<string>('all');
+  readonly typeFilter = signal('');
 
   readonly resource = httpResource<PaginatedNotifications>(() => ({
     url: '/api/notifications',
@@ -183,6 +212,7 @@ export class NotificationsListComponent {
       sortBy: 'createdAt',
       order: 'DESC',
       ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
+      ...(this.typeFilter() ? { type: this.typeFilter() } : {}),
     },
   }));
 
@@ -196,6 +226,12 @@ export class NotificationsListComponent {
 
   onFilterChange(value: string): void {
     this.readFilter.set(value);
+    this.currentPage.set(1);
+    this.resource.reload();
+  }
+
+  onTypeFilterChange(value: string): void {
+    this.typeFilter.set(value);
     this.currentPage.set(1);
     this.resource.reload();
   }
