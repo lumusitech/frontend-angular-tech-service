@@ -91,18 +91,20 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                 }
                 @switch (widgetId) {
                   @case ('kpis') {
-                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" />
+                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" (kpiClick)="navigateTo($event)" />
                   }
                   @case ('pendingItems') {
                     <app-pending-items-widget
                       [items]="pendingItems()"
                       (viewAll)="navigateTo('/admin/pending-items')"
+                      (itemClick)="navigateTo('/admin/pending-items?highlight=' + $event)"
                     />
                   }
                   @case ('inquiries') {
                     <app-inquiries-widget
                       [items]="inquiries()"
                       (viewAll)="navigateTo('/admin/inquiries')"
+                      (itemClick)="navigateTo('/admin/inquiries/' + $event)"
                     />
                   }
                   @case ('charts') {
@@ -114,7 +116,7 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                     <app-quick-actions-widget (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" />
+                    <app-top-clients-widget [clients]="summary()!.topClients" (clientClick)="navigateTo('/admin/clients?highlight=' + $event)" />
                   }
                 }
               </div>

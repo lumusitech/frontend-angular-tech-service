@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TopClient } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
@@ -14,7 +14,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </h3>
         <div class="space-y-3">
           @for (client of clients(); track client.clientId) {
-            <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+            <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 cursor-pointer hover:opacity-80 transition-opacity" (click)="clientClick.emit(client.clientId)">
               <div>
                 <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {{ client.clientName }}
@@ -35,4 +35,5 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 })
 export class TopClientsWidgetComponent {
   clients = input.required<TopClient[]>();
+  clientClick = output<string>();
 }

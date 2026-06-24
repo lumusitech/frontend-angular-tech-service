@@ -22,7 +22,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         </div>
         <div class="space-y-3">
           @for (inquiry of items(); track inquiry.id) {
-            <div class="flex items-center justify-between p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
+            <div class="flex items-center justify-between p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 cursor-pointer hover:opacity-80 transition-opacity" (click)="itemClick.emit(inquiry.id)">
               <div class="flex items-center gap-3">
                 <mat-icon class="text-blue-500">help_outline</mat-icon>
                 <div>
@@ -49,4 +49,5 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 export class InquiriesWidgetComponent {
   items = input.required<InquirySummary[]>();
   viewAll = output<void>();
+  itemClick = output<string>();
 }
