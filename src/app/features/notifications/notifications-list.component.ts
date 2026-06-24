@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationsService } from '../../core/services/notifications.service';
@@ -126,6 +126,13 @@ const TYPE_COLORS: Record<string, string> = {
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
+
+          @if (hasActiveFilters()) {
+            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
+              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
+              {{ 'common.clearFilters' | translate }}
+            </button>
+          }
         </div>
       </div>
 
@@ -230,6 +237,16 @@ export class NotificationsListComponent {
 
   getTypeColor(type: string): string {
     return TYPE_COLORS[type] || 'text-gray-500 bg-gray-100 dark:bg-gray-700';
+  }
+
+  readonly hasActiveFilters = computed(() => {
+    return this.readFilter() !== 'all' || this.typeFilter() !== '' || this.searchFilter() !== '';
+  });
+
+  clearFilters(): void {
+    this.readFilter.set('all');
+    this.typeFilter.set('');
+    this.searchFilter.set('');
   }
 
   onFilterChange(value: string): void {

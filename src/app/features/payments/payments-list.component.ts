@@ -96,12 +96,19 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="w-40">
+            <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
+
+          @if (hasActiveFilters()) {
+            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
+              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
+              {{ 'common.clearFilters' | translate }}
+            </button>
+          }
         </div>
       </div>
 
@@ -356,6 +363,18 @@ export class PaymentsListComponent implements OnInit {
     } else {
       this.dateTo.set('');
     }
+  }
+
+  readonly hasActiveFilters = computed(() => {
+    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.methodFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+  });
+
+  clearFilters(): void {
+    this.searchFilter.set('');
+    this.statusFilter.set('');
+    this.methodFilter.set('');
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   approvePayment(payment: Payment): void {

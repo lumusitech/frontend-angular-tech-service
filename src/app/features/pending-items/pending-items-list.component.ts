@@ -133,12 +133,19 @@ const TYPE_LABELS: Record<string, string> = {
             <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dueDateFromPicker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="w-40">
+            <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dueDateToPicker></mat-datepicker>
           </mat-form-field>
+
+          @if (hasActiveFilters()) {
+            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
+              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
+              {{ 'common.clearFilters' | translate }}
+            </button>
+          }
         </div>
       </div>
 
@@ -440,6 +447,18 @@ export class PendingItemsListComponent implements OnInit {
     } else {
       this.dueDateTo.set('');
     }
+  }
+
+  readonly hasActiveFilters = computed(() => {
+    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '';
+  });
+
+  clearFilters(): void {
+    this.searchFilter.set('');
+    this.statusFilter.set('');
+    this.priorityFilter.set('');
+    this.dueDateFrom.set('');
+    this.dueDateTo.set('');
   }
 
   openCreateDialog(): void {
