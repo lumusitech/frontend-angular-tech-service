@@ -6,13 +6,9 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  statusCode: number;
-  data: {
-    accessToken: string;
-    user: User;
-    preferences?: LoginPreferencesResponse;
-  };
-  timestamp: string;
+  accessToken: string;
+  user: User;
+  preferences?: LoginPreferencesResponse;
 }
 
 export interface User {

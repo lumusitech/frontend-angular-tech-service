@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
 import { Invoice, InvoiceType, InvoiceStatus } from '../../core/models/invoice.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -202,22 +201,17 @@ export class InvoicesListComponent {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
-  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(
-    () => ({
-      url: '/api/billing/invoices',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-        ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
-        ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
-        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Invoice>>).data,
+  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => ({
+    url: '/api/billing/invoices',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
+      ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
+      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
-  );
+  }));
 
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
 

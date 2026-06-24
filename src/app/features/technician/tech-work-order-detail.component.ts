@@ -6,7 +6,6 @@ import {
   WorkOrder,
   WorkOrderStatus,
 } from '../../core/models/work-order.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -237,15 +236,10 @@ export class TechWorkOrderDetailComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
 
-  readonly resource = httpResource<WorkOrder>(
-    () => {
-      const id = this.route.snapshot.paramMap.get('id');
-      return id ? `/api/work-orders/${id}` : '';
-    },
-    {
-      parse: (res: unknown) => (res as ApiResponse<WorkOrder>).data,
-    },
-  );
+  readonly resource = httpResource<WorkOrder>(() => {
+    const id = this.route.snapshot.paramMap.get('id');
+    return id ? `/api/work-orders/${id}` : '';
+  });
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {

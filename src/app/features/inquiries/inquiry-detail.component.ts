@@ -7,7 +7,6 @@ import {
   InquiryStatus,
   InquiryDecision,
 } from '../../core/models/inquiry.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -234,15 +233,10 @@ export class InquiryDetailComponent {
   private readonly inquiriesService = inject(InquiriesService);
   private readonly dialog = inject(MatDialog);
 
-  readonly resource = httpResource<Inquiry>(
-    () => {
-      const id = this.route.snapshot.paramMap.get('id');
-      return id ? `/api/inquiries/${id}` : '';
-    },
-    {
-      parse: (res: unknown) => (res as ApiResponse<Inquiry>).data,
-    },
-  );
+  readonly resource = httpResource<Inquiry>(() => {
+    const id = this.route.snapshot.paramMap.get('id');
+    return id ? `/api/inquiries/${id}` : '';
+  });
 
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700';

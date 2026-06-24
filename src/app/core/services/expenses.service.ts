@@ -12,7 +12,7 @@ import { PaginatedResponse } from '../models/client.interfaces';
 @Service()
 export class ExpensesService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/finances/expenses';
+  private readonly apiUrl = '/api/expenses';
 
   getAll(filters?: ExpenseFilters): Observable<PaginatedResponse<Expense>> {
     let params = new HttpParams();
@@ -20,8 +20,8 @@ export class ExpensesService {
     if (filters?.category) params = params.set('category', filters.category);
     if (filters?.isRecurring !== undefined)
       params = params.set('isRecurring', filters.isRecurring.toString());
-    if (filters?.startDate) params = params.set('startDate', filters.startDate);
-    if (filters?.endDate) params = params.set('endDate', filters.endDate);
+    if (filters?.startDate) params = params.set('dateFrom', filters.startDate);
+    if (filters?.endDate) params = params.set('dateTo', filters.endDate);
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());
 

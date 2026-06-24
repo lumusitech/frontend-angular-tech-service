@@ -9,7 +9,6 @@ import {
   PendingItemType,
   PaginatedResponse,
 } from '../../core/models/pending-item.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -294,20 +293,15 @@ export class PendingItemsListComponent implements OnInit {
   readonly sortBy = signal('dueDate');
   readonly sortOrder = signal<'ASC' | 'DESC'>('ASC');
 
-  readonly resource = httpResource<PaginatedResponse<PendingItem>>(
-    () => ({
-      url: '/api/pending-items',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        sortBy: this.sortBy(),
-        order: this.sortOrder(),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<PendingItem>>).data,
+  readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
+    url: '/api/pending-items',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      sortBy: this.sortBy(),
+      order: this.sortOrder(),
     },
-  );
+  }));
 
   displayedColumns = [
     'title',

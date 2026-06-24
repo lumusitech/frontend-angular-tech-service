@@ -8,7 +8,6 @@ import {
   WorkOrderPriority,
 } from '../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -301,21 +300,16 @@ export class WorkOrdersListComponent implements OnInit {
     }
   }
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
-    () => ({
-      url: '/api/work-orders',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-        ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
-        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<WorkOrder>>).data,
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
+    url: '/api/work-orders',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
-  );
+  }));
 
   displayedColumns = [
     'trackingCode',

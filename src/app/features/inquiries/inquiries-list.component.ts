@@ -8,7 +8,6 @@ import {
   InquirySource,
   PaginatedResponse,
 } from '../../core/models/inquiry.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -235,20 +234,15 @@ export class InquiriesListComponent implements OnInit {
   readonly sortBy = signal('createdAt');
   readonly sortOrder = signal<'ASC' | 'DESC'>('DESC');
 
-  readonly resource = httpResource<PaginatedResponse<Inquiry>>(
-    () => ({
-      url: '/api/inquiries',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        sortBy: this.sortBy(),
-        order: this.sortOrder(),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Inquiry>>).data,
+  readonly resource = httpResource<PaginatedResponse<Inquiry>>(() => ({
+    url: '/api/inquiries',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      sortBy: this.sortBy(),
+      order: this.sortOrder(),
     },
-  );
+  }));
 
   displayedColumns = ['clientName', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
 

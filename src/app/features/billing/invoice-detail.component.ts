@@ -3,7 +3,6 @@ import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
 import { Invoice } from '../../core/models/invoice.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -228,15 +227,10 @@ export class InvoiceDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
 
-  readonly invoiceResource = httpResource<Invoice>(
-    () => {
-      const id = this.route.snapshot.paramMap.get('id');
-      return id ? `/api/billing/invoices/${id}` : '';
-    },
-    {
-      parse: (res: unknown) => (res as ApiResponse<Invoice>).data,
-    },
-  );
+  readonly invoiceResource = httpResource<Invoice>(() => {
+    const id = this.route.snapshot.paramMap.get('id');
+    return id ? `/api/billing/invoices/${id}` : '';
+  });
 
   issueInvoice(invoice: Invoice): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
