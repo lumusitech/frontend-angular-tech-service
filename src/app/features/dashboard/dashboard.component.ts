@@ -97,7 +97,7 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                     <app-pending-items-widget
                       [items]="pendingItems()"
                       (viewAll)="navigateTo('/admin/pending-items')"
-                      (itemClick)="navigateTo('/admin/pending-items?highlight=' + $event)"
+                      (itemClick)="navigateTo('/admin/pending-items', { highlight: $event.id, search: $event.title })"
                     />
                   }
                   @case ('inquiries') {
@@ -116,7 +116,7 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                     <app-quick-actions-widget (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" (clientClick)="navigateTo('/admin/clients?highlight=' + $event)" />
+                    <app-top-clients-widget [clients]="summary()!.topClients" (clientClick)="navigateTo('/admin/clients', { highlight: $event.id, search: $event.name })" />
                   }
                 }
               </div>
@@ -177,7 +177,11 @@ export class DashboardComponent implements OnInit {
     this.layoutService.reorder(event.previousIndex, event.currentIndex);
   }
 
-  navigateTo(route: string): void {
-    this.router.navigate([route]);
+  navigateTo(route: string, queryParams?: Record<string, string>): void {
+    if (queryParams) {
+      this.router.navigate([route], { queryParams });
+    } else {
+      this.router.navigate([route]);
+    }
   }
 }
