@@ -1,7 +1,13 @@
 import { Service, inject, signal } from '@angular/core';
 import { UserPreferencesService } from './user-preferences.service';
 
-export type DashboardWidgetId = 'kpis' | 'pendingItems' | 'inquiries' | 'charts' | 'quickActions' | 'topClients';
+export type DashboardWidgetId =
+  | 'kpis'
+  | 'pendingItems'
+  | 'inquiries'
+  | 'charts'
+  | 'quickActions'
+  | 'topClients';
 
 export interface DashboardLayoutConfig {
   layout: DashboardWidgetId[];
@@ -9,10 +15,10 @@ export interface DashboardLayoutConfig {
 }
 
 const DEFAULT_LAYOUT: DashboardWidgetId[] = [
+  'charts',
   'kpis',
   'pendingItems',
   'inquiries',
-  'charts',
   'quickActions',
   'topClients',
 ];
