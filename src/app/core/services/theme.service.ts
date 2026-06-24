@@ -3,6 +3,8 @@ import { UserPreferencesService } from './user-preferences.service';
 
 export type Theme = 'light' | 'dark';
 
+const THEME_KEY = 'theme_preference';
+
 @Service()
 export class ThemeService {
   private readonly prefsService = inject(UserPreferencesService);
@@ -11,6 +13,8 @@ export class ThemeService {
   readonly isDark = signal(false);
 
   private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+  private mediaQuery: MediaQueryList | null = null;
+  private osChangeListener: ((e: MediaQueryListEvent) => void) | null = null;
 
   constructor() {
     effect(() => {
@@ -20,16 +24,16 @@ export class ThemeService {
   }
 
   init(): void {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('theme') as Theme | null;
-      if (stored === 'light' || stored === 'dark') {
-        this.setTheme(stored, false);
-        return;
-      }
+    if (typeof window === 'undefined') return;
 
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.setTheme(prefersDark ? 'dark' : 'light', false);
+    const stored = localStorage.getItem(THEME_KEY) as Theme | null;
+    if (stored === 'light' || stored === 'dark') {
+      this.setTheme(stored, false);
+    } else {
+      this.setTheme(this.getOsPreference(), false);
     }
+
+    this.listenForOsChanges();
   }
 
   setTheme(name: Theme, persist = true): void {
@@ -37,6 +41,7 @@ export class ThemeService {
     this.isDark.set(name === 'dark');
 
     if (persist) {
+      localStorage.setItem(THEME_KEY, name);
       this.persistTheme(name);
     }
   }
@@ -46,20 +51,34 @@ export class ThemeService {
     this.setTheme(next);
   }
 
+  resetToSystem(): void {
+    localStorage.removeItem(THEME_KEY);
+    this.setTheme(this.getOsPreference(), true);
+  }
+
+  private getOsPreference(): Theme {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  private listenForOsChanges(): void {
+    this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    this.osChangeListener = (e: MediaQueryListEvent) => {
+      const hasExplicitChoice = localStorage.getItem(THEME_KEY) !== null;
+      if (!hasExplicitChoice) {
+        this.setTheme(e.matches ? 'dark' : 'light', false);
+      }
+    };
+
+    this.mediaQuery.addEventListener('change', this.osChangeListener);
+  }
+
   private applyTheme(theme: Theme): void {
     if (typeof document === 'undefined') return;
 
     const html = document.documentElement;
-    if (theme === 'dark') {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
+    html.classList.toggle('dark', theme === 'dark');
     html.setAttribute('data-theme', theme);
-
-    try {
-      localStorage.setItem('theme', theme);
-    } catch {}
   }
 
   private persistTheme(theme: Theme): void {
