@@ -12,7 +12,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,7 +34,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatButtonToggleModule,
+    MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
@@ -59,16 +59,15 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
       <!-- Filter bar -->
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <mat-button-toggle-group
-            [value]="period()"
-            (change)="onPeriodChange($event.value)"
-            class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
-          >
-            <mat-button-toggle value="daily">{{ 'reports.daily' | translate }}</mat-button-toggle>
-            <mat-button-toggle value="weekly">{{ 'reports.weekly' | translate }}</mat-button-toggle>
-            <mat-button-toggle value="monthly">{{ 'reports.monthly' | translate }}</mat-button-toggle>
-            <mat-button-toggle value="yearly">{{ 'reports.yearly' | translate }}</mat-button-toggle>
-          </mat-button-toggle-group>
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'reports.period' | translate }}</mat-label>
+            <mat-select [value]="period()" (selectionChange)="onPeriodChange($event.value)">
+              <mat-option value="daily">{{ 'reports.daily' | translate }}</mat-option>
+              <mat-option value="weekly">{{ 'reports.weekly' | translate }}</mat-option>
+              <mat-option value="monthly">{{ 'reports.monthly' | translate }}</mat-option>
+              <mat-option value="yearly">{{ 'reports.yearly' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
