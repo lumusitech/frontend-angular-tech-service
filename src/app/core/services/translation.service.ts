@@ -5,7 +5,7 @@ export class TranslationService {
   readonly locale = signal<string>('es');
   readonly translations = signal<Record<string, unknown>>({});
 
-  private loaded = new Set<string>();
+  private cache = new Map<string, Record<string, unknown>>();
 
   async init(locale = 'es'): Promise<void> {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
@@ -16,7 +16,9 @@ export class TranslationService {
   async loadLocale(locale: string): Promise<void> {
     if (typeof window === 'undefined') return;
 
-    if (this.loaded.has(locale)) {
+    const cached = this.cache.get(locale);
+    if (cached) {
+      this.translations.set(cached);
       this.locale.set(locale);
       try {
         localStorage.setItem('locale', locale);
@@ -35,9 +37,9 @@ export class TranslationService {
         return;
       }
       const data = (await response.json()) as Record<string, unknown>;
+      this.cache.set(locale, data);
       this.translations.set(data);
       this.locale.set(locale);
-      this.loaded.add(locale);
 
       try {
         localStorage.setItem('locale', locale);
