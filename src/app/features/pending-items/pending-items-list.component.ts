@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
@@ -20,6 +20,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -78,6 +80,8 @@ const TYPE_LABELS: Record<string, string> = {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
@@ -121,6 +125,19 @@ const TYPE_LABELS: Record<string, string> = {
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dueDateFromPicker" [value]="dueDateFromValue()" (dateChange)="onDueDateFromChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dueDateFromPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dueDateToPicker></mat-datepicker>
           </mat-form-field>
         </div>
       </div>
@@ -332,6 +349,10 @@ export class PendingItemsListComponent implements OnInit {
   readonly statusFilter = signal('');
   readonly priorityFilter = signal('');
   readonly searchFilter = signal('');
+  readonly dueDateFrom = signal('');
+  readonly dueDateTo = signal('');
+  readonly dueDateFromValue = computed(() => this.dueDateFrom() ? new Date(this.dueDateFrom()) : null);
+  readonly dueDateToValue = computed(() => this.dueDateTo() ? new Date(this.dueDateTo()) : null);
 
   readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
     url: '/api/pending-items',
@@ -343,6 +364,8 @@ export class PendingItemsListComponent implements OnInit {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dueDateFrom() ? { dueDateFrom: this.dueDateFrom() } : {}),
+      ...(this.dueDateTo() ? { dueDateTo: this.dueDateTo() } : {}),
     },
   }));
 
@@ -399,6 +422,24 @@ export class PendingItemsListComponent implements OnInit {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  onDueDateFromChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    if (date) {
+      this.dueDateFrom.set(date.toISOString().split('T')[0]);
+    } else {
+      this.dueDateFrom.set('');
+    }
+  }
+
+  onDueDateToChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    if (date) {
+      this.dueDateTo.set(date.toISOString().split('T')[0]);
+    } else {
+      this.dueDateTo.set('');
+    }
   }
 
   openCreateDialog(): void {

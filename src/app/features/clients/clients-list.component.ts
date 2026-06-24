@@ -58,6 +58,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-44">
+            <mat-label>{{ 'common.status' | translate }}</mat-label>
+            <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
+              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+              <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
+              <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
 
@@ -137,6 +146,24 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
                 {{ client.phone }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="address">
+              <th
+                mat-header-cell
+                mat-sort-header
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'common.address' | translate }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
+                {{ client.address }}
               </td>
             </ng-container>
 
@@ -226,6 +253,7 @@ export class ClientsListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly searchFilter = signal('');
+  readonly isActiveFilter = signal<'true' | 'false' | ''>('');
 
   readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
     url: '/api/clients',
@@ -234,10 +262,11 @@ export class ClientsListComponent implements OnInit {
       limit: this.pageSize(),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() === 'true' } : {}),
     },
   }));
 
-  displayedColumns = ['name', 'email', 'phone', 'isActive', 'createdAt', 'actions'];
+  displayedColumns = ['name', 'email', 'phone', 'address', 'isActive', 'createdAt', 'actions'];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ExpensesService } from '../../core/services/expenses.service';
@@ -14,6 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -37,6 +39,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
@@ -92,6 +96,19 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFromPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
         </div>
       </div>
@@ -276,6 +293,10 @@ export class ExpensesListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly searchFilter = signal('');
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
+  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
 
   readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
     url: '/api/expenses',
@@ -285,6 +306,8 @@ export class ExpensesListComponent implements OnInit {
       ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 
@@ -318,6 +341,24 @@ export class ExpensesListComponent implements OnInit {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    if (date) {
+      this.dateFrom.set(date.toISOString().split('T')[0]);
+    } else {
+      this.dateFrom.set('');
+    }
+  }
+
+  onDateToChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    if (date) {
+      this.dateTo.set(date.toISOString().split('T')[0]);
+    } else {
+      this.dateTo.set('');
+    }
   }
 
   openCreateDialog(): void {

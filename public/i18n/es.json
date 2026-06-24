@@ -22,7 +22,11 @@
     "details": "Detalles",
     "back": "Volver",
     "view": "Ver",
-    "notifications": "Notificaciones"
+    "address": "Dirección",
+    "notifications": "Notificaciones",
+    "all": "Todos",
+    "from": "Desde",
+    "to": "Hasta"
   },
   "nav": {
     "dashboard": "Dashboard",
