@@ -64,8 +64,8 @@ const STATUS_COLORS: Record<string, string> = {
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex gap-3 flex-wrap">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+        <div class="flex items-center gap-3 flex-wrap">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
