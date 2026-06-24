@@ -23,7 +23,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                   {{ service.name }}
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 ml-2">
-                  {{ service.revenue | currencyArs: '1.0-0' }}
+                  {{ service.revenue | currencyArs: '1.2-2' }}
                 </p>
               </div>
               <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">

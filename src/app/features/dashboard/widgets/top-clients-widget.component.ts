@@ -24,7 +24,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
                 </p>
               </div>
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {{ client.totalSpent | currencyArs: '1.0-0' }}
+                {{ client.totalSpent | currencyArs: '1.2-2' }}
               </p>
             </div>
           }
