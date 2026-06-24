@@ -19,13 +19,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  assigned: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  in_progress: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-  completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  delivered: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-  cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-  postponed: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+  pending: 'bg-yellow-500/15 text-yellow-400',
+  assigned: 'bg-blue-500/15 text-blue-400',
+  in_progress: 'bg-purple-500/15 text-purple-400',
+  completed: 'bg-green-500/15 text-green-400',
+  delivered: 'bg-gray-500/15 text-gray-400',
+  cancelled: 'bg-red-500/15 text-red-400',
+  postponed: 'bg-orange-500/15 text-orange-400',
 };
 
 @Component({
@@ -167,7 +167,7 @@ export class TechWorkOrdersComponent {
   }));
 
   getStatusColor(status: string): string {
-    return STATUS_COLORS[status] || 'bg-gray-100 text-gray-800';
+    return STATUS_COLORS[status] || 'bg-gray-500/15 text-gray-400';
   }
 
   setFilter(value: string | null): void {

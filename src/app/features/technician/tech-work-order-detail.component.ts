@@ -243,14 +243,14 @@ export class TechWorkOrderDetailComponent {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      assigned: 'bg-blue-100 text-blue-800',
-      in_progress: 'bg-purple-100 text-purple-800',
-      completed: 'bg-green-100 text-green-800',
-      delivered: 'bg-gray-100 text-gray-800',
-      cancelled: 'bg-red-100 text-red-800',
+      pending: 'bg-yellow-500/15 text-yellow-400',
+      assigned: 'bg-blue-500/15 text-blue-400',
+      in_progress: 'bg-purple-500/15 text-purple-400',
+      completed: 'bg-green-500/15 text-green-400',
+      delivered: 'bg-gray-500/15 text-gray-400',
+      cancelled: 'bg-red-500/15 text-red-400',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-500/15 text-gray-400';
   }
 
   getValidTransitions(status: string): string[] {
@@ -268,12 +268,12 @@ export class TechWorkOrderDetailComponent {
 
   getNoteTypeClass(type: string): string {
     const classes: Record<string, string> = {
-      diagnosis: 'bg-blue-100 text-blue-800',
-      issue: 'bg-red-100 text-red-800',
-      observation: 'bg-gray-100 text-gray-800',
-      internal: 'bg-yellow-100 text-yellow-800',
+      diagnosis: 'bg-blue-500/15 text-blue-400',
+      issue: 'bg-red-500/15 text-red-400',
+      observation: 'bg-gray-500/15 text-gray-400',
+      internal: 'bg-yellow-500/15 text-yellow-400',
     };
-    return classes[type] || 'bg-gray-100 text-gray-800';
+    return classes[type] || 'bg-gray-500/15 text-gray-400';
   }
 
   goBack(): void {

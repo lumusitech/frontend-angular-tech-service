@@ -100,7 +100,7 @@ const STATUS_COLORS: Record<string, string> = {
           @if (inquiry.adminDecision !== 'pending') {
             <span
               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-              [class]="inquiry.adminDecision === 'approved' ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100'"
+              [class]="inquiry.adminDecision === 'approved' ? 'text-green-400 bg-green-500/15' : 'text-red-400 bg-red-500/15'"
             >
               {{ 'statusLabels.' + inquiry.adminDecision | translate }}
             </span>
