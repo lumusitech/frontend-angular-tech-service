@@ -26,7 +26,8 @@
     "notifications": "Notificaciones",
     "all": "Todos",
     "from": "Desde",
-    "to": "Hasta"
+    "to": "Hasta",
+    "clearFilters": "Limpiar filtros"
   },
   "nav": {
     "dashboard": "Dashboard",

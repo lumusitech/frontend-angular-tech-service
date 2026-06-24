@@ -26,7 +26,8 @@
     "notifications": "Notifications",
     "all": "All",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "clearFilters": "Clear filters"
   },
   "nav": {
     "dashboard": "Dashboard",

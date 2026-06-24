@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { SuppliersService } from '../../core/services/suppliers.service';
@@ -68,6 +68,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          @if (hasActiveFilters()) {
+            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
+              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
+              {{ 'common.clearFilters' | translate }}
+            </button>
+          }
         </div>
       </div>
 
@@ -329,6 +336,15 @@ export class SuppliersListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.suppliersResource.reload();
     });
+  }
+
+  readonly hasActiveFilters = computed(() => {
+    return this.searchFilter() !== '' || this.isActiveFilter() !== '';
+  });
+
+  clearFilters(): void {
+    this.searchFilter.set('');
+    this.isActiveFilter.set('');
   }
 
   deleteSupplier(supplier: Supplier): void {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
@@ -89,6 +89,13 @@ import { InvoiceFormComponent } from './invoice-form.component';
               [placeholder]="'common.search' | translate"
             />
           </mat-form-field>
+
+          @if (hasActiveFilters()) {
+            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
+              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
+              {{ 'common.clearFilters' | translate }}
+            </button>
+          }
         </div>
       </div>
 
@@ -216,6 +223,16 @@ export class InvoicesListComponent {
   }));
 
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
+
+  readonly hasActiveFilters = computed(() => {
+    return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '';
+  });
+
+  clearFilters(): void {
+    this.statusFilter.set('');
+    this.typeFilter.set('');
+    this.clientNameFilter.set('');
+  }
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
