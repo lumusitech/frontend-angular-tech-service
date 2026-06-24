@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -66,9 +66,15 @@ interface WidgetOption {
             {{ 'settings.theme' | translate }}
           </p>
           <mat-button-toggle-group
-            [value]="themeService.theme()"
-            (change)="themeService.setTheme($event.value)"
+            [value]="themeMode()"
+            (change)="onThemeChange($event.value)"
           >
+            <mat-button-toggle value="system">
+              <span class="flex items-center gap-2">
+                <mat-icon class="!w-5 !h-5 text-gray-500">brightness_auto</mat-icon>
+                {{ 'settings.system' | translate }}
+              </span>
+            </mat-button-toggle>
             <mat-button-toggle value="light">
               <span class="flex items-center gap-2">
                 <mat-icon class="!w-5 !h-5 text-amber-500">light_mode</mat-icon>
@@ -162,6 +168,11 @@ export class SettingsComponent {
   readonly translationService = inject(TranslationService);
   readonly layoutService = inject(DashboardLayoutService);
 
+  readonly themeMode = computed(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme_preference') : null;
+    return stored ? stored : 'system';
+  });
+
   availableLanguages: LanguageOption[] = [
     { code: 'es', label: 'Español', flag: '🇦🇷' },
     { code: 'en', label: 'English', flag: '🇺🇸' },
@@ -180,6 +191,14 @@ export class SettingsComponent {
     const lang = this.availableLanguages.find((l) => l.code === this.translationService.locale());
     return lang?.flag || '🌐';
   });
+
+  onThemeChange(mode: string): void {
+    if (mode === 'system') {
+      this.themeService.resetToSystem();
+    } else {
+      this.themeService.setTheme(mode as 'light' | 'dark');
+    }
+  }
 
   onLanguageChange(locale: string): void {
     this.translationService.setLocale(locale);
