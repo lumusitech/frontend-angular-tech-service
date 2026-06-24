@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardKPIs, DashboardTrends } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -9,7 +9,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
   imports: [MatIconModule, TranslatePipe, CurrencyArsPipe],
   template: `
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/work-orders')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -28,7 +28,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/payments')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -52,7 +52,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/expenses')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -76,7 +76,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/billing')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -100,4 +100,5 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 export class KpiCardsComponent {
   kpis = input.required<DashboardKPIs>();
   trends = input.required<DashboardTrends>();
+  kpiClick = output<string>();
 }
