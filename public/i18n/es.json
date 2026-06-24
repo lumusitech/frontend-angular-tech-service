@@ -159,6 +159,8 @@
     "technicians": "Técnicos",
     "assignedTo": "Asignado a",
     "diagnosis": "Diagnóstico",
+    "workAddress": "Dirección del trabajo",
+    "workAddressPlaceholder": "Solo si es diferente a la dirección del cliente",
     "scheduledDate": "Fecha programada",
     "warrantyUntil": "Garantía hasta",
     "location": "Ubicación",

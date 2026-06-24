@@ -108,6 +108,11 @@ interface DialogData {
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
           <textarea matInput [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}" rows="3"></textarea>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'workOrders.workAddress' | translate }}</mat-label>
+          <input matInput [(ngModel)]="workAddress" [ngModelOptions]="{standalone: true}" [placeholder]="'workOrders.workAddressPlaceholder' | translate" />
+        </mat-form-field>
       </form>
     </mat-dialog-content>
 
@@ -135,6 +140,7 @@ export class WorkOrderFormComponent implements OnInit {
   readonly scheduledDate = signal('');
   readonly warrantyUntil = signal('');
   readonly diagnosis = signal('');
+  readonly workAddress = signal('');
   readonly saving = signal(false);
 
   ngOnInit(): void {
@@ -181,6 +187,7 @@ export class WorkOrderFormComponent implements OnInit {
       scheduledDate: this.scheduledDate() || undefined,
       warrantyUntil: this.warrantyUntil() || undefined,
       diagnosis: this.diagnosis() || undefined,
+      workAddress: this.workAddress() || undefined,
     };
 
     this.workOrdersService.create(dto).subscribe({

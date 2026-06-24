@@ -213,6 +213,24 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="workAddress">
+              <th
+                mat-header-cell
+                mat-sort-header="workAddress"
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'workOrders.workAddress' | translate }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
+                {{ order.workAddress || '-' }}
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="serviceType">
               <th
                 mat-header-cell
@@ -357,6 +375,7 @@ export class WorkOrdersListComponent implements OnInit {
     'status',
     'priority',
     'client',
+    'workAddress',
     'serviceType',
     'scheduledDate',
     'createdAt',
