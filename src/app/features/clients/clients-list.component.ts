@@ -304,6 +304,11 @@ export class ClientsListComponent implements OnInit {
       this.highlightedId.set(highlightId);
       setTimeout(() => this.highlightedId.set(null), 3000);
     }
+
+    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+    if (searchQuery) {
+      this.searchFilter.set(searchQuery);
+    }
   }
 
   onPageChange(event: PageEvent): void {

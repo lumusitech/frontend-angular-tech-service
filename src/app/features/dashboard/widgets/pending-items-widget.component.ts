@@ -25,7 +25,7 @@ import { StatusLabelPipe } from '../../../shared/pipes/status-label.pipe';
           @for (item of items(); track item.id) {
             <div
               class="flex items-center justify-between p-3 rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
-              (click)="itemClick.emit(item.id)"
+              (click)="itemClick.emit({ id: item.id, title: item.title })"
               [class.border-red-200]="item.priority === 'urgent'"
               [class.dark:border-red-800]="item.priority === 'urgent'"
               [class.bg-red-50]="item.priority === 'urgent'"
@@ -82,5 +82,5 @@ import { StatusLabelPipe } from '../../../shared/pipes/status-label.pipe';
 export class PendingItemsWidgetComponent {
   items = input.required<PendingItemSummary[]>();
   viewAll = output<void>();
-  itemClick = output<string>();
+  itemClick = output<{ id: string; title: string }>();
 }
