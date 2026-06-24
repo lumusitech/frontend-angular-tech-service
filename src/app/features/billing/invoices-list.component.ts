@@ -58,38 +58,36 @@ import { InvoiceFormComponent } from './invoice-form.component';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option value="">{{ 'billing.filters.allStatuses' | translate }}</mat-option>
-              <mat-option value="draft">{{ 'billing.statuses.draft' | translate }}</mat-option>
-              <mat-option value="issued">{{ 'billing.statuses.issued' | translate }}</mat-option>
-              <mat-option value="cancelled">{{ 'billing.statuses.cancelled' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <div class="flex items-center gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option value="">{{ 'billing.filters.allStatuses' | translate }}</mat-option>
+            <mat-option value="draft">{{ 'billing.statuses.draft' | translate }}</mat-option>
+            <mat-option value="issued">{{ 'billing.statuses.issued' | translate }}</mat-option>
+            <mat-option value="cancelled">{{ 'billing.statuses.cancelled' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
-            <mat-select [value]="typeFilter()" (selectionChange)="typeFilter.set($event.value)">
-              <mat-option value="">{{ 'billing.filters.allTypes' | translate }}</mat-option>
-              <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
-              <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
-              <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
+          <mat-select [value]="typeFilter()" (selectionChange)="typeFilter.set($event.value)">
+            <mat-option value="">{{ 'billing.filters.allTypes' | translate }}</mat-option>
+            <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
+            <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
+            <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="clientNameFilter()"
-              (input)="clientNameFilter.set(getInputValue($event))"
-              [placeholder]="'common.search' | translate"
-            />
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
+          <input
+            matInput
+            [value]="clientNameFilter()"
+            (input)="clientNameFilter.set(getInputValue($event))"
+            [placeholder]="'common.search' | translate"
+          />
+        </mat-form-field>
       </div>
 
       @if (invoicesResource.status() === 'loading' && !invoicesResource.hasValue()) {

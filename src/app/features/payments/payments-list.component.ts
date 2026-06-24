@@ -50,42 +50,40 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         [subtitle]="'payments.subtitle' | translate"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-40">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option>{{ 'payments.filters.all' | translate }}</mat-option>
-              <mat-option value="pending">{{ 'payments.statuses.pending' | translate }}</mat-option>
-              <mat-option value="approved">{{ 'payments.statuses.approved' | translate }}</mat-option>
-              <mat-option value="rejected">{{ 'payments.statuses.rejected' | translate }}</mat-option>
-              <mat-option value="refunded">{{ 'payments.statuses.refunded' | translate }}</mat-option>
-              <mat-option value="cancelled">{{
-                'payments.statuses.cancelled' | translate
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <div class="flex items-center gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-40">
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option>{{ 'payments.filters.all' | translate }}</mat-option>
+            <mat-option value="pending">{{ 'payments.statuses.pending' | translate }}</mat-option>
+            <mat-option value="approved">{{ 'payments.statuses.approved' | translate }}</mat-option>
+            <mat-option value="rejected">{{ 'payments.statuses.rejected' | translate }}</mat-option>
+            <mat-option value="refunded">{{ 'payments.statuses.refunded' | translate }}</mat-option>
+            <mat-option value="cancelled">{{
+              'payments.statuses.cancelled' | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40">
-            <mat-label>{{ 'payments.method' | translate }}</mat-label>
-            <mat-select [value]="methodFilter()" (selectionChange)="methodFilter.set($event.value)">
-              <mat-option>{{ 'payments.filters.allMethods' | translate }}</mat-option>
-              <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
-              <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
-              <mat-option value="credit_card">{{
-                'payments.methods.creditCard' | translate
-              }}</mat-option>
-              <mat-option value="debit_card">{{
-                'payments.methods.debitCard' | translate
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="w-40">
+          <mat-label>{{ 'payments.method' | translate }}</mat-label>
+          <mat-select [value]="methodFilter()" (selectionChange)="methodFilter.set($event.value)">
+            <mat-option>{{ 'payments.filters.allMethods' | translate }}</mat-option>
+            <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
+            <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
+            <mat-option value="credit_card">{{
+              'payments.methods.creditCard' | translate
+            }}</mat-option>
+            <mat-option value="debit_card">{{
+              'payments.methods.debitCard' | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
       </div>
 
       @if (paymentsResource.status() === 'loading' && !paymentsResource.hasValue()) {

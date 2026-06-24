@@ -55,45 +55,43 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-48">
-            <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-            <mat-select
-              [value]="categoryFilter()"
-              (selectionChange)="categoryFilter.set($event.value)"
-            >
-              <mat-option>{{ 'expenses.filters.allCategories' | translate }}</mat-option>
-              <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
-              <mat-option value="utilities">{{
-                'expenses.categories.utilities' | translate
-              }}</mat-option>
-              <mat-option value="salaries">{{
-                'expenses.categories.salaries' | translate
-              }}</mat-option>
-              <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
-              <mat-option value="transport">{{
-                'expenses.categories.transport' | translate
-              }}</mat-option>
-              <mat-option value="advertising">{{
-                'expenses.categories.advertising' | translate
-              }}</mat-option>
-              <mat-option value="supplies">{{
-                'expenses.categories.supplies' | translate
-              }}</mat-option>
-              <mat-option value="maintenance">{{
-                'expenses.categories.maintenance' | translate
-              }}</mat-option>
-              <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
-              <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <div class="flex items-center gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-48">
+          <mat-label>{{ 'expenses.category' | translate }}</mat-label>
+          <mat-select
+            [value]="categoryFilter()"
+            (selectionChange)="categoryFilter.set($event.value)"
+          >
+            <mat-option>{{ 'expenses.filters.allCategories' | translate }}</mat-option>
+            <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
+            <mat-option value="utilities">{{
+              'expenses.categories.utilities' | translate
+            }}</mat-option>
+            <mat-option value="salaries">{{
+              'expenses.categories.salaries' | translate
+            }}</mat-option>
+            <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
+            <mat-option value="transport">{{
+              'expenses.categories.transport' | translate
+            }}</mat-option>
+            <mat-option value="advertising">{{
+              'expenses.categories.advertising' | translate
+            }}</mat-option>
+            <mat-option value="supplies">{{
+              'expenses.categories.supplies' | translate
+            }}</mat-option>
+            <mat-option value="maintenance">{{
+              'expenses.categories.maintenance' | translate
+            }}</mat-option>
+            <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
+            <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
       </div>
 
       @if (expensesResource.status() === 'loading' && !expensesResource.hasValue()) {

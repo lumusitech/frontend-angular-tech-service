@@ -58,50 +58,48 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+      <div class="flex items-center gap-3 flex-wrap">
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option value="">{{ 'workOrders.filters.all' | translate }}</mat-option>
-              <mat-option value="pending">{{ 'workOrders.statuses.pending' | translate }}</mat-option>
-              <mat-option value="assigned">{{
-                'workOrders.statuses.assigned' | translate
-              }}</mat-option>
-              <mat-option value="in_progress">{{
-                'workOrders.statuses.inProgress' | translate
-              }}</mat-option>
-              <mat-option value="completed">{{
-                'workOrders.statuses.completed' | translate
-              }}</mat-option>
-              <mat-option value="delivered">{{
-                'workOrders.statuses.delivered' | translate
-              }}</mat-option>
-              <mat-option value="cancelled">{{
-                'workOrders.statuses.cancelled' | translate
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.status' | translate }}</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option value="">{{ 'workOrders.filters.all' | translate }}</mat-option>
+            <mat-option value="pending">{{ 'workOrders.statuses.pending' | translate }}</mat-option>
+            <mat-option value="assigned">{{
+              'workOrders.statuses.assigned' | translate
+            }}</mat-option>
+            <mat-option value="in_progress">{{
+              'workOrders.statuses.inProgress' | translate
+            }}</mat-option>
+            <mat-option value="completed">{{
+              'workOrders.statuses.completed' | translate
+            }}</mat-option>
+            <mat-option value="delivered">{{
+              'workOrders.statuses.delivered' | translate
+            }}</mat-option>
+            <mat-option value="cancelled">{{
+              'workOrders.statuses.cancelled' | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
-            <mat-select
-              [value]="priorityFilter()"
-              (selectionChange)="priorityFilter.set($event.value)"
-            >
-              <mat-option value="">{{ 'workOrders.filters.allPriorities' | translate }}</mat-option>
-              <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
-              <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
+          <mat-select
+            [value]="priorityFilter()"
+            (selectionChange)="priorityFilter.set($event.value)"
+          >
+            <mat-option value="">{{ 'workOrders.filters.allPriorities' | translate }}</mat-option>
+            <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
+            <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
+            <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
+            <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
       @if (workOrdersResource.status() === 'loading' && !workOrdersResource.hasValue()) {
