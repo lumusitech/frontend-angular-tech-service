@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ExpensesService } from '../../core/services/expenses.service';
 import { Expense, ExpenseCategory } from '../../core/models/expense.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -268,20 +267,15 @@ export class ExpensesListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
-  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(
-    () => ({
-      url: '/api/expenses',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
-        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Expense>>).data,
+  readonly expensesResource = httpResource<PaginatedResponse<Expense>>(() => ({
+    url: '/api/expenses',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
+      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
-  );
+  }));
 
   displayedColumns = [
     'description',

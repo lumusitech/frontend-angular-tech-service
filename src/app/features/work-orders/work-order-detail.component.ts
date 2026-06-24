@@ -7,7 +7,6 @@ import {
   WorkOrderStatus,
   UpdateWorkOrderDto,
 } from '../../core/models/work-order.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -164,14 +163,9 @@ export class WorkOrderDetailComponent {
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
 
-  readonly workOrderResource = httpResource<WorkOrder>(
-    () => ({
-      url: `/api/work-orders/${this.orderId()}`,
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<WorkOrder>).data,
-    },
-  );
+  readonly workOrderResource = httpResource<WorkOrder>(() => ({
+    url: `/api/work-orders/${this.orderId()}`,
+  }));
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;

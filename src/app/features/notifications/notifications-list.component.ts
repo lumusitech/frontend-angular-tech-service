@@ -7,7 +7,6 @@ import {
   NotificationType,
   PaginatedNotifications,
 } from '../../core/models/notification.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -176,21 +175,16 @@ export class NotificationsListComponent {
   readonly currentPage = signal(1);
   readonly readFilter = signal<string>('all');
 
-  readonly resource = httpResource<PaginatedNotifications>(
-    () => ({
-      url: '/api/notifications',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        sortBy: 'createdAt',
-        order: 'DESC',
-        ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedNotifications>).data,
+  readonly resource = httpResource<PaginatedNotifications>(() => ({
+    url: '/api/notifications',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      sortBy: 'createdAt',
+      order: 'DESC',
+      ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
     },
-  );
+  }));
 
   getTypeIcon(type: string): string {
     return TYPE_ICONS[type] || 'notifications';

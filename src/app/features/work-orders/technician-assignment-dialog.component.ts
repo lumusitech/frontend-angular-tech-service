@@ -9,7 +9,6 @@ import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { User } from '../../core/models/user.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -82,14 +81,9 @@ export class TechnicianAssignmentDialogComponent {
   readonly selectedIds: string[] = [...this.data.currentTechnicianIds];
   readonly saving = signal(false);
 
-  readonly techniciansResource = httpResource<PaginatedResponse<User>>(
-    () => ({
-      url: '/api/users?role=technician&limit=100',
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<User>>).data,
-    },
-  );
+  readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
+    url: '/api/users?role=technician&limit=100',
+  }));
 
   onSelectionChange(event: MatSelectionListChange): void {
     this.selectedIds.length = 0;

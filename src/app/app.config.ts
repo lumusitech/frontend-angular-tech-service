@@ -10,6 +10,7 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MatNativeDateModule } from '@angular/material/core';
 import { routes } from './app.routes';
+import { apiResponseInterceptor } from './core/interceptors/api-response.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideClientHydration(),
-    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor])),
+    provideHttpClient(withInterceptors([apiResponseInterceptor, authInterceptor, loadingInterceptor])),
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(MatNativeDateModule),
     provideServiceWorker('ngsw-worker.js', {

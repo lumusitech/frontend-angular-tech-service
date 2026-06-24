@@ -7,7 +7,6 @@ import {
   WorkOrderStatus,
 } from '../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../core/models/dashboard.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -156,21 +155,16 @@ export class TechWorkOrdersComponent {
     { value: 'completed', label: 'workOrders.statuses.completed' },
   ];
 
-  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(
-    () => ({
-      url: '/api/work-orders',
-      params: {
-        page: 1,
-        limit: 50,
-        sortBy: 'scheduledDate',
-        order: 'ASC',
-        ...(this.activeFilter() ? { status: this.activeFilter()! } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<WorkOrder>>).data,
+  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
+    url: '/api/work-orders',
+    params: {
+      page: 1,
+      limit: 50,
+      sortBy: 'scheduledDate',
+      order: 'ASC',
+      ...(this.activeFilter() ? { status: this.activeFilter()! } : {}),
     },
-  );
+  }));
 
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'bg-gray-100 text-gray-800';

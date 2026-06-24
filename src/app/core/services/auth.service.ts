@@ -30,7 +30,7 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
       tap((response: LoginResponse) => {
-        const { accessToken, user, preferences } = response.data;
+        const { accessToken, user, preferences } = response;
         this.tokenSignal.set(accessToken);
         this.userSignal.set(user);
         this.preferencesSignal.set(preferences || null);

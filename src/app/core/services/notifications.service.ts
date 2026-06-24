@@ -1,7 +1,6 @@
 import { Service, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { ApiResponse } from '../models/api-response.interfaces';
 import {
   AppNotification,
   NotificationFilters,
@@ -24,42 +23,33 @@ export class NotificationsService {
     if (filters?.type) params = params.set('type', filters.type);
     if (filters?.isRead !== undefined) params = params.set('isRead', filters.isRead.toString());
 
-    return this.http
-      .get<ApiResponse<PaginatedNotifications>>(this.apiUrl, { params })
-      .pipe(map((res) => res.data));
+    return this.http.get<PaginatedNotifications>(this.apiUrl, { params });
   }
 
   getUnreadCount(): Observable<number> {
-    return this.http
-      .get<ApiResponse<number>>(`${this.apiUrl}/unread-count`)
-      .pipe(
-        map((res) => {
-          const count = res.data;
-          this.unreadCount.set(count);
-          return count;
-        }),
-      );
+    return this.http.get<number>(`${this.apiUrl}/unread-count`).pipe(
+      map((count) => {
+        this.unreadCount.set(count);
+        return count;
+      }),
+    );
   }
 
   markAsRead(id: string): Observable<AppNotification> {
-    return this.http
-      .patch<ApiResponse<AppNotification>>(`${this.apiUrl}/${id}/read`, {})
-      .pipe(
-        map((res) => {
-          this.unreadCount.update((c) => Math.max(0, c - 1));
-          return res.data;
-        }),
-      );
+    return this.http.patch<AppNotification>(`${this.apiUrl}/${id}/read`, {}).pipe(
+      map((notification) => {
+        this.unreadCount.update((c) => Math.max(0, c - 1));
+        return notification;
+      }),
+    );
   }
 
   markAllAsRead(): Observable<void> {
-    return this.http
-      .patch<ApiResponse<void>>(`${this.apiUrl}/read-all`, {})
-      .pipe(
-        map(() => {
-          this.unreadCount.set(0);
-        }),
-      );
+    return this.http.patch<void>(`${this.apiUrl}/read-all`, {}).pipe(
+      map(() => {
+        this.unreadCount.set(0);
+      }),
+    );
   }
 
   incrementUnread(): void {

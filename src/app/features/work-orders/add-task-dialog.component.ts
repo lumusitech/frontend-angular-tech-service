@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { User } from '../../core/models/user.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -97,14 +96,9 @@ export class AddTaskDialogComponent {
   readonly assignedToId = signal('');
   readonly saving = signal(false);
 
-  readonly techniciansResource = httpResource<PaginatedResponse<User>>(
-    () => ({
-      url: '/api/users?role=technician&limit=100',
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<User>>).data,
-    },
-  );
+  readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
+    url: '/api/users?role=technician&limit=100',
+  }));
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;

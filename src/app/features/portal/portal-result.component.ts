@@ -1,7 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { PortalResponse } from '../../core/models/portal.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -162,8 +161,5 @@ export class PortalResultComponent {
 
   readonly portalResource = httpResource<PortalResponse>(
     () => `/api/portal/track/${this.code()}`,
-    {
-      parse: (res: unknown) => (res as ApiResponse<PortalResponse>).data,
-    },
   );
 }

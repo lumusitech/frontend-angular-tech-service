@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '../../core/services/payments.service';
 import { Payment, PaymentStatus, PaymentMethod } from '../../core/models/payment.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -263,21 +262,16 @@ export class PaymentsListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
-  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(
-    () => ({
-      url: '/api/payments',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-        ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
-        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Payment>>).data,
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
+    url: '/api/payments',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
+      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
-  );
+  }));
 
   displayedColumns = [
     'trackingCode',

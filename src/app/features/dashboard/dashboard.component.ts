@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -13,7 +13,6 @@ import {
   InquirySummary,
   PaginatedResponse,
 } from '../../core/models/dashboard.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -136,28 +135,22 @@ export class DashboardComponent implements OnInit {
   readonly loadError = signal(false);
   readonly editMode = signal(false);
 
-  private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(
-    () => ({
-      url: '/api/pending-items',
-      params: { status: 'pending', limit: '5', sortBy: 'dueDate', order: 'ASC' },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<PendingItemSummary>>).data,
-    },
-  );
+  private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(() => ({
+    url: '/api/pending-items',
+    params: { status: 'pending', limit: '5', sortBy: 'dueDate', order: 'ASC' },
+  }));
 
-  private readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(
-    () => ({
-      url: '/api/inquiries',
-      params: { status: 'new', limit: '5', sortBy: 'createdAt', order: 'DESC' },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<InquirySummary>>).data,
-    },
-  );
+  private readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(() => ({
+    url: '/api/inquiries',
+    params: { status: 'new', limit: '5', sortBy: 'createdAt', order: 'DESC' },
+  }));
 
-  readonly pendingItems = signal<PendingItemSummary[]>([]);
-  readonly inquiries = signal<InquirySummary[]>([]);
+  readonly pendingItems = computed(() =>
+    this.pendingItemsResource.hasValue() ? this.pendingItemsResource.value().data : [],
+  );
+  readonly inquiries = computed(() =>
+    this.inquiriesResource.hasValue() ? this.inquiriesResource.value().data : [],
+  );
 
   ngOnInit(): void {
     this.loadSummary();
@@ -176,11 +169,6 @@ export class DashboardComponent implements OnInit {
         this.loadError.set(true);
       },
     });
-
-    this.pendingItemsResource.hasValue() &&
-      this.pendingItems.set(this.pendingItemsResource.value().data);
-    this.inquiriesResource.hasValue() &&
-      this.inquiries.set(this.inquiriesResource.value().data);
   }
 
   onDrop(event: CdkDragDrop<DashboardWidgetId[]>): void {

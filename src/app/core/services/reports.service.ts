@@ -1,7 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { ApiResponse } from '../models/api-response.interfaces';
+import { Observable } from 'rxjs';
 import {
   PeriodFilter,
   SummaryReport,
@@ -29,59 +28,43 @@ export class ReportsService {
   }
 
   getSummary(): Observable<SummaryReport> {
-    return this.http
-      .get<ApiResponse<SummaryReport>>(`${this.apiUrl}/summary`)
-      .pipe(map((res) => res.data));
+    return this.http.get<SummaryReport>(`${this.apiUrl}/summary`);
   }
 
   getIncome(filters?: PeriodFilter): Observable<IncomeReport> {
-    return this.http
-      .get<ApiResponse<IncomeReport>>(`${this.apiUrl}/income`, {
-        params: this.buildPeriodParams(filters),
-      })
-      .pipe(map((res) => res.data));
+    return this.http.get<IncomeReport>(`${this.apiUrl}/income`, {
+      params: this.buildPeriodParams(filters),
+    });
   }
 
   getExpenses(filters?: PeriodFilter): Observable<ExpenseReport> {
-    return this.http
-      .get<ApiResponse<ExpenseReport>>(`${this.apiUrl}/expenses`, {
-        params: this.buildPeriodParams(filters),
-      })
-      .pipe(map((res) => res.data));
+    return this.http.get<ExpenseReport>(`${this.apiUrl}/expenses`, {
+      params: this.buildPeriodParams(filters),
+    });
   }
 
   getProfit(filters?: PeriodFilter): Observable<ProfitReport> {
-    return this.http
-      .get<ApiResponse<ProfitReport>>(`${this.apiUrl}/profit`, {
-        params: this.buildPeriodParams(filters),
-      })
-      .pipe(map((res) => res.data));
+    return this.http.get<ProfitReport>(`${this.apiUrl}/profit`, {
+      params: this.buildPeriodParams(filters),
+    });
   }
 
   getServices(filters?: PeriodFilter): Observable<ServicesReport> {
-    return this.http
-      .get<ApiResponse<ServicesReport>>(`${this.apiUrl}/services`, {
-        params: this.buildPeriodParams(filters),
-      })
-      .pipe(map((res) => res.data));
+    return this.http.get<ServicesReport>(`${this.apiUrl}/services`, {
+      params: this.buildPeriodParams(filters),
+    });
   }
 
   getTechnicians(): Observable<TechnicianRanking[]> {
-    return this.http
-      .get<ApiResponse<TechnicianRanking[]>>(`${this.apiUrl}/technicians`)
-      .pipe(map((res) => res.data));
+    return this.http.get<TechnicianRanking[]>(`${this.apiUrl}/technicians`);
   }
 
   getTechnicianDetail(id: string): Observable<TechnicianDetail> {
-    return this.http
-      .get<ApiResponse<TechnicianDetail>>(`${this.apiUrl}/technicians/${id}`)
-      .pipe(map((res) => res.data));
+    return this.http.get<TechnicianDetail>(`${this.apiUrl}/technicians/${id}`);
   }
 
   getClientReport(id: string): Observable<ClientReport> {
-    return this.http
-      .get<ApiResponse<ClientReport>>(`${this.apiUrl}/clients/${id}`)
-      .pipe(map((res) => res.data));
+    return this.http.get<ClientReport>(`${this.apiUrl}/clients/${id}`);
   }
 
   downloadBudgetPdf(workOrderId: string): Observable<Blob> {

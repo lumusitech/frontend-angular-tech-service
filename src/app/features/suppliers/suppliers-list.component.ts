@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { SuppliersService } from '../../core/services/suppliers.service';
 import { Supplier } from '../../core/models/supplier.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -231,19 +230,14 @@ export class SuppliersListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
 
-  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(
-    () => ({
-      url: '/api/suppliers',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
-      },
-    }),
-    {
-      parse: (res: unknown) => (res as ApiResponse<PaginatedResponse<Supplier>>).data,
+  readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
+    url: '/api/suppliers',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
     },
-  );
+  }));
 
   displayedColumns = ['name', 'contact', 'phone', 'email', 'isActive', 'createdAt', 'actions'];
 

@@ -1,7 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { ApiResponse } from '../models/api-response.interfaces';
+import { Observable } from 'rxjs';
 import {
   ServiceType,
   CreateServiceTypeDto,
@@ -24,32 +23,22 @@ export class ServiceTypesService {
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());
 
-    return this.http
-      .get<ApiResponse<PaginatedResponse<ServiceType>>>(this.apiUrl, { params })
-      .pipe(map((res) => res.data));
+    return this.http.get<PaginatedResponse<ServiceType>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<ServiceType> {
-    return this.http
-      .get<ApiResponse<ServiceType>>(`${this.apiUrl}/${id}`)
-      .pipe(map((res) => res.data));
+    return this.http.get<ServiceType>(`${this.apiUrl}/${id}`);
   }
 
   create(dto: CreateServiceTypeDto): Observable<ServiceType> {
-    return this.http
-      .post<ApiResponse<ServiceType>>(this.apiUrl, dto)
-      .pipe(map((res) => res.data));
+    return this.http.post<ServiceType>(this.apiUrl, dto);
   }
 
   update(id: string, dto: UpdateServiceTypeDto): Observable<ServiceType> {
-    return this.http
-      .patch<ApiResponse<ServiceType>>(`${this.apiUrl}/${id}`, dto)
-      .pipe(map((res) => res.data));
+    return this.http.patch<ServiceType>(`${this.apiUrl}/${id}`, dto);
   }
 
   delete(id: string): Observable<void> {
-    return this.http
-      .delete<ApiResponse<void>>(`${this.apiUrl}/${id}`)
-      .pipe(map((res) => res.data));
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

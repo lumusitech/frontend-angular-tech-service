@@ -12,7 +12,6 @@ import { CreateInvoiceDto } from '../../core/models/api.interfaces';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
 import { WorkOrder } from '../../core/models/work-order.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { ApiResponse } from '../../core/models/api-response.interfaces';
 
 @Component({
   selector: 'app-invoice-form',
@@ -223,7 +222,7 @@ export class InvoiceFormComponent {
   private clientSearch = signal('');
   private workOrderSearch = signal('');
 
-  readonly clientsResource = httpResource<ApiResponse<PaginatedResponse<Client>>>(
+  readonly clientsResource = httpResource<PaginatedResponse<Client>>(
     () => {
       const term = this.clientSearch();
       if (!term || term.length < 2) return undefined;
@@ -231,7 +230,7 @@ export class InvoiceFormComponent {
     },
   );
 
-  readonly workOrdersResource = httpResource<ApiResponse<PaginatedResponse<WorkOrder>>>(
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
     () => {
       const term = this.workOrderSearch();
       if (!term || term.length < 2) return undefined;
@@ -241,14 +240,14 @@ export class InvoiceFormComponent {
 
   readonly filteredClients = computed(() => {
     if (this.clientsResource.hasValue()) {
-      return this.clientsResource.value().data.data;
+      return this.clientsResource.value().data;
     }
     return [];
   });
 
   readonly filteredWorkOrders = computed(() => {
     if (this.workOrdersResource.hasValue()) {
-      return this.workOrdersResource.value().data.data;
+      return this.workOrdersResource.value().data;
     }
     return [];
   });
