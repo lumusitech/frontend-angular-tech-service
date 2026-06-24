@@ -99,7 +99,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalIncome' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.totalIncome | currencyArs: '1.0-0' }}
+                {{ s.kpis.totalIncome | currencyArs: '1.2-2' }}
               </p>
               <p class="text-xs mt-1" [class]="s.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'">
                 {{ s.trends.incomeChange >= 0 ? '+' : '' }}{{ s.trends.incomeChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
@@ -108,13 +108,13 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalExpenses' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.totalExpenses | currencyArs: '1.0-0' }}
+                {{ s.kpis.totalExpenses | currencyArs: '1.2-2' }}
               </p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.netProfit' | translate }}</p>
               <p class="text-2xl font-bold mt-1" [class]="s.kpis.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                {{ s.kpis.netProfit | currencyArs: '1.0-0' }}
+                {{ s.kpis.netProfit | currencyArs: '1.2-2' }}
               </p>
               <p class="text-xs mt-1" [class]="s.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'">
                 {{ s.trends.profitChange >= 0 ? '+' : '' }}{{ s.trends.profitChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
@@ -123,7 +123,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.averageTicket' | translate }}</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                {{ s.kpis.averageTicket | currencyArs: '1.0-0' }}
+                {{ s.kpis.averageTicket | currencyArs: '1.2-2' }}
               </p>
             </div>
           </div>

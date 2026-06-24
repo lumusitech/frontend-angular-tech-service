@@ -31,7 +31,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.completedOrders }}</td>
                 <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.averageResolutionDays | number: '1.1-1' }}d</td>
                 <td class="py-2.5 text-right font-medium text-gray-900 dark:text-gray-100">
-                  {{ tech.totalRevenue | currencyArs: '1.0-0' }}
+                  {{ tech.totalRevenue | currencyArs: '1.2-2' }}
                 </td>
               </tr>
             }
