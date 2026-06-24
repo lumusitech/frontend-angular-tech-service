@@ -62,7 +62,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
           <mat-button-toggle-group
             [value]="period()"
             (change)="onPeriodChange($event.value)"
-            class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
+            class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg h-[56px]"
           >
             <mat-button-toggle value="daily">{{ 'reports.daily' | translate }}</mat-button-toggle>
             <mat-button-toggle value="weekly">{{ 'reports.weekly' | translate }}</mat-button-toggle>
