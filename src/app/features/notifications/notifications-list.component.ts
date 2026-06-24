@@ -121,6 +121,11 @@ const TYPE_COLORS: Record<string, string> = {
             <mat-option value="inquiry.reviewed">{{ 'notifications.types.inquiryReviewed' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+        </mat-form-field>
       </div>
 
       @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -203,6 +208,7 @@ export class NotificationsListComponent {
   readonly currentPage = signal(1);
   readonly readFilter = signal<string>('all');
   readonly typeFilter = signal('');
+  readonly searchFilter = signal('');
 
   readonly resource = httpResource<PaginatedNotifications>(() => ({
     url: '/api/notifications',
@@ -213,6 +219,7 @@ export class NotificationsListComponent {
       order: 'DESC',
       ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
       ...(this.typeFilter() ? { type: this.typeFilter() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -234,6 +241,10 @@ export class NotificationsListComponent {
     this.typeFilter.set(value);
     this.currentPage.set(1);
     this.resource.reload();
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   onPageChange(event: PageEvent): void {

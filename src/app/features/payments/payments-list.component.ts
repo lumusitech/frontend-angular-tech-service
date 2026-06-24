@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -31,6 +32,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatButtonModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
     ErrorStateComponent,
@@ -76,6 +78,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               'payments.methods.debitCard' | translate
             }}</mat-option>
           </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>{{ 'common.search' | translate }}</mat-label>
+          <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
         </mat-form-field>
       </div>
 
@@ -261,6 +268,7 @@ export class PaymentsListComponent implements OnInit {
   readonly methodFilter = signal<PaymentMethod | ''>('');
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly searchFilter = signal('');
 
   readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
     url: '/api/payments',
@@ -270,6 +278,7 @@ export class PaymentsListComponent implements OnInit {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
     },
   }));
 
@@ -300,6 +309,10 @@ export class PaymentsListComponent implements OnInit {
   onSortChange(sort: Sort): void {
     this.sortBy.set(sort.active);
     this.sortOrder.set((sort.direction || 'asc') as 'asc' | 'desc');
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 
   approvePayment(payment: Payment): void {
