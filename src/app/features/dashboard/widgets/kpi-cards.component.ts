@@ -9,9 +9,9 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
   imports: [MatIconModule, TranslatePipe, CurrencyArsPipe],
   template: `
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-          <div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+        <div class="flex items-start gap-3">
+          <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'dashboard.totalOrders' | translate }}
             </p>
@@ -22,15 +22,15 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ kpis().completedCount }} {{ 'dashboard.completed' | translate }}
             </p>
           </div>
-          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+          <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
             <mat-icon class="text-blue-600 dark:text-blue-400">assignment</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-          <div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+        <div class="flex items-start gap-3">
+          <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'dashboard.totalIncome' | translate }}
             </p>
@@ -46,15 +46,15 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ 'dashboard.vsLastMonth' | translate }}
             </p>
           </div>
-          <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+          <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center shrink-0">
             <mat-icon class="text-emerald-600 dark:text-emerald-400">payments</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-          <div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+        <div class="flex items-start gap-3">
+          <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'dashboard.netProfit' | translate }}
             </p>
@@ -70,15 +70,15 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ 'dashboard.vsLastMonth' | translate }}
             </p>
           </div>
-          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center shrink-0">
             <mat-icon class="text-purple-600 dark:text-purple-400">trending_up</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-          <div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+        <div class="flex items-start gap-3">
+          <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'dashboard.avgTicket' | translate }}
             </p>
@@ -89,7 +89,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ kpis().completionRate }}% {{ 'dashboard.completionRate' | translate }}
             </p>
           </div>
-          <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+          <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center shrink-0">
             <mat-icon class="text-orange-600 dark:text-orange-400">receipt</mat-icon>
           </div>
         </div>
