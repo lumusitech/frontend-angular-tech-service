@@ -15,8 +15,8 @@ export interface DashboardLayoutConfig {
 }
 
 const DEFAULT_LAYOUT: DashboardWidgetId[] = [
-  'charts',
   'kpis',
+  'charts',
   'pendingItems',
   'inquiries',
   'quickActions',
