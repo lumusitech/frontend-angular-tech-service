@@ -140,6 +140,24 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="address">
+              <th
+                mat-header-cell
+                mat-sort-header
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'common.address' | translate }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
+                {{ client.address }}
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="isActive">
               <th
                 mat-header-cell
@@ -237,7 +255,7 @@ export class ClientsListComponent implements OnInit {
     },
   }));
 
-  displayedColumns = ['name', 'email', 'phone', 'isActive', 'createdAt', 'actions'];
+  displayedColumns = ['name', 'email', 'phone', 'address', 'isActive', 'createdAt', 'actions'];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');

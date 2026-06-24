@@ -142,6 +142,23 @@ const STATUS_COLORS: Record<string, string> = {
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="clientAddress">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'common.address' | translate }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let inquiry"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
+                {{ inquiry.clientAddress || '-' }}
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="source">
               <th
                 mat-header-cell
@@ -291,7 +308,7 @@ export class InquiriesListComponent implements OnInit {
     },
   }));
 
-  displayedColumns = ['clientName', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
+  displayedColumns = ['clientName', 'clientAddress', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
