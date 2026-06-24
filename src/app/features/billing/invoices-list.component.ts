@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -88,6 +88,19 @@ import { InvoiceFormComponent } from './invoice-form.component';
               (input)="clientNameFilter.set(getInputValue($event))"
               [placeholder]="'common.search' | translate"
             />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFromPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
 
           @if (hasActiveFilters()) {
@@ -209,6 +222,10 @@ export class InvoicesListComponent {
   readonly clientNameFilter = signal('');
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
+  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
 
   readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => ({
     url: '/api/billing/invoices',
@@ -219,23 +236,37 @@ export class InvoicesListComponent {
       ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
       ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
 
   readonly hasActiveFilters = computed(() => {
-    return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '';
+    return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
 
   clearFilters(): void {
     this.statusFilter.set('');
     this.typeFilter.set('');
     this.clientNameFilter.set('');
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateFrom.set(date ? date.toISOString().split('T')[0] : '');
+  }
+
+  onDateToChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateTo.set(date ? date.toISOString().split('T')[0] : '');
   }
 
   onPageChange(event: PageEvent): void {

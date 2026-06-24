@@ -14,6 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -36,6 +38,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
@@ -67,6 +71,19 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
               <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
             </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFromPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
 
           @if (hasActiveFilters()) {
@@ -250,6 +267,10 @@ export class ServiceTypesListComponent implements OnInit {
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly searchFilter = signal('');
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
+  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
 
   readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
     url: '/api/service-types',
@@ -259,6 +280,8 @@ export class ServiceTypesListComponent implements OnInit {
       ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() === 'true' } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
 
@@ -293,6 +316,16 @@ export class ServiceTypesListComponent implements OnInit {
     return (event.target as HTMLInputElement).value;
   }
 
+  onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateFrom.set(date ? date.toISOString().split('T')[0] : '');
+  }
+
+  onDateToChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateTo.set(date ? date.toISOString().split('T')[0] : '');
+  }
+
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(ServiceTypeFormComponent, {
       width: '600px',
@@ -316,12 +349,14 @@ export class ServiceTypesListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.isActiveFilter() !== '';
+    return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
 
   clearFilters(): void {
     this.searchFilter.set('');
     this.isActiveFilter.set('');
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   deleteServiceType(serviceType: ServiceType): void {
