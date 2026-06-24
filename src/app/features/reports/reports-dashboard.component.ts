@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ReportsService } from '../../core/services/reports.service';
 import {
   PeriodFilter,
@@ -13,6 +13,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { IncomeChartComponent } from './income-chart.component';
@@ -30,6 +35,10 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
     PageHeaderComponent,
     ErrorStateComponent,
     IncomeChartComponent,
@@ -47,33 +56,33 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
         [subtitle]="'reports.subtitle' | translate"
       />
 
-      <!-- Period selector -->
-      <div class="flex items-center gap-4 flex-wrap">
-        <mat-button-toggle-group
-          [value]="period()"
-          (change)="onPeriodChange($event.value)"
-          class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
-        >
-          <mat-button-toggle value="daily">{{ 'reports.daily' | translate }}</mat-button-toggle>
-          <mat-button-toggle value="weekly">{{ 'reports.weekly' | translate }}</mat-button-toggle>
-          <mat-button-toggle value="monthly">{{ 'reports.monthly' | translate }}</mat-button-toggle>
-          <mat-button-toggle value="yearly">{{ 'reports.yearly' | translate }}</mat-button-toggle>
-        </mat-button-toggle-group>
+      <!-- Filter bar -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <mat-button-toggle-group
+            [value]="period()"
+            (change)="onPeriodChange($event.value)"
+            class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
+          >
+            <mat-button-toggle value="daily">{{ 'reports.daily' | translate }}</mat-button-toggle>
+            <mat-button-toggle value="weekly">{{ 'reports.weekly' | translate }}</mat-button-toggle>
+            <mat-button-toggle value="monthly">{{ 'reports.monthly' | translate }}</mat-button-toggle>
+            <mat-button-toggle value="yearly">{{ 'reports.yearly' | translate }}</mat-button-toggle>
+          </mat-button-toggle-group>
 
-        <div class="flex items-center gap-2">
-          <input
-            type="date"
-            [value]="dateFrom()"
-            (change)="onDateFromChange($event)"
-            class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          />
-          <span class="text-gray-400">—</span>
-          <input
-            type="date"
-            [value]="dateTo()"
-            (change)="onDateToChange($event)"
-            class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          />
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.from' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFromPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-40">
+            <mat-label>{{ 'common.to' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateToPicker></mat-datepicker>
+          </mat-form-field>
         </div>
       </div>
 
@@ -149,6 +158,8 @@ export class ReportsDashboardComponent {
   readonly period = signal<string>('monthly');
   readonly dateFrom = signal<string>('');
   readonly dateTo = signal<string>('');
+  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
   readonly loading = signal(true);
   readonly error = signal(false);
 
@@ -221,13 +232,17 @@ export class ReportsDashboardComponent {
     this.loadAll();
   }
 
-  onDateFromChange(event: Event): void {
-    this.dateFrom.set((event.target as HTMLInputElement).value);
+  onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateFrom.set(date ? date.toISOString().split('T')[0] : '');
+    this.period.set('');
     this.loadAll();
   }
 
-  onDateToChange(event: Event): void {
-    this.dateTo.set((event.target as HTMLInputElement).value);
+  onDateToChange(event: MatDatepickerInputEvent<Date>): void {
+    const date = event.value;
+    this.dateTo.set(date ? date.toISOString().split('T')[0] : '');
+    this.period.set('');
     this.loadAll();
   }
 }

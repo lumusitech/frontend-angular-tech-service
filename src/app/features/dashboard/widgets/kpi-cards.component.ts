@@ -1,12 +1,12 @@
 import { Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
 import { DashboardKPIs, DashboardTrends } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 
 @Component({
   selector: 'app-kpi-cards',
-  imports: [MatIconModule, CurrencyPipe, TranslatePipe],
+  imports: [MatIconModule, TranslatePipe, CurrencyArsPipe],
   template: `
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -35,7 +35,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
               {{ 'dashboard.totalIncome' | translate }}
             </p>
             <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-              {{ kpis().totalIncome | currency: 'ARS' : 'symbol' : '1.0-0' }}
+              {{ kpis().totalIncome | currencyArs: '1.0-0' }}
             </p>
             <p
               class="text-xs mt-1"
@@ -58,8 +58,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'dashboard.netProfit' | translate }}
             </p>
-            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-              {{ kpis().netProfit | currency: 'ARS' : 'symbol' : '1.0-0' }}
+            <p class="text-3xl font-bold mt-1" [class]="kpis().netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+              {{ kpis().netProfit | currencyArs: '1.0-0' }}
             </p>
             <p
               class="text-xs mt-1"
@@ -83,7 +83,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
               {{ 'dashboard.avgTicket' | translate }}
             </p>
             <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-              {{ kpis().averageTicket | currency: 'ARS' : 'symbol' : '1.0-0' }}
+              {{ kpis().averageTicket | currencyArs: '1.0-0' }}
             </p>
             <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {{ kpis().completionRate }}% {{ 'dashboard.completionRate' | translate }}

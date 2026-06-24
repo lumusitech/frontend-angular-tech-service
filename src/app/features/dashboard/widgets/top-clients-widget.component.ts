@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
 import { TopClient } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 
 @Component({
   selector: 'app-top-clients-widget',
-  imports: [CurrencyPipe, TranslatePipe],
+  imports: [TranslatePipe, CurrencyArsPipe],
   template: `
     @if (clients().length > 0) {
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -24,7 +24,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                 </p>
               </div>
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {{ client.totalSpent | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                {{ client.totalSpent | currencyArs: '1.0-0' }}
               </p>
             </div>
           }
