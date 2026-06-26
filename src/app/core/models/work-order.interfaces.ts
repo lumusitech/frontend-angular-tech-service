@@ -22,6 +22,12 @@ export interface WorkOrder {
   scheduledDate?: string;
   startedAt?: string;
   completedAt?: string;
+  commissionPercent?: number;
+  sellerId?: string;
+  seller?: {
+    id: string;
+    name: string;
+  };
   client: {
     id: string;
     name: string;
@@ -89,12 +95,14 @@ export interface CreateWorkOrderDto {
   workAddress?: string;
   warrantyUntil?: string;
   scheduledDate?: string;
+  sellerId?: string;
 }
 
 export interface UpdateWorkOrderDto {
   status?: WorkOrderStatus;
   startedAt?: string;
   completedAt?: string;
+  commissionPercent?: number;
 }
 
 export interface CreateWorkOrderNoteDto {
@@ -126,6 +134,7 @@ export interface WorkOrderFilters {
   priority?: WorkOrderPriority;
   technicianId?: string;
   clientId?: string;
+  sellerId?: string;
   page?: number;
   limit?: number;
 }

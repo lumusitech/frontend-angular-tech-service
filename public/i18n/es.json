@@ -633,6 +633,13 @@
       "profile": "Perfil"
     }
   },
+  "seller": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "orders": "Órdenes",
+      "profile": "Perfil"
+    }
+  },
   "inquiries": {
     "title": "Consultas",
     "subtitle": "Gestión de consultas de clientes",

@@ -25,6 +25,7 @@ export class WorkOrdersService {
     if (filters?.status) params = params.set('status', filters.status);
     if (filters?.priority) params = params.set('priority', filters.priority);
     if (filters?.technicianId) params = params.set('technicianId', filters.technicianId);
+    if (filters?.sellerId) params = params.set('sellerId', filters.sellerId);
     if (filters?.clientId) params = params.set('clientId', filters.clientId);
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());

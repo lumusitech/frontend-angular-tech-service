@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, sellerGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -214,9 +214,47 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/technician/tech-profile.component').then(
+            (m) => m.TechProfileComponent,
+          ),
+      },
+      {
         path: 'settings',
         loadComponent: () =>
           import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+      },
+    ],
+  },
+  {
+    path: 'seller',
+    canActivate: [sellerGuard],
+    loadComponent: () =>
+      import('./layouts/seller-layout/seller-layout.component').then(
+        (m) => m.SellerLayoutComponent,
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/seller/seller-dashboard.component').then(
+            (m) => m.SellerDashboardComponent,
+          ),
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./features/seller/seller-work-orders.component').then(
+            (m) => m.SellerWorkOrdersComponent,
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/seller/seller-settings.component').then(
+            (m) => m.SellerSettingsComponent,
+          ),
       },
     ],
   },

@@ -58,13 +58,13 @@ export class BottomNavComponent {
       icon: 'notifications',
       labelKey: 'technician.nav.notifications',
     },
-    { id: 'profile', path: '/tech/settings', icon: 'person', labelKey: 'technician.nav.profile' },
+    { id: 'profile', path: '/tech/profile', icon: 'person', labelKey: 'technician.nav.profile' },
   ];
 
   readonly activeTab = computed(() => {
     const url = this.router.url;
     if (url.startsWith('/tech/notifications')) return 'notifications';
-    if (url.startsWith('/tech/settings')) return 'profile';
+    if (url.startsWith('/tech/profile')) return 'profile';
     return 'orders';
   });
 
