@@ -109,6 +109,20 @@
       "consumidorFinal": "Final Consumer",
       "monotributo": "Monotax",
       "exento": "Exempt"
+    },
+    "detail": {
+      "title": "Client Detail",
+      "subtitle": "Complete client information",
+      "clientInfo": "Client Information",
+      "kpis": "Summary",
+      "workOrders": "Work Orders",
+      "totalOrders": "Total Orders",
+      "completedOrders": "Completed",
+      "pendingOrders": "Pending",
+      "loadError": "Error loading",
+      "loadErrorMessage": "Could not load client details",
+      "noOrders": "No orders",
+      "noOrdersMessage": "This client has no work orders registered"
     }
   },
   "suppliers": {

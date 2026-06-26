@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
@@ -28,6 +28,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-clients-list',
   imports: [
+    RouterLink,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -132,9 +133,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <td
                 mat-cell
                 *matCellDef="let client"
-                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+                class="px-4 py-3 text-sm"
               >
-                {{ client.name }}
+                <a
+                  [routerLink]="['/admin/clients', client.id]"
+                  class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  {{ client.name }}
+                </a>
               </td>
             </ng-container>
 
@@ -252,7 +258,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="viewDetail(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
           </table>
 
           <mat-paginator
@@ -269,6 +275,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 })
 export class ClientsListComponent implements OnInit {
   private readonly clientsService = inject(ClientsService);
+  private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
 
@@ -310,6 +317,10 @@ export class ClientsListComponent implements OnInit {
     if (searchQuery) {
       this.searchFilter.set(searchQuery);
     }
+  }
+
+  viewDetail(client: Client): void {
+    this.router.navigate(['/admin/clients', client.id]);
   }
 
   onPageChange(event: PageEvent): void {
