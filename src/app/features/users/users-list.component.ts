@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { UsersService } from '../../core/services/users.service';
-import { User, PaginatedResponse } from '../../core/models/user.interfaces';
-import { RouterLink } from '@angular/router';
+import { User } from '../../core/models/user.interfaces';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -26,7 +26,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-users-list',
   imports: [
-    RouterLink,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,

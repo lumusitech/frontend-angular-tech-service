@@ -16,6 +16,8 @@ export interface User {
   name: string;
   email: string;
   role: 'admin' | 'technician' | 'seller';
+  phone?: string;
+  commission?: number;
 }
 
 export type UserRole = User['role'];

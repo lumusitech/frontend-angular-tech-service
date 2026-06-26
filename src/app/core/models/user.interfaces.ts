@@ -2,6 +2,8 @@ export interface SkillRef {
   id: string;
   name: string;
   category?: string;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export interface User {

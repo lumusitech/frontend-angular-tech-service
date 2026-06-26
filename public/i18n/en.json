@@ -156,6 +156,13 @@
       "seller": "Seller"
     }
   },
+  "seller": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "orders": "Orders",
+      "profile": "Profile"
+    }
+  },
   "suppliers": {
     "title": "Suppliers",
     "subtitle": "Manage your suppliers",
