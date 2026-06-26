@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -172,7 +173,7 @@ export class PendingItemFormComponent {
 
     this.saving.set(true);
 
-    const dueDateStr = this.dueDate()!.toISOString().split('T')[0];
+    const dueDateStr = toLocalDateString(this.dueDate()!);
 
     if (this.data.mode === 'create') {
       const dto: CreatePendingItemDto = {

@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ExpensesService } from '../../core/services/expenses.service';
@@ -256,14 +257,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <td mat-cell *matCellDef="let expense" class="px-4 py-3 text-right">
                 <button
                   mat-icon-button
-                  (click)="openEditDialog(expense)"
+                  (click)="openEditDialog(expense); $event.stopPropagation()"
                   [title]="'common.edit' | translate"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
-                  (click)="deleteExpense(expense)"
+                  (click)="deleteExpense(expense); $event.stopPropagation()"
                   [title]="'common.delete' | translate"
                   color="warn"
                 >
@@ -353,7 +354,7 @@ export class ExpensesListComponent implements OnInit {
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateFrom.set(date.toISOString().split('T')[0]);
+      this.dateFrom.set(toLocalDateString(date));
     } else {
       this.dateFrom.set('');
     }
@@ -362,7 +363,7 @@ export class ExpensesListComponent implements OnInit {
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateTo.set(date.toISOString().split('T')[0]);
+      this.dateTo.set(toLocalDateString(date));
     } else {
       this.dateTo.set('');
     }

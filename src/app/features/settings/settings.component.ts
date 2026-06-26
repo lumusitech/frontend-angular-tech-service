@@ -1,22 +1,22 @@
-import { Component, inject, computed, signal, effect } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { MatIconModule } from '@angular/material/icon';
+import { UpperCasePipe } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { email, form, FormField } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { ThemeService } from '../../core/services/theme.service';
-import { TranslationService } from '../../core/services/translation.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { BusinessSettingsService } from '../../core/services/business-settings.service';
 import {
   DashboardLayoutService,
   DashboardWidgetId,
 } from '../../core/services/dashboard-layout.service';
-import { BusinessSettingsService } from '../../core/services/business-settings.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface LanguageOption {
   code: string;
@@ -24,10 +24,19 @@ interface LanguageOption {
   flag: string;
 }
 
+interface BusinessForm {
+  businessName: string;
+  logoUrl: string;
+  primaryColor: string;
+  secondaryColor: string;
+  address: string;
+  phone: string;
+  email: string;
+}
+
 @Component({
   selector: 'app-settings',
   imports: [
-    FormsModule,
     DragDropModule,
     MatIconModule,
     MatButtonModule,
@@ -38,6 +47,7 @@ interface LanguageOption {
     MatFormFieldModule,
     TranslatePipe,
     UpperCasePipe,
+    FormField,
   ],
   template: `
     <div class="space-y-6">
@@ -77,7 +87,7 @@ interface LanguageOption {
               <input
                 matInput
                 [placeholder]="'settings.businessNamePlaceholder' | translate"
-                [(ngModel)]="businessName"
+                [formField]="businessForm.businessName"
               />
             </mat-form-field>
 
@@ -86,7 +96,7 @@ interface LanguageOption {
               <input
                 matInput
                 [placeholder]="'settings.logoUrlPlaceholder' | translate"
-                [(ngModel)]="logoUrl"
+                [formField]="businessForm.logoUrl"
               />
             </mat-form-field>
           </div>
@@ -99,12 +109,12 @@ interface LanguageOption {
               <div class="flex items-center gap-2">
                 <input
                   type="color"
-                  [(ngModel)]="primaryColor"
+                  [formField]="businessForm.primaryColor"
                   class="w-10 h-10 rounded cursor-pointer border-0"
                 />
                 <input
                   type="text"
-                  [(ngModel)]="primaryColor"
+                  [formField]="businessForm.primaryColor"
                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -117,12 +127,12 @@ interface LanguageOption {
               <div class="flex items-center gap-2">
                 <input
                   type="color"
-                  [(ngModel)]="secondaryColor"
+                  [formField]="businessForm.secondaryColor"
                   class="w-10 h-10 rounded cursor-pointer border-0"
                 />
                 <input
                   type="text"
-                  [(ngModel)]="secondaryColor"
+                  [formField]="businessForm.secondaryColor"
                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -135,7 +145,7 @@ interface LanguageOption {
               <input
                 matInput
                 [placeholder]="'settings.businessAddressPlaceholder' | translate"
-                [(ngModel)]="address"
+                [formField]="businessForm.address"
               />
             </mat-form-field>
 
@@ -144,7 +154,7 @@ interface LanguageOption {
               <input
                 matInput
                 [placeholder]="'settings.businessPhonePlaceholder' | translate"
-                [(ngModel)]="phone"
+                [formField]="businessForm.phone"
               />
             </mat-form-field>
           </div>
@@ -155,17 +165,12 @@ interface LanguageOption {
               matInput
               type="email"
               [placeholder]="'settings.businessEmailPlaceholder' | translate"
-              [(ngModel)]="email"
+              [formField]="businessForm.email"
             />
           </mat-form-field>
 
           <div class="flex justify-end">
-            <button
-              mat-flat-button
-              color="primary"
-              [disabled]="saving()"
-              (click)="saveBusiness()"
-            >
+            <button mat-flat-button color="primary" [disabled]="saving()" (click)="saveBusiness()">
               @if (saving()) {
                 {{ 'common.saving' | translate }}
               } @else {
@@ -195,25 +200,22 @@ interface LanguageOption {
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
             {{ 'settings.theme' | translate }}
           </p>
-          <mat-button-toggle-group
-            [value]="themeMode()"
-            (change)="onThemeChange($event.value)"
-          >
+          <mat-button-toggle-group [value]="themeMode()" (change)="onThemeChange($event.value)">
             <mat-button-toggle value="system">
               <span class="flex items-center gap-2">
-                <mat-icon class="!w-5 !h-5 text-gray-500">brightness_auto</mat-icon>
+                <mat-icon class="w-5! h-5! text-gray-500">brightness_auto</mat-icon>
                 {{ 'settings.system' | translate }}
               </span>
             </mat-button-toggle>
             <mat-button-toggle value="light">
               <span class="flex items-center gap-2">
-                <mat-icon class="!w-5 !h-5 text-amber-500">light_mode</mat-icon>
+                <mat-icon class="w-5! h-5! text-amber-500">light_mode</mat-icon>
                 {{ 'settings.light' | translate }}
               </span>
             </mat-button-toggle>
             <mat-button-toggle value="dark">
               <span class="flex items-center gap-2">
-                <mat-icon class="!w-5 !h-5 text-indigo-400">dark_mode</mat-icon>
+                <mat-icon class="w-5! h-5! text-indigo-400">dark_mode</mat-icon>
                 {{ 'settings.dark' | translate }}
               </span>
             </mat-button-toggle>
@@ -287,7 +289,7 @@ interface LanguageOption {
                   [checked]="layoutService.widgets()[widgetId]"
                   (change)="layoutService.toggleWidget(widgetId)"
                 >
-                  {{ ('settings.widget' + widgetId) | translate }}
+                  {{ 'settings.widget' + widgetId | translate }}
                 </mat-checkbox>
               </div>
             }
@@ -304,7 +306,7 @@ interface LanguageOption {
     </div>
   `,
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   readonly themeService = inject(ThemeService);
   readonly translationService = inject(TranslationService);
   readonly layoutService = inject(DashboardLayoutService);
@@ -317,27 +319,35 @@ export class SettingsComponent {
 
   readonly saving = signal(false);
 
-  businessName = '';
-  logoUrl = '';
-  primaryColor = '#3B82F6';
-  secondaryColor = '#10B981';
-  address = '';
-  phone = '';
-  email = '';
+  readonly businessModel = signal<BusinessForm>({
+    businessName: '',
+    logoUrl: '',
+    primaryColor: '#3B82F6',
+    secondaryColor: '#10B981',
+    address: '',
+    phone: '',
+    email: '',
+  });
 
-  private readonly loadEffect = effect(() => {
-    const data = this.businessSettingsService.settingsResource.value();
-    if (data?.data) {
-      this.businessName = data.data.businessName || '';
-      this.logoUrl = data.data.logoUrl || '';
-      this.primaryColor = this.toHex(data.data.primaryColor) || '#3B82F6';
-      this.secondaryColor = this.toHex(data.data.secondaryColor) || '#10B981';
-      this.address = data.data.address || '';
-      this.phone = data.data.phone || '';
-      this.email = data.data.email || '';
+  readonly businessForm = form(this.businessModel, (p) => {
+    email(p.email, { message: 'Email inválido' });
+  });
+
+  ngOnInit(): void {
+    const data = this.businessSettingsService.settings();
+    if (data) {
+      this.businessModel.set({
+        businessName: data.businessName || '',
+        logoUrl: data.logoUrl || '',
+        primaryColor: data.primaryColor || '#3B82F6',
+        secondaryColor: data.secondaryColor || '#10B981',
+        address: data.address || '',
+        phone: data.phone || '',
+        email: data.email || '',
+      });
       this.applyColors();
     }
-  });
+  }
 
   availableLanguages: LanguageOption[] = [
     { code: 'es', label: 'Español', flag: '🇦🇷' },
@@ -367,40 +377,47 @@ export class SettingsComponent {
 
   saveBusiness(): void {
     this.saving.set(true);
+    const m = this.businessModel();
     this.businessSettingsService
       .update({
-        businessName: this.businessName,
-        logoUrl: this.logoUrl,
-        primaryColor: this.primaryColor,
-        secondaryColor: this.secondaryColor,
-        address: this.address,
-        phone: this.phone,
-        email: this.email,
+        businessName: m.businessName,
+        logoUrl: m.logoUrl,
+        primaryColor: m.primaryColor,
+        secondaryColor: m.secondaryColor,
+        address: m.address,
+        phone: m.phone,
+        email: m.email,
       })
       .subscribe({
-        next: () => {
+        next: (data) => {
           this.saving.set(false);
-          this.businessSettingsService.settingsResource.reload();
+          this.businessModel.set({
+            businessName: data.businessName || '',
+            logoUrl: data.logoUrl || '',
+            primaryColor: data.primaryColor || '#3B82F6',
+            secondaryColor: data.secondaryColor || '#10B981',
+            address: data.address || '',
+            phone: data.phone || '',
+            email: data.email || '',
+          });
           this.applyColors();
         },
-        error: () => this.saving.set(false),
+        error: (err) => {
+          this.saving.set(false);
+          console.error('Error guardando business settings:', err);
+        },
       });
   }
 
   private applyColors(): void {
     if (typeof document !== 'undefined') {
-      if (this.primaryColor) {
-        document.documentElement.style.setProperty('--color-primary', this.primaryColor);
+      const m = this.businessModel();
+      if (m.primaryColor) {
+        document.documentElement.style.setProperty('--color-primary', m.primaryColor);
       }
-      if (this.secondaryColor) {
-        document.documentElement.style.setProperty('--color-secondary', this.secondaryColor);
+      if (m.secondaryColor) {
+        document.documentElement.style.setProperty('--color-secondary', m.secondaryColor);
       }
     }
-  }
-
-  private toHex(value: string | null | undefined): string | null {
-    if (!value) return null;
-    if (/^#[0-9a-fA-F]{6}$/.test(value)) return value;
-    return null;
   }
 }

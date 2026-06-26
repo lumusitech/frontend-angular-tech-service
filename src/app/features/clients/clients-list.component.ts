@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ClientsService } from '../../core/services/clients.service';
@@ -234,14 +235,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <td mat-cell *matCellDef="let client" class="px-4 py-3 text-right">
                 <button
                   mat-icon-button
-                  (click)="openEditDialog(client)"
+                  (click)="openEditDialog(client); $event.stopPropagation()"
                   [title]="'common.edit' | translate"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
-                  (click)="deleteClient(client)"
+                  (click)="deleteClient(client); $event.stopPropagation()"
                   [title]="'common.delete' | translate"
                   color="warn"
                 >
@@ -327,12 +328,12 @@ export class ClientsListComponent implements OnInit {
 
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateFrom.set(date ? date.toISOString().split('T')[0] : '');
+    this.dateFrom.set(date ? toLocalDateString(date) : '');
   }
 
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateTo.set(date ? date.toISOString().split('T')[0] : '');
+    this.dateTo.set(date ? toLocalDateString(date) : '');
   }
 
   openCreateDialog(): void {

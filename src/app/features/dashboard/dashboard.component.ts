@@ -24,6 +24,7 @@ import { InquiriesWidgetComponent } from './widgets/inquiries-widget.component';
 import { ChartsWidgetComponent } from './widgets/charts-widget.component';
 import { QuickActionsWidgetComponent } from './widgets/quick-actions-widget.component';
 import { TopClientsWidgetComponent } from './widgets/top-clients-widget.component';
+import { BusinessSettingsService } from '../../core/services/business-settings.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,13 +45,18 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {{ 'dashboard.title' | translate }}
-          </h1>
-          <p class="text-gray-500 dark:text-gray-400 mt-1">
-            {{ 'dashboard.subtitle' | translate }}
-          </p>
+        <div class="flex items-center gap-3">
+          @if (businessSettings()?.logoUrl) {
+            <img [src]="businessSettings()!.logoUrl" [alt]="businessSettings()!.businessName" class="h-10 w-10 rounded-lg object-cover" />
+          }
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {{ businessSettings()?.businessName ?? ('dashboard.title' | translate) }}
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+              {{ 'dashboard.subtitle' | translate }}
+            </p>
+          </div>
         </div>
         <div class="flex items-center gap-2">
           <button
@@ -91,11 +97,12 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                 }
                 @switch (widgetId) {
                   @case ('kpis') {
-                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" (kpiClick)="navigateTo($event)" />
+                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (kpiClick)="navigateTo($event)" />
                   }
                   @case ('pendingItems') {
                     <app-pending-items-widget
                       [items]="pendingItems()"
+                      [secondaryColor]="secondaryColor()"
                       (viewAll)="navigateTo('/admin/pending-items')"
                       (itemClick)="navigateTo('/admin/pending-items', { highlight: $event.id, search: $event.title })"
                     />
@@ -103,6 +110,7 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                   @case ('inquiries') {
                     <app-inquiries-widget
                       [items]="inquiries()"
+                      [primaryColor]="primaryColor()"
                       (viewAll)="navigateTo('/admin/inquiries')"
                       (itemClick)="navigateTo('/admin/inquiries/' + $event)"
                     />
@@ -110,13 +118,15 @@ import { TopClientsWidgetComponent } from './widgets/top-clients-widget.componen
                   @case ('charts') {
                     <app-charts-widget
                       [summary]="summary()!"
+                      [primaryColor]="primaryColor()"
+                      [secondaryColor]="secondaryColor()"
                     />
                   }
                   @case ('quickActions') {
-                    <app-quick-actions-widget (navigate)="navigateTo($event)" />
+                    <app-quick-actions-widget [secondaryColor]="secondaryColor()" (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" (clientClick)="navigateTo('/admin/clients', { highlight: $event.id, search: $event.name })" />
+                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (clientClick)="navigateTo('/admin/clients', { highlight: $event.id, search: $event.name })" />
                   }
                 }
               </div>
@@ -131,11 +141,16 @@ export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
   private readonly router = inject(Router);
   readonly layoutService = inject(DashboardLayoutService);
+  private readonly businessSettingsService = inject(BusinessSettingsService);
 
   readonly summary = signal<DashboardSummary | null>(null);
   readonly loading = signal(true);
   readonly loadError = signal(false);
   readonly editMode = signal(false);
+
+  readonly businessSettings = computed(() => this.businessSettingsService.settings());
+  readonly primaryColor = computed(() => this.businessSettings()?.primaryColor ?? '#3B82F6');
+  readonly secondaryColor = computed(() => this.businessSettings()?.secondaryColor ?? '#10B981');
 
   private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(() => ({
     url: '/api/pending-items',

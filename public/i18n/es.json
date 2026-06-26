@@ -10,6 +10,7 @@
     "loading": "Cargando...",
     "noResults": "Sin resultados",
     "noResultsMessage": "No se encontraron elementos para mostrar.",
+    "invalidDateRange": "La fecha desde no puede ser mayor que la fecha hasta",
     "errorLoading": "Error al cargar",
     "errorMessage": "No se pudieron obtener los datos. Verifica tu conexión e intenta de nuevo.",
     "retry": "Reintentar",
@@ -159,7 +160,7 @@
     "technicians": "Técnicos",
     "assignedTo": "Asignado a",
     "diagnosis": "Diagnóstico",
-    "workAddress": "Dirección del trabajo",
+    "workAddress": "Dirección",
     "workAddressPlaceholder": "Solo si es diferente a la dirección del cliente",
     "scheduledDate": "Fecha programada",
     "warrantyUntil": "Garantía hasta",
@@ -271,7 +272,8 @@
     },
     "technicians": {
       "noTechnicians": "Sin técnicos asignados",
-      "assign": "Asignar Técnicos"
+      "assign": "Asignar Técnicos",
+      "saveTechnicians": "Guardar Técnicos"
     }
   },
   "pendingItems": {
@@ -541,10 +543,30 @@
     "noNotificationsMessage": "No tenés notificaciones nuevas",
     "unread": "No leída",
     "viewAll": "Ver todas",
+    "type": "Tipo",
     "filters": {
       "all": "Todas",
-      "unread": "No leídas"
-    }
+      "unread": "No leídas",
+      "allTypes": "Todos los tipos"
+    },
+    "types": {
+      "workOrderCreated": "Nueva orden de trabajo",
+      "workOrderStatusChanged": "Estado de orden cambiado",
+      "workOrderTechnicianAssigned": "Técnico asignado a orden",
+      "taskCreated": "Nueva tarea",
+      "taskCompleted": "Tarea completada",
+      "paymentCreated": "Nuevo pago registrado",
+      "paymentApproved": "Pago aprobado",
+      "paymentRejected": "Pago rechazado",
+      "pendingItemCreated": "Nuevo trabajo pendiente",
+      "pendingItemDueToday": "Pendiente vence hoy",
+      "pendingItemOverdue": "Pendiente vencido",
+      "inquiryCreated": "Nueva consulta recibida",
+      "inquiryAssigned": "Consulta asignada",
+      "inquiryContacted": "Contacto con cliente",
+      "inquiryReviewed": "Consulta revisada"
+    },
+    "filteredFromNotification": "Filtrado desde notificación"
   },
   "technician": {
     "title": "Mis Órdenes",

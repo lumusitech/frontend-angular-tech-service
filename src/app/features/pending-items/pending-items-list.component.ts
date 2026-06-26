@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
@@ -145,6 +146,13 @@ const TYPE_LABELS: Record<string, string> = {
               <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
               {{ 'common.clearFilters' | translate }}
             </button>
+          }
+
+          @if (fromNotification()) {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+              <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
+              {{ 'notifications.filteredFromNotification' | translate }}
+            </span>
           }
         </div>
       </div>
@@ -311,14 +319,14 @@ const TYPE_LABELS: Record<string, string> = {
               <td mat-cell *matCellDef="let item" class="px-4 py-3 text-right">
                 <button
                   mat-icon-button
-                  (click)="openEditDialog(item)"
+                  (click)="openEditDialog(item); $event.stopPropagation()"
                   [title]="'common.edit' | translate"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
-                  (click)="deleteItem(item)"
+                  (click)="deleteItem(item); $event.stopPropagation()"
                   [title]="'common.delete' | translate"
                   color="warn"
                 >
@@ -347,8 +355,10 @@ export class PendingItemsListComponent implements OnInit {
   private readonly pendingItemsService = inject(PendingItemsService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly _routeHighlight = signal<string | null>(null);
+  private readonly _clearHighlight = signal(false);
 
-  readonly highlightedId = signal<string | null>(null);
+  readonly fromNotification = signal(false);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly sortBy = signal('dueDate');
@@ -376,6 +386,34 @@ export class PendingItemsListComponent implements OnInit {
     },
   }));
 
+  readonly highlightedId = computed(() => {
+    const data = this.resource.value();
+    const search = this.searchFilter();
+    const fromNotif = this.fromNotification();
+    const loading = this.resource.isLoading();
+    const cleared = this._clearHighlight();
+    const routeHighlight = this._routeHighlight();
+
+    if (!data || cleared || loading) return null;
+
+    if (fromNotif && search) {
+      const match = data.data.find(
+        (row) =>
+          row.title === search ||
+          row.title.startsWith(search) ||
+          row.id === search,
+      );
+      return match?.id ?? null;
+    }
+
+    if (routeHighlight && !fromNotif) {
+      const match = data.data.find((row) => row.id === routeHighlight);
+      return match?.id ?? null;
+    }
+
+    return null;
+  });
+
   displayedColumns = [
     'title',
     'type',
@@ -389,12 +427,19 @@ export class PendingItemsListComponent implements OnInit {
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      setTimeout(() => this.highlightedId.set(null), 3000);
+    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
+    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+
+    this.fromNotification.set(fromNotification);
+
+    if (fromNotification && !searchQuery) {
+      this.pageSize.set(100);
+    } else if (highlightId && !fromNotification) {
+      this._routeHighlight.set(highlightId);
+      this.pageSize.set(50);
+      setTimeout(() => this._clearHighlight.set(true), 3000);
     }
 
-    const searchQuery = this.route.snapshot.queryParamMap.get('search');
     if (searchQuery) {
       this.searchFilter.set(searchQuery);
     }
@@ -439,7 +484,7 @@ export class PendingItemsListComponent implements OnInit {
   onDueDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dueDateFrom.set(date.toISOString().split('T')[0]);
+      this.dueDateFrom.set(toLocalDateString(date));
     } else {
       this.dueDateFrom.set('');
     }
@@ -448,14 +493,14 @@ export class PendingItemsListComponent implements OnInit {
   onDueDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dueDateTo.set(date.toISOString().split('T')[0]);
+      this.dueDateTo.set(toLocalDateString(date));
     } else {
       this.dueDateTo.set('');
     }
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '';
+    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '' || this.fromNotification();
   });
 
   clearFilters(): void {
@@ -464,6 +509,9 @@ export class PendingItemsListComponent implements OnInit {
     this.priorityFilter.set('');
     this.dueDateFrom.set('');
     this.dueDateTo.set('');
+    this._clearHighlight.set(true);
+    this._routeHighlight.set(null);
+    this.fromNotification.set(false);
   }
 
   openCreateDialog(): void {

@@ -149,8 +149,8 @@ export const routes: Routes = [
       {
         path: 'notifications',
         loadComponent: () =>
-          import('./features/notifications/notifications-list.component').then(
-            (m) => m.NotificationsListComponent,
+          import('./features/notifications/notifications-page.component').then(
+            (m) => m.NotificationsPageComponent,
           ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -181,8 +181,8 @@ export const routes: Routes = [
       {
         path: 'notifications',
         loadComponent: () =>
-          import('./features/notifications/notifications-list.component').then(
-            (m) => m.NotificationsListComponent,
+          import('./features/notifications/notifications-page.component').then(
+            (m) => m.NotificationsPageComponent,
           ),
       },
       {

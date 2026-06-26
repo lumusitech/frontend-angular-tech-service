@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -124,6 +125,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
               {{ 'common.clearFilters' | translate }}
             </button>
+          }
+
+          @if (fromNotification()) {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+              <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
+              {{ 'notifications.filteredFromNotification' | translate }}
+            </span>
           }
         </div>
       </div>
@@ -343,6 +351,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly sortBy = signal('');
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly highlightedId = signal<string | null>(null);
+  readonly fromNotification = signal(false);
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
@@ -350,9 +359,20 @@ export class WorkOrdersListComponent implements OnInit {
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
+
     if (highlightId) {
       this.highlightedId.set(highlightId);
-      setTimeout(() => this.highlightedId.set(null), 3000);
+      this.fromNotification.set(fromNotification);
+      if (!fromNotification) {
+        this.pageSize.set(50);
+        setTimeout(() => this.highlightedId.set(null), 3000);
+      }
+    }
+
+    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+    if (searchQuery) {
+      this.searchFilter.set(searchQuery);
     }
   }
 
@@ -399,7 +419,7 @@ export class WorkOrdersListComponent implements OnInit {
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateFrom.set(date.toISOString().split('T')[0]);
+      this.dateFrom.set(toLocalDateString(date));
     } else {
       this.dateFrom.set('');
     }
@@ -408,7 +428,7 @@ export class WorkOrdersListComponent implements OnInit {
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateTo.set(date.toISOString().split('T')[0]);
+      this.dateTo.set(toLocalDateString(date));
     } else {
       this.dateTo.set('');
     }
@@ -426,7 +446,7 @@ export class WorkOrdersListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
   });
 
   clearFilters(): void {
@@ -435,6 +455,8 @@ export class WorkOrdersListComponent implements OnInit {
     this.priorityFilter.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.highlightedId.set(null);
+    this.fromNotification.set(false);
   }
 
   viewDetail(order: WorkOrder): void {

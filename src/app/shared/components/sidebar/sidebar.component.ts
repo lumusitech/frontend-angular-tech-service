@@ -1,7 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { BusinessSettingsService } from '../../../core/services/business-settings.service';
 
 interface NavItem {
   labelKey: string;
@@ -22,7 +23,12 @@ interface NavItem {
         class="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700"
       >
         @if (!collapsed()) {
-          <span class="text-lg font-bold text-gray-900 dark:text-gray-100">Tech Service</span>
+          <div class="flex items-center gap-2">
+            @if (settings()?.logoUrl) {
+              <img [src]="settings()!.logoUrl" [alt]="settings()!.businessName" class="h-8 w-8 rounded-lg object-cover" />
+            }
+            <span class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ settings()?.businessName ?? 'Tech Service' }}</span>
+          </div>
         }
         <button
           (click)="toggleCollapse.emit()"
@@ -60,10 +66,20 @@ interface NavItem {
           </a>
         }
       </nav>
+
+      @if (!collapsed() && settings()?.logoUrl) {
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+          <img [src]="settings()!.logoUrl" [alt]="settings()!.businessName" class="h-16 w-16 rounded-xl object-cover opacity-60" />
+        </div>
+      }
     </aside>
   `,
 })
 export class SidebarComponent {
+  private readonly businessSettingsService = inject(BusinessSettingsService);
+
+  readonly settings = this.businessSettingsService.settings;
+
   collapsed = input(false);
   toggleCollapse = output<void>();
 

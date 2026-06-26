@@ -169,7 +169,9 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
-      this.notificationsService.getUnreadCount().subscribe();
+      this.notificationsService.getUnreadCount().subscribe({
+        next: (count) => this.notificationsService.unreadCount.set(count),
+      });
       this.websocketService.connect();
     }
   }

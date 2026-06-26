@@ -9,7 +9,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
   imports: [MatIconModule, TranslatePipe, CurrencyArsPipe],
   template: `
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/work-orders')">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/work-orders')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -22,13 +22,13 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ kpis().completedCount }} {{ 'dashboard.completed' | translate }}
             </p>
           </div>
-          <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
-            <mat-icon class="text-blue-600 dark:text-blue-400">assignment</mat-icon>
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" [style.background-color]="primaryColor() + '1a'">
+            <mat-icon [style.color]="primaryColor()">assignment</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/payments')">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/payments')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -46,13 +46,13 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ 'dashboard.vsLastMonth' | translate }}
             </p>
           </div>
-          <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center shrink-0">
-            <mat-icon class="text-emerald-600 dark:text-emerald-400">payments</mat-icon>
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" [style.background-color]="secondaryColor() + '1a'">
+            <mat-icon [style.color]="secondaryColor()">payments</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/expenses')">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/expenses')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -76,7 +76,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" (click)="kpiClick.emit('/admin/billing')">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/billing')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -100,5 +100,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 export class KpiCardsComponent {
   kpis = input.required<DashboardKPIs>();
   trends = input.required<DashboardTrends>();
+  primaryColor = input<string>('#3B82F6');
+  secondaryColor = input<string>('#10B981');
   kpiClick = output<string>();
 }

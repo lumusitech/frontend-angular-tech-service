@@ -1,5 +1,6 @@
 import { Service, inject, signal, effect } from '@angular/core';
 import { UserPreferencesService } from './user-preferences.service';
+import { AuthService } from './auth.service';
 
 export type Theme = 'light' | 'dark';
 
@@ -8,6 +9,7 @@ const THEME_KEY = 'theme_preference';
 @Service()
 export class ThemeService {
   private readonly prefsService = inject(UserPreferencesService);
+  private readonly authService = inject(AuthService);
 
   readonly theme = signal<Theme>('light');
   readonly isDark = signal(false);
@@ -87,9 +89,11 @@ export class ThemeService {
     }
 
     this.updateTimeout = setTimeout(() => {
-      this.prefsService.update({ theme }).subscribe({
-        error: () => {},
-      });
+      if (this.authService.isAuthenticated()) {
+        this.prefsService.update({ theme }).subscribe({
+          error: () => {},
+        });
+      }
     }, 500);
   }
 }

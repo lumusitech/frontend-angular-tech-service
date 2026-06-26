@@ -10,7 +10,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   imports: [MatIconModule, MatButtonModule, DatePipe, SlicePipe, TranslatePipe],
   template: `
     @if (items().length > 0) {
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ 'dashboard.newInquiries' | translate }}
@@ -22,9 +22,12 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         </div>
         <div class="space-y-3">
           @for (inquiry of items(); track inquiry.id) {
-            <div class="flex items-center justify-between p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 cursor-pointer hover:opacity-80 transition-opacity" (click)="itemClick.emit(inquiry.id)">
+            <div class="flex items-center justify-between p-3 rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                 [style.border-color]="primaryColor() + '30'"
+                 [style.background-color]="primaryColor() + '0a'"
+                 (click)="itemClick.emit(inquiry.id)">
               <div class="flex items-center gap-3">
-                <mat-icon class="text-blue-500">help_outline</mat-icon>
+                <mat-icon [style.color]="primaryColor()">help_outline</mat-icon>
                 <div>
                   <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {{ inquiry.clientName }}
@@ -36,7 +39,9 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                   </p>
                 </div>
               </div>
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                    [style.color]="primaryColor()"
+                    [style.background-color]="primaryColor() + '1a'">
                 {{ inquiry.description | slice: 0:30 }}{{ inquiry.description.length > 30 ? '...' : '' }}
               </span>
             </div>
@@ -48,6 +53,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 })
 export class InquiriesWidgetComponent {
   items = input.required<InquirySummary[]>();
+  primaryColor = input<string>('#3B82F6');
   viewAll = output<void>();
   itemClick = output<string>();
 }

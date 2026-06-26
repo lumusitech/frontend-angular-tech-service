@@ -1,6 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { NotificationsService } from '../../core/services/notifications.service';
 import {
   AppNotification,
@@ -151,10 +150,9 @@ const TYPE_COLORS: Record<string, string> = {
         <div class="space-y-2">
           @for (notification of resource.value().data; track notification.id) {
             <div
-              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3"
-              [class.border-l-4]="!notification.isRead"
-              [class.border-l-blue-500]="!notification.isRead"
-              (click)="onNotificationClick(notification)"
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3"
+              [style.border-left-color]="!notification.isRead ? 'var(--color-primary)' : 'var(--color-secondary)'"
+              (click)="handleItemClick(notification)"
             >
               <!-- Icon -->
               <div
@@ -210,7 +208,7 @@ const TYPE_COLORS: Record<string, string> = {
 })
 export class NotificationsListComponent {
   readonly notificationsService = inject(NotificationsService);
-  private readonly router = inject(Router);
+  readonly notificationClick = output<AppNotification>();
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -273,35 +271,29 @@ export class NotificationsListComponent {
   markAsRead(notification: AppNotification, event: Event): void {
     event.stopPropagation();
     this.notificationsService.markAsRead(notification.id).subscribe({
-      next: () => this.resource.reload(),
+      next: () => {
+        this.notificationsService.unreadCount.update((c) => Math.max(0, c - 1));
+        this.resource.reload();
+      },
     });
   }
 
   markAllAsRead(): void {
     this.notificationsService.markAllAsRead().subscribe({
-      next: () => this.resource.reload(),
+      next: () => {
+        this.notificationsService.unreadCount.set(0);
+        this.resource.reload();
+      },
     });
   }
 
-  onNotificationClick(notification: AppNotification): void {
+  handleItemClick(notification: AppNotification): void {
     if (!notification.isRead) {
-      this.notificationsService.markAsRead(notification.id).subscribe();
+      this.notificationsService.markAsRead(notification.id).subscribe({
+        next: () => this.notificationsService.unreadCount.update((c) => Math.max(0, c - 1)),
+      });
     }
 
-    if (notification.referenceType) {
-      const routes: Record<string, string> = {
-        work_order: '/admin/work-orders',
-        task: '/admin/work-orders',
-        payment: '/admin/payments',
-        pending_item: '/admin/pending-items',
-        inquiry: '/admin/inquiries',
-      };
-      const baseRoute = routes[notification.referenceType];
-      if (baseRoute) {
-        this.router.navigate([baseRoute], {
-          queryParams: notification.referenceId ? { highlight: notification.referenceId } : {},
-        });
-      }
-    }
+    this.notificationClick.emit(notification);
   }
 }
