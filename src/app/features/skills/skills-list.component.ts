@@ -21,6 +21,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 import { SkillFormComponent } from './skill-form.component';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-skills-list',
@@ -109,7 +110,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                  {{ skill.category || '—' }}
+                  {{ skill.category ? (('skills.categories.' + skill.category) | translate) : '—' }}
                 </span>
               </td>
             </ng-container>
@@ -165,6 +166,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class SkillsListComponent {
   private readonly skillsService = inject(SkillsService);
   private readonly dialog = inject(MatDialog);
+  private readonly translationService = inject(TranslationService);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -188,6 +190,10 @@ export class SkillsListComponent {
     const skills = this.skillsResource.value()?.data || [];
     return [...new Set(skills.map((s) => s.category).filter((c): c is string => !!c))];
   });
+
+  private translate(key: string, params?: Record<string, string>): string {
+    return this.translationService.instant(key, params);
+  }
 
   displayedColumns = ['name', 'category', 'description', 'createdAt', 'actions'];
 
@@ -240,9 +246,9 @@ export class SkillsListComponent {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Eliminar habilidad',
-        message: `¿Estás seguro de eliminar "${skill.name}"?`,
-        confirmLabel: 'Eliminar',
+        title: this.translate('skills.deleteTitle'),
+        message: this.translate('skills.deleteMessage', { name: skill.name }),
+        confirmLabel: this.translate('common.delete'),
         color: 'warn',
       },
     });
