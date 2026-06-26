@@ -39,8 +39,22 @@ export const routes: Routes = [
       },
       {
         path: 'clients',
-        loadComponent: () =>
-          import('./features/clients/clients-list.component').then((m) => m.ClientsListComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/clients/clients-list.component').then(
+                (m) => m.ClientsListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/clients/client-detail.component').then(
+                (m) => m.ClientDetailComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'suppliers',

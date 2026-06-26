@@ -109,6 +109,20 @@
       "consumidorFinal": "Consumidor Final",
       "monotributo": "Monotributo",
       "exento": "Exento"
+    },
+    "detail": {
+      "title": "Detalle del Cliente",
+      "subtitle": "Información completa del cliente",
+      "clientInfo": "Información del Cliente",
+      "kpis": "Resumen",
+      "workOrders": "Órdenes de Trabajo",
+      "totalOrders": "Órdenes Totales",
+      "completedOrders": "Completadas",
+      "pendingOrders": "Pendientes",
+      "loadError": "Error al cargar",
+      "loadErrorMessage": "No se pudo cargar el detalle del cliente",
+      "noOrders": "Sin órdenes",
+      "noOrdersMessage": "Este cliente no tiene órdenes de trabajo registradas"
     }
   },
   "suppliers": {
