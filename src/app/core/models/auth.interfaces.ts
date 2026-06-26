@@ -15,7 +15,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'technician';
+  role: 'admin' | 'technician' | 'seller';
 }
 
 export type UserRole = User['role'];

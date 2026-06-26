@@ -36,6 +36,8 @@
     "suppliers": "Suppliers",
     "services": "Services",
     "orders": "Orders",
+    "skills": "Skills",
+    "users": "Users",
     "pendingItems": "Pending",
     "inquiries": "Inquiries",
     "payments": "Payments",
@@ -123,6 +125,35 @@
       "loadErrorMessage": "Could not load client details",
       "noOrders": "No orders",
       "noOrdersMessage": "This client has no work orders registered"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage system users",
+    "newUser": "New User",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "role": "Role",
+    "commission": "Commission",
+    "experience": "Experience",
+    "experiencePlaceholder": "e.g. 5 years in technical support...",
+    "trustRating": "Trust Rating",
+    "skills": "Skills",
+    "skillsPlaceholder": "Search skills...",
+    "noSkillsFound": "No skills found",
+    "noUsers": "No users",
+    "noUsersMessage": "No users registered in the system",
+    "createUser": "Create user",
+    "newUserTitle": "New User",
+    "editUserTitle": "Edit User",
+    "deleteTitle": "Delete user",
+    "deleteMessage": "Are you sure you want to delete {{name}}?",
+    "roles": {
+      "admin": "Admin",
+      "technician": "Technician",
+      "seller": "Seller"
     }
   },
   "suppliers": {
@@ -782,7 +813,29 @@
       "title": "Everything you need",
       "subtitle": "A complete platform to manage your technical service business.",
       "items": {
-        "workOrders": {
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Technical skills catalog",
+    "newSkill": "New Skill",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "categoryPlaceholder": "e.g. Networks, Electronics, Software",
+    "noSkills": "No skills",
+    "noSkillsMessage": "No skills registered",
+    "createSkill": "Create skill",
+    "newSkillTitle": "New Skill",
+    "editSkillTitle": "Edit Skill",
+    "deleteTitle": "Delete skill",
+    "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
+    "categories": {
+      "networks": "Networks",
+      "electronics": "Electronics",
+      "hardware": "Hardware",
+      "software": "Software"
+    }
+  },
+  "workOrders": {
           "title": "Work Orders",
           "description": "Create, assign and track every job with unique tracking code, statuses, technicians and materials."
         },

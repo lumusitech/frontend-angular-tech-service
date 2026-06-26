@@ -71,6 +71,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'skills',
+        loadComponent: () =>
+          import('./features/skills/skills-list.component').then(
+            (m) => m.SkillsListComponent,
+          ),
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./features/users/users-list.component').then(
+            (m) => m.UsersListComponent,
+          ),
+      },
+      {
         path: 'work-orders',
         children: [
           {

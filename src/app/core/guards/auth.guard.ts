@@ -34,3 +34,14 @@ export const technicianGuard: CanActivateFn = () => {
 
   return router.createUrlTree(['/login']);
 };
+
+export const sellerGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated() && authService.isSeller()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/login']);
+};
