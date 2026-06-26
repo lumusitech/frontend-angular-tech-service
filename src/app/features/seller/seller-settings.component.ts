@@ -12,19 +12,19 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="p-6 space-y-4">
           <div>
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Nombre</label>
-            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user?.name }}</p>
+            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user()?.name }}</p>
           </div>
           <div>
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Email</label>
-            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user?.email }}</p>
+            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user()?.email }}</p>
           </div>
           <div>
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Teléfono</label>
-            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user?.phone || '—' }}</p>
+            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user()?.phone || '—' }}</p>
           </div>
           <div>
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Comisión</label>
-            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user?.commission ?? 5 }}%</p>
+            <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">{{ user()?.commission ?? 5 }}%</p>
           </div>
         </div>
       </div>

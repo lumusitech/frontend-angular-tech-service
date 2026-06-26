@@ -15,7 +15,7 @@ import { User } from '../../core/models/user.interfaces';
         <div class="flex justify-center py-12">
           <mat-icon class="animate-spin text-gray-400">sync</mat-icon>
         </div>
-      } @else if (resource.hasValue(); as profile) {
+      } @else if (resource.value(); as profile) {
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <div class="p-6 space-y-4">
             <div class="flex items-center gap-4 pb-4 border-b border-gray-200 dark:border-gray-700">

@@ -76,7 +76,7 @@ interface DialogData {
 })
 export class SkillFormComponent {
   private readonly skillsService = inject(SkillsService);
-  private readonly dialogRef = inject(MatDialogRef<SkillFormComponent>);
+  protected readonly dialogRef = inject(MatDialogRef<SkillFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly name = signal(this.data.skill?.name || '');

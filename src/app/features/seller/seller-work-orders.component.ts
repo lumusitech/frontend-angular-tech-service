@@ -1,5 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +7,7 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
 
 @Component({
   selector: 'app-seller-work-orders',
-  imports: [RouterLink, MatIconModule],
+  imports: [MatIconModule],
   template: `
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-4">
@@ -19,8 +18,8 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
         <div class="flex justify-center py-12">
           <mat-icon class="animate-spin text-gray-400">sync</mat-icon>
         </div>
-      } @else if (resource.hasValue(); as data) {
-        @let orders = data.data;
+      } @else if (resource.value(); as result) {
+        @let orders = result.data;
 
         @if (orders.length === 0) {
           <div class="text-center py-12 text-gray-500 dark:text-gray-400">

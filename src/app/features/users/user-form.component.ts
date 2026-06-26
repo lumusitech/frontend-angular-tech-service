@@ -10,6 +10,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../core/services/users.service';
 import { User } from '../../core/models/user.interfaces';
+import { Skill } from '../../core/models/skill.interfaces';
 import { SkillSelectorComponent } from './skill-selector.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
@@ -133,7 +134,7 @@ interface DialogData {
 export class UserFormComponent {
   readonly Math = Math;
   private readonly usersService = inject(UsersService);
-  private readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
+  protected readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly name = signal(this.data.user?.name || '');
@@ -145,8 +146,8 @@ export class UserFormComponent {
   readonly experience = signal(this.data.user?.experience || '');
   readonly trustRating = signal(this.data.user?.trustRating ?? 3);
   readonly isActive = signal(this.data.user?.isActive ?? true);
-  readonly selectedSkills = signal<{ id: string; name: string; category?: string }[]>(
-    this.data.user?.skills || [],
+  readonly selectedSkills = signal<Skill[]>(
+    (this.data.user?.skills ?? []) as Skill[],
   );
   readonly loading = signal(false);
 

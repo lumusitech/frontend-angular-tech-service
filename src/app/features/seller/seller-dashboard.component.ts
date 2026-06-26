@@ -24,8 +24,8 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
         <div class="flex justify-center py-12">
           <mat-icon class="animate-spin text-gray-400">sync</mat-icon>
         </div>
-      } @else if (ordersResource.hasValue(); as data) {
-        @let orders = data.data;
+      } @else if (ordersResource.value(); as result) {
+        @let orders = result.data;
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">

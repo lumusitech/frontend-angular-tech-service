@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { SkillFormComponent } from './skill-form.component';
 import { DatePipe } from '@angular/common';
@@ -40,7 +39,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
-    StatusBadgeComponent,
     DatePipe,
     TranslatePipe,
   ],
