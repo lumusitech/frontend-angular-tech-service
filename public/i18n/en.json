@@ -820,29 +820,7 @@
       "title": "Everything you need",
       "subtitle": "A complete platform to manage your technical service business.",
       "items": {
-  "skills": {
-    "title": "Skills",
-    "subtitle": "Technical skills catalog",
-    "newSkill": "New Skill",
-    "name": "Name",
-    "description": "Description",
-    "category": "Category",
-    "categoryPlaceholder": "e.g. Networks, Electronics, Software",
-    "noSkills": "No skills",
-    "noSkillsMessage": "No skills registered",
-    "createSkill": "Create skill",
-    "newSkillTitle": "New Skill",
-    "editSkillTitle": "Edit Skill",
-    "deleteTitle": "Delete skill",
-    "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
-    "categories": {
-      "networks": "Networks",
-      "electronics": "Electronics",
-      "hardware": "Hardware",
-      "software": "Software"
-    }
-  },
-  "workOrders": {
+        "workOrders": {
           "title": "Work Orders",
           "description": "Create, assign and track every job with unique tracking code, statuses, technicians and materials."
         },
@@ -899,6 +877,28 @@
       "login": "Sign In",
       "track": "Track Order",
       "copyright": "© 2026 Tech Service. All rights reserved."
+    }
+  },
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Technical skills catalog",
+    "newSkill": "New Skill",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "categoryPlaceholder": "e.g. Networks, Electronics, Software",
+    "noSkills": "No skills",
+    "noSkillsMessage": "No skills registered",
+    "createSkill": "Create skill",
+    "newSkillTitle": "New Skill",
+    "editSkillTitle": "Edit Skill",
+    "deleteTitle": "Delete skill",
+    "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
+    "categories": {
+      "networks": "Networks",
+      "electronics": "Electronics",
+      "hardware": "Hardware",
+      "software": "Software"
     }
   }
 }
