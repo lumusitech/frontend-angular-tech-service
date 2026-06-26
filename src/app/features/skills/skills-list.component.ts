@@ -110,7 +110,7 @@ import { TranslationService } from '../../core/services/translation.service';
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                  {{ skill.category ? (('skills.categories.' + skill.category) | translate) : '—' }}
+                  {{ skill.category ? (('skills.categories.' + categoryKey(skill.category)) | translate) : '—' }}
                 </span>
               </td>
             </ng-container>
@@ -190,6 +190,16 @@ export class SkillsListComponent {
     const skills = this.skillsResource.value()?.data || [];
     return [...new Set(skills.map((s) => s.category).filter((c): c is string => !!c))];
   });
+
+  private categoryKey(category: string): string {
+    const map: Record<string, string> = {
+      Redes: 'networks',
+      Electrónica: 'electronics',
+      Hardware: 'hardware',
+      Software: 'software',
+    };
+    return map[category] || category;
+  }
 
   private translate(key: string, params?: Record<string, string>): string {
     return this.translationService.instant(key, params);
