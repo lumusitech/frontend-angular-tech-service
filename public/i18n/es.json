@@ -88,6 +88,10 @@
     "title": "Clientes",
     "subtitle": "Gestiona tus clientes",
     "newClient": "Nuevo Cliente",
+    "editClient": "Editar Cliente",
+    "createClient": "Crear Cliente",
+    "noClients": "Sin clientes",
+    "noClientsMessage": "No hay clientes registrados. Comienza creando uno nuevo.",
     "name": "Nombre",
     "email": "Email",
     "phone": "Teléfono",
@@ -105,7 +109,6 @@
     "consumidorFinal": "Consumidor Final",
     "monotributo": "Monotributo",
     "exento": "Exento",
-    "editClient": "Editar Cliente",
     "ivaConditions": {
       "responsableInscripto": "Responsable Inscripto",
       "consumidorFinal": "Consumidor Final",
