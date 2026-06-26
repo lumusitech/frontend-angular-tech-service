@@ -821,29 +821,7 @@
       "title": "Todo lo que necesitás",
       "subtitle": "Una plataforma completa para gestionar tu negocio de servicios técnicos.",
       "items": {
-  "skills": {
-    "title": "Habilidades",
-    "subtitle": "Catálogo de habilidades técnicas",
-    "newSkill": "Nueva Habilidad",
-    "name": "Nombre",
-    "description": "Descripción",
-    "category": "Categoría",
-    "categoryPlaceholder": "Ej: Redes, Electrónica, Software",
-    "noSkills": "Sin habilidades",
-    "noSkillsMessage": "No hay habilidades registradas",
-    "createSkill": "Crear habilidad",
-    "newSkillTitle": "Nueva Habilidad",
-    "editSkillTitle": "Editar Habilidad",
-    "deleteTitle": "Eliminar habilidad",
-    "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
-    "categories": {
-      "networks": "Redes",
-      "electronics": "Electrónica",
-      "hardware": "Hardware",
-      "software": "Software"
-    }
-  },
-  "workOrders": {
+        "workOrders": {
           "title": "Órdenes de Trabajo",
           "description": "Creá, asigná y seguí cada trabajo con código de tracking único, estados, técnicos y materiales."
         },
@@ -900,6 +878,28 @@
       "login": "Iniciar Sesión",
       "track": "Rastrear Orden",
       "copyright": "© 2026 Tech Service. Todos los derechos reservados."
+    }
+  },
+  "skills": {
+    "title": "Habilidades",
+    "subtitle": "Catálogo de habilidades técnicas",
+    "newSkill": "Nueva Habilidad",
+    "name": "Nombre",
+    "description": "Descripción",
+    "category": "Categoría",
+    "categoryPlaceholder": "Ej: Redes, Electrónica, Software",
+    "noSkills": "Sin habilidades",
+    "noSkillsMessage": "No hay habilidades registradas",
+    "createSkill": "Crear habilidad",
+    "newSkillTitle": "Nueva Habilidad",
+    "editSkillTitle": "Editar Habilidad",
+    "deleteTitle": "Eliminar habilidad",
+    "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
+    "categories": {
+      "networks": "Redes",
+      "electronics": "Electrónica",
+      "hardware": "Hardware",
+      "software": "Software"
     }
   }
 }

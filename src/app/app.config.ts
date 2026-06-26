@@ -2,6 +2,8 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   importProvidersFrom,
+  provideAppInitializer,
+  inject,
   isDevMode,
   LOCALE_ID,
 } from '@angular/core';
@@ -17,6 +19,7 @@ import { apiResponseInterceptor } from './core/interceptors/api-response.interce
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
+import { TranslationService } from './core/services/translation.service';
 
 registerLocaleData(localeEsAR);
 
@@ -29,6 +32,10 @@ export const appConfig: ApplicationConfig = {
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(MatNativeDateModule),
     { provide: LOCALE_ID, useValue: 'es-AR' },
+    provideAppInitializer(() => {
+      const ts = inject(TranslationService);
+      return ts.init();
+    }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',

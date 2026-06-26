@@ -4,7 +4,6 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
 import { InstallPromptComponent } from './shared/components/install-prompt/install-prompt.component';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
 import { ThemeService } from './core/services/theme.service';
-import { TranslationService } from './core/services/translation.service';
 import { BusinessSettingsService } from './core/services/business-settings.service';
 
 @Component({
@@ -15,12 +14,10 @@ import { BusinessSettingsService } from './core/services/business-settings.servi
 })
 export class App implements OnInit {
   private readonly themeService = inject(ThemeService);
-  private readonly translationService = inject(TranslationService);
   private readonly businessSettingsService = inject(BusinessSettingsService);
 
   ngOnInit(): void {
     this.themeService.init();
-    this.translationService.init();
     this.applyBusinessColors();
   }
 
