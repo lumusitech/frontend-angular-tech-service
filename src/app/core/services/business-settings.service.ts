@@ -1,7 +1,6 @@
-import { Service, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { httpResource } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 export interface BusinessSetting {
   id: string;
@@ -14,21 +13,27 @@ export interface BusinessSetting {
   email: string;
 }
 
-export interface ApiResponse<T> {
-  statusCode: number;
-  data: T;
-  timestamp: string;
-}
-
-@Service()
+@Injectable({ providedIn: 'root' })
 export class BusinessSettingsService {
   private http = inject(HttpClient);
 
-  readonly settingsResource = httpResource<ApiResponse<BusinessSetting>>(
-    () => '/api/business-settings',
-  );
+  private readonly _settings = signal<BusinessSetting | null>(null);
 
-  update(dto: Partial<BusinessSetting>): Observable<ApiResponse<BusinessSetting>> {
-    return this.http.patch<ApiResponse<BusinessSetting>>('/api/business-settings', dto);
+  readonly settings = this._settings.asReadonly();
+
+  constructor() {
+    this.load();
+  }
+
+  load(): void {
+    this.http.get<BusinessSetting>('/api/business-settings').subscribe(data => {
+      this._settings.set(data);
+    });
+  }
+
+  update(dto: Partial<BusinessSetting>): Observable<BusinessSetting> {
+    return this.http.patch<BusinessSetting>('/api/business-settings', dto).pipe(
+      tap(() => this.load()),
+    );
   }
 }

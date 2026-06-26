@@ -47,3 +47,106 @@ body {
 .highlight-pulse {
   animation: highlight-pulse 2s ease-in-out;
 }
+
+/* ============================================
+   Brand Colors — Primary & Secondary
+   Applied globally to Material components
+   ============================================ */
+
+:root {
+  --color-primary: #3B82F6;
+  --color-secondary: #10B981;
+}
+
+/* --- Mat Table --- */
+.mat-mdc-table {
+  --mdc-filled-container-color: transparent;
+}
+
+/* Left border on the table wrapper (div:has(> table.mat-mdc-table)) */
+.mat-mdc-table:has(~ .mat-mdc-paginator) {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+div:has(> table.mat-mdc-table) {
+  border-left: 4px solid var(--color-primary) !important;
+}
+
+.mat-mdc-header-row {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.mat-mdc-header-cell {
+  color: color-mix(in srgb, var(--color-primary) 70%, white);
+  font-weight: 600;
+}
+
+:root.dark .mat-mdc-header-cell {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+.mat-mdc-row:not(.mat-mdc-row-disabled):hover {
+  background-color: color-mix(in srgb, var(--color-secondary) 5%, transparent);
+}
+
+.mat-mdc-row:focus-within {
+  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+}
+
+/* --- Mat Paginator --- */
+.mat-mdc-paginator {
+  border-radius: 0 0 0.75rem 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.mat-mdc-paginator-page-size .mat-mdc-select-value {
+  color: var(--color-primary);
+}
+
+/* --- Mat Form Field (inputs, selects, datepickers) --- */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: var(--color-primary);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
+  --mdc-outlined-text-field-label-text-color: #6b7280;
+}
+
+.mat-mdc-form-field:focus-within .mat-mdc-form-field-focus-overlay {
+  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+}
+
+/* --- Mat Sort Arrow --- */
+.mat-sort-header-arrow {
+  color: var(--color-primary);
+}
+
+/* --- Status Badge (generic) --- */
+.brand-badge-primary {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.brand-badge-secondary {
+  background-color: color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  color: var(--color-secondary);
+}
+
+/* --- Sidebar active link --- */
+.sidebar-active-link {
+  border-left: 3px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+/* --- Notification Toast --- */
+.notification-toast-panel {
+  --mdc-snackbar-container-color: white;
+  --mdc-snackbar-supporting-text-color: #111827;
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+:root.dark .notification-toast-panel {
+  --mdc-snackbar-container-color: #1f2937;
+  --mdc-snackbar-supporting-text-color: #f3f4f6;
+}

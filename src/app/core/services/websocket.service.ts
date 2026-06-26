@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
 import { NotificationsService } from './notifications.service';
 import { AppNotification } from '../models/notification.interfaces';
+import { environment } from '../../../environments/environment';
 
 @Service()
 export class WebsocketService implements OnDestroy {
@@ -19,7 +20,7 @@ export class WebsocketService implements OnDestroy {
     const token = this.authService.token();
     if (!token) return;
 
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(environment.wsUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],
     });

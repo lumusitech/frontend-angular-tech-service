@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
@@ -261,12 +262,12 @@ export class InvoicesListComponent {
 
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateFrom.set(date ? date.toISOString().split('T')[0] : '');
+    this.dateFrom.set(date ? toLocalDateString(date) : '');
   }
 
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateTo.set(date ? date.toISOString().split('T')[0] : '');
+    this.dateTo.set(date ? toLocalDateString(date) : '');
   }
 
   onPageChange(event: PageEvent): void {

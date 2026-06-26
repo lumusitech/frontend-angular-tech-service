@@ -1,6 +1,6 @@
 import { Service, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   AppNotification,
   NotificationFilters,
@@ -27,29 +27,15 @@ export class NotificationsService {
   }
 
   getUnreadCount(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/unread-count`).pipe(
-      map((count) => {
-        this.unreadCount.set(count);
-        return count;
-      }),
-    );
+    return this.http.get<number>(`${this.apiUrl}/unread-count`);
   }
 
   markAsRead(id: string): Observable<AppNotification> {
-    return this.http.patch<AppNotification>(`${this.apiUrl}/${id}/read`, {}).pipe(
-      map((notification) => {
-        this.unreadCount.update((c) => Math.max(0, c - 1));
-        return notification;
-      }),
-    );
+    return this.http.patch<AppNotification>(`${this.apiUrl}/${id}/read`, {});
   }
 
   markAllAsRead(): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/read-all`, {}).pipe(
-      map(() => {
-        this.unreadCount.set(0);
-      }),
-    );
+    return this.http.patch<void>(`${this.apiUrl}/read-all`, {});
   }
 
   incrementUnread(): void {

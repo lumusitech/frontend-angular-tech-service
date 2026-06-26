@@ -9,7 +9,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   imports: [BaseChartDirective, TranslatePipe],
   template: `
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.monthlyTrend' | translate }}
         </h3>
@@ -17,7 +17,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line"></canvas>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.ordersByStatus' | translate }}
         </h3>
@@ -27,7 +27,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.topServices' | translate }}
         </h3>
@@ -40,17 +40,20 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 })
 export class ChartsWidgetComponent {
   readonly summary = input.required<DashboardSummary>();
+  readonly primaryColor = input<string>('#3B82F6');
+  readonly secondaryColor = input<string>('#10B981');
 
   lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
     const s = this.summary();
+    const color = this.primaryColor();
     return {
       labels: s.monthlyTrend.labels,
       datasets: [
         {
           data: s.monthlyTrend.income,
           label: 'Ingresos',
-          borderColor: '#1E40AF',
-          backgroundColor: 'rgba(30, 64, 175, 0.1)',
+          borderColor: color,
+          backgroundColor: color + '1a',
           fill: true,
           tension: 0.4,
         },
@@ -68,16 +71,18 @@ export class ChartsWidgetComponent {
 
   donutChartData = computed<ChartData<'doughnut'>>(() => {
     const s = this.summary();
+    const pColor = this.primaryColor();
+    const sColor = this.secondaryColor();
     return {
       labels: s.workOrdersByStatus.map((st) => st.label),
       datasets: [
         {
           data: s.workOrdersByStatus.map((st) => st.count),
           backgroundColor: [
+            pColor,
+            sColor,
             '#FCD34D',
             '#818CF8',
-            '#34D399',
-            '#10B981',
             '#F87171',
             '#A78BFA',
             '#9CA3AF',
@@ -95,7 +100,7 @@ export class ChartsWidgetComponent {
         {
           data: s.topServices.map((svc) => svc.count),
           label: 'Servicios',
-          backgroundColor: '#3B82F6',
+          backgroundColor: this.primaryColor(),
         },
       ],
     };

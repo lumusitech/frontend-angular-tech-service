@@ -9,7 +9,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   selector: 'app-income-chart',
   imports: [BaseChartDirective, DecimalPipe, TranslatePipe],
   template: `
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="'var(--color-primary)'">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ 'reports.income' | translate }}
@@ -50,19 +50,25 @@ export class IncomeChartComponent {
   constructor() {
     effect(() => {
       const report = this.data();
+      const primaryColor = this.getPrimaryColor();
       this.chartData = {
         labels: report.byDay.map((d) => d.date),
         datasets: [
           {
             data: report.byDay.map((d) => d.total),
             label: 'Ingresos',
-            borderColor: '#1E40AF',
-            backgroundColor: 'rgba(30, 64, 175, 0.1)',
+            borderColor: primaryColor,
+            backgroundColor: primaryColor + '1a',
             fill: true,
             tension: 0.4,
           },
         ],
       };
     });
+  }
+
+  private getPrimaryColor(): string {
+    if (typeof document === 'undefined') return '#3B82F6';
+    return getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3B82F6';
   }
 }

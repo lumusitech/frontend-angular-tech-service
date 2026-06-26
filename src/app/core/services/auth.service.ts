@@ -34,10 +34,12 @@ export class AuthService {
         this.tokenSignal.set(accessToken);
         this.userSignal.set(user);
         this.preferencesSignal.set(preferences || null);
-        localStorage.setItem(TOKEN_KEY, accessToken);
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-        if (preferences) {
-          localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(TOKEN_KEY, accessToken);
+          localStorage.setItem(USER_KEY, JSON.stringify(user));
+          if (preferences) {
+            localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+          }
         }
       }),
       catchError((error: unknown) => {
@@ -50,9 +52,11 @@ export class AuthService {
     this.tokenSignal.set(null);
     this.userSignal.set(null);
     this.preferencesSignal.set(null);
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(PREFS_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(PREFS_KEY);
+    }
     this.router.navigate(['/login']);
   }
 

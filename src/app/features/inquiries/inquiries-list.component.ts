@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InquiriesService } from '../../core/services/inquiries.service';
@@ -119,6 +120,13 @@ const STATUS_COLORS: Record<string, string> = {
               <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
               {{ 'common.clearFilters' | translate }}
             </button>
+          }
+
+          @if (fromNotification()) {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+              <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
+              {{ 'notifications.filteredFromNotification' | translate }}
+            </span>
           }
         </div>
       </div>
@@ -272,14 +280,14 @@ const STATUS_COLORS: Record<string, string> = {
                 </button>
                 <button
                   mat-icon-button
-                  (click)="openEditDialog(inquiry)"
+                  (click)="openEditDialog(inquiry); $event.stopPropagation()"
                   [title]="'common.edit' | translate"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button
-                  (click)="deleteItem(inquiry)"
+                  (click)="deleteItem(inquiry); $event.stopPropagation()"
                   [title]="'common.delete' | translate"
                   color="warn"
                 >
@@ -309,8 +317,10 @@ export class InquiriesListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly _routeHighlight = signal<string | null>(null);
+  private readonly _clearHighlight = signal(false);
 
-  readonly highlightedId = signal<string | null>(null);
+  readonly fromNotification = signal(false);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly sortBy = signal('createdAt');
@@ -338,13 +348,50 @@ export class InquiriesListComponent implements OnInit {
     },
   }));
 
+  readonly highlightedId = computed(() => {
+    const data = this.resource.value();
+    const search = this.searchFilter();
+    const fromNotif = this.fromNotification();
+    const loading = this.resource.isLoading();
+    const cleared = this._clearHighlight();
+    const routeHighlight = this._routeHighlight();
+
+    if (!data || cleared || loading) return null;
+
+    if (fromNotif && search) {
+      const match = data.data.find(
+        (row) => row.clientName === search || row.id === search,
+      );
+      return match?.id ?? null;
+    }
+
+    if (routeHighlight && !fromNotif) {
+      const match = data.data.find((row) => row.id === routeHighlight);
+      return match?.id ?? null;
+    }
+
+    return null;
+  });
+
   displayedColumns = ['clientName', 'clientAddress', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      setTimeout(() => this.highlightedId.set(null), 3000);
+    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
+    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+
+    this.fromNotification.set(fromNotification);
+
+    if (fromNotification && !searchQuery) {
+      this.pageSize.set(100);
+    } else if (highlightId && !fromNotification) {
+      this._routeHighlight.set(highlightId);
+      this.pageSize.set(50);
+      setTimeout(() => this._clearHighlight.set(true), 3000);
+    }
+
+    if (searchQuery) {
+      this.searchFilter.set(searchQuery);
     }
   }
 
@@ -369,7 +416,7 @@ export class InquiriesListComponent implements OnInit {
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateFrom.set(date.toISOString().split('T')[0]);
+      this.dateFrom.set(toLocalDateString(date));
     } else {
       this.dateFrom.set('');
     }
@@ -378,14 +425,14 @@ export class InquiriesListComponent implements OnInit {
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateTo.set(date.toISOString().split('T')[0]);
+      this.dateTo.set(toLocalDateString(date));
     } else {
       this.dateTo.set('');
     }
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.sourceFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.sourceFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
   });
 
   clearFilters(): void {
@@ -394,6 +441,9 @@ export class InquiriesListComponent implements OnInit {
     this.sourceFilter.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this._clearHighlight.set(true);
+    this._routeHighlight.set(null);
+    this.fromNotification.set(false);
   }
 
   openCreateDialog(): void {

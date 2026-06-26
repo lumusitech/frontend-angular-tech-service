@@ -8,7 +8,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   selector: 'app-technician-ranking',
   imports: [DecimalPipe, CurrencyArsPipe, TranslatePipe],
   template: `
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="'var(--color-primary)'">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
         {{ 'reports.technicianRanking' | translate }}
       </h3>

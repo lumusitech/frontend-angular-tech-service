@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -147,7 +148,7 @@ export class ExpenseFormComponent {
 
   readonly description = signal(this.data.expense?.description || '');
   readonly amount = signal(this.data.expense?.amount?.toString() || '');
-  readonly date = signal(this.data.expense?.date || new Date().toISOString().split('T')[0]);
+  readonly date = signal(this.data.expense?.date || toLocalDateString(new Date()));
   readonly category = signal<ExpenseCategory>(this.data.expense?.category || 'other');
   readonly notes = signal(this.data.expense?.notes || '');
   readonly isRecurring = signal(this.data.expense?.isRecurring ?? false);
@@ -163,7 +164,7 @@ export class ExpenseFormComponent {
   }
 
   onDateChange(event: { value: Date | null }): void {
-    this.date.set(event.value ? event.value.toISOString().split('T')[0] : '');
+    this.date.set(event.value ? toLocalDateString(event.value) : '');
   }
 
   onSubmit(event: Event): void {

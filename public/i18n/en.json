@@ -10,6 +10,7 @@
     "loading": "Loading...",
     "noResults": "No results",
     "noResultsMessage": "No items found to display.",
+    "invalidDateRange": "The start date cannot be later than the end date",
     "errorLoading": "Error loading",
     "errorMessage": "Could not fetch data. Check your connection and try again.",
     "retry": "Retry",
@@ -271,7 +272,8 @@
     },
     "technicians": {
       "noTechnicians": "No technicians assigned",
-      "assign": "Assign Technicians"
+      "assign": "Assign Technicians",
+      "saveTechnicians": "Save Technicians"
     }
   },
   "pendingItems": {
@@ -541,10 +543,30 @@
     "noNotificationsMessage": "You have no new notifications",
     "unread": "Unread",
     "viewAll": "View all",
+    "type": "Type",
     "filters": {
       "all": "All",
-      "unread": "Unread"
-    }
+      "unread": "Unread",
+      "allTypes": "All types"
+    },
+    "types": {
+      "workOrderCreated": "New work order",
+      "workOrderStatusChanged": "Work order status changed",
+      "workOrderTechnicianAssigned": "Technician assigned to order",
+      "taskCreated": "New task",
+      "taskCompleted": "Task completed",
+      "paymentCreated": "New payment registered",
+      "paymentApproved": "Payment approved",
+      "paymentRejected": "Payment rejected",
+      "pendingItemCreated": "New pending item",
+      "pendingItemDueToday": "Pending item due today",
+      "pendingItemOverdue": "Pending item overdue",
+      "inquiryCreated": "New inquiry received",
+      "inquiryAssigned": "Inquiry assigned",
+      "inquiryContacted": "Client contacted",
+      "inquiryReviewed": "Inquiry reviewed"
+    },
+    "filteredFromNotification": "Filtered from notification"
   },
   "technician": {
     "title": "My Orders",

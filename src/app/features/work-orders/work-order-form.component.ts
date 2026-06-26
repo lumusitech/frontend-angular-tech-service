@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -164,11 +165,11 @@ export class WorkOrderFormComponent implements OnInit {
   }
 
   onScheduledDateChange(event: { value: Date | null }): void {
-    this.scheduledDate.set(event.value ? event.value.toISOString().split('T')[0] : '');
+    this.scheduledDate.set(event.value ? toLocalDateString(event.value) : '');
   }
 
   onWarrantyUntilChange(event: { value: Date | null }): void {
-    this.warrantyUntil.set(event.value ? event.value.toISOString().split('T')[0] : '');
+    this.warrantyUntil.set(event.value ? toLocalDateString(event.value) : '');
   }
 
   getInputValue(event: Event): string {
