@@ -36,6 +36,8 @@
     "suppliers": "Proveedores",
     "services": "Servicios",
     "orders": "Órdenes",
+    "skills": "Habilidades",
+    "users": "Usuarios",
     "pendingItems": "Pendientes",
     "inquiries": "Consultas",
     "payments": "Pagos",
@@ -123,6 +125,35 @@
       "loadErrorMessage": "No se pudo cargar el detalle del cliente",
       "noOrders": "Sin órdenes",
       "noOrdersMessage": "Este cliente no tiene órdenes de trabajo registradas"
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Gestiona los usuarios del sistema",
+    "newUser": "Nuevo Usuario",
+    "name": "Nombre",
+    "email": "Email",
+    "password": "Contraseña",
+    "phone": "Teléfono",
+    "role": "Rol",
+    "commission": "Comisión",
+    "experience": "Experiencia",
+    "experiencePlaceholder": "Ej: 5 años en soporte técnico...",
+    "trustRating": "Confianza",
+    "skills": "Habilidades",
+    "skillsPlaceholder": "Buscar habilidades...",
+    "noSkillsFound": "No se encontraron habilidades",
+    "noUsers": "Sin usuarios",
+    "noUsersMessage": "No hay usuarios registrados en el sistema",
+    "createUser": "Crear usuario",
+    "newUserTitle": "Nuevo Usuario",
+    "editUserTitle": "Editar Usuario",
+    "deleteTitle": "Eliminar usuario",
+    "deleteMessage": "¿Estás seguro de eliminar a {{name}}?",
+    "roles": {
+      "admin": "Admin",
+      "technician": "Técnico",
+      "seller": "Vendedor"
     }
   },
   "suppliers": {
@@ -783,7 +814,29 @@
       "title": "Todo lo que necesitás",
       "subtitle": "Una plataforma completa para gestionar tu negocio de servicios técnicos.",
       "items": {
-        "workOrders": {
+  "skills": {
+    "title": "Habilidades",
+    "subtitle": "Catálogo de habilidades técnicas",
+    "newSkill": "Nueva Habilidad",
+    "name": "Nombre",
+    "description": "Descripción",
+    "category": "Categoría",
+    "categoryPlaceholder": "Ej: Redes, Electrónica, Software",
+    "noSkills": "Sin habilidades",
+    "noSkillsMessage": "No hay habilidades registradas",
+    "createSkill": "Crear habilidad",
+    "newSkillTitle": "Nueva Habilidad",
+    "editSkillTitle": "Editar Habilidad",
+    "deleteTitle": "Eliminar habilidad",
+    "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
+    "categories": {
+      "networks": "Redes",
+      "electronics": "Electrónica",
+      "hardware": "Hardware",
+      "software": "Software"
+    }
+  },
+  "workOrders": {
           "title": "Órdenes de Trabajo",
           "description": "Creá, asigná y seguí cada trabajo con código de tracking único, estados, técnicos y materiales."
         },

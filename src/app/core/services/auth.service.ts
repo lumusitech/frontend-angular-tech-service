@@ -26,6 +26,7 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
   readonly isAdmin = computed(() => this.userSignal()?.role === 'admin');
   readonly isTechnician = computed(() => this.userSignal()?.role === 'technician');
+  readonly isSeller = computed(() => this.userSignal()?.role === 'seller');
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(

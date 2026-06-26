@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, UserFilters } from '../models/user.interfaces';
+import { User, CreateUserDto, UpdateUserDto, UserFilters } from '../models/user.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
 @Service()
@@ -21,5 +21,17 @@ export class UsersService {
 
   getById(id: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
+  }
+
+  create(dto: CreateUserDto): Observable<User> {
+    return this.http.post<User>(this.apiUrl, dto);
+  }
+
+  update(id: string, dto: UpdateUserDto): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${id}`, dto);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
