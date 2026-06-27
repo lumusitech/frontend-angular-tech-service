@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { InstallPromptComponent } from './shared/components/install-prompt/install-prompt.component';
@@ -16,15 +16,10 @@ export class App implements OnInit {
   private readonly themeService = inject(ThemeService);
   private readonly businessSettingsService = inject(BusinessSettingsService);
 
-  ngOnInit(): void {
-    this.themeService.init();
-    this.applyBusinessColors();
-  }
-
-  private applyBusinessColors(): void {
-    const settings = this.businessSettingsService.settings();
-    if (settings) {
-      if (typeof document !== 'undefined') {
+  constructor() {
+    effect(() => {
+      const settings = this.businessSettingsService.settings();
+      if (settings && typeof document !== 'undefined') {
         if (settings.primaryColor) {
           document.documentElement.style.setProperty('--color-primary', settings.primaryColor);
         }
@@ -32,6 +27,10 @@ export class App implements OnInit {
           document.documentElement.style.setProperty('--color-secondary', settings.secondaryColor);
         }
       }
-    }
+    });
+  }
+
+  ngOnInit(): void {
+    this.themeService.init();
   }
 }
