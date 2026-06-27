@@ -3,6 +3,8 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InquiriesService } from '../../core/services/inquiries.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import {
   Inquiry,
   InquiryStatus,
@@ -317,6 +319,8 @@ export class InquiriesListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   private readonly _routeHighlight = signal<string | null>(null);
   private readonly _clearHighlight = signal(false);
 
@@ -487,7 +491,14 @@ export class InquiriesListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.inquiriesService.delete(inquiry.id).subscribe({
-          next: () => this.resource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.resource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });

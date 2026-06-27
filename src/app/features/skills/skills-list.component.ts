@@ -21,6 +21,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 import { SkillFormComponent } from './skill-form.component';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
@@ -167,6 +168,7 @@ export class SkillsListComponent {
   private readonly skillsService = inject(SkillsService);
   private readonly dialog = inject(MatDialog);
   private readonly translationService = inject(TranslationService);
+  private readonly toastService = inject(ToastService);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -256,7 +258,14 @@ export class SkillsListComponent {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.skillsService.delete(skill.id).subscribe({
-          next: () => this.skillsResource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.skillsResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });

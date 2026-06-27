@@ -177,16 +177,16 @@ div:has(> table.mat-mdc-table) {
 }
 
 :root.dark .toast-success {
-  --mdc-snackbar-container-color: #1f2937;
-  --mdc-snackbar-supporting-text-color: #f3f4f6;
+  --mdc-snackbar-container-color: #1f2937 !important;
+  --mdc-snackbar-supporting-text-color: #f3f4f6 !important;
 }
 
 :root.dark .toast-error {
-  --mdc-snackbar-container-color: #1f2937;
-  --mdc-snackbar-supporting-text-color: #f3f4f6;
+  --mdc-snackbar-container-color: #1f2937 !important;
+  --mdc-snackbar-supporting-text-color: #f3f4f6 !important;
 }
 
 :root.dark .toast-info {
-  --mdc-snackbar-container-color: #1f2937;
-  --mdc-snackbar-supporting-text-color: #f3f4f6;
+  --mdc-snackbar-container-color: #1f2937 !important;
+  --mdc-snackbar-supporting-text-color: #f3f4f6 !important;
 }

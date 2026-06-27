@@ -3,6 +3,8 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import {
   PendingItem,
   PendingItemStatus,
@@ -355,6 +357,8 @@ export class PendingItemsListComponent implements OnInit {
   private readonly pendingItemsService = inject(PendingItemsService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   private readonly _routeHighlight = signal<string | null>(null);
   private readonly _clearHighlight = signal(false);
 
@@ -550,7 +554,14 @@ export class PendingItemsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.pendingItemsService.delete(item.id).subscribe({
-          next: () => this.resource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.resource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });

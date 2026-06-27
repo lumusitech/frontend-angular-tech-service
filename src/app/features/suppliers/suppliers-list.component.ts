@@ -3,6 +3,8 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { SuppliersService } from '../../core/services/suppliers.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { Supplier } from '../../core/models/supplier.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
@@ -290,6 +292,8 @@ export class SuppliersListComponent implements OnInit {
   private readonly suppliersService = inject(SuppliersService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
@@ -398,7 +402,14 @@ export class SuppliersListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.suppliersService.delete(supplier.id).subscribe({
-          next: () => this.suppliersResource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.suppliersResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });

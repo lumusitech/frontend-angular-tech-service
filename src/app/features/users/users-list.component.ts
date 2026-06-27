@@ -1,6 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { UsersService } from '../../core/services/users.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { User } from '../../core/models/user.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
@@ -185,6 +187,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class UsersListComponent {
   private readonly usersService = inject(UsersService);
   private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -280,7 +284,12 @@ export class UsersListComponent {
       if (confirmed) {
         this.usersService.delete(user.id).subscribe({
           next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
             this.usersResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
           },
         });
       }
