@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,28 +42,28 @@ interface DialogData {
         </div>
       </div>
 
-      <div class="space-y-4">
+      <form #skillForm="ngForm" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.name' | translate }}</mat-label>
-          <input matInput [value]="name()" (input)="name.set(getInputValue($event))" (blur)="nameTouched.set(true)" />
-          @if (nameTouched() && !isNameValid()) {
+          <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
+          @if (nameRef.invalid && nameRef.touched) {
             <mat-error>{{ 'validation.required' | translate }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.category' | translate }}</mat-label>
-          <input matInput [value]="category()" (input)="category.set(getInputValue($event))" [placeholder]="'skills.categoryPlaceholder' | translate" />
+          <input matInput [(ngModel)]="category" name="category" [placeholder]="'skills.categoryPlaceholder' | translate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.description' | translate }}</mat-label>
-          <textarea matInput [value]="description()" (input)="description.set(getInputValue($event))" rows="3"></textarea>
+          <textarea matInput [(ngModel)]="description" name="description" rows="3"></textarea>
         </mat-form-field>
-      </div>
+      </form>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [checked]="isActive()" (change)="isActive.set($event.checked)" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -71,7 +71,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || !isFormValid()">
+          <button mat-flat-button color="primary" (click)="onSubmit(skillForm)" [disabled]="loading() || skillForm.invalid">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -92,21 +92,13 @@ export class SkillFormComponent {
   readonly isActive = signal(this.data.skill?.isActive ?? true);
   readonly loading = signal(false);
 
-  readonly nameTouched = signal(false);
-  readonly isNameValid = computed(() => this.name().trim().length > 0);
-  readonly isFormValid = computed(() => this.isNameValid());
-
   private t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
-  }
-
-  onSubmit(): void {
-    this.nameTouched.set(true);
-    if (!this.isFormValid()) return;
+  onSubmit(form: any): void {
+    form.control.markAllAsTouched();
+    if (form.invalid) return;
 
     this.loading.set(true);
     const dto = {

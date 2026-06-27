@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { BillingService } from '../../core/services/billing.service';
 import { CreateInvoiceDto } from '../../core/models/api.interfaces';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
@@ -34,11 +34,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form (submit)="onSubmit($event)" class="space-y-4">
+      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
-            <mat-select [value]="invoiceType()" (selectionChange)="invoiceType.set($event.value)">
+            <mat-select [(ngModel)]="invoiceType" name="invoiceType">
               <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
               <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
               <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
@@ -47,7 +47,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.concept' | translate }}</mat-label>
-            <mat-select [value]="concept()" (selectionChange)="concept.set($event.value)">
+            <mat-select [(ngModel)]="concept" name="concept">
               <mat-option value="services">{{ 'billing.concepts.services' | translate }}</mat-option>
               <mat-option value="products">{{ 'billing.concepts.products' | translate }}</mat-option>
               <mat-option value="both">{{ 'billing.concepts.both' | translate }}</mat-option>
@@ -60,14 +60,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
             <input
               matInput
-              [value]="clientName()"
-              (input)="onClientSearch(getInputValue($event))"
+              [(ngModel)]="clientName"
+              name="clientName"
+              #clientNameRef="ngModel"
+              (input)="onClientSearch(clientName)"
               (focus)="showClientDropdown.set(true)"
               (blur)="hideClientDropdown()"
-              (blur)="clientNameTouched.set(true)"
               required
             />
-            @if (clientNameTouched() && !clientNameValid()) {
+            @if (clientNameRef.invalid && clientNameRef.touched) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
@@ -92,14 +93,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.clientCuit' | translate }}</mat-label>
             <input
               matInput
-              [value]="clientCuit()"
-              (input)="clientCuit.set(getInputValue($event))"
+              [(ngModel)]="clientCuit"
+              name="clientCuit"
             />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.clientIvaCondition' | translate }}</mat-label>
-            <mat-select [value]="clientIvaCondition()" (selectionChange)="clientIvaCondition.set($event.value)">
+            <mat-select [(ngModel)]="clientIvaCondition" name="clientIvaCondition">
               <mat-option value="consumidor_final">{{ 'billing.ivaConditions.consumidorFinal' | translate }}</mat-option>
               <mat-option value="responsable_inscripto">{{ 'billing.ivaConditions.responsableInscripto' | translate }}</mat-option>
               <mat-option value="monotributo">{{ 'billing.ivaConditions.monotributo' | translate }}</mat-option>
@@ -112,8 +113,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           <mat-label>{{ 'billing.clientAddress' | translate }}</mat-label>
           <input
             matInput
-            [value]="clientAddress()"
-            (input)="clientAddress.set(getInputValue($event))"
+            [(ngModel)]="clientAddress"
+            name="clientAddress"
             required
           />
         </mat-form-field>
@@ -124,14 +125,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [value]="subtotal()"
-              (input)="subtotal.set(getInputValue($event))"
-              (blur)="subtotalTouched.set(true)"
-              min="0"
+              [(ngModel)]="subtotal"
+              name="subtotal"
+              #subtotalRef="ngModel"
+              min="0.01"
               step="0.01"
               required
             />
-            @if (subtotalTouched() && !subtotalValid()) {
+            @if (subtotalRef.invalid && subtotalRef.touched) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
@@ -141,8 +142,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [value]="ivaAmount()"
-              (input)="ivaAmount.set(getInputValue($event))"
+              [(ngModel)]="ivaAmount"
+              name="ivaAmount"
               min="0"
               step="0.01"
             />
@@ -153,14 +154,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [value]="total()"
-              (input)="total.set(getInputValue($event))"
-              (blur)="totalTouched.set(true)"
-              min="0"
+              [(ngModel)]="total"
+              name="total"
+              #totalRef="ngModel"
+              min="0.01"
               step="0.01"
               required
             />
-            @if (totalTouched() && !totalValid()) {
+            @if (totalRef.invalid && totalRef.touched) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
@@ -171,14 +172,15 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.workOrder' | translate }}</mat-label>
             <input
               matInput
-              [value]="workOrderDisplay()"
-              (input)="onWorkOrderSearch(getInputValue($event))"
+              [(ngModel)]="workOrderDisplay"
+              name="workOrderDisplay"
+              #workOrderDisplayRef="ngModel"
+              (input)="onWorkOrderSearch(workOrderDisplay)"
               (focus)="showWorkOrderDropdown.set(true)"
               (blur)="hideWorkOrderDropdown()"
-              (blur)="workOrderIdTouched.set(true)"
               required
             />
-            @if (workOrderIdTouched() && !workOrderIdValid()) {
+            @if (selectedWorkOrderId.length === 0 && workOrderDisplayRef.touched) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
@@ -208,8 +210,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       <button
         mat-flat-button
         color="primary"
-        (click)="onSubmit($event)"
-        [disabled]="saving() || !isFormValid()"
+        (click)="onSubmit($event, formRef)"
+        [disabled]="saving() || formRef.invalid"
       >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
@@ -223,40 +225,21 @@ export class InvoiceFormComponent {
   private readonly translationService = inject(TranslationService);
   private readonly data = inject<Record<string, never>>(MAT_DIALOG_DATA);
 
-  readonly invoiceType = signal<'A' | 'B' | 'C'>('B');
-  readonly concept = signal<'products' | 'services' | 'both'>('services');
-  readonly clientName = signal('');
-  readonly clientCuit = signal('');
-  readonly clientAddress = signal('');
-  readonly clientIvaCondition = signal<'consumidor_final' | 'responsable_inscripto' | 'monotributo' | 'exento'>('consumidor_final');
-  readonly subtotal = signal('');
-  readonly ivaAmount = signal('');
-  readonly total = signal('');
-  readonly selectedClientId = signal('');
-  readonly selectedWorkOrderId = signal('');
-  readonly workOrderDisplay = signal('');
+  invoiceType = 'B';
+  concept = 'services';
+  clientName = '';
+  clientCuit = '';
+  clientAddress = '';
+  clientIvaCondition: 'consumidor_final' | 'responsable_inscripto' | 'monotributo' | 'exento' = 'consumidor_final';
+  subtotal = '';
+  ivaAmount = '';
+  total = '';
+  selectedClientId = '';
+  selectedWorkOrderId = '';
+  workOrderDisplay = '';
   readonly saving = signal(false);
   readonly showClientDropdown = signal(false);
   readonly showWorkOrderDropdown = signal(false);
-
-  readonly clientNameTouched = signal(false);
-  readonly subtotalTouched = signal(false);
-  readonly totalTouched = signal(false);
-  readonly workOrderIdTouched = signal(false);
-
-  readonly clientNameValid = computed(() => this.clientName().trim().length > 0);
-  readonly subtotalValid = computed(() => {
-    const val = parseFloat(this.subtotal());
-    return !isNaN(val) && val > 0;
-  });
-  readonly totalValid = computed(() => {
-    const val = parseFloat(this.total());
-    return !isNaN(val) && val > 0;
-  });
-  readonly workOrderIdValid = computed(() => this.selectedWorkOrderId().trim().length > 0);
-  readonly isFormValid = computed(() =>
-    this.clientNameValid() && this.subtotalValid() && this.totalValid() && this.workOrderIdValid()
-  );
 
   t(key: string): string {
     return this.translationService.instant(key);
@@ -299,7 +282,6 @@ export class InvoiceFormComponent {
   private workOrderSearchTimer: ReturnType<typeof setTimeout> | null = null;
 
   onClientSearch(value: string): void {
-    this.clientName.set(value);
     this.showClientDropdown.set(true);
     if (this.clientSearchTimer) clearTimeout(this.clientSearchTimer);
     this.clientSearchTimer = setTimeout(() => {
@@ -312,18 +294,17 @@ export class InvoiceFormComponent {
   }
 
   selectClient(client: Client): void {
-    this.selectedClientId.set(client.id);
-    this.clientName.set(client.name);
-    this.clientCuit.set(client.cuit ?? '');
-    this.clientAddress.set(client.address ?? '');
+    this.selectedClientId = client.id;
+    this.clientName = client.name;
+    this.clientCuit = client.cuit ?? '';
+    this.clientAddress = client.address ?? '';
     if (client.ivaCondition) {
-      this.clientIvaCondition.set(client.ivaCondition);
+      this.clientIvaCondition = client.ivaCondition;
     }
     this.showClientDropdown.set(false);
   }
 
   onWorkOrderSearch(value: string): void {
-    this.workOrderDisplay.set(value);
     this.showWorkOrderDropdown.set(true);
     if (this.workOrderSearchTimer) clearTimeout(this.workOrderSearchTimer);
     this.workOrderSearchTimer = setTimeout(() => {
@@ -336,30 +317,30 @@ export class InvoiceFormComponent {
   }
 
   selectWorkOrder(wo: WorkOrder): void {
-    this.selectedWorkOrderId.set(wo.id);
-    this.workOrderDisplay.set(wo.trackingCode);
+    this.selectedWorkOrderId = wo.id;
+    this.workOrderDisplay = wo.trackingCode;
     this.showWorkOrderDropdown.set(false);
   }
 
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
-  }
-
-  onSubmit(event: Event): void {
+  onSubmit(event: Event, form: NgForm): void {
     event.preventDefault();
+    form.control.markAllAsTouched();
+
+    if (form.invalid) return;
+
     this.saving.set(true);
 
     const dto: CreateInvoiceDto = {
-      invoiceType: this.invoiceType(),
-      concept: this.concept(),
-      clientName: this.clientName(),
-      clientCuit: this.clientCuit() || undefined,
-      clientAddress: this.clientAddress(),
-      clientIvaCondition: this.clientIvaCondition(),
-      subtotal: parseFloat(this.subtotal()) || 0,
-      ivaAmount: parseFloat(this.ivaAmount()) || 0,
-      total: parseFloat(this.total()) || 0,
-      workOrderId: this.selectedWorkOrderId(),
+      invoiceType: this.invoiceType as 'A' | 'B' | 'C',
+      concept: this.concept as 'products' | 'services' | 'both',
+      clientName: this.clientName,
+      clientCuit: this.clientCuit || undefined,
+      clientAddress: this.clientAddress,
+      clientIvaCondition: this.clientIvaCondition,
+      subtotal: parseFloat(this.subtotal) || 0,
+      ivaAmount: parseFloat(this.ivaAmount) || 0,
+      total: parseFloat(this.total) || 0,
+      workOrderId: this.selectedWorkOrderId,
     };
 
     this.billingService.create(dto).subscribe({

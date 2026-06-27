@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -49,21 +49,21 @@ interface DialogData {
         </div>
       </div>
 
-      <div class="space-y-4">
+      <form #userForm="ngForm" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.name' | translate }}</mat-label>
-            <input matInput [value]="name()" (input)="name.set(getInputValue($event))" (blur)="nameTouched.set(true)" />
-            @if (nameTouched() && !isNameValid()) {
+            <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
+            @if (nameRef.invalid && nameRef.touched) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.email' | translate }}</mat-label>
-            <input matInput type="email" [value]="email()" (input)="email.set(getInputValue($event))" (blur)="emailTouched.set(true)" />
-            @if (emailTouched() && !isEmailValid()) {
-              <mat-error>{{ isEmailFormat() ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            <input matInput [(ngModel)]="email" name="email" #emailRef="ngModel" type="email" required email />
+            @if (emailRef.invalid && emailRef.touched) {
+              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
             }
           </mat-form-field>
         </div>
@@ -71,21 +71,21 @@ interface DialogData {
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.password' | translate }}</mat-label>
-            <input matInput type="password" [value]="password()" (input)="password.set(getInputValue($event))" (blur)="passwordTouched.set(true)" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
-            @if (data.mode === 'create' && passwordTouched() && !isPasswordValid()) {
-              <mat-error>{{ password().length > 0 ? ('validation.minLength' | translate:{min:6}) : ('validation.required' | translate) }}</mat-error>
+            <input matInput [(ngModel)]="password" name="password" #passwordRef="ngModel" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
+            @if (passwordRef.invalid && passwordRef.touched) {
+              <mat-error>{{ passwordRef.hasError('required') ? ('validation.required' | translate) : ('validation.minLength' | translate:{min:6}) }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.phone' | translate }}</mat-label>
-            <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" placeholder="+5491122334455" />
+            <input matInput [(ngModel)]="phone" name="phone" placeholder="+5491122334455" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'users.role' | translate }}</mat-label>
-          <mat-select [value]="role()" (selectionChange)="role.set($event.value); onRoleChange()">
+          <mat-select [(ngModel)]="role" name="role" (selectionChange)="onRoleChange()">
             <mat-option value="admin">{{ 'users.roles.admin' | translate }}</mat-option>
             <mat-option value="technician">{{ 'users.roles.technician' | translate }}</mat-option>
             <mat-option value="seller">{{ 'users.roles.seller' | translate }}</mat-option>
@@ -97,7 +97,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.experience' | translate }}</mat-label>
-            <textarea matInput [value]="experience()" (input)="experience.set(getInputValue($event))" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
+            <textarea matInput [(ngModel)]="experience" name="experience" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
           </mat-form-field>
 
           <div class="flex items-center gap-4">
@@ -120,13 +120,13 @@ interface DialogData {
         @if (role() === 'seller') {
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.commission' | translate }} (%)</mat-label>
-            <input matInput [value]="commission()" (input)="commission.set(getInputValue($event))" type="number" min="0" max="100" />
+            <input matInput [(ngModel)]="commission" name="commission" type="number" min="0" max="100" />
           </mat-form-field>
         }
-      </div>
+      </form>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [checked]="isActive()" (change)="isActive.set($event.checked)" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -134,7 +134,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || !isFormValid()">
+          <button mat-flat-button color="primary" (click)="onSubmit(userForm)" [disabled]="loading() || userForm.invalid">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -164,26 +164,8 @@ export class UserFormComponent {
   );
   readonly loading = signal(false);
 
-  readonly nameTouched = signal(false);
-  readonly emailTouched = signal(false);
-  readonly passwordTouched = signal(false);
-
-  readonly isNameValid = computed(() => this.name().trim().length > 0);
-  readonly isEmailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email()));
-  readonly isEmailFormat = computed(() => this.email().trim().length > 0);
-  readonly isPasswordValid = computed(() => this.password().length >= 6);
-  readonly isFormValid = computed(() => {
-    if (!this.isNameValid() || !this.isEmailValid()) return false;
-    if (this.data.mode === 'create' && !this.isPasswordValid()) return false;
-    return true;
-  });
-
   private t(key: string): string {
     return this.translationService.instant(key);
-  }
-
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
   }
 
   onRoleChange(): void {
@@ -195,11 +177,9 @@ export class UserFormComponent {
     }
   }
 
-  onSubmit(): void {
-    this.nameTouched.set(true);
-    this.emailTouched.set(true);
-    this.passwordTouched.set(true);
-    if (!this.isFormValid()) return;
+  onSubmit(form: any): void {
+    form.control.markAllAsTouched();
+    if (form.invalid) return;
 
     this.loading.set(true);
 

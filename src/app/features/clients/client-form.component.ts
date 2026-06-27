@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -42,42 +42,42 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form (submit)="onSubmit($event)" class="space-y-4">
+      <form #clientForm="ngForm" (submit)="onSubmit($event, clientForm)" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.name' | translate }}</mat-label>
-            <input matInput [value]="name()" (input)="name.set(getInputValue($event))" (blur)="nameTouched.set(true)" />
-            @if (nameTouched() && !isNameValid()) {
+            <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
+            @if (nameRef.invalid && nameRef.touched) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.email' | translate }}</mat-label>
-            <input matInput type="email" [value]="email()" (input)="email.set(getInputValue($event))" (blur)="emailTouched.set(true)" />
-            @if (emailTouched() && !isEmailValid()) {
-              <mat-error>{{ isEmailFormat() ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            <input matInput type="email" [(ngModel)]="email" name="email" #emailRef="ngModel" required email />
+            @if (emailRef.invalid && emailRef.touched) {
+              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.phone' | translate }}</mat-label>
-            <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" (blur)="phoneTouched.set(true)" />
-            @if (phoneTouched() && !isPhoneValid()) {
+            <input matInput [(ngModel)]="phone" name="phone" #phoneRef="ngModel" required />
+            @if (phoneRef.invalid && phoneRef.touched) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
-            <input matInput [value]="cuit()" (input)="cuit.set(getInputValue($event))" />
+            <input matInput [(ngModel)]="cuit" name="cuit" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.address' | translate }}</mat-label>
-          <input matInput [value]="address()" (input)="address.set(getInputValue($event))" (blur)="addressTouched.set(true)" />
-          @if (addressTouched() && !isAddressValid()) {
+          <input matInput [(ngModel)]="address" name="address" #addressRef="ngModel" required />
+          @if (addressRef.invalid && addressRef.touched) {
             <mat-error>{{ 'validation.required' | translate }}</mat-error>
           }
         </mat-form-field>
@@ -85,18 +85,18 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetProvider' | translate }}</mat-label>
-            <input matInput [value]="internetProvider()" (input)="internetProvider.set(getInputValue($event))" />
+            <input matInput [(ngModel)]="internetProvider" name="internetProvider" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetPlan' | translate }}</mat-label>
-            <input matInput [value]="internetPlan()" (input)="internetPlan.set(getInputValue($event))" />
+            <input matInput [(ngModel)]="internetPlan" name="internetPlan" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
-          <mat-select [value]="ivaCondition()" (selectionChange)="ivaCondition.set($event.value)">
+          <mat-select [(ngModel)]="ivaCondition" name="ivaCondition">
             <mat-option value="responsable_inscripto">{{
               'clients.ivaConditions.responsableInscripto' | translate
             }}</mat-option>
@@ -110,7 +110,7 @@ interface DialogData {
           </mat-select>
         </mat-form-field>
 
-        <mat-checkbox [checked]="isActive()" (change)="isActive.set($event.checked)">
+        <mat-checkbox [(ngModel)]="isActive" name="isActive">
           {{ 'clients.activeClient' | translate }}
         </mat-checkbox>
       </form>
@@ -118,7 +118,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event, clientForm)" [disabled]="saving() || clientForm.invalid">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -142,33 +142,14 @@ export class ClientFormComponent {
   readonly isActive = signal(this.data.client?.isActive ?? true);
   readonly saving = signal(false);
 
-  readonly nameTouched = signal(false);
-  readonly emailTouched = signal(false);
-  readonly phoneTouched = signal(false);
-  readonly addressTouched = signal(false);
-
-  readonly isNameValid = computed(() => this.name().trim().length > 0);
-  readonly isEmailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email()));
-  readonly isEmailFormat = computed(() => this.email().trim().length > 0);
-  readonly isPhoneValid = computed(() => this.phone().trim().length > 0);
-  readonly isAddressValid = computed(() => this.address().trim().length > 0);
-  readonly isFormValid = computed(() => this.isNameValid() && this.isEmailValid() && this.isPhoneValid() && this.isAddressValid());
-
   private t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
-  }
-
-  onSubmit(event: Event): void {
+  onSubmit(event: Event, form: any): void {
     event.preventDefault();
-    this.nameTouched.set(true);
-    this.emailTouched.set(true);
-    this.phoneTouched.set(true);
-    this.addressTouched.set(true);
-    if (!this.isFormValid()) return;
+    form.control.markAllAsTouched();
+    if (form.invalid) return;
 
     this.saving.set(true);
 

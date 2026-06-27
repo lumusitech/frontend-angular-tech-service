@@ -1,11 +1,11 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import {
   Inquiry,
@@ -41,17 +41,17 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form (submit)="onSubmit($event)" class="space-y-4">
+      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
           <input
             matInput
-            [value]="clientName()"
-            (input)="clientName.set(getInputValue($event))"
-            (blur)="clientNameTouched.set(true)"
+            [(ngModel)]="clientName"
+            name="clientName"
+            #clientNameRef="ngModel"
             required
           />
-          @if (clientNameTouched() && !clientNameValid()) {
+          @if (clientNameRef.invalid && clientNameRef.touched) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -61,8 +61,8 @@ interface DialogData {
             <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
             <input
               matInput
-              [value]="clientPhone()"
-              (input)="clientPhone.set(getInputValue($event))"
+              [(ngModel)]="clientPhone"
+              name="clientPhone"
             />
           </mat-form-field>
 
@@ -71,9 +71,14 @@ interface DialogData {
             <input
               matInput
               type="email"
-              [value]="clientEmail()"
-              (input)="clientEmail.set(getInputValue($event))"
+              [(ngModel)]="clientEmail"
+              name="clientEmail"
+              #clientEmailRef="ngModel"
+              email
             />
+            @if (clientEmailRef.invalid && clientEmailRef.touched) {
+              <mat-error>{{ clientEmailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -81,8 +86,8 @@ interface DialogData {
           <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
           <input
             matInput
-            [value]="clientAddress()"
-            (input)="clientAddress.set(getInputValue($event))"
+            [(ngModel)]="clientAddress"
+            name="clientAddress"
           />
         </mat-form-field>
 
@@ -90,13 +95,13 @@ interface DialogData {
           <mat-label>{{ 'inquiries.description' | translate }}</mat-label>
           <textarea
             matInput
+            [(ngModel)]="description"
+            name="description"
+            #descriptionRef="ngModel"
             rows="3"
-            [value]="description()"
-            (input)="description.set(getInputValue($event))"
-            (blur)="descriptionTouched.set(true)"
             required
           ></textarea>
-          @if (descriptionTouched() && !descriptionValid()) {
+          @if (descriptionRef.invalid && descriptionRef.touched) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -104,7 +109,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-            <mat-select [value]="source()" (selectionChange)="source.set($event.value)" required>
+            <mat-select [(ngModel)]="source" name="source" #sourceRef="ngModel" required>
               <mat-option value="phone">{{ 'statusLabels.phone' | translate }}</mat-option>
               <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
               <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
@@ -112,14 +117,14 @@ interface DialogData {
               <mat-option value="social_media">{{ 'statusLabels.social_media' | translate }}</mat-option>
               <mat-option value="referral">{{ 'statusLabels.referral' | translate }}</mat-option>
             </mat-select>
-            @if (sourceTouched() && !sourceValid()) {
+            @if (sourceRef.invalid && sourceRef.touched) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.priority' | translate }}</mat-label>
-            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+            <mat-select [(ngModel)]="priority" name="priority">
               <mat-option value="low">{{ 'statusLabels.low' | translate }}</mat-option>
               <mat-option value="medium">{{ 'statusLabels.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'statusLabels.high' | translate }}</mat-option>
@@ -132,7 +137,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -145,84 +150,73 @@ export class InquiryFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly clientName = signal(this.data.inquiry?.clientName || '');
-  readonly clientPhone = signal(this.data.inquiry?.clientPhone || '');
-  readonly clientEmail = signal(this.data.inquiry?.clientEmail || '');
-  readonly clientAddress = signal(this.data.inquiry?.clientAddress || '');
-  readonly description = signal(this.data.inquiry?.description || '');
-  readonly source = signal(this.data.inquiry?.source || InquirySource.PHONE);
-  readonly priority = signal(this.data.inquiry?.priority || 'medium');
+  clientName = this.data.inquiry?.clientName || '';
+  clientPhone = this.data.inquiry?.clientPhone || '';
+  clientEmail = this.data.inquiry?.clientEmail || '';
+  clientAddress = this.data.inquiry?.clientAddress || '';
+  description = this.data.inquiry?.description || '';
+  source: string = this.data.inquiry?.source || InquirySource.PHONE;
+  priority = this.data.inquiry?.priority || 'medium';
   readonly saving = signal(false);
-
-  readonly clientNameTouched = signal(false);
-  readonly descriptionTouched = signal(false);
-  readonly sourceTouched = signal(false);
-
-  readonly clientNameValid = computed(() => this.clientName().trim().length > 0);
-  readonly descriptionValid = computed(() => this.description().trim().length > 0);
-  readonly sourceValid = computed(() => this.source().trim().length > 0);
-  readonly isFormValid = computed(() =>
-    this.clientNameValid() && this.descriptionValid() && this.sourceValid()
-  );
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
-  }
-
-  onSubmit(event: Event): void {
+  onSubmit(event: Event, form: NgForm): void {
     event.preventDefault();
+    form.control.markAllAsTouched();
+
+    if (form.invalid) return;
+
     this.saving.set(true);
 
     if (this.data.mode === 'create') {
       const dto: CreateInquiryDto = {
-        clientName: this.clientName(),
-        description: this.description(),
-        source: this.source() as InquirySource,
-        clientPhone: this.clientPhone() || undefined,
-        clientEmail: this.clientEmail() || undefined,
-        clientAddress: this.clientAddress() || undefined,
-        priority: this.priority() || undefined,
+        clientName: this.clientName,
+        description: this.description,
+        source: this.source as InquirySource,
+        clientPhone: this.clientPhone || undefined,
+        clientEmail: this.clientEmail || undefined,
+        clientAddress: this.clientAddress || undefined,
+        priority: this.priority || undefined,
       };
 
-    this.inquiriesService.create(dto).subscribe({
-      next: (inquiry) => {
-        this.saving.set(false);
-        this.toastService.show(this.t('common.toast.created'), 'success');
-        this.dialogRef.close(inquiry);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        console.error('Create inquiry failed:', err);
-        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
-      },
-    });
+      this.inquiriesService.create(dto).subscribe({
+        next: (inquiry) => {
+          this.saving.set(false);
+          this.toastService.show(this.t('common.toast.created'), 'success');
+          this.dialogRef.close(inquiry);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          console.error('Create inquiry failed:', err);
+          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
+        },
+      });
     } else {
       const dto: UpdateInquiryDto = {
-        clientName: this.clientName(),
-        description: this.description(),
-        source: this.source() as InquirySource,
-        clientPhone: this.clientPhone() || undefined,
-        clientEmail: this.clientEmail() || undefined,
-        clientAddress: this.clientAddress() || undefined,
-        priority: this.priority() || undefined,
+        clientName: this.clientName,
+        description: this.description,
+        source: this.source as InquirySource,
+        clientPhone: this.clientPhone || undefined,
+        clientEmail: this.clientEmail || undefined,
+        clientAddress: this.clientAddress || undefined,
+        priority: this.priority || undefined,
       };
 
-    this.inquiriesService.update(this.data.inquiry!.id, dto).subscribe({
-      next: (inquiry) => {
-        this.saving.set(false);
-        this.toastService.show(this.t('common.toast.updated'), 'success');
-        this.dialogRef.close(inquiry);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        console.error('Update inquiry failed:', err);
-        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
-      },
-    });
+      this.inquiriesService.update(this.data.inquiry!.id, dto).subscribe({
+        next: (inquiry) => {
+          this.saving.set(false);
+          this.toastService.show(this.t('common.toast.updated'), 'success');
+          this.dialogRef.close(inquiry);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          console.error('Update inquiry failed:', err);
+          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
+        },
+      });
     }
   }
 }
