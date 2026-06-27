@@ -36,6 +36,12 @@
       "errorCreated": "Error al crear",
       "errorUpdated": "Error al actualizar",
       "errorDeleted": "Error al eliminar"
+    },
+    "validation": {
+      "required": "Este campo es requerido",
+      "invalidEmail": "Ingrese un email válido",
+      "minLength": "Mínimo {{min}} caracteres",
+      "invalidAmount": "Ingrese un monto válido"
     }
   },
   "nav": {

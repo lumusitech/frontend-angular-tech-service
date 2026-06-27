@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -47,14 +47,24 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.name' | translate }}</mat-label>
-          <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
+          <input
+            matInput
+            [value]="name()"
+            (input)="name.set(getInputValue($event))"
+            (blur)="nameTouched.set(true)"
+            required
+          />
+          @if (nameTouched() && !nameValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.description' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
+            [value]="description()"
+            (input)="description.set(getInputValue($event))"
             rows="3"
           ></textarea>
         </mat-form-field>
@@ -78,7 +88,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -96,6 +106,15 @@ export class ServiceTypeFormComponent {
   readonly estimatedDuration = signal(this.data.serviceType?.estimatedDuration?.toString() || '');
   readonly isActive = signal(this.data.serviceType?.isActive ?? true);
   readonly saving = signal(false);
+
+  readonly nameTouched = signal(false);
+
+  readonly nameValid = computed(() => this.name().trim().length > 0);
+  readonly isFormValid = computed(() => this.nameValid());
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -118,13 +137,13 @@ export class ServiceTypeFormComponent {
     this.serviceTypesService.create(dto).subscribe({
       next: (serviceType) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.toastService.show(this.t('common.toast.created'), 'success');
         this.dialogRef.close(serviceType);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-        this.toastService.show(msg, 'error');
+        console.error('Create service type failed:', err);
+        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
       },
     });
     } else {
@@ -138,13 +157,13 @@ export class ServiceTypeFormComponent {
     this.serviceTypesService.update(this.data.serviceType!.id, dto).subscribe({
       next: (serviceType) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.toastService.show(this.t('common.toast.updated'), 'success');
         this.dialogRef.close(serviceType);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-        this.toastService.show(msg, 'error');
+        console.error('Update service type failed:', err);
+        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
       },
     });
     }

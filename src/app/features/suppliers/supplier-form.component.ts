@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,7 +48,16 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
+            <input
+              matInput
+              [value]="name()"
+              (input)="name.set(getInputValue($event))"
+              (blur)="nameTouched.set(true)"
+              required
+            />
+            @if (nameTouched() && !nameValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -57,13 +66,26 @@ interface DialogData {
               matInput
               [value]="contact()"
               (input)="contact.set(getInputValue($event))"
+              (blur)="contactTouched.set(true)"
               required
             />
+            @if (contactTouched() && !contactValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" [ngModelOptions]="{standalone: true}" required />
+            <input
+              matInput
+              [value]="phone()"
+              (input)="phone.set(getInputValue($event))"
+              (blur)="phoneTouched.set(true)"
+              required
+            />
+            @if (phoneTouched() && !phoneValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -83,15 +105,20 @@ interface DialogData {
             matInput
             [value]="address()"
             (input)="address.set(getInputValue($event))"
+            (blur)="addressTouched.set(true)"
             required
           />
+          @if (addressTouched() && !addressValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="notes" [ngModelOptions]="{standalone: true}"
+            [value]="notes()"
+            (input)="notes.set(getInputValue($event))"
             rows="3"
           ></textarea>
         </mat-form-field>
@@ -104,7 +131,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -125,6 +152,23 @@ export class SupplierFormComponent {
   readonly notes = signal(this.data.supplier?.notes || '');
   readonly isActive = signal(this.data.supplier?.isActive ?? true);
   readonly saving = signal(false);
+
+  readonly nameTouched = signal(false);
+  readonly contactTouched = signal(false);
+  readonly phoneTouched = signal(false);
+  readonly addressTouched = signal(false);
+
+  readonly nameValid = computed(() => this.name().trim().length > 0);
+  readonly contactValid = computed(() => this.contact().trim().length > 0);
+  readonly phoneValid = computed(() => this.phone().trim().length > 0);
+  readonly addressValid = computed(() => this.address().trim().length > 0);
+  readonly isFormValid = computed(() =>
+    this.nameValid() && this.contactValid() && this.phoneValid() && this.addressValid()
+  );
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -148,13 +192,13 @@ export class SupplierFormComponent {
     this.suppliersService.create(dto).subscribe({
       next: (supplier) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.toastService.show(this.t('common.toast.created'), 'success');
         this.dialogRef.close(supplier);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-        this.toastService.show(msg, 'error');
+        console.error('Create supplier failed:', err);
+        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
       },
     });
     } else {
@@ -171,13 +215,13 @@ export class SupplierFormComponent {
     this.suppliersService.update(this.data.supplier!.id, dto).subscribe({
       next: (supplier) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.toastService.show(this.t('common.toast.updated'), 'success');
         this.dialogRef.close(supplier);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-        this.toastService.show(msg, 'error');
+        console.error('Update supplier failed:', err);
+        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
       },
     });
     }

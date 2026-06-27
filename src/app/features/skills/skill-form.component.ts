@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,22 +45,25 @@ interface DialogData {
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.name' | translate }}</mat-label>
-          <input matInput [(ngModel)]="name" required />
+          <input matInput [value]="name()" (input)="name.set(getInputValue($event))" (blur)="nameTouched.set(true)" />
+          @if (nameTouched() && !isNameValid()) {
+            <mat-error>{{ 'validation.required' | translate }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.category' | translate }}</mat-label>
-          <input matInput [(ngModel)]="category" [placeholder]="'skills.categoryPlaceholder' | translate" />
+          <input matInput [value]="category()" (input)="category.set(getInputValue($event))" [placeholder]="'skills.categoryPlaceholder' | translate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.description' | translate }}</mat-label>
-          <textarea matInput [(ngModel)]="description" rows="3"></textarea>
+          <textarea matInput [value]="description()" (input)="description.set(getInputValue($event))" rows="3"></textarea>
         </mat-form-field>
       </div>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [(ngModel)]="isActive" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [checked]="isActive()" (change)="isActive.set($event.checked)" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -68,7 +71,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!name() || loading()">
+          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || !isFormValid()">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -89,8 +92,21 @@ export class SkillFormComponent {
   readonly isActive = signal(this.data.skill?.isActive ?? true);
   readonly loading = signal(false);
 
+  readonly nameTouched = signal(false);
+  readonly isNameValid = computed(() => this.name().trim().length > 0);
+  readonly isFormValid = computed(() => this.isNameValid());
+
+  private t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
+  getInputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
+  }
+
   onSubmit(): void {
-    if (!this.name()) return;
+    this.nameTouched.set(true);
+    if (!this.isFormValid()) return;
 
     this.loading.set(true);
     const dto = {
@@ -103,26 +119,26 @@ export class SkillFormComponent {
     if (this.data.mode === 'create') {
       this.skillsService.create(dto).subscribe({
         next: () => {
-          this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+          this.toastService.show(this.t('common.toast.created'), 'success');
           this.dialogRef.close(true);
         },
         error: (err) => {
           this.loading.set(false);
-          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-          this.toastService.show(msg, 'error');
+          console.error('Create skill failed:', err);
+          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
         },
         complete: () => this.loading.set(false),
       });
     } else if (this.data.skill) {
       this.skillsService.update(this.data.skill.id, dto).subscribe({
         next: () => {
-          this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+          this.toastService.show(this.t('common.toast.updated'), 'success');
           this.dialogRef.close(true);
         },
         error: (err) => {
           this.loading.set(false);
-          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-          this.toastService.show(msg, 'error');
+          console.error('Update skill failed:', err);
+          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
         },
         complete: () => this.loading.set(false),
       });

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,7 +55,16 @@ interface DialogData {
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
-          <input matInput [(ngModel)]="title" [ngModelOptions]="{standalone: true}" required />
+          <input
+            matInput
+            [value]="title()"
+            (input)="title.set(getInputValue($event))"
+            (blur)="titleTouched.set(true)"
+            required
+          />
+          @if (titleTouched() && !titleValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -63,14 +72,15 @@ interface DialogData {
           <textarea
             matInput
             rows="3"
-            [(ngModel)]="description" [ngModelOptions]="{standalone: true}"
+            [value]="description()"
+            (input)="description.set(getInputValue($event))"
           ></textarea>
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
-            <mat-select [(ngModel)]="type" [ngModelOptions]="{standalone: true}" required>
+            <mat-select [value]="type()" (selectionChange)="type.set($event.value)" required>
               <mat-option value="work_order">{{
                 'pendingItems.types.workOrder' | translate
               }}</mat-option>
@@ -85,11 +95,14 @@ interface DialogData {
               }}</mat-option>
               <mat-option value="other">{{ 'pendingItems.types.other' | translate }}</mat-option>
             </mat-select>
+            @if (typeTouched() && !typeValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
+            <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
               <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{
                 'pendingItems.priorities.medium' | translate
@@ -110,16 +123,20 @@ interface DialogData {
             [value]="dueDate()"
             (dateChange)="onDateChange($event)"
             (click)="picker.open()"
+            (blur)="dueDateTouched.set(true)"
             required
           />
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
           <mat-datepicker #picker />
+          @if (dueDateTouched() && !dueDateValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         @if (data.mode === 'edit') {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
+            <mat-select [value]="status()" (selectionChange)="status.set($event.value)">
               <mat-option value="pending">{{
                 'pendingItems.statuses.pending' | translate
               }}</mat-option>
@@ -140,7 +157,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -163,6 +180,21 @@ export class PendingItemFormComponent {
   );
   readonly saving = signal(false);
 
+  readonly titleTouched = signal(false);
+  readonly typeTouched = signal(false);
+  readonly dueDateTouched = signal(false);
+
+  readonly titleValid = computed(() => this.title().trim().length > 0);
+  readonly typeValid = computed(() => this.type().trim().length > 0);
+  readonly dueDateValid = computed(() => this.dueDate() !== null);
+  readonly isFormValid = computed(() =>
+    this.titleValid() && this.typeValid() && this.dueDateValid()
+  );
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
@@ -173,8 +205,6 @@ export class PendingItemFormComponent {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    if (!this.title() || !this.dueDate()) return;
-
     this.saving.set(true);
 
     const dueDateStr = toLocalDateString(this.dueDate()!);
@@ -191,13 +221,13 @@ export class PendingItemFormComponent {
     this.pendingItemsService.create(dto).subscribe({
       next: (item) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.toastService.show(this.t('common.toast.created'), 'success');
         this.dialogRef.close(item);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-        this.toastService.show(msg, 'error');
+        console.error('Create pending item failed:', err);
+        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
       },
     });
     } else {
@@ -213,13 +243,13 @@ export class PendingItemFormComponent {
     this.pendingItemsService.update(this.data.item!.id, dto).subscribe({
       next: (item) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.toastService.show(this.t('common.toast.updated'), 'success');
         this.dialogRef.close(item);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-        this.toastService.show(msg, 'error');
+        console.error('Update pending item failed:', err);
+        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
       },
     });
     }

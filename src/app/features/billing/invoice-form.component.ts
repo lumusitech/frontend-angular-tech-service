@@ -38,7 +38,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
-            <mat-select [(ngModel)]="invoiceType" [ngModelOptions]="{standalone: true}" required>
+            <mat-select [value]="invoiceType()" (selectionChange)="invoiceType.set($event.value)">
               <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
               <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
               <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
@@ -47,7 +47,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.concept' | translate }}</mat-label>
-            <mat-select [(ngModel)]="concept" [ngModelOptions]="{standalone: true}">
+            <mat-select [value]="concept()" (selectionChange)="concept.set($event.value)">
               <mat-option value="services">{{ 'billing.concepts.services' | translate }}</mat-option>
               <mat-option value="products">{{ 'billing.concepts.products' | translate }}</mat-option>
               <mat-option value="both">{{ 'billing.concepts.both' | translate }}</mat-option>
@@ -64,8 +64,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               (input)="onClientSearch(getInputValue($event))"
               (focus)="showClientDropdown.set(true)"
               (blur)="hideClientDropdown()"
+              (blur)="clientNameTouched.set(true)"
               required
             />
+            @if (clientNameTouched() && !clientNameValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
           @if (showClientDropdown() && filteredClients().length > 0) {
             <div class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -95,7 +99,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.clientIvaCondition' | translate }}</mat-label>
-            <mat-select [(ngModel)]="clientIvaCondition" [ngModelOptions]="{standalone: true}">
+            <mat-select [value]="clientIvaCondition()" (selectionChange)="clientIvaCondition.set($event.value)">
               <mat-option value="consumidor_final">{{ 'billing.ivaConditions.consumidorFinal' | translate }}</mat-option>
               <mat-option value="responsable_inscripto">{{ 'billing.ivaConditions.responsableInscripto' | translate }}</mat-option>
               <mat-option value="monotributo">{{ 'billing.ivaConditions.monotributo' | translate }}</mat-option>
@@ -122,10 +126,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               type="number"
               [value]="subtotal()"
               (input)="subtotal.set(getInputValue($event))"
+              (blur)="subtotalTouched.set(true)"
               min="0"
               step="0.01"
               required
             />
+            @if (subtotalTouched() && !subtotalValid()) {
+              <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -147,10 +155,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               type="number"
               [value]="total()"
               (input)="total.set(getInputValue($event))"
+              (blur)="totalTouched.set(true)"
               min="0"
               step="0.01"
               required
             />
+            @if (totalTouched() && !totalValid()) {
+              <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -163,8 +175,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               (input)="onWorkOrderSearch(getInputValue($event))"
               (focus)="showWorkOrderDropdown.set(true)"
               (blur)="hideWorkOrderDropdown()"
+              (blur)="workOrderIdTouched.set(true)"
               required
             />
+            @if (workOrderIdTouched() && !workOrderIdValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
           @if (showWorkOrderDropdown() && filteredWorkOrders().length > 0) {
             <div class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -193,7 +209,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         mat-flat-button
         color="primary"
         (click)="onSubmit($event)"
-        [disabled]="saving()"
+        [disabled]="saving() || !isFormValid()"
       >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
@@ -222,6 +238,29 @@ export class InvoiceFormComponent {
   readonly saving = signal(false);
   readonly showClientDropdown = signal(false);
   readonly showWorkOrderDropdown = signal(false);
+
+  readonly clientNameTouched = signal(false);
+  readonly subtotalTouched = signal(false);
+  readonly totalTouched = signal(false);
+  readonly workOrderIdTouched = signal(false);
+
+  readonly clientNameValid = computed(() => this.clientName().trim().length > 0);
+  readonly subtotalValid = computed(() => {
+    const val = parseFloat(this.subtotal());
+    return !isNaN(val) && val > 0;
+  });
+  readonly totalValid = computed(() => {
+    const val = parseFloat(this.total());
+    return !isNaN(val) && val > 0;
+  });
+  readonly workOrderIdValid = computed(() => this.selectedWorkOrderId().trim().length > 0);
+  readonly isFormValid = computed(() =>
+    this.clientNameValid() && this.subtotalValid() && this.totalValid() && this.workOrderIdValid()
+  );
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
 
   private clientSearch = signal('');
   private workOrderSearch = signal('');
@@ -326,13 +365,13 @@ export class InvoiceFormComponent {
     this.billingService.create(dto).subscribe({
       next: (invoice) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.toastService.show(this.t('common.toast.created'), 'success');
         this.dialogRef.close(invoice);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-        this.toastService.show(msg, 'error');
+        console.error('Create invoice failed:', err);
+        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
       },
     });
   }

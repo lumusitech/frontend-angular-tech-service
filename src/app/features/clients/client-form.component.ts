@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,64 +46,57 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" [ngModelOptions]="{standalone: true}" required />
+            <input matInput [value]="name()" (input)="name.set(getInputValue($event))" (blur)="nameTouched.set(true)" />
+            @if (nameTouched() && !isNameValid()) {
+              <mat-error>{{ 'validation.required' | translate }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.email' | translate }}</mat-label>
-            <input
-              matInput
-              type="email"
-              [value]="email()"
-              (input)="email.set(getInputValue($event))"
-              required
-            />
+            <input matInput type="email" [value]="email()" (input)="email.set(getInputValue($event))" (blur)="emailTouched.set(true)" />
+            @if (emailTouched() && !isEmailValid()) {
+              <mat-error>{{ isEmailFormat() ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" [ngModelOptions]="{standalone: true}" required />
+            <input matInput [value]="phone()" (input)="phone.set(getInputValue($event))" (blur)="phoneTouched.set(true)" />
+            @if (phoneTouched() && !isPhoneValid()) {
+              <mat-error>{{ 'validation.required' | translate }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
-            <input matInput [(ngModel)]="cuit" [ngModelOptions]="{standalone: true}" />
+            <input matInput [value]="cuit()" (input)="cuit.set(getInputValue($event))" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.address' | translate }}</mat-label>
-          <input
-            matInput
-            [value]="address()"
-            (input)="address.set(getInputValue($event))"
-            required
-          />
+          <input matInput [value]="address()" (input)="address.set(getInputValue($event))" (blur)="addressTouched.set(true)" />
+          @if (addressTouched() && !isAddressValid()) {
+            <mat-error>{{ 'validation.required' | translate }}</mat-error>
+          }
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetProvider' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="internetProvider()"
-              (input)="internetProvider.set(getInputValue($event))"
-            />
+            <input matInput [value]="internetProvider()" (input)="internetProvider.set(getInputValue($event))" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetPlan' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="internetPlan()"
-              (input)="internetPlan.set(getInputValue($event))"
-            />
+            <input matInput [value]="internetPlan()" (input)="internetPlan.set(getInputValue($event))" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
-          <mat-select [(ngModel)]="ivaCondition" [ngModelOptions]="{standalone: true}">
+          <mat-select [value]="ivaCondition()" (selectionChange)="ivaCondition.set($event.value)">
             <mat-option value="responsable_inscripto">{{
               'clients.ivaConditions.responsableInscripto' | translate
             }}</mat-option>
@@ -125,7 +118,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -149,12 +142,34 @@ export class ClientFormComponent {
   readonly isActive = signal(this.data.client?.isActive ?? true);
   readonly saving = signal(false);
 
+  readonly nameTouched = signal(false);
+  readonly emailTouched = signal(false);
+  readonly phoneTouched = signal(false);
+  readonly addressTouched = signal(false);
+
+  readonly isNameValid = computed(() => this.name().trim().length > 0);
+  readonly isEmailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email()));
+  readonly isEmailFormat = computed(() => this.email().trim().length > 0);
+  readonly isPhoneValid = computed(() => this.phone().trim().length > 0);
+  readonly isAddressValid = computed(() => this.address().trim().length > 0);
+  readonly isFormValid = computed(() => this.isNameValid() && this.isEmailValid() && this.isPhoneValid() && this.isAddressValid());
+
+  private t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
+    this.nameTouched.set(true);
+    this.emailTouched.set(true);
+    this.phoneTouched.set(true);
+    this.addressTouched.set(true);
+    if (!this.isFormValid()) return;
+
     this.saving.set(true);
 
     if (this.data.mode === 'create') {
@@ -173,13 +188,13 @@ export class ClientFormComponent {
       this.clientsService.create(dto).subscribe({
         next: (client) => {
           this.saving.set(false);
-          this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+          this.toastService.show(this.t('common.toast.created'), 'success');
           this.dialogRef.close(client);
         },
         error: (err) => {
           this.saving.set(false);
-          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-          this.toastService.show(msg, 'error');
+          console.error('Create client failed:', err);
+          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
         },
       });
     } else {
@@ -198,13 +213,13 @@ export class ClientFormComponent {
       this.clientsService.update(this.data.client!.id, dto).subscribe({
         next: (client) => {
           this.saving.set(false);
-          this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+          this.toastService.show(this.t('common.toast.updated'), 'success');
           this.dialogRef.close(client);
         },
         error: (err) => {
           this.saving.set(false);
-          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-          this.toastService.show(msg, 'error');
+          console.error('Update client failed:', err);
+          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
         },
       });
     }

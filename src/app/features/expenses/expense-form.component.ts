@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -59,8 +59,12 @@ interface DialogData {
             matInput
             [value]="description()"
             (input)="description.set(getInputValue($event))"
+            (blur)="descriptionTouched.set(true)"
             required
           />
+          @if (descriptionTouched() && !descriptionValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -71,10 +75,14 @@ interface DialogData {
               type="number"
               [value]="amount()"
               (input)="amount.set(getInputValue($event))"
+              (blur)="amountTouched.set(true)"
               min="0"
               step="0.01"
               required
             />
+            @if (amountTouched() && !amountValid()) {
+              <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -85,16 +93,20 @@ interface DialogData {
               [value]="dateValue()"
               (dateChange)="onDateChange($event)"
               (click)="datePicker.open()"
+              (blur)="dateTouched.set(true)"
               required
             />
             <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
             <mat-datepicker #datePicker></mat-datepicker>
+            @if (dateTouched() && !dateValid()) {
+              <mat-error>{{ t('validation.required') }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-          <mat-select [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
             <mat-option value="utilities">{{
               'expenses.categories.utilities' | translate
@@ -124,7 +136,8 @@ interface DialogData {
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="notes" [ngModelOptions]="{standalone: true}"
+            [value]="notes()"
+            (input)="notes.set(getInputValue($event))"
             rows="3"
           ></textarea>
         </mat-form-field>
@@ -137,7 +150,7 @@ interface DialogData {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -157,6 +170,24 @@ export class ExpenseFormComponent {
   readonly notes = signal(this.data.expense?.notes || '');
   readonly isRecurring = signal(this.data.expense?.isRecurring ?? false);
   readonly saving = signal(false);
+
+  readonly descriptionTouched = signal(false);
+  readonly amountTouched = signal(false);
+  readonly dateTouched = signal(false);
+
+  readonly descriptionValid = computed(() => this.description().trim().length > 0);
+  readonly amountValid = computed(() => {
+    const val = parseFloat(this.amount());
+    return !isNaN(val) && val > 0;
+  });
+  readonly dateValid = computed(() => this.date().trim().length > 0);
+  readonly isFormValid = computed(() =>
+    this.descriptionValid() && this.amountValid() && this.dateValid()
+  );
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -188,13 +219,13 @@ export class ExpenseFormComponent {
     this.expensesService.create(dto).subscribe({
       next: (expense) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.toastService.show(this.t('common.toast.created'), 'success');
         this.dialogRef.close(expense);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
-        this.toastService.show(msg, 'error');
+        console.error('Create expense failed:', err);
+        this.toastService.show(this.t('common.toast.errorCreated'), 'error');
       },
     });
     } else {
@@ -210,13 +241,13 @@ export class ExpenseFormComponent {
     this.expensesService.update(this.data.expense!.id, dto).subscribe({
       next: (expense) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.toastService.show(this.t('common.toast.updated'), 'success');
         this.dialogRef.close(expense);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-        this.toastService.show(msg, 'error');
+        console.error('Update expense failed:', err);
+        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
       },
     });
     }

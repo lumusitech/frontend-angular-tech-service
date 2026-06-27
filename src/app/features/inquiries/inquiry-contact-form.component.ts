@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -41,21 +41,40 @@ interface DialogData {
           <textarea
             matInput
             rows="4"
-            [(ngModel)]="technicianNotes" [ngModelOptions]="{standalone: true}"
+            [value]="technicianNotes()"
+            (input)="technicianNotes.set(getInputValue($event))"
+            (blur)="technicianNotesTouched.set(true)"
             [placeholder]="'inquiries.technicianNotesPlaceholder' | translate"
             required
           ></textarea>
+          @if (technicianNotesTouched() && !technicianNotesValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedCost' | translate }} ($)</mat-label>
-            <input matInput type="number" [(ngModel)]="estimatedCost" [ngModelOptions]="{standalone: true}" />
+            <input
+              matInput
+              type="number"
+              [value]="estimatedCost()"
+              (input)="estimatedCost.set(getInputValue($event))"
+              (blur)="estimatedCostTouched.set(true)"
+            />
+            @if (estimatedCostTouched() && !estimatedCostValid()) {
+              <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedDuration' | translate }} (h)</mat-label>
-            <input matInput type="number" [(ngModel)]="estimatedDuration" [ngModelOptions]="{standalone: true}" />
+            <input
+              matInput
+              type="number"
+              [value]="estimatedDuration()"
+              (input)="estimatedDuration.set(getInputValue($event))"
+            />
           </mat-form-field>
         </div>
 
@@ -64,27 +83,31 @@ interface DialogData {
           <textarea
             matInput
             rows="2"
-            [(ngModel)]="materialsNeeded" [ngModelOptions]="{standalone: true}"
+            [value]="materialsNeeded()"
+            (input)="materialsNeeded.set(getInputValue($event))"
             [placeholder]="'inquiries.materialsPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
-          <mat-select [(ngModel)]="recommendation" [ngModelOptions]="{standalone: true}">
+          <mat-select [value]="recommendation()" (selectionChange)="recommendation.set($event.value)" required>
             <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
             <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
             <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>
             <mat-option value="inspection">{{ 'statusLabels.inspection' | translate }}</mat-option>
             <mat-option value="no_action">{{ 'statusLabels.no_action' | translate }}</mat-option>
           </mat-select>
+          @if (recommendationTouched() && !recommendationValid()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving() || !isFormValid()">
         {{ saving() ? ('common.saving' | translate) : ('inquiries.saveContact' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -104,14 +127,31 @@ export class InquiryContactFormComponent {
   readonly recommendation = signal('');
   readonly saving = signal(false);
 
+  readonly technicianNotesTouched = signal(false);
+  readonly estimatedCostTouched = signal(false);
+  readonly recommendationTouched = signal(false);
+
+  readonly technicianNotesValid = computed(() => this.technicianNotes().trim().length > 0);
+  readonly estimatedCostValid = computed(() => {
+    if (!this.estimatedCost()) return true;
+    const val = parseFloat(this.estimatedCost());
+    return !isNaN(val) && val >= 0;
+  });
+  readonly recommendationValid = computed(() => this.recommendation().trim().length > 0);
+  readonly isFormValid = computed(() =>
+    this.technicianNotesValid() && this.estimatedCostValid() && this.recommendationValid()
+  );
+
+  t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    if (!this.technicianNotes()) return;
-
     this.saving.set(true);
 
     const dto: ContactInquiryDto = {
@@ -125,13 +165,13 @@ export class InquiryContactFormComponent {
     this.inquiriesService.contact(this.data.inquiryId, dto).subscribe({
       next: (inquiry) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.toastService.show(this.t('common.toast.updated'), 'success');
         this.dialogRef.close(inquiry);
       },
       error: (err) => {
         this.saving.set(false);
-        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
-        this.toastService.show(msg, 'error');
+        console.error('Contact inquiry failed:', err);
+        this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
       },
     });
   }
