@@ -12,6 +12,8 @@ import {
   CreateServiceTypeDto,
   UpdateServiceTypeDto,
 } from '../../core/models/service-type.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -85,6 +87,8 @@ interface DialogData {
 export class ServiceTypeFormComponent {
   private readonly dialogRef = inject(MatDialogRef<ServiceTypeFormComponent>);
   private readonly serviceTypesService = inject(ServiceTypesService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly name = signal(this.data.serviceType?.name || '');
@@ -111,15 +115,17 @@ export class ServiceTypeFormComponent {
         isActive: this.isActive(),
       };
 
-      this.serviceTypesService.create(dto).subscribe({
-        next: (serviceType) => {
-          this.saving.set(false);
-          this.dialogRef.close(serviceType);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.serviceTypesService.create(dto).subscribe({
+      next: (serviceType) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.dialogRef.close(serviceType);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+      },
+    });
     } else {
       const dto: UpdateServiceTypeDto = {
         name: this.name(),
@@ -128,15 +134,17 @@ export class ServiceTypeFormComponent {
         isActive: this.isActive(),
       };
 
-      this.serviceTypesService.update(this.data.serviceType!.id, dto).subscribe({
-        next: (serviceType) => {
-          this.saving.set(false);
-          this.dialogRef.close(serviceType);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.serviceTypesService.update(this.data.serviceType!.id, dto).subscribe({
+      next: (serviceType) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.dialogRef.close(serviceType);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+      },
+    });
     }
   }
 }

@@ -28,7 +28,15 @@
     "all": "Todos",
     "from": "Desde",
     "to": "Hasta",
-    "clearFilters": "Limpiar filtros"
+    "clearFilters": "Limpiar filtros",
+    "toast": {
+      "created": "Creado exitosamente",
+      "updated": "Actualizado exitosamente",
+      "deleted": "Eliminado exitosamente",
+      "errorCreated": "Error al crear",
+      "errorUpdated": "Error al actualizar",
+      "errorDeleted": "Error al eliminar"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",

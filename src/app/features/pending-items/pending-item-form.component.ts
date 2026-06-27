@@ -18,6 +18,8 @@ import {
   CreatePendingItemDto,
   UpdatePendingItemDto,
 } from '../../core/models/pending-item.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -147,6 +149,8 @@ interface DialogData {
 export class PendingItemFormComponent {
   private readonly dialogRef = inject(MatDialogRef<PendingItemFormComponent>);
   private readonly pendingItemsService = inject(PendingItemsService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly title = signal(this.data.item?.title || '');
@@ -184,15 +188,17 @@ export class PendingItemFormComponent {
         priority: this.priority() as PendingItemPriority,
       };
 
-      this.pendingItemsService.create(dto).subscribe({
-        next: (item) => {
-          this.saving.set(false);
-          this.dialogRef.close(item);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.pendingItemsService.create(dto).subscribe({
+      next: (item) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.dialogRef.close(item);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+      },
+    });
     } else {
       const dto: UpdatePendingItemDto = {
         title: this.title(),
@@ -203,15 +209,17 @@ export class PendingItemFormComponent {
         status: this.status() as PendingItemStatus,
       };
 
-      this.pendingItemsService.update(this.data.item!.id, dto).subscribe({
-        next: (item) => {
-          this.saving.set(false);
-          this.dialogRef.close(item);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.pendingItemsService.update(this.data.item!.id, dto).subscribe({
+      next: (item) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.dialogRef.close(item);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+      },
+    });
     }
   }
 }

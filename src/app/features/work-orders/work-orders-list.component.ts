@@ -348,8 +348,8 @@ export class WorkOrdersListComponent implements OnInit {
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
   readonly searchFilter = signal('');
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
   readonly dateFrom = signal('');
@@ -384,7 +384,8 @@ export class WorkOrdersListComponent implements OnInit {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },

@@ -8,6 +8,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { SkillsService } from '../../core/services/skills.service';
 import { Skill } from '../../core/models/skill.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -76,6 +78,8 @@ interface DialogData {
 })
 export class SkillFormComponent {
   private readonly skillsService = inject(SkillsService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   protected readonly dialogRef = inject(MatDialogRef<SkillFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 

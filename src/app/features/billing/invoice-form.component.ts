@@ -11,6 +11,8 @@ import { BillingService } from '../../core/services/billing.service';
 import { CreateInvoiceDto } from '../../core/models/api.interfaces';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
 import { WorkOrder } from '../../core/models/work-order.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -201,6 +203,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class InvoiceFormComponent {
   private readonly dialogRef = inject(MatDialogRef<InvoiceFormComponent>);
   private readonly billingService = inject(BillingService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   private readonly data = inject<Record<string, never>>(MAT_DIALOG_DATA);
 
   readonly invoiceType = signal<'A' | 'B' | 'C'>('B');
@@ -322,10 +326,12 @@ export class InvoiceFormComponent {
     this.billingService.create(dto).subscribe({
       next: (invoice) => {
         this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
         this.dialogRef.close(invoice);
       },
       error: () => {
         this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
       },
     });
   }

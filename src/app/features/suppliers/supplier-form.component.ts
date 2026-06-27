@@ -12,6 +12,8 @@ import {
   CreateSupplierDto,
   UpdateSupplierDto,
 } from '../../core/models/supplier.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -111,6 +113,8 @@ interface DialogData {
 export class SupplierFormComponent {
   private readonly dialogRef = inject(MatDialogRef<SupplierFormComponent>);
   private readonly suppliersService = inject(SuppliersService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly name = signal(this.data.supplier?.name || '');
@@ -141,15 +145,17 @@ export class SupplierFormComponent {
         isActive: this.isActive(),
       };
 
-      this.suppliersService.create(dto).subscribe({
-        next: (supplier) => {
-          this.saving.set(false);
-          this.dialogRef.close(supplier);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.suppliersService.create(dto).subscribe({
+      next: (supplier) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.dialogRef.close(supplier);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+      },
+    });
     } else {
       const dto: UpdateSupplierDto = {
         name: this.name(),
@@ -161,15 +167,17 @@ export class SupplierFormComponent {
         isActive: this.isActive(),
       };
 
-      this.suppliersService.update(this.data.supplier!.id, dto).subscribe({
-        next: (supplier) => {
-          this.saving.set(false);
-          this.dialogRef.close(supplier);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.suppliersService.update(this.data.supplier!.id, dto).subscribe({
+      next: (supplier) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.dialogRef.close(supplier);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+      },
+    });
     }
   }
 }

@@ -12,6 +12,8 @@ import { UsersService } from '../../core/services/users.service';
 import { User } from '../../core/models/user.interfaces';
 import { Skill } from '../../core/models/skill.interfaces';
 import { SkillSelectorComponent } from './skill-selector.component';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -134,6 +136,8 @@ interface DialogData {
 export class UserFormComponent {
   readonly Math = Math;
   private readonly usersService = inject(UsersService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   protected readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
@@ -177,11 +181,17 @@ export class UserFormComponent {
         experience: this.role() === 'technician' ? this.experience() || undefined : undefined,
         trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
         skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
-      }).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
-        complete: () => this.loading.set(false),
-      });
+}).subscribe({
+  next: () => {
+    this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+    this.dialogRef.close(true);
+  },
+  error: () => {
+    this.loading.set(false);
+    this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+  },
+  complete: () => this.loading.set(false),
+});
     } else if (this.data.user) {
       this.usersService.update(this.data.user.id, {
         name: this.name(),
@@ -194,11 +204,17 @@ export class UserFormComponent {
         experience: this.role() === 'technician' ? this.experience() || undefined : undefined,
         trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
         skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
-      }).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
-        complete: () => this.loading.set(false),
-      });
+}).subscribe({
+  next: () => {
+    this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+    this.dialogRef.close(true);
+  },
+  error: () => {
+    this.loading.set(false);
+    this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+  },
+  complete: () => this.loading.set(false),
+});
     }
   }
 }

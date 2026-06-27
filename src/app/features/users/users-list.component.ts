@@ -188,8 +188,8 @@ export class UsersListComponent {
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal('');
   readonly roleFilter = signal('');
 
@@ -198,7 +198,8 @@ export class UsersListComponent {
     params: {
       page: this.currentPage(),
       limit: this.pageSize(),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.roleFilter() ? { role: this.roleFilter() } : {}),
     },
   }));

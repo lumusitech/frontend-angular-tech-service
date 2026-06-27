@@ -13,6 +13,8 @@ import {
   CreateInquiryDto,
   UpdateInquiryDto,
 } from '../../core/models/inquiry.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -109,6 +111,8 @@ interface DialogData {
 export class InquiryFormComponent {
   private readonly dialogRef = inject(MatDialogRef<InquiryFormComponent>);
   private readonly inquiriesService = inject(InquiriesService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly clientName = signal(this.data.inquiry?.clientName || '');
@@ -141,15 +145,17 @@ export class InquiryFormComponent {
         priority: this.priority() || undefined,
       };
 
-      this.inquiriesService.create(dto).subscribe({
-        next: (inquiry) => {
-          this.saving.set(false);
-          this.dialogRef.close(inquiry);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.inquiriesService.create(dto).subscribe({
+      next: (inquiry) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.dialogRef.close(inquiry);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+      },
+    });
     } else {
       const dto: UpdateInquiryDto = {
         clientName: this.clientName(),
@@ -161,15 +167,17 @@ export class InquiryFormComponent {
         priority: this.priority() || undefined,
       };
 
-      this.inquiriesService.update(this.data.inquiry!.id, dto).subscribe({
-        next: (inquiry) => {
-          this.saving.set(false);
-          this.dialogRef.close(inquiry);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.inquiriesService.update(this.data.inquiry!.id, dto).subscribe({
+      next: (inquiry) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.dialogRef.close(inquiry);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+      },
+    });
     }
   }
 }

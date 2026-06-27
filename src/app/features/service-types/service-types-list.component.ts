@@ -264,8 +264,8 @@ export class ServiceTypesListComponent implements OnInit {
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal('');
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
@@ -278,7 +278,8 @@ export class ServiceTypesListComponent implements OnInit {
     params: {
       page: this.currentPage(),
       limit: this.pageSize(),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() === 'true' } : {}),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),

@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, CreateClientDto, UpdateClientDto } from '../../core/models/client.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -132,6 +134,8 @@ interface DialogData {
 export class ClientFormComponent {
   private readonly dialogRef = inject(MatDialogRef<ClientFormComponent>);
   private readonly clientsService = inject(ClientsService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly name = signal(this.data.client?.name || '');
@@ -169,10 +173,12 @@ export class ClientFormComponent {
       this.clientsService.create(dto).subscribe({
         next: (client) => {
           this.saving.set(false);
+          this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
           this.dialogRef.close(client);
         },
         error: () => {
           this.saving.set(false);
+          this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
         },
       });
     } else {
@@ -191,10 +197,12 @@ export class ClientFormComponent {
       this.clientsService.update(this.data.client!.id, dto).subscribe({
         next: (client) => {
           this.saving.set(false);
+          this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
           this.dialogRef.close(client);
         },
         error: () => {
           this.saving.set(false);
+          this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
         },
       });
     }

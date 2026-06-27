@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ContactInquiryDto, InquiryRecommendation } from '../../core/models/inquiry.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -91,6 +93,8 @@ interface DialogData {
 export class InquiryContactFormComponent {
   private readonly dialogRef = inject(MatDialogRef<InquiryContactFormComponent>);
   private readonly inquiriesService = inject(InquiriesService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly technicianNotes = signal('');
@@ -121,10 +125,12 @@ export class InquiryContactFormComponent {
     this.inquiriesService.contact(this.data.inquiryId, dto).subscribe({
       next: (inquiry) => {
         this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
         this.dialogRef.close(inquiry);
       },
       error: () => {
         this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
       },
     });
   }

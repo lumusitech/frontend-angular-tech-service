@@ -17,6 +17,8 @@ import {
   UpdateExpenseDto,
   ExpenseCategory,
 } from '../../core/models/expense.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -144,6 +146,8 @@ interface DialogData {
 export class ExpenseFormComponent {
   private readonly dialogRef = inject(MatDialogRef<ExpenseFormComponent>);
   private readonly expensesService = inject(ExpensesService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly description = signal(this.data.expense?.description || '');
@@ -181,15 +185,17 @@ export class ExpenseFormComponent {
         notes: this.notes() || undefined,
       };
 
-      this.expensesService.create(dto).subscribe({
-        next: (expense) => {
-          this.saving.set(false);
-          this.dialogRef.close(expense);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.expensesService.create(dto).subscribe({
+      next: (expense) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+        this.dialogRef.close(expense);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+      },
+    });
     } else {
       const dto: UpdateExpenseDto = {
         description: this.description(),
@@ -200,15 +206,17 @@ export class ExpenseFormComponent {
         notes: this.notes() || undefined,
       };
 
-      this.expensesService.update(this.data.expense!.id, dto).subscribe({
-        next: (expense) => {
-          this.saving.set(false);
-          this.dialogRef.close(expense);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+    this.expensesService.update(this.data.expense!.id, dto).subscribe({
+      next: (expense) => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+        this.dialogRef.close(expense);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+      },
+    });
     }
   }
 }
