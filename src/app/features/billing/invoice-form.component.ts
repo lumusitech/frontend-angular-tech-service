@@ -329,9 +329,10 @@ export class InvoiceFormComponent {
         this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
         this.dialogRef.close(invoice);
       },
-      error: () => {
+      error: (err) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.errorCreated'), 'error');
+        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
+        this.toastService.show(msg, 'error');
       },
     });
   }

@@ -176,8 +176,16 @@ div:has(> table.mat-mdc-table) {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
 
-:root.dark .toast-success,
-:root.dark .toast-error,
+:root.dark .toast-success {
+  --mdc-snackbar-container-color: #1f2937;
+  --mdc-snackbar-supporting-text-color: #f3f4f6;
+}
+
+:root.dark .toast-error {
+  --mdc-snackbar-container-color: #1f2937;
+  --mdc-snackbar-supporting-text-color: #f3f4f6;
+}
+
 :root.dark .toast-info {
   --mdc-snackbar-container-color: #1f2937;
   --mdc-snackbar-supporting-text-color: #f3f4f6;

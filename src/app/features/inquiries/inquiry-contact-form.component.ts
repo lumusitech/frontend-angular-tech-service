@@ -128,9 +128,10 @@ export class InquiryContactFormComponent {
         this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
         this.dialogRef.close(inquiry);
       },
-      error: () => {
+      error: (err) => {
         this.saving.set(false);
-        this.toastService.show(this.translationService.instant('common.toast.errorUpdated'), 'error');
+        const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
+        this.toastService.show(msg, 'error');
       },
     });
   }

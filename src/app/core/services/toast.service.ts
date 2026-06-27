@@ -21,7 +21,7 @@ const TYPE_ICONS: Record<string, string> = {
       <mat-icon [class]="data.type === 'success' ? '!text-green-500' : data.type === 'error' ? '!text-red-500' : '!text-blue-500'">
         {{ icon }}
       </mat-icon>
-      <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ data.message }}</span>
+      <span class="text-sm font-medium">{{ data.message }}</span>
     </div>
   `,
   host: { class: 'block' },

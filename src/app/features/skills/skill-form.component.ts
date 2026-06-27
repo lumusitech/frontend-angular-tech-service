@@ -102,14 +102,28 @@ export class SkillFormComponent {
 
     if (this.data.mode === 'create') {
       this.skillsService.create(dto).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.translationService.instant('common.toast.created'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorCreated');
+          this.toastService.show(msg, 'error');
+        },
         complete: () => this.loading.set(false),
       });
     } else if (this.data.skill) {
       this.skillsService.update(this.data.skill.id, dto).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorUpdated');
+          this.toastService.show(msg, 'error');
+        },
         complete: () => this.loading.set(false),
       });
     }
