@@ -28,7 +28,21 @@
     "all": "Todos",
     "from": "Desde",
     "to": "Hasta",
-    "clearFilters": "Limpiar filtros"
+    "clearFilters": "Limpiar filtros",
+    "toast": {
+      "created": "Creado exitosamente",
+      "updated": "Actualizado exitosamente",
+      "deleted": "Eliminado exitosamente",
+      "errorCreated": "Error al crear",
+      "errorUpdated": "Error al actualizar",
+      "errorDeleted": "Error al eliminar"
+    },
+    "validation": {
+      "required": "Este campo es requerido",
+      "invalidEmail": "Ingrese un email válido",
+      "minLength": "Mínimo {{min}} caracteres",
+      "invalidAmount": "Ingrese un monto válido"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -88,6 +102,10 @@
     "title": "Clientes",
     "subtitle": "Gestiona tus clientes",
     "newClient": "Nuevo Cliente",
+    "editClient": "Editar Cliente",
+    "createClient": "Crear Cliente",
+    "noClients": "Sin clientes",
+    "noClientsMessage": "No hay clientes registrados. Comienza creando uno nuevo.",
     "name": "Nombre",
     "email": "Email",
     "phone": "Teléfono",
@@ -105,7 +123,6 @@
     "consumidorFinal": "Consumidor Final",
     "monotributo": "Monotributo",
     "exento": "Exento",
-    "editClient": "Editar Cliente",
     "ivaConditions": {
       "responsableInscripto": "Responsable Inscripto",
       "consumidorFinal": "Consumidor Final",

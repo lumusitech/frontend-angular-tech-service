@@ -3,6 +3,8 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClientsService } from '../../core/services/clients.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -278,12 +280,14 @@ export class ClientsListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal('');
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
@@ -296,7 +300,8 @@ export class ClientsListComponent implements OnInit {
     params: {
       page: this.currentPage(),
       limit: this.pageSize(),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() === 'true' } : {}),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
@@ -394,7 +399,14 @@ export class ClientsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.clientsService.delete(client.id).subscribe({
-          next: () => this.clientsResource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.clientsResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });

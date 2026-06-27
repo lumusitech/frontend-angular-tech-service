@@ -301,8 +301,8 @@ export class PaymentsListComponent implements OnInit {
   readonly currentPage = signal(1);
   readonly statusFilter = signal<PaymentStatus | ''>('');
   readonly methodFilter = signal<PaymentMethod | ''>('');
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
@@ -316,7 +316,8 @@ export class PaymentsListComponent implements OnInit {
       limit: this.pageSize(),
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),

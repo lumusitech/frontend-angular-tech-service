@@ -28,7 +28,21 @@
     "all": "All",
     "from": "From",
     "to": "To",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "toast": {
+      "created": "Created successfully",
+      "updated": "Updated successfully",
+      "deleted": "Deleted successfully",
+      "errorCreated": "Error creating",
+      "errorUpdated": "Error updating",
+      "errorDeleted": "Error deleting"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Enter a valid email",
+      "minLength": "Minimum {{min}} characters",
+      "invalidAmount": "Enter a valid amount"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -88,6 +102,10 @@
     "title": "Clients",
     "subtitle": "Manage your clients",
     "newClient": "New Client",
+    "editClient": "Edit Client",
+    "createClient": "Create Client",
+    "noClients": "No clients",
+    "noClientsMessage": "No clients registered yet. Start by creating a new one.",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
@@ -105,7 +123,6 @@
     "consumidorFinal": "Final Consumer",
     "monotributo": "Monotax",
     "exento": "Exempt",
-    "editClient": "Edit Client",
     "ivaConditions": {
       "responsableInscripto": "Registered Taxpayer",
       "consumidorFinal": "Final Consumer",

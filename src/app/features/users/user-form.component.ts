@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,8 @@ import { UsersService } from '../../core/services/users.service';
 import { User } from '../../core/models/user.interfaces';
 import { Skill } from '../../core/models/skill.interfaces';
 import { SkillSelectorComponent } from './skill-selector.component';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -47,34 +49,43 @@ interface DialogData {
         </div>
       </div>
 
-      <div class="space-y-4">
+      <form #userForm="ngForm" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" required />
+            <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
+            @if (nameRef.invalid && nameRef.touched) {
+              <mat-error>{{ 'validation.required' | translate }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.email' | translate }}</mat-label>
-            <input matInput [(ngModel)]="email" type="email" required />
+            <input matInput [(ngModel)]="email" name="email" #emailRef="ngModel" type="email" required email />
+            @if (emailRef.invalid && emailRef.touched) {
+              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.password' | translate }}</mat-label>
-            <input matInput [(ngModel)]="password" type="password" [required]="data.mode === 'create'" [attr.placeholder]="data.mode === 'edit' ? '•••••••• (dejar vacío para no cambiar)' : ''" />
+            <input matInput [(ngModel)]="password" name="password" #passwordRef="ngModel" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
+            @if (passwordRef.invalid && passwordRef.touched) {
+              <mat-error>{{ passwordRef.hasError('required') ? ('validation.required' | translate) : ('validation.minLength' | translate:{min:6}) }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" placeholder="+5491122334455" />
+            <input matInput [(ngModel)]="phone" name="phone" placeholder="+5491122334455" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'users.role' | translate }}</mat-label>
-          <mat-select [(ngModel)]="role" (selectionChange)="onRoleChange()">
+          <mat-select [(ngModel)]="role" name="role" (selectionChange)="onRoleChange()">
             <mat-option value="admin">{{ 'users.roles.admin' | translate }}</mat-option>
             <mat-option value="technician">{{ 'users.roles.technician' | translate }}</mat-option>
             <mat-option value="seller">{{ 'users.roles.seller' | translate }}</mat-option>
@@ -86,7 +97,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.experience' | translate }}</mat-label>
-            <textarea matInput [(ngModel)]="experience" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
+            <textarea matInput [(ngModel)]="experience" name="experience" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
           </mat-form-field>
 
           <div class="flex items-center gap-4">
@@ -109,13 +120,13 @@ interface DialogData {
         @if (role() === 'seller') {
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.commission' | translate }} (%)</mat-label>
-            <input matInput [(ngModel)]="commission" type="number" min="0" max="100" />
+            <input matInput [(ngModel)]="commission" name="commission" type="number" min="0" max="100" />
           </mat-form-field>
         }
-      </div>
+      </form>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [(ngModel)]="isActive" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -123,7 +134,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!name() || !email() || (data.mode === 'create' && !password()) || loading()">
+          <button mat-flat-button color="primary" (click)="onSubmit(userForm)" [disabled]="loading() || userForm.invalid">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -134,6 +145,8 @@ interface DialogData {
 export class UserFormComponent {
   readonly Math = Math;
   private readonly usersService = inject(UsersService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   protected readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
@@ -151,6 +164,10 @@ export class UserFormComponent {
   );
   readonly loading = signal(false);
 
+  private t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
   onRoleChange(): void {
     if (this.role() !== 'technician') {
       this.selectedSkills.set([]);
@@ -160,9 +177,9 @@ export class UserFormComponent {
     }
   }
 
-  onSubmit(): void {
-    if (!this.name() || !this.email()) return;
-    if (this.data.mode === 'create' && !this.password()) return;
+  onSubmit(form: any): void {
+    form.control.markAllAsTouched();
+    if (form.invalid) return;
 
     this.loading.set(true);
 
@@ -178,8 +195,15 @@ export class UserFormComponent {
         trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
         skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
       }).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.t('common.toast.created'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          console.error('Create user failed:', err);
+          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
+        },
         complete: () => this.loading.set(false),
       });
     } else if (this.data.user) {
@@ -195,8 +219,15 @@ export class UserFormComponent {
         trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
         skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
       }).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.t('common.toast.updated'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          console.error('Update user failed:', err);
+          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
+        },
         complete: () => this.loading.set(false),
       });
     }

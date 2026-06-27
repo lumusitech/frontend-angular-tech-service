@@ -221,8 +221,8 @@ export class InvoicesListComponent {
   readonly statusFilter = signal<InvoiceStatus | ''>('');
   readonly typeFilter = signal<InvoiceType | ''>('');
   readonly clientNameFilter = signal('');
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
@@ -236,7 +236,8 @@ export class InvoicesListComponent {
       ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
       ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
       ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },

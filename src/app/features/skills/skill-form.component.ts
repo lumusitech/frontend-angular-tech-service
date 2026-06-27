@@ -8,6 +8,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { SkillsService } from '../../core/services/skills.service';
 import { Skill } from '../../core/models/skill.interfaces';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
@@ -40,25 +42,28 @@ interface DialogData {
         </div>
       </div>
 
-      <div class="space-y-4">
+      <form #skillForm="ngForm" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.name' | translate }}</mat-label>
-          <input matInput [(ngModel)]="name" required />
+          <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
+          @if (nameRef.invalid && nameRef.touched) {
+            <mat-error>{{ 'validation.required' | translate }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.category' | translate }}</mat-label>
-          <input matInput [(ngModel)]="category" [placeholder]="'skills.categoryPlaceholder' | translate" />
+          <input matInput [(ngModel)]="category" name="category" [placeholder]="'skills.categoryPlaceholder' | translate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.description' | translate }}</mat-label>
-          <textarea matInput [(ngModel)]="description" rows="3"></textarea>
+          <textarea matInput [(ngModel)]="description" name="description" rows="3"></textarea>
         </mat-form-field>
-      </div>
+      </form>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [(ngModel)]="isActive" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -66,7 +71,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!name() || loading()">
+          <button mat-flat-button color="primary" (click)="onSubmit(skillForm)" [disabled]="loading() || skillForm.invalid">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -76,6 +81,8 @@ interface DialogData {
 })
 export class SkillFormComponent {
   private readonly skillsService = inject(SkillsService);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   protected readonly dialogRef = inject(MatDialogRef<SkillFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
@@ -85,8 +92,13 @@ export class SkillFormComponent {
   readonly isActive = signal(this.data.skill?.isActive ?? true);
   readonly loading = signal(false);
 
-  onSubmit(): void {
-    if (!this.name()) return;
+  private t(key: string): string {
+    return this.translationService.instant(key);
+  }
+
+  onSubmit(form: any): void {
+    form.control.markAllAsTouched();
+    if (form.invalid) return;
 
     this.loading.set(true);
     const dto = {
@@ -98,14 +110,28 @@ export class SkillFormComponent {
 
     if (this.data.mode === 'create') {
       this.skillsService.create(dto).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.t('common.toast.created'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          console.error('Create skill failed:', err);
+          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
+        },
         complete: () => this.loading.set(false),
       });
     } else if (this.data.skill) {
       this.skillsService.update(this.data.skill.id, dto).subscribe({
-        next: () => this.dialogRef.close(true),
-        error: () => this.loading.set(false),
+        next: () => {
+          this.toastService.show(this.t('common.toast.updated'), 'success');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          console.error('Update skill failed:', err);
+          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
+        },
         complete: () => this.loading.set(false),
       });
     }

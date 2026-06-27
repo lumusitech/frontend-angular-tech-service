@@ -3,6 +3,8 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ExpensesService } from '../../core/services/expenses.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { Expense, ExpenseCategory } from '../../core/models/expense.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
@@ -293,13 +295,15 @@ export class ExpensesListComponent implements OnInit {
   private readonly expensesService = inject(ExpensesService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly categoryFilter = signal<ExpenseCategory | ''>('');
-  readonly sortBy = signal('');
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly sortBy = signal('createdAt');
+  readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
@@ -312,7 +316,8 @@ export class ExpensesListComponent implements OnInit {
       page: this.currentPage(),
       limit: this.pageSize(),
       ...(this.categoryFilter() ? { category: this.categoryFilter() } : {}),
-      ...(this.sortBy() ? { sortBy: this.sortBy(), order: this.sortOrder().toUpperCase() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
@@ -416,7 +421,14 @@ export class ExpensesListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.expensesService.delete(expense.id).subscribe({
-          next: () => this.expensesResource.reload(),
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.expensesResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
         });
       }
     });
