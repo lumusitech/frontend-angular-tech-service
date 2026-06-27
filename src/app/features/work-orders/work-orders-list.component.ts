@@ -217,7 +217,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let order"
                 class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
               >
-                {{ order.client.name }}
+                {{ order.client?.name || '-' }}
               </td>
             </ng-container>
 
@@ -253,7 +253,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let order"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ order.serviceType.name }}
+                {{ order.serviceType?.name || '-' }}
               </td>
             </ng-container>
 

@@ -1,8 +1,9 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { DashboardSummary } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-charts-widget',
@@ -14,7 +15,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           {{ 'dashboard.monthlyTrend' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line"></canvas>
+          <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions()" type="line"></canvas>
         </div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
@@ -22,7 +23,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           {{ 'dashboard.ordersByStatus' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="donutChartData()" [options]="donutChartOptions" type="doughnut"></canvas>
+          <canvas baseChart [data]="donutChartData()" [options]="donutChartOptions()" type="doughnut"></canvas>
         </div>
       </div>
     </div>
@@ -32,16 +33,24 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           {{ 'dashboard.topServices' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar"></canvas>
+          <canvas baseChart [data]="barChartData()" [options]="barChartOptions()" type="bar"></canvas>
         </div>
       </div>
     </div>
   `,
 })
 export class ChartsWidgetComponent {
+  private readonly themeService = inject(ThemeService);
+
   readonly summary = input.required<DashboardSummary>();
   readonly primaryColor = input<string>('#3B82F6');
   readonly secondaryColor = input<string>('#10B981');
+
+  private readonly isDark = this.themeService.isDark;
+
+  private readonly labelColor = computed(() => (this.isDark() ? '#e5e7eb' : '#374151'));
+  private readonly borderColor = computed(() => (this.isDark() ? '#1f2937' : '#ffffff'));
+  private readonly tooltipBg = computed(() => (this.isDark() ? '#374151' : '#1f2937'));
 
   lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
     const s = this.summary();
@@ -87,6 +96,8 @@ export class ChartsWidgetComponent {
             '#A78BFA',
             '#9CA3AF',
           ],
+          borderColor: this.borderColor(),
+          borderWidth: 2,
         },
       ],
     };
@@ -106,21 +117,57 @@ export class ChartsWidgetComponent {
     };
   });
 
-  lineChartOptions: ChartConfiguration<'line'>['options'] = {
+  lineChartOptions = computed<ChartConfiguration<'line'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-  };
+    animation: { duration: 750, easing: 'easeInOutQuart' },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: this.labelColor(), padding: 16, font: { size: 12 } },
+      },
+      tooltip: {
+        backgroundColor: this.tooltipBg(),
+        titleColor: '#f9fafb',
+        bodyColor: '#e5e7eb',
+        padding: 12,
+        cornerRadius: 8,
+      },
+    },
+  }));
 
-  donutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+  donutChartOptions = computed<ChartConfiguration<'doughnut'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-  };
+    animation: { duration: 750, easing: 'easeInOutQuart' },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: this.labelColor(), padding: 16, font: { size: 12 } },
+      },
+      tooltip: {
+        backgroundColor: this.tooltipBg(),
+        titleColor: '#f9fafb',
+        bodyColor: '#e5e7eb',
+        padding: 12,
+        cornerRadius: 8,
+      },
+    },
+  }));
 
-  barChartOptions: ChartConfiguration<'bar'>['options'] = {
+  barChartOptions = computed<ChartConfiguration<'bar'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-  };
+    animation: { duration: 750, easing: 'easeInOutQuart' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: this.tooltipBg(),
+        titleColor: '#f9fafb',
+        bodyColor: '#e5e7eb',
+        padding: 12,
+        cornerRadius: 8,
+      },
+    },
+  }));
 }

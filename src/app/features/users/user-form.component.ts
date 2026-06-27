@@ -73,7 +73,7 @@ interface DialogData {
             <mat-label>{{ 'users.password' | translate }}</mat-label>
             <input matInput [(ngModel)]="password" name="password" #passwordRef="ngModel" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
             @if (passwordRef.invalid && passwordRef.touched) {
-              <mat-error>{{ passwordRef.hasError('required') ? ('validation.required' | translate) : ('validation.minLength' | translate:{min:6}) }}</mat-error>
+              <mat-error>{{ passwordRef.hasError('required') ? ('validation.required' | translate) : ('validation.minLength' | translate:{min:'6'}) }}</mat-error>
             }
           </mat-form-field>
 
