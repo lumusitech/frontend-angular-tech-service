@@ -141,7 +141,8 @@
       "loadError": "Error al cargar",
       "loadErrorMessage": "No se pudo cargar el detalle del cliente",
       "noOrders": "Sin órdenes",
-      "noOrdersMessage": "Este cliente no tiene órdenes de trabajo registradas"
+      "noOrdersMessage": "Este cliente no tiene órdenes de trabajo registradas",
+      "viewReport": "Ver Reporte"
     }
   },
   "users": {
@@ -171,7 +172,8 @@
       "admin": "Admin",
       "technician": "Técnico",
       "seller": "Vendedor"
-    }
+    },
+    "viewTechnicianReport": "Ver reporte del técnico"
   },
   "suppliers": {
     "title": "Proveedores",
@@ -594,7 +596,44 @@
     "totalRevenue": "Revenue Total",
     "vsPrevious": "vs período anterior",
     "downloadBudget": "Descargar Presupuesto",
-    "downloadReceipt": "Descargar Comprobante"
+    "downloadReceipt": "Descargar Comprobante",
+    "profit": {
+      "title": "Ganancia Neta",
+      "income": "Ingresos",
+      "materials": "Materiales",
+      "expenses": "Gastos Operativos"
+    },
+    "technicianDetail": {
+      "subtitle": "Detalle del técnico",
+      "completedOrders": "Completadas",
+      "inProgressOrders": "En Progreso",
+      "avgResolution": "Tiempo Promedio",
+      "totalRevenue": "Revenue Total",
+      "recentOrders": "Órdenes Recientes",
+      "noOrders": "Sin órdenes recientes",
+      "completedAt": "Completada",
+      "loadError": "Error al cargar técnico",
+      "loadErrorMessage": "No se pudieron obtener los datos del técnico."
+    },
+    "clientReport": {
+      "totalOrders": "Órdenes Totales",
+      "totalSpent": "Total Gastado",
+      "outstandingDebt": "Deuda Pendiente",
+      "avgTicket": "Ticket Promedio",
+      "orders": "Órdenes",
+      "payments": "Pagos",
+      "totalPaid": "Pagado",
+      "paidAt": "Fecha de Pago",
+      "noOrders": "Sin órdenes",
+      "noPayments": "Sin pagos registrados",
+      "loadError": "Error al cargar reporte",
+      "loadErrorMessage": "No se pudieron obtener los datos del cliente."
+    },
+    "export": {
+      "export": "Exportar",
+      "budget": "Presupuesto (PDF)",
+      "receipt": "Comprobante (PDF)"
+    }
   },
   "notifications": {
     "title": "Notificaciones",

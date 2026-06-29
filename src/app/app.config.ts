@@ -20,6 +20,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 import { TranslationService } from './core/services/translation.service';
+import { ThemeService } from './core/services/theme.service';
 
 registerLocaleData(localeEsAR);
 
@@ -33,6 +34,8 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(MatNativeDateModule),
     { provide: LOCALE_ID, useValue: 'es-AR' },
     provideAppInitializer(() => {
+      const themeService = inject(ThemeService);
+      themeService.init();
       const ts = inject(TranslationService);
       return ts.init();
     }),

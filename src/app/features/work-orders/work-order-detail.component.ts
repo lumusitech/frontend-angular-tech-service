@@ -26,6 +26,7 @@ import { TasksTabComponent } from './tabs/tasks-tab.component';
 import { MaterialsTabComponent } from './tabs/materials-tab.component';
 import { NotesTabComponent } from './tabs/notes-tab.component';
 import { WorkOrderSidebarComponent } from './tabs/work-order-sidebar.component';
+import { ExportButtonsComponent } from '../../shared/components/export-buttons/export-buttons.component';
 
 @Component({
   selector: 'app-work-order-detail',
@@ -44,6 +45,7 @@ import { WorkOrderSidebarComponent } from './tabs/work-order-sidebar.component';
     MaterialsTabComponent,
     NotesTabComponent,
     WorkOrderSidebarComponent,
+    ExportButtonsComponent,
   ],
   template: `
     @if (workOrderResource.status() === 'loading' && !workOrderResource.hasValue()) {
@@ -84,11 +86,14 @@ import { WorkOrderSidebarComponent } from './tabs/work-order-sidebar.component';
             </div>
           </div>
 
-          <app-status-transition
-            [status]="workOrderResource.value().status"
-            (transition)="onStatusTransition($event)"
-            (openTechnicianAssignment)="openTechnicianDialog()"
-          />
+          <div class="flex items-center gap-2">
+            <app-export-buttons [workOrderId]="workOrderResource.value().id" />
+            <app-status-transition
+              [status]="workOrderResource.value().status"
+              (transition)="onStatusTransition($event)"
+              (openTechnicianAssignment)="openTechnicianDialog()"
+            />
+          </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

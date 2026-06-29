@@ -51,26 +51,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Próximos pasos priorizados
 
-### 1. ClientDetailComponent (completar CRUD de clientes)
-
-**Qué:** Vista de detalle de un cliente con su historial de órdenes, pagos y datos.
-**Dependencias:** Ninguna.
-**Ruta:** `/admin/clients/:id`
-
-Archivos a crear/modificar:
-- Crear: `src/app/features/clients/client-detail.component.ts`
-- Modificar: `src/app/app.routes.ts` — agregar ruta `:id` como child de `clients`
-- Modificar: `src/app/features/clients/clients-list.component.ts` — agregar link a detalle
-- Crear/Modificar: `public/i18n/es.json` + `en.json` — keys `clients.detail.*`
-
-Patrón a seguir:
-- Usar `httpResource` con param de ID desde `ActivatedRoute`
-- Layout con cards (Tailwind) como en `src/app/features/work-orders/work-order-detail.component.ts`
-- Secciones: datos del cliente, órdenes asociadas (tabla), KPIs resumidos
-
----
-
-### 2. PortalLayoutComponent (layout dedicado para portal público)
+### 1. PortalLayoutComponent (layout dedicado para portal público)
 
 **Qué:** Layout minimal para el portal de tracking, con logo del negocio desde API.
 **Dependencias:** Ninguna.
@@ -91,64 +72,9 @@ Patrón a seguir:
 
 ---
 
-### 3. NotificationBellComponent (badge en header)
-
-**Qué:** Icono de campana en el header de admin con badge de notificaciones no leídas.
-**Dependencias:** NotificationsService ya existe con `unreadCount` signal.
-**Posición:** En el header de admin-layout, al lado del avatar.
-
-Archivos a crear/modificar:
-- Crear: `src/app/shared/components/notification-bell/notification-bell.component.ts`
-- Modificar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar el componente
-- Modificar: `public/i18n/es.json` + `en.json` — keys `notifications.bell.*`
-
-Patrón a seguir:
-- Usar `NotificationsService.unreadCount()` signal
-- `MatIconModule` con `notifications` icon
-- Badge rojo con count (similar a como se hace en BottomNavComponent)
-- Link a `/admin/notifications` al hacer click
-- SSR-safe: inyectar `PLATFORM_ID` y usar `isPlatformBrowser` si es necesario para WebSocket
-
----
-
 ## Próximos pasos priorizados (por valor al proyecto)
 
-### 1. ~~BusinessSettingsComponent — Multi-tenant (diferenciador comercial)~~ ✅ COMPLETADO
-
-**Valor:** Permite vender el sistema a otros negocios con su propia marca. Es el feature que diferencia "un sistema más" de "una plataforma multi-tenant".
-
-**Qué:** Configuración del negocio: nombre, logo, colores primarios/secundarios. Los colores se aplican como CSS variables en todo el sistema.
-
-**Ruta:** `/admin/settings` (expandir el componente existente)
-
-**Archivos:**
-- Modificar: `src/app/features/settings/settings.component.ts` — agregar sección "Negocio"
-- Crear: `src/app/core/services/business-settings.service.ts` (si no existe endpoint en backend)
-- Modificar: `public/i18n/es.json` + `en.json` — keys `settings.business.*`
-
-**Patrón:** Formulario con campos (name, logo URL, primaryColor, secondaryColor). Guardar con HttpClient. Aplicar colores como CSS variables via `document.documentElement.style.setProperty()`.
-
----
-
-### 2. ClientDetailComponent — Completar CRUD de clientes
-
-**Valor:** Cierra el flujo completo de gestión de clientes. Sin esto, solo se puede listar y crear, pero no ver el historial de un cliente.
-
-**Qué:** Vista de detalle con datos del cliente, historial de órdenes, pagos y KPIs resumidos.
-
-**Ruta:** `/admin/clients/:id`
-
-**Archivos:**
-- Crear: `src/app/features/clients/client-detail.component.ts`
-- Modificar: `src/app/app.routes.ts` — agregar ruta `:id` como child de `clients`
-- Modificar: `src/app/features/clients/clients-list.component.ts` — link a detalle en filas
-- Modificar: `public/i18n/es.json` + `en.json` — keys `clients.detail.*`
-
-**Patrón:** `httpResource` con ID desde `ActivatedRoute`. Layout con cards (Tailwind) como en `work-order-detail.component.ts`. Secciones: datos del cliente, órdenes asociadas (tabla), pagos, KPIs.
-
----
-
-### 3. Push Notifications — PWA real-time en mobile
+### 1. Push Notifications — PWA real-time en mobile
 
 **Valor:** Feature diferenciador para PWA. Las notificaciones push llegan aunque la app esté cerrada en el celular. Sin costo de infraestructura ($0).
 
@@ -174,24 +100,7 @@ Patrón a seguir:
 
 ---
 
-### 4. NotificationBellComponent — Badge en header
-
-**Valor:** UX core. Conecta con push notifications y con la lista de notificaciones existente. Muestra al admin que hay actividad sin abrir la página de notificaciones.
-
-**Qué:** Icono de campana en el header de admin con badge rojo de notificaciones no leídas. Click lleva a `/admin/notifications`.
-
-**Ruta:** En el header de admin-layout
-
-**Archivos:**
-- Crear: `src/app/shared/components/notification-bell/notification-bell.component.ts`
-- Modificar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar componente en header
-- Modificar: `public/i18n/es.json` + `en.json` — keys `notifications.bell.*`
-
-**Patrón:** Usar `NotificationsService.unreadCount()` signal. MatIconModule con `notifications`. Badge con count. Link a `/admin/notifications`. SSR-safe si es necesario.
-
----
-
-### 5. ProfileSettingsComponent — Perfil de usuario
+### 2. ProfileSettingsComponent — Perfil de usuario
 
 **Valor:** Completitud de gestión de usuarios. El admin puede editar su perfil, el técnico puede ver sus datos.
 
@@ -206,7 +115,7 @@ Patrón a seguir:
 
 ---
 
-### 6. PortalLayoutComponent — Layout dedicado para portal
+### 3. PortalLayoutComponent — Layout dedicado para portal
 
 **Valor:** Mejor organización del portal público. Separa el layout del contenido. Mejor SEO y reutilización.
 
@@ -223,7 +132,7 @@ Patrón a seguir:
 
 ---
 
-### 7. Reportes avanzados — Business intelligence
+### 4. Reportes avanzados — Business intelligence
 
 **Valor:** Da más herramientas de decisión al dueño del negocio. Los reportes son el cierre del ciclo operativo → financiero → estratégico.
 
@@ -243,7 +152,7 @@ Patrón a seguir:
 
 ---
 
-### 8. RelativeDatePipe + RoleDirective — UX polish
+### 5. RelativeDatePipe + RoleDirective — UX polish
 
 **Valor:** Mejor experiencia de usuario. Fechas más legibles, elementos visibles solo según rol.
 
@@ -259,7 +168,7 @@ Patrón a seguir:
 
 ---
 
-### 9. Tests — Calidad y confianza
+### 6. Tests — Calidad y confianza
 
 **Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo. Pero se hace DESPUÉS de tener la base completa.
 
@@ -275,7 +184,7 @@ Patrón a seguir:
 
 - [x] Auth (login, guards, interceptors)
 - [x] Dashboard (KPIs, charts, widgets, drag-drop)
-- [x] Clients CRUD (list, form, search, pagination)
+- [x] Clients CRUD (list, form, search, pagination, detail)
 - [x] Suppliers CRUD
 - [x] Service Types CRUD
 - [x] Work Orders (list, detail, tasks, materials, notes, status transitions, technician assignment)
@@ -283,7 +192,7 @@ Patrón a seguir:
 - [x] Expenses CRUD
 - [x] Billing (invoices CRUD, issue, cancel, PDF)
 - [x] Reports (dashboard, income, expenses, services ranking, technician ranking)
-- [x] Notifications (list, mark read, WebSocket, unreadCount)
+- [x] Notifications (list, mark read, WebSocket, unreadCount, bell badge in header)
 - [x] Pending Items (list, form, dashboard widget)
 - [x] Inquiries (list, detail, contact, review, convert)
 - [x] Landing Page (SSG/prerender, 6 sub-components)

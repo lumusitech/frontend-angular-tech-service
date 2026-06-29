@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { ReportsService } from '../../core/services/reports.service';
 import {
@@ -23,6 +24,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { IncomeChartComponent } from './income-chart.component';
 import { ExpensesChartComponent } from './expenses-chart.component';
+import { ProfitChartComponent } from './profit-chart.component';
 import { ServicesRankingComponent } from './services-ranking.component';
 import { TechnicianRankingComponent } from './technician-ranking.component';
 import { DecimalPipe } from '@angular/common';
@@ -44,6 +46,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
     ErrorStateComponent,
     IncomeChartComponent,
     ExpensesChartComponent,
+    ProfitChartComponent,
     ServicesRankingComponent,
     TechnicianRankingComponent,
     DecimalPipe,
@@ -143,13 +146,20 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
           }
         </div>
 
+        <!-- Profit chart -->
+        <div class="grid grid-cols-1 gap-6">
+          @if (profitReport(); as profit) {
+            <app-profit-chart [data]="profit" />
+          }
+        </div>
+
         <!-- Rankings row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           @if (servicesReport(); as services) {
             <app-services-ranking [data]="services" />
           }
           @if (technicianRanking(); as technicians) {
-            <app-technician-ranking [data]="technicians" />
+            <app-technician-ranking [data]="technicians" (technicianClick)="onTechnicianClick($event)" />
           }
         </div>
       }
@@ -158,6 +168,7 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 })
 export class ReportsDashboardComponent {
   private readonly reportsService = inject(ReportsService);
+  private readonly router = inject(Router);
 
   readonly period = signal<string>('monthly');
   readonly dateFrom = signal<string>('');
@@ -196,7 +207,7 @@ export class ReportsDashboardComponent {
     const filters = this.getFilters();
 
     let completed = 0;
-    const total = 5;
+    const total = 6;
     const checkDone = () => {
       completed++;
       if (completed === total) {
@@ -216,6 +227,11 @@ export class ReportsDashboardComponent {
 
     this.reportsService.getExpenses(filters).subscribe({
       next: (data) => { this.expenseReport.set(data); checkDone(); },
+      error: () => checkDone(),
+    });
+
+    this.reportsService.getProfit(filters).subscribe({
+      next: (data) => { this.profitReport.set(data); checkDone(); },
       error: () => checkDone(),
     });
 
@@ -267,5 +283,9 @@ export class ReportsDashboardComponent {
     if (this.validateDates()) {
       this.loadAll();
     }
+  }
+
+  onTechnicianClick(technicianId: string): void {
+    this.router.navigate(['/admin/reports/technicians', technicianId]);
   }
 }

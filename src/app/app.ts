@@ -1,9 +1,8 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { InstallPromptComponent } from './shared/components/install-prompt/install-prompt.component';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
-import { ThemeService } from './core/services/theme.service';
 import { BusinessSettingsService } from './core/services/business-settings.service';
 
 @Component({
@@ -12,8 +11,7 @@ import { BusinessSettingsService } from './core/services/business-settings.servi
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
-  private readonly themeService = inject(ThemeService);
+export class App {
   private readonly businessSettingsService = inject(BusinessSettingsService);
 
   constructor() {
@@ -28,9 +26,5 @@ export class App implements OnInit {
         }
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.themeService.init();
   }
 }

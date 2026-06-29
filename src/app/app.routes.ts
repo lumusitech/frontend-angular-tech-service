@@ -138,10 +138,29 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () =>
-          import('./features/reports/reports-dashboard.component').then(
-            (m) => m.ReportsDashboardComponent,
-          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/reports/reports-dashboard.component').then(
+                (m) => m.ReportsDashboardComponent,
+              ),
+          },
+          {
+            path: 'technicians/:id',
+            loadComponent: () =>
+              import('./features/reports/technician-detail.component').then(
+                (m) => m.TechnicianDetailComponent,
+              ),
+          },
+          {
+            path: 'clients/:id',
+            loadComponent: () =>
+              import('./features/reports/client-report.component').then(
+                (m) => m.ClientReportComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'settings',
