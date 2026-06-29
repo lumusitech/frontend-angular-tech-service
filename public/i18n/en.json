@@ -141,7 +141,8 @@
       "loadError": "Error loading",
       "loadErrorMessage": "Could not load client details",
       "noOrders": "No orders",
-      "noOrdersMessage": "This client has no work orders registered"
+      "noOrdersMessage": "This client has no work orders registered",
+      "viewReport": "View Report"
     }
   },
   "users": {
@@ -171,7 +172,8 @@
       "admin": "Admin",
       "technician": "Technician",
       "seller": "Seller"
-    }
+    },
+    "viewTechnicianReport": "View technician report"
   },
   "seller": {
     "nav": {
@@ -601,7 +603,44 @@
     "totalRevenue": "Total Revenue",
     "vsPrevious": "vs previous period",
     "downloadBudget": "Download Budget",
-    "downloadReceipt": "Download Receipt"
+    "downloadReceipt": "Download Receipt",
+    "profit": {
+      "title": "Net Profit",
+      "income": "Income",
+      "materials": "Materials",
+      "expenses": "Operational Expenses"
+    },
+    "technicianDetail": {
+      "subtitle": "Technician detail",
+      "completedOrders": "Completed",
+      "inProgressOrders": "In Progress",
+      "avgResolution": "Avg Resolution",
+      "totalRevenue": "Total Revenue",
+      "recentOrders": "Recent Orders",
+      "noOrders": "No recent orders",
+      "completedAt": "Completed",
+      "loadError": "Error loading technician",
+      "loadErrorMessage": "Could not load technician data."
+    },
+    "clientReport": {
+      "totalOrders": "Total Orders",
+      "totalSpent": "Total Spent",
+      "outstandingDebt": "Outstanding Debt",
+      "avgTicket": "Average Ticket",
+      "orders": "Orders",
+      "payments": "Payments",
+      "totalPaid": "Paid",
+      "paidAt": "Payment Date",
+      "noOrders": "No orders",
+      "noPayments": "No payments registered",
+      "loadError": "Error loading report",
+      "loadErrorMessage": "Could not load client data."
+    },
+    "export": {
+      "export": "Export",
+      "budget": "Budget (PDF)",
+      "receipt": "Receipt (PDF)"
+    }
   },
   "notifications": {
     "title": "Notifications",

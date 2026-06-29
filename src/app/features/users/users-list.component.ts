@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { UsersService } from '../../core/services/users.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -159,6 +160,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3 text-right">
+                @if (user.role === 'technician') {
+                  <button mat-icon-button (click)="viewTechnicianReport(user.id); $event.stopPropagation()" [title]="'users.viewTechnicianReport' | translate">
+                    <mat-icon>assessment</mat-icon>
+                  </button>
+                }
                 <button mat-icon-button (click)="openEditDialog(user); $event.stopPropagation()" [title]="'common.edit' | translate">
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -189,6 +195,7 @@ export class UsersListComponent {
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
+  private readonly router = inject(Router);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -294,5 +301,9 @@ export class UsersListComponent {
         });
       }
     });
+  }
+
+  viewTechnicianReport(userId: string): void {
+    this.router.navigate(['/admin/reports/technicians', userId]);
   }
 }

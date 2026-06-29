@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { TechnicianRanking } from '../../core/models/report.interfaces';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
@@ -25,7 +25,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           </thead>
           <tbody>
             @for (tech of data(); track tech.technicianId; let i = $index) {
-              <tr class="border-b border-gray-100 dark:border-gray-800">
+              <tr
+                class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                (click)="technicianClick.emit(tech.technicianId)"
+              >
                 <td class="py-2.5 text-gray-400 dark:text-gray-500 font-bold">{{ i + 1 }}</td>
                 <td class="py-2.5 font-medium text-gray-900 dark:text-gray-100">{{ tech.name }}</td>
                 <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.completedOrders }}</td>
@@ -50,4 +53,5 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 })
 export class TechnicianRankingComponent {
   data = input.required<TechnicianRanking[]>();
+  technicianClick = output<string>();
 }

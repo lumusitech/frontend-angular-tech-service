@@ -8,9 +8,20 @@ import { ThemeService } from '../../../core/services/theme.service';
 @Component({
   selector: 'app-charts-widget',
   imports: [BaseChartDirective, TranslatePipe],
+  styles: `
+    @keyframes chartEntry {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chart-entry {
+      animation: chartEntry 0.5s ease-out both;
+    }
+    .chart-entry:nth-child(2) { animation-delay: 0.1s; }
+    .chart-entry:nth-child(3) { animation-delay: 0.2s; }
+  `,
   template: `
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
+      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.monthlyTrend' | translate }}
         </h3>
@@ -18,7 +29,7 @@ import { ThemeService } from '../../../core/services/theme.service';
           <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions()" type="line"></canvas>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.ordersByStatus' | translate }}
         </h3>
@@ -28,7 +39,7 @@ import { ThemeService } from '../../../core/services/theme.service';
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.topServices' | translate }}
         </h3>
@@ -40,6 +51,8 @@ import { ThemeService } from '../../../core/services/theme.service';
   `,
 })
 export class ChartsWidgetComponent {
+  private static readonly ANIMATION = { duration: 750, easing: 'easeInOutQuart' as const };
+
   private readonly themeService = inject(ThemeService);
 
   readonly summary = input.required<DashboardSummary>();
@@ -51,6 +64,8 @@ export class ChartsWidgetComponent {
   private readonly labelColor = computed(() => (this.isDark() ? '#e5e7eb' : '#374151'));
   private readonly borderColor = computed(() => (this.isDark() ? '#1f2937' : '#ffffff'));
   private readonly tooltipBg = computed(() => (this.isDark() ? '#374151' : '#1f2937'));
+
+  private readonly gridColor = 'rgba(156,163,175,0.15)';
 
   lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
     const s = this.summary();
@@ -120,7 +135,18 @@ export class ChartsWidgetComponent {
   lineChartOptions = computed<ChartConfiguration<'line'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 750, easing: 'easeInOutQuart' },
+    animation: ChartsWidgetComponent.ANIMATION,
+    scales: {
+      x: {
+        ticks: { color: this.labelColor(), font: { size: 11 } },
+        grid: { color: this.gridColor },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: this.labelColor(), font: { size: 11 } },
+        grid: { color: this.gridColor },
+      },
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -139,11 +165,13 @@ export class ChartsWidgetComponent {
   donutChartOptions = computed<ChartConfiguration<'doughnut'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 750, easing: 'easeInOutQuart' },
+    animation: { animateRotate: true, animateScale: true, ...ChartsWidgetComponent.ANIMATION },
+    cutout: '55%',
+    spacing: 2,
     plugins: {
       legend: {
         position: 'bottom',
-        labels: { color: this.labelColor(), padding: 16, font: { size: 12 } },
+        labels: { color: this.labelColor(), padding: 16, font: { size: 12 }, usePointStyle: true },
       },
       tooltip: {
         backgroundColor: this.tooltipBg(),
@@ -158,7 +186,7 @@ export class ChartsWidgetComponent {
   barChartOptions = computed<ChartConfiguration<'bar'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 750, easing: 'easeInOutQuart' },
+    animation: ChartsWidgetComponent.ANIMATION,
     plugins: {
       legend: { display: false },
       tooltip: {

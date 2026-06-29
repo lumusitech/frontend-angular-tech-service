@@ -45,7 +45,7 @@ import { MatTableModule } from '@angular/material/table';
           <button mat-icon-button (click)="goBack()">
             <mat-icon>arrow_back</mat-icon>
           </button>
-          <div>
+          <div class="flex-1">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {{ clientResource.value().name }}
             </h1>
@@ -53,6 +53,10 @@ import { MatTableModule } from '@angular/material/table';
               {{ 'clients.detail.subtitle' | translate }}
             </p>
           </div>
+          <button mat-stroked-button (click)="viewReport()" class="!text-blue-600 dark:!text-blue-400 !border-blue-200 dark:!border-blue-800">
+            <mat-icon>assessment</mat-icon>
+            {{ 'clients.detail.viewReport' | translate }}
+          </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -257,5 +261,9 @@ export class ClientDetailComponent {
 
   goBack(): void {
     this.router.navigate(['/admin/clients']);
+  }
+
+  viewReport(): void {
+    this.router.navigate(['/admin/reports/clients', this.clientId()]);
   }
 }

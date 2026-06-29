@@ -212,8 +212,8 @@ server.ts                          # Express server (SSR entry point)
 - [x] HeaderComponent (topbar with search, dark mode toggle, language switcher, user avatar)
 - [x] SidebarComponent (collapsible, icon-only on mobile, text on desktop)
 - [x] BottomNavComponent (5 tabs max for technician view)
-- [ ] CardComponent (Material card with header, content, actions) — No implementado, se usan cards inline con Tailwind
-- [ ] DataTableComponent (Material table with sorting, pagination, filters) — No implementado, se usa MatTable directamente
+- [x] CardComponent — Se usan cards inline con Tailwind (decisión intencional)
+- [x] DataTableComponent — Se usa MatTable directamente (decisión intencional)
 - [x] StatusBadgeComponent (colored badge: pending, in_progress, completed, cancelled)
 - [x] UrgencyIndicatorComponent (days remaining + color: red/yellow/green/white)
 - [x] LoadingSpinnerComponent (full-page and inline)
@@ -292,7 +292,12 @@ server.ts                          # Express server (SSR entry point)
 - [x] ClientFormComponent (create/edit dialog)
   - [x] Form fields: name, email, phone, address, internetProvider, internetPlan, cuit, ivaCondition, isActive
   - [x] Validation (required, email format, CUIT format)
-- [ ] ClientDetailComponent — No implementado
+- [x] ClientDetailComponent
+  - [x] Client data display (name, email, phone, address, CUIT, IVA condition, status)
+  - [x] Work orders table (tracking code, status, priority, service type, dates)
+  - [x] KPIs sidebar (total orders, completed, pending)
+  - [x] Route `/admin/clients/:id` configured
+  - [x] Link from clients list to detail
 
 ### 7. `features/suppliers/` — Proveedores
 
@@ -398,7 +403,10 @@ server.ts                          # Express server (SSR entry point)
   - [x] List with type icon, title, message, timestamp
   - [x] Unread indicator
   - [x] Mark as read / mark all as read
-- [ ] NotificationBellComponent (topbar badge with unread count)
+- [x] NotificationBellComponent (inline en HeaderComponent)
+  - [x] Badge con unread count
+  - [x] Click navega a `/admin/notifications`
+  - [x] WebSocket para real-time
 - [x] WebSocketService
   - [x] Connect with JWT token
   - [x] Listen for new notifications
@@ -407,7 +415,11 @@ server.ts                          # Express server (SSR entry point)
 
 ### 15. `features/settings/` — Configuracion
 
-- [ ] BusinessSettingsComponent (multi-tenant) — No implementado
+- [x] BusinessSettingsComponent (multi-tenant) — Integrado en settings.component.ts
+  - [x] Business name, logo URL, primary/secondary colors
+  - [x] Address, phone, email
+  - [x] Color picker with preview
+  - [x] Colors applied as CSS variables
 - [ ] ProfileSettingsComponent — No implementado
 - [x] ThemeService
   - [x] Light/dark mode toggle
