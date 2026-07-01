@@ -10,6 +10,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { DecimalPipe } from '@angular/common';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { ExportButtonsComponent } from '../../shared/components/export-buttons/export-buttons.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -29,6 +30,7 @@ import { MatTableModule } from '@angular/material/table';
     CurrencyArsPipe,
     DecimalPipe,
     RelativeDatePipe,
+    ExportButtonsComponent,
   ],
   template: `
     @if (loading()) {
@@ -129,6 +131,15 @@ import { MatTableModule } from '@angular/material/table';
                 </td>
               </ng-container>
 
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  {{ 'common.actions' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let order" class="px-4 py-3 text-right">
+                  <app-export-buttons [workOrderId]="order.id" />
+                </td>
+              </ng-container>
+
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
@@ -148,7 +159,7 @@ export class TechnicianDetailComponent {
   readonly loading = signal(true);
   readonly error = signal(false);
 
-  readonly displayedColumns = ['trackingCode', 'serviceType', 'status', 'completedAt'];
+  readonly displayedColumns = ['trackingCode', 'serviceType', 'status', 'completedAt', 'actions'];
 
   constructor() {
     this.loadData();
