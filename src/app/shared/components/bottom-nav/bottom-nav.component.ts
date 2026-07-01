@@ -1,9 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { NotificationsService } from '../../../core/services/notifications.service';
+import { filter } from 'rxjs';
 
 interface TechNavTab {
   id: string;
@@ -61,15 +62,21 @@ export class BottomNavComponent {
     { id: 'profile', path: '/tech/profile', icon: 'person', labelKey: 'technician.nav.profile' },
   ];
 
-  readonly activeTab = computed(() => {
-    const url = this.router.url;
-    if (url.startsWith('/tech/notifications')) return 'notifications';
-    if (url.startsWith('/tech/profile')) return 'profile';
-    return 'orders';
-  });
+  readonly currentUrl = signal(this.router.url);
+
+  constructor() {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentUrl.set((event as NavigationEnd).urlAfterRedirects || (event as NavigationEnd).url);
+      });
+  }
 
   isActive(tabId: string): boolean {
-    return this.activeTab() === tabId;
+    const url = this.currentUrl();
+    if (tabId === 'notifications') return url.startsWith('/tech/notifications');
+    if (tabId === 'profile') return url.startsWith('/tech/profile');
+    return url === '/tech' || url === '/tech/';
   }
 
   navigate(path: string): void {
