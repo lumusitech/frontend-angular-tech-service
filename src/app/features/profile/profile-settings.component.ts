@@ -188,7 +188,7 @@ export class ProfileSettingsComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
 
-  readonly profileResource = httpResource<User>('/api/auth/profile');
+  readonly profileResource = httpResource<User>(() => '/api/auth/profile');
 
   readonly profileModel = signal<ProfileForm>({
     name: '',
