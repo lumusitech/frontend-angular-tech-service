@@ -227,3 +227,23 @@ ng build                    # Build con SSR + prerender
 ng test                     # Unit tests (Vitest)
 pnpm sync:types          # Generar interfaces desde Swagger
 ```
+
+---
+
+## Solución a problemas comunes de lockfile (pnpm)
+
+Cuando `pnpm i` falla con errores como:
+- `Broken lockfile: no entry for ...`
+- `Lockfile failed supply-chain policy check`
+- `ERR_PNPM_LOCKFILE_MISSING_DEPENDENCY`
+
+**Solución (en el proyecto afectado — frontend o backend):**
+
+```bash
+pnpm clean --lockfile   # Elimina lockfile y node_modules
+pnpm i                  # Regenera desde cero
+```
+
+**Causa:** El lockfile queda desincronizado cuando dependencias se actualizan parcialmente (ej. dependabot, merge manual de package.json sin lockfile, o installs parciales).
+
+**Prevención:** Siempre hacer `pnpm i` completo después de pull, nunca editar `pnpm-lock.yaml` manualmente.
