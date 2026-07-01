@@ -207,6 +207,8 @@ Patrón a seguir:
 - [x] JWT isActive verification (session killed immediately when user is deactivated)
 - [x] Tech Layout logout button
 - [x] Route fix: `:id` moved after specific routes in `/tech` to prevent profile/notifications hijack
+- [x] Role-based login redirect (admin→/admin, tech→/tech, seller→/seller)
+- [x] Role-based route guards (`adminGuard` on `/admin`, `technicianGuard` on `/tech`)
 
 ## Archivos de referencia útiles
 
