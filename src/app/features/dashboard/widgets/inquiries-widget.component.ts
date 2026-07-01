@@ -1,13 +1,14 @@
 import { Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { DatePipe, SlicePipe } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 import { InquirySummary } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-inquiries-widget',
-  imports: [MatIconModule, MatButtonModule, DatePipe, SlicePipe, TranslatePipe],
+  imports: [MatIconModule, MatButtonModule, SlicePipe, TranslatePipe, RelativeDatePipe],
   template: `
     @if (items().length > 0) {
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
@@ -35,7 +36,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                   <p class="text-xs text-gray-500 dark:text-gray-400">
                     {{ 'statusLabels.' + inquiry.source | translate }}
                     &middot;
-                    {{ inquiry.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                    {{ inquiry.createdAt | relativeDate }}
                   </p>
                 </div>
               </div>

@@ -22,8 +22,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-payments-list',
@@ -45,8 +45,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     StatusBadgeComponent,
     TrackingCodeComponent,
     CurrencyArsPipe,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -231,7 +231,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let payment"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ payment.paidAt ? (payment.paidAt | date: 'dd/MM/yyyy HH:mm') : '-' }}
+                {{ payment.paidAt ? (payment.paidAt | relativeDate) : '-' }}
               </td>
             </ng-container>
 
@@ -249,7 +249,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let payment"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ payment.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                {{ payment.createdAt | relativeDate }}
               </td>
             </ng-container>
 

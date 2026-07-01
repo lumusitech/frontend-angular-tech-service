@@ -18,6 +18,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 import { AddNoteDialogComponent } from '../work-orders/add-note-dialog.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -40,6 +41,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
     DecimalPipe,
     TranslatePipe,
     StatusLabelPipe,
+    RelativeDatePipe,
   ],
   template: `
     @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -198,7 +200,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
                       {{ note.type | statusLabel: 'noteType' }}
                     </span>
                     <span class="text-xs text-gray-400 dark:text-gray-500">
-                      {{ note.createdAt | date: 'dd/MM HH:mm' }}
+                      {{ note.createdAt | relativeDate }}
                     </span>
                   </div>
                   <p class="text-sm text-gray-700 dark:text-gray-300">{{ note.content }}</p>

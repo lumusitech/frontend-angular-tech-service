@@ -19,8 +19,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { SkillFormComponent } from './skill-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 
@@ -41,8 +41,8 @@ import { TranslationService } from '../../core/services/translation.service';
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -130,7 +130,7 @@ import { TranslationService } from '../../core/services/translation.service';
                 {{ 'common.created' | translate }}
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                {{ skill.createdAt | date: 'dd/MM/yyyy' }}
+                {{ skill.createdAt | relativeDate }}
               </td>
             </ng-container>
 

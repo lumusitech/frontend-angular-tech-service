@@ -222,13 +222,13 @@ server.ts                          # Express server (SSR entry point)
 - [x] PageHeaderComponent (title + subtitle + action button)
 - [x] ErrorStateComponent (error icon + message + retry button)
 - [x] TrackingCodeComponent (format: `TS-XXXXX`) — Implementado como componente
-- [ ] RelativeDatePipe (hace 2 dias, en 3 dias)
+- [x] RelativeDatePipe (hace 2 dias, en 3 dias)
 - [x] CurrencyArsPipe (formato argentino: $1.234,56)
 - [x] StatusLabelPipe (traduce estados a labels)
 - [x] StatusClassPipe (retorna clases CSS para badges)
 - [x] SafeHtmlPipe (bypass sanitizer para SVG icons)
 - [x] TranslatePipe (i18n custom con JSON files)
-- [ ] RoleDirective (show/hide based on role)
+- [x] RoleDirective (show/hide based on role)
 
 ### 3. `layouts/` — Layouts
 

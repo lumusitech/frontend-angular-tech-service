@@ -24,8 +24,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ClientFormComponent } from './client-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-clients-list',
@@ -47,8 +47,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -228,7 +228,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let client"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ client.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                {{ client.createdAt | relativeDate }}
               </td>
             </ng-container>
 

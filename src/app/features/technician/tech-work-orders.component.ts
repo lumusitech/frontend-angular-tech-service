@@ -14,9 +14,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { UrgencyIndicatorComponent } from '../../shared/components/urgency-indicator/urgency-indicator.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-500/15 text-yellow-400',
@@ -38,9 +38,9 @@ const STATUS_COLORS: Record<string, string> = {
     UrgencyIndicatorComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    DatePipe,
     TranslatePipe,
     StatusLabelPipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-4">
@@ -117,7 +117,7 @@ const STATUS_COLORS: Record<string, string> = {
                   <app-urgency-indicator [scheduledDate]="order.scheduledDate || null" />
                   @if (order.scheduledDate) {
                     <span class="text-xs text-gray-400 dark:text-gray-500">
-                      {{ order.scheduledDate | date: 'dd/MM' }}
+                      {{ order.scheduledDate | relativeDate }}
                     </span>
                   }
                 </div>

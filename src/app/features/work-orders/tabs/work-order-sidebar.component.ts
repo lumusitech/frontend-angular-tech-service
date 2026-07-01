@@ -1,9 +1,9 @@
 import { Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { DatePipe } from '@angular/common';
 import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 
 interface Technician {
   id: string;
@@ -12,7 +12,7 @@ interface Technician {
 
 @Component({
   selector: 'app-work-order-sidebar',
-  imports: [MatIconModule, MatButtonModule, DatePipe, CurrencyArsPipe, TranslatePipe],
+  imports: [MatIconModule, MatButtonModule, CurrencyArsPipe, TranslatePipe, RelativeDatePipe],
   template: `
     <div class="space-y-4">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
@@ -66,7 +66,7 @@ interface Technician {
             <span class="text-gray-500 dark:text-gray-400">
               {{ 'workOrders.detail.created' | translate }}
             </span>
-            <span>{{ createdAt() | date: 'dd/MM/yyyy' }}</span>
+            <span>{{ createdAt() | relativeDate }}</span>
           </div>
         </div>
       </div>

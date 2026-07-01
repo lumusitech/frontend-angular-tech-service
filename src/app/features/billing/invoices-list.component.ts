@@ -22,8 +22,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { InvoiceFormComponent } from './invoice-form.component';
 
 @Component({
@@ -46,8 +46,8 @@ import { InvoiceFormComponent } from './invoice-form.component';
     PageHeaderComponent,
     StatusBadgeComponent,
     CurrencyArsPipe,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -186,7 +186,7 @@ import { InvoiceFormComponent } from './invoice-form.component';
                 {{ 'billing.createdAt' | translate }}
               </th>
               <td mat-cell *matCellDef="let invoice">
-                {{ invoice.createdAt | date : 'dd/MM/yyyy' }}
+                {{ invoice.createdAt | relativeDate }}
               </td>
             </ng-container>
 

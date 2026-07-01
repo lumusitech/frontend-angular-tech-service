@@ -8,7 +8,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -26,8 +27,8 @@ import { MatTableModule } from '@angular/material/table';
     TrackingCodeComponent,
     TranslatePipe,
     CurrencyArsPipe,
-    DatePipe,
     DecimalPipe,
+    RelativeDatePipe,
   ],
   template: `
     @if (loading()) {
@@ -121,7 +122,7 @@ import { MatTableModule } from '@angular/material/table';
                 </th>
                 <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                   @if (order.completedAt) {
-                    {{ order.completedAt | date: 'dd/MM/yyyy' }}
+                    {{ order.completedAt | relativeDate }}
                   } @else {
                     <span class="text-gray-400">—</span>
                   }

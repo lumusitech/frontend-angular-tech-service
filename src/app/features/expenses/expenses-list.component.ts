@@ -26,8 +26,8 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { ExpenseFormComponent } from './expense-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-expenses-list',
@@ -49,8 +49,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     PageHeaderComponent,
     StatusBadgeComponent,
     CurrencyArsPipe,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -208,7 +208,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let expense"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ expense.date | date: 'dd/MM/yyyy' }}
+                {{ expense.date | relativeDate }}
               </td>
             </ng-container>
 
@@ -244,7 +244,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let expense"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ expense.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                {{ expense.createdAt | relativeDate }}
               </td>
             </ng-container>
 

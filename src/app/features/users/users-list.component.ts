@@ -23,8 +23,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { UserFormComponent } from './user-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-users-list',
@@ -44,8 +44,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -151,7 +151,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 {{ 'common.created' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                {{ user.createdAt | date: 'dd/MM/yyyy' }}
+                {{ user.createdAt | relativeDate }}
               </td>
             </ng-container>
 
