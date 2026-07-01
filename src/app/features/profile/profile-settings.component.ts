@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { ProfileService } from '../../core/services/profile.service';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/user.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ToastService } from '../../core/services/toast.service';
@@ -227,6 +228,7 @@ interface PasswordForm {
 })
 export class ProfileSettingsComponent {
   private readonly profileService = inject(ProfileService);
+  private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
   readonly profileResource = httpResource<User>(() => '/api/auth/profile');
@@ -354,6 +356,7 @@ export class ProfileSettingsComponent {
 
   private saveAvatarToApi(value: string): void {
     this.profileService.updateProfile({ avatar: value }).subscribe({
+      next: () => this.authService.updateAvatar(value),
       error: () => this.toastService.show('Error al guardar avatar', 'error'),
     });
   }

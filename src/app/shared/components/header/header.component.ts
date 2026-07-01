@@ -110,11 +110,21 @@ interface LanguageOption {
         </button>
 
         <div class="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-700">
-          <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <span class="text-white text-sm font-medium">
-              {{ authService.user()?.name?.charAt(0) || 'U' }}
-            </span>
-          </div>
+          @if (authService.user()?.avatar) {
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden bg-blue-600">
+              @if (authService.user()!.avatar!.startsWith('data:')) {
+                <img [src]="authService.user()!.avatar" class="w-full h-full object-cover" />
+              } @else {
+                {{ authService.user()!.avatar }}
+              }
+            </div>
+          } @else {
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-medium">
+                {{ authService.user()?.name?.charAt(0) || 'U' }}
+              </span>
+            </div>
+          }
           <div class="hidden md:block">
             <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
               {{ authService.user()?.name || 'Usuario' }}
