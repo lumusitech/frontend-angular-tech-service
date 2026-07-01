@@ -65,6 +65,17 @@ export class AuthService {
     return this.tokenSignal();
   }
 
+  updateAvatar(avatar: string): void {
+    const current = this.userSignal();
+    if (current) {
+      const updated = { ...current, avatar };
+      this.userSignal.set(updated);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(USER_KEY, JSON.stringify(updated));
+      }
+    }
+  }
+
   private getStoredToken(): string | null {
     if (typeof window !== 'undefined') {
       return localStorage.getItem(TOKEN_KEY);
