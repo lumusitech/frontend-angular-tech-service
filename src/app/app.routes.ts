@@ -9,6 +9,10 @@ export const routes: Routes = [
   },
   {
     path: 'track',
+    loadComponent: () =>
+      import('./layouts/portal-layout/portal-layout.component').then(
+        (m) => m.PortalLayoutComponent,
+      ),
     children: [
       {
         path: '',
