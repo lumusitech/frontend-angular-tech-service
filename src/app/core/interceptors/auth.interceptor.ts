@@ -24,7 +24,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        toastService.show('Sesión expirada o cuenta desactivada. Iniciá sesión nuevamente.', 'error');
+        toastService.show('Sesión expirada o cuenta desactivada. Iniciá sesión nuevamente.', 'warning');
         authService.logout();
       }
       return throwError(() => error);
