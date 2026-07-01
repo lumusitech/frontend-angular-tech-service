@@ -185,6 +185,7 @@ export interface TechnicianDetail {
   averageResolutionDays: number;
   totalRevenue: number;
   recentOrders: {
+    id: string;
     trackingCode: string;
     serviceTypeName: string;
     status: string;

@@ -132,23 +132,17 @@ Patrón a seguir:
 
 ---
 
-### 4. Reportes avanzados — Business intelligence
+### 4. Reportes avanzados — Business intelligence ~~大部分完成~~
 
 **Valor:** Da más herramientas de decisión al dueño del negocio. Los reportes son el cierre del ciclo operativo → financiero → estratégico.
 
-**Componentes:**
-
-| Componente | Qué muestra | Ruta |
-|-----------|-------------|------|
-| ProfitChartComponent | Ganancia neta (income - expenses - materials) | widget en dashboard |
-| TechnicianDetailComponent | Performance individual de un técnico | `/admin/reports/technicians/:id` |
-| ClientReportComponent | Historial completo de un cliente | `/admin/reports/clients/:id` |
-| ExportButtons | Descarga de PDFs (budget, receipt) | botones en reports |
-
-**Archivos por componente:**
-- Crear: `src/app/features/reports/{component}.ts`
-- Modificar: `src/app/app.routes.ts` — rutas para detail components
-- Modificar: `src/app/features/reports/reports-dashboard.component.ts` — agregar ProfitChart
+| Componente | Estado | Ruta |
+|-----------|--------|------|
+| ~~ProfitChartComponent~~ | ✅ Línea de ganancia agregada al gráfico mensual del dashboard | widget en dashboard |
+| ~~TechnicianDetailComponent~~ | ✅ KPIs + tabla de órdenes + ExportButtons | `/admin/reports/technicians/:id` |
+| ~~ClientReportComponent~~ | ✅ KPIs + tabs órdenes/pagos + ExportButtons | `/admin/reports/clients/:id` |
+| ~~ExportButtons~~ | ✅ Botones de descarga PDF en technician-detail y client-report | botones en reports |
+| ~~Client drill-down~~ | ✅ Top clients del dashboard navega a client report | dashboard → report |
 
 ---
 
@@ -194,7 +188,7 @@ Patrón a seguir:
 - [x] Payments (list, filters, approve)
 - [x] Expenses CRUD
 - [x] Billing (invoices CRUD, issue, cancel, PDF)
-- [x] Reports (dashboard, income, expenses, services ranking, technician ranking)
+- [x] Reports (dashboard, income, expenses, profit chart, services ranking, technician ranking, export buttons, client drill-down)
 - [x] Notifications (list, mark read, WebSocket, unreadCount, bell badge in header)
 - [x] Pending Items (list, form, dashboard widget)
 - [x] Inquiries (list, detail, contact, review, convert)
