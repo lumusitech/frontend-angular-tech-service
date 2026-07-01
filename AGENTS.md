@@ -189,7 +189,8 @@ npx ng build
 1. Hacer cambios
 2. `npx ng build` → verificar 0 errores TypeScript/build
 3. Si hay errores, corregir antes de continuar
-4. El error de prerender en `/` (timeout a `/api/business-settings`) es pre-existente y esperado cuando el backend no está corriendo — ignorar ese error específico
+4. Actualizar `TODO.md` si se agregó una feature, se completó una tarea pendiente o surgieron nuevos requisitos
+5. El error de prerender en `/` (timeout a `/api/business-settings`) es pre-existente y esperado cuando el backend no está corriendo — ignorar ese error específico
 
 ---
 
