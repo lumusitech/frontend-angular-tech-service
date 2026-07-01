@@ -172,6 +172,13 @@ export const routes: Routes = [
           import('./features/settings/settings.component').then((m) => m.SettingsComponent),
       },
       {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile-settings.component').then(
+            (m) => m.ProfileSettingsComponent,
+          ),
+      },
+      {
         path: 'pending-items',
         loadComponent: () =>
           import('./features/pending-items/pending-items-list.component').then(
