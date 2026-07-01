@@ -126,7 +126,7 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                     <app-quick-actions-widget [secondaryColor]="secondaryColor()" (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (clientClick)="navigateTo('/admin/clients', { highlight: $event.id, search: $event.name })" />
+                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (clientClick)="navigateTo('/admin/reports/clients/' + $event.id)" />
                   }
                 }
               </div>
