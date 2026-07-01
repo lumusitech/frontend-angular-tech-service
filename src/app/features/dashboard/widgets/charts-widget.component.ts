@@ -70,6 +70,7 @@ export class ChartsWidgetComponent {
   lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
     const s = this.summary();
     const color = this.primaryColor();
+    const sColor = this.secondaryColor();
     return {
       labels: s.monthlyTrend.labels,
       datasets: [
@@ -87,6 +88,14 @@ export class ChartsWidgetComponent {
           borderColor: '#EF4444',
           backgroundColor: 'rgba(239, 68, 68, 0.1)',
           fill: true,
+          tension: 0.4,
+        },
+        {
+          data: s.monthlyTrend.profit,
+          label: 'Ganancia',
+          borderColor: sColor,
+          backgroundColor: 'transparent',
+          borderDash: [5, 5],
           tension: 0.4,
         },
       ],
