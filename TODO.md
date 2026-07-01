@@ -202,7 +202,11 @@ Patrón a seguir:
 - [x] i18n (es + en, ~300+ keys)
 - [x] Business Settings (multi-tenant branding: name, logo, colors, contact info)
 - [x] Portal Layout (dedicated layout for public tracking pages with business branding)
-- [x] Profile Settings (admin profile editing with name, email, phone, password change)
+- [x] Profile Settings (admin + tech profile editing, name, email, phone, password change)
+- [x] Self-service Profile API (GET/PATCH /api/auth/profile, POST /api/auth/change-password)
+- [x] JWT isActive verification (session killed immediately when user is deactivated)
+- [x] Tech Layout logout button
+- [x] Route fix: `:id` moved after specific routes in `/tech` to prevent profile/notifications hijack
 
 ## Archivos de referencia útiles
 

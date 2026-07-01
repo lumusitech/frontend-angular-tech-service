@@ -166,6 +166,33 @@ export class ClientFormComponent {
 - **Viewport**: `dvh` para layouts, `svh` para above-the-fold, `rem` para espaciado
 - **Fuentes**: Inter (headings + body) + JetBrains Mono (códigos)
 
+---
+
+## REGLA OBLIGATORIA: Verificación con `ng build`
+
+**Después de CUALQUIER cambio en código TypeScript, templates o estilos, EJECUTAR obligatoriamente:**
+
+```bash
+npx ng build
+```
+
+**Por qué:** `ng build` captura errores y warnings que `tsc --noEmit` NO detecta:
+- Errores de templates Angular (binding, interpolación, structural directives)
+- Errores de `httpResource` (overload mismatches, tipos de arguments)
+- Warnings de dependencias CommonJS
+- Errores de prerendering/SSR
+- Errores de bundling y chunks
+
+**No es suficiente con `tsc --noEmit`** — solo verifica tipos TypeScript, no el template compilation ni el build completo de Angular.
+
+**Flujo obligatorio:**
+1. Hacer cambios
+2. `npx ng build` → verificar 0 errores TypeScript/build
+3. Si hay errores, corregir antes de continuar
+4. El error de prerender en `/` (timeout a `/api/business-settings`) es pre-existente y esperado cuando el backend no está corriendo — ignorar ese error específico
+
+---
+
 ## Backend API
 
 - **Base URL:** `/api/` (proxy en desarrollo → localhost:3000)
