@@ -957,5 +957,30 @@
       "hardware": "Hardware",
       "software": "Software"
     }
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "subtitle": "Gestioná tu información personal y contraseña",
+    "personalInfo": "Información personal",
+    "personalInfoSubtitle": "Datos básicos de tu cuenta",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "phone": "Teléfono",
+    "phonePlaceholder": "+54 11 1234-5678",
+    "memberSince": "Miembro desde",
+    "changePassword": "Cambiar contraseña",
+    "changePasswordSubtitle": "Actualizá tu contraseña periódicamente",
+    "currentPassword": "Contraseña actual",
+    "currentPasswordPlaceholder": "Ingresá tu contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "newPasswordPlaceholder": "Ingresá la nueva contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "Repetí la nueva contraseña",
+    "updatePassword": "Actualizar contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "passwordUpdated": "Contraseña actualizada",
+    "profileUpdated": "Perfil actualizado"
   }
 }

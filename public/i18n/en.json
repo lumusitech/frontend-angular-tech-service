@@ -956,5 +956,30 @@
       "hardware": "Hardware",
       "software": "Software"
     }
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and password",
+    "personalInfo": "Personal information",
+    "personalInfoSubtitle": "Basic account details",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 555 123-4567",
+    "memberSince": "Member since",
+    "changePassword": "Change password",
+    "changePasswordSubtitle": "Update your password regularly",
+    "currentPassword": "Current password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Repeat new password",
+    "updatePassword": "Update password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordUpdated": "Password updated",
+    "profileUpdated": "Profile updated"
   }
 }

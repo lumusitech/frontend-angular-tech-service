@@ -100,7 +100,7 @@ Patrón a seguir:
 
 ---
 
-### 2. ProfileSettingsComponent — Perfil de usuario
+### ~~2. ProfileSettingsComponent — Perfil de usuario~~ ✅
 
 **Valor:** Completitud de gestión de usuarios. El admin puede editar su perfil, el técnico puede ver sus datos.
 
@@ -202,6 +202,7 @@ Patrón a seguir:
 - [x] i18n (es + en, ~300+ keys)
 - [x] Business Settings (multi-tenant branding: name, logo, colors, contact info)
 - [x] Portal Layout (dedicated layout for public tracking pages with business branding)
+- [x] Profile Settings (admin profile editing with name, email, phone, password change)
 
 ## Archivos de referencia útiles
 
