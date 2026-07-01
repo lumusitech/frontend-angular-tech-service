@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, sellerGuard } from './core/guards/auth.guard';
+import { adminGuard, technicianGuard, sellerGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -32,7 +32,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     loadComponent: () =>
       import('./layouts/admin-layout/admin-layout.component').then((m) => m.AdminLayoutComponent),
     children: [
@@ -216,7 +216,7 @@ export const routes: Routes = [
   },
   {
     path: 'tech',
-    canActivate: [authGuard],
+    canActivate: [technicianGuard],
     loadComponent: () =>
       import('./layouts/tech-layout/tech-layout.component').then(
         (m) => m.TechLayoutComponent,

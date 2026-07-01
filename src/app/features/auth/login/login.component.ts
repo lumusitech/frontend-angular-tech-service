@@ -123,7 +123,14 @@ export class LoginComponent {
       })
       .subscribe({
         next: () => {
-          this.router.navigate(['/admin/dashboard']);
+          const role = this.authService.user()?.role;
+          if (role === 'technician') {
+            this.router.navigate(['/tech']);
+          } else if (role === 'seller') {
+            this.router.navigate(['/seller']);
+          } else {
+            this.router.navigate(['/admin/dashboard']);
+          }
         },
         error: (err) => {
           this.loading.set(false);
