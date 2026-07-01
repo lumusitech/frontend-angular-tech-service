@@ -17,6 +17,7 @@ export interface User {
   email: string;
   role: 'admin' | 'technician' | 'seller';
   phone?: string;
+  avatar?: string;
   commission?: number;
 }
 

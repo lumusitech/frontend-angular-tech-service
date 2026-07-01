@@ -239,8 +239,8 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('./features/technician/tech-profile.component').then(
-            (m) => m.TechProfileComponent,
+          import('./features/profile/profile-settings.component').then(
+            (m) => m.ProfileSettingsComponent,
           ),
       },
       {

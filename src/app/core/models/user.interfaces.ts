@@ -13,6 +13,7 @@ export interface User {
   role: 'admin' | 'technician' | 'seller';
   isActive: boolean;
   phone?: string;
+  avatar?: string;
   commission?: number;
   experience?: string;
   trustRating?: number;
