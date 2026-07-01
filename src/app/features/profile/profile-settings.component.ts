@@ -14,8 +14,6 @@ import { ToastService } from '../../core/services/toast.service';
 
 const AVATAR_EMOJIS = ['👨‍🔧', '👩‍🔧', '🧑‍💻', '👨‍💻', '👩‍💻', '🧑‍🏭', '👨‍🏭', '👩‍🏭', '⚙️', '🔧', '🛠️', '💡', '🔌', '📋', '🏆', '👷', '🧑‍🔬', '🎯'];
 
-const AVATAR_KEY = 'user_avatar';
-
 interface ProfileForm {
   name: string;
   email: string;
@@ -234,7 +232,7 @@ export class ProfileSettingsComponent {
   readonly profileResource = httpResource<User>(() => '/api/auth/profile');
 
   readonly emojis = AVATAR_EMOJIS;
-  readonly avatar = signal(this.loadAvatar());
+  readonly avatar = signal('');
   readonly showEmojiPicker = signal(false);
 
   readonly avatarDisplay = computed(() => {
@@ -272,6 +270,7 @@ export class ProfileSettingsComponent {
   private readonly _syncProfile = effect(() => {
     const profile = this.profileResource.value();
     if (profile) {
+      this.avatar.set(profile.avatar || '');
       this.profileModel.set({
         name: profile.name || '',
         email: profile.email || '',
@@ -282,8 +281,8 @@ export class ProfileSettingsComponent {
 
   selectEmoji(emoji: string): void {
     this.avatar.set(emoji);
-    this.saveAvatar(emoji);
     this.showEmojiPicker.set(false);
+    this.saveAvatarToApi(emoji);
   }
 
   onFileSelected(event: Event): void {
@@ -295,8 +294,8 @@ export class ProfileSettingsComponent {
     reader.onload = () => {
       const dataUrl = reader.result as string;
       this.avatar.set(dataUrl);
-      this.saveAvatar(dataUrl);
       this.showEmojiPicker.set(false);
+      this.saveAvatarToApi(dataUrl);
     };
     reader.readAsDataURL(file);
   }
@@ -308,6 +307,7 @@ export class ProfileSettingsComponent {
       name: m.name,
       email: m.email,
       phone: m.phone || undefined,
+      avatar: this.avatar() || undefined,
     }).subscribe({
       next: (updated) => {
         this.savingProfile.set(false);
@@ -316,6 +316,7 @@ export class ProfileSettingsComponent {
           email: updated.email || '',
           phone: updated.phone || '',
         });
+        this.avatar.set(updated.avatar || '');
         this.toastService.show('Perfil actualizado', 'success');
       },
       error: (err) => {
@@ -351,16 +352,9 @@ export class ProfileSettingsComponent {
     });
   }
 
-  private loadAvatar(): string {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(AVATAR_KEY) || '';
-    }
-    return '';
-  }
-
-  private saveAvatar(value: string): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(AVATAR_KEY, value);
-    }
+  private saveAvatarToApi(value: string): void {
+    this.profileService.updateProfile({ avatar: value }).subscribe({
+      error: () => this.toastService.show('Error al guardar avatar', 'error'),
+    });
   }
 }
