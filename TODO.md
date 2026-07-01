@@ -51,7 +51,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Próximos pasos priorizados
 
-### 1. PortalLayoutComponent (layout dedicado para portal público)
+### ~~1. PortalLayoutComponent (layout dedicado para portal público)~~ ✅
 
 **Qué:** Layout minimal para el portal de tracking, con logo del negocio desde API.
 **Dependencias:** Ninguna.
@@ -115,7 +115,7 @@ Patrón a seguir:
 
 ---
 
-### 3. PortalLayoutComponent — Layout dedicado para portal
+### ~~3. PortalLayoutComponent — Layout dedicado para portal~~ ✅
 
 **Valor:** Mejor organización del portal público. Separa el layout del contenido. Mejor SEO y reutilización.
 
@@ -201,6 +201,7 @@ Patrón a seguir:
 - [x] Technician View (cards, urgency, detail, bottom nav)
 - [x] i18n (es + en, ~300+ keys)
 - [x] Business Settings (multi-tenant branding: name, logo, colors, contact info)
+- [x] Portal Layout (dedicated layout for public tracking pages with business branding)
 
 ## Archivos de referencia útiles
 
