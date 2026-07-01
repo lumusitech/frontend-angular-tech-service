@@ -71,7 +71,7 @@ import { User } from '../../core/models/user.interfaces';
   `,
 })
 export class TechProfileComponent {
-  readonly resource = httpResource<User>(() => '/api/auth/profile');
+  readonly resource = httpResource<User>('/api/auth/profile');
 
   readonly roundedRating = computed(() => Math.round(this.resource.value()?.trustRating ?? 0));
 }
