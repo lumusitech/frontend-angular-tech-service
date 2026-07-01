@@ -1,7 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/user.interfaces';
 
 @Component({
@@ -72,13 +71,7 @@ import { User } from '../../core/models/user.interfaces';
   `,
 })
 export class TechProfileComponent {
-  private readonly authService = inject(AuthService);
-
-  private readonly userId = computed(() => this.authService.user()?.id);
-
-  readonly resource = httpResource<User>(
-    () => this.userId() ? `/api/users/${this.userId()}` : undefined,
-  );
+  readonly resource = httpResource<User>('/api/auth/profile');
 
   readonly roundedRating = computed(() => Math.round(this.resource.value()?.trustRating ?? 0));
 }

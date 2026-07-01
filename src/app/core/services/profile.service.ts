@@ -18,15 +18,15 @@ export interface ChangePasswordDto {
 export class ProfileService {
   private readonly http = inject(HttpClient);
 
-  getProfile(userId: string): Observable<User> {
-    return this.http.get<User>(`/api/users/${userId}`);
+  getProfile(): Observable<User> {
+    return this.http.get<User>('/api/auth/profile');
   }
 
-  updateProfile(userId: string, dto: UpdateProfileDto): Observable<User> {
-    return this.http.patch<User>(`/api/users/${userId}`, dto);
+  updateProfile(dto: UpdateProfileDto): Observable<User> {
+    return this.http.patch<User>('/api/auth/profile', dto);
   }
 
-  changePassword(userId: string, dto: ChangePasswordDto): Observable<void> {
-    return this.http.post<void>(`/api/users/${userId}/change-password`, dto);
+  changePassword(dto: ChangePasswordDto): Observable<void> {
+    return this.http.post<void>('/api/auth/change-password', dto);
   }
 }
