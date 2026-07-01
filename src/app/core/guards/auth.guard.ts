@@ -17,31 +17,49 @@ export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.isAdmin()) {
+  if (!authService.isAuthenticated()) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (authService.isAdmin()) {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(getHomeRoute(authService));
 };
 
 export const technicianGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.isTechnician()) {
+  if (!authService.isAuthenticated()) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (authService.isTechnician()) {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(getHomeRoute(authService));
 };
 
 export const sellerGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.isSeller()) {
+  if (!authService.isAuthenticated()) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (authService.isSeller()) {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(getHomeRoute(authService));
 };
+
+function getHomeRoute(authService: AuthService): string[] {
+  if (authService.isTechnician()) return ['/tech'];
+  if (authService.isSeller()) return ['/seller'];
+  return ['/admin/dashboard'];
+}

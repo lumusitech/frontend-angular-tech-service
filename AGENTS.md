@@ -194,6 +194,22 @@ npx ng build
 
 ---
 
+## REGLA OBLIGATORIA: Crear PR para cada cambio
+
+**Cada grupo de cambios relacionados DEBE tener su propia Pull Request:**
+
+1. Crear un branch descriptivo: `feat/nombre-feature`, `fix/nombre-fix`, `docs/que-se-actualizo`
+2. Commitear con mensajes descriptivos
+3. Hacer push al branch
+4. Crear PR con título claro usando `gh pr create`
+5. Si el branch ya tiene una PR abierta, los nuevos commits se agregan automáticamente
+
+**No commitear directamente a `main`** — siempre a través de PR.
+
+**Regla: un cambio = una PR.** Si se mezclan features distintas en un mismo commit, el review se complica.
+
+---
+
 ## Backend API
 
 - **Base URL:** `/api/` (proxy en desarrollo → localhost:3000)
