@@ -8,6 +8,7 @@ import { TrackingCodeComponent } from '../../shared/components/tracking-code/tra
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { ExportButtonsComponent } from '../../shared/components/export-buttons/export-buttons.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,6 +29,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     TranslatePipe,
     CurrencyArsPipe,
     RelativeDatePipe,
+    ExportButtonsComponent,
   ],
   template: `
     @if (loading()) {
@@ -133,6 +135,15 @@ import { MatTabsModule } from '@angular/material/tabs';
                     </td>
                   </ng-container>
 
+                  <ng-container matColumnDef="orderActions">
+                    <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      {{ 'common.actions' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let order" class="px-4 py-3 text-right">
+                      <app-export-buttons [workOrderId]="order.id" />
+                    </td>
+                  </ng-container>
+
                   <tr mat-header-row *matHeaderRowDef="orderColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: orderColumns" class="hover:bg-gray-50 dark:hover:bg-gray-700/50"></tr>
                 </table>
@@ -193,6 +204,15 @@ import { MatTabsModule } from '@angular/material/tabs';
                     </td>
                   </ng-container>
 
+                  <ng-container matColumnDef="paymentActions">
+                    <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      {{ 'common.actions' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-right">
+                      <app-export-buttons [paymentId]="payment.id" />
+                    </td>
+                  </ng-container>
+
                   <tr mat-header-row *matHeaderRowDef="paymentColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: paymentColumns" class="hover:bg-gray-50 dark:hover:bg-gray-700/50"></tr>
                 </table>
@@ -214,8 +234,8 @@ export class ClientReportComponent {
   readonly loading = signal(true);
   readonly error = signal(false);
 
-  readonly orderColumns = ['trackingCode', 'serviceType', 'status', 'createdAt', 'totalPaid'];
-  readonly paymentColumns = ['amount', 'method', 'status', 'paidAt', 'trackingCode'];
+  readonly orderColumns = ['trackingCode', 'serviceType', 'status', 'createdAt', 'totalPaid', 'orderActions'];
+  readonly paymentColumns = ['amount', 'method', 'status', 'paidAt', 'trackingCode', 'paymentActions'];
 
   constructor() {
     this.loadData();
