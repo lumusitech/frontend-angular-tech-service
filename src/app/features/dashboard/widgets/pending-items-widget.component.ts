@@ -1,14 +1,14 @@
 import { Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { DatePipe } from '@angular/common';
 import { PendingItemSummary } from '../../../core/models/dashboard.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { StatusLabelPipe } from '../../../shared/pipes/status-label.pipe';
+import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-pending-items-widget',
-  imports: [MatIconModule, MatButtonModule, DatePipe, TranslatePipe, StatusLabelPipe],
+  imports: [MatIconModule, MatButtonModule, TranslatePipe, StatusLabelPipe, RelativeDatePipe],
   template: `
     @if (items().length > 0) {
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="secondaryColor()">
@@ -47,7 +47,7 @@ import { StatusLabelPipe } from '../../../shared/pipes/status-label.pipe';
                 <div>
                   <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ item.title }}</p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ 'pendingItems.dueDate' | translate }}: {{ item.dueDate | date: 'dd/MM/yyyy' }}
+                    {{ 'pendingItems.dueDate' | translate }}: {{ item.dueDate | relativeDate }}
                     @if (item.assignedTo) {
                       &middot; {{ item.assignedTo.name }}
                     }

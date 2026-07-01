@@ -28,8 +28,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InquiryFormComponent } from './inquiry-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'text-blue-400 bg-blue-500/15',
@@ -58,8 +58,8 @@ const STATUS_COLORS: Record<string, string> = {
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -260,7 +260,7 @@ const STATUS_COLORS: Record<string, string> = {
                 *matCellDef="let inquiry"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ inquiry.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                {{ inquiry.createdAt | relativeDate }}
               </td>
             </ng-container>
 

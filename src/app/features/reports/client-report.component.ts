@@ -7,7 +7,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { DatePipe } from '@angular/common';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -27,7 +27,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     TrackingCodeComponent,
     TranslatePipe,
     CurrencyArsPipe,
-    DatePipe,
+    RelativeDatePipe,
   ],
   template: `
     @if (loading()) {
@@ -120,7 +120,7 @@ import { MatTabsModule } from '@angular/material/tabs';
                       {{ 'common.created' | translate }}
                     </th>
                     <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {{ order.createdAt | date: 'dd/MM/yyyy' }}
+                      {{ order.createdAt | relativeDate }}
                     </td>
                   </ng-container>
 
@@ -180,7 +180,7 @@ import { MatTabsModule } from '@angular/material/tabs';
                       {{ 'reports.clientReport.paidAt' | translate }}
                     </th>
                     <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {{ payment.paidAt | date: 'dd/MM/yyyy' }}
+                      {{ payment.paidAt | relativeDate }}
                     </td>
                   </ng-container>
 

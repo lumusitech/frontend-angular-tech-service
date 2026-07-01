@@ -9,6 +9,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { DatePipe } from '@angular/common';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -27,6 +28,7 @@ import { MatTableModule } from '@angular/material/table';
     TrackingCodeComponent,
     TranslatePipe,
     DatePipe,
+    RelativeDatePipe,
   ],
   template: `
     @if (clientResource.status() === 'loading' && !clientResource.hasValue()) {
@@ -105,7 +107,7 @@ import { MatTableModule } from '@angular/material/table';
                 <div>
                   <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ 'common.created' | translate }}</dt>
                   <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                    {{ clientResource.value().createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                    {{ clientResource.value().createdAt | relativeDate }}
                   </dd>
                 </div>
               </dl>
@@ -182,7 +184,7 @@ import { MatTableModule } from '@angular/material/table';
                       {{ 'common.created' | translate }}
                     </th>
                     <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {{ order.createdAt | date: 'dd/MM/yyyy' }}
+                      {{ order.createdAt | relativeDate }}
                     </td>
                   </ng-container>
 

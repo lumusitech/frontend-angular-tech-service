@@ -152,19 +152,22 @@ Patrón a seguir:
 
 ---
 
-### 5. RelativeDatePipe + RoleDirective — UX polish
+### ~~5. RelativeDatePipe + RoleDirective — UX polish~~ ✅
 
 **Valor:** Mejor experiencia de usuario. Fechas más legibles, elementos visibles solo según rol.
 
-#### 8a. RelativeDatePipe
-- Crear: `src/app/shared/pipes/relative-date.pipe.ts`
-- Formato: "hace 2 días", "en 3 días", "hace 1 hora"
-- Usar en listas (createdAt, updatedAt, dueDate)
+#### ~~8a. RelativeDatePipe~~ ✅
+- ~~Crear: `src/app/shared/pipes/relative-date.pipe.ts`~~
+- ~~Formato: "hace 2 días", "en 3 días", "hace 1 hora"~~
+- ~~Usar en listas (createdAt, updatedAt, dueDate)~~
+- Adoptado en TODAS las listas, widgets y vistas resumen (14 componentes)
+- Fechas exactas (`| date:`) solo en vistas de detalle (info-tab, client-detail, tech-detail, profile)
 
-#### 8b. RoleDirective
-- Crear: `src/app/shared/directives/role.directive.ts`
-- `@Input() appRole: 'admin' | 'technician'`
-- Mostrar/ocultar según `AuthService.user()?.role`
+#### ~~8b. RoleDirective~~ ✅
+- ~~Crear: `src/app/shared/directives/role.directive.ts`~~
+- ~~`@Input() appRole: 'admin' | 'technician'`~~
+- ~~Mostrar/ocultar según `AuthService.user()?.role`~~
+- Directiva structural `*role` creada, lista para usar cuando se necesite
 
 ---
 
@@ -209,6 +212,8 @@ Patrón a seguir:
 - [x] Route fix: `:id` moved after specific routes in `/tech` to prevent profile/notifications hijack
 - [x] Role-based login redirect (admin→/admin, tech→/tech, seller→/seller)
 - [x] Role-based route guards (`adminGuard` on `/admin`, `technicianGuard` on `/tech`)
+- [x] RelativeDatePipe (fechas relativas: "hace 2 días", "en 3 horas")
+- [x] RoleDirective (directiva structural `*role` para visibilidad por rol)
 
 ## Archivos de referencia útiles
 

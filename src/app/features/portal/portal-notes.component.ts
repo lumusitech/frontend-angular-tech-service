@@ -3,11 +3,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { PortalNote } from '../../core/models/portal.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { DatePipe } from '@angular/common';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-portal-notes',
-  imports: [MatIconModule, MatCardModule, TranslatePipe, DatePipe],
+  imports: [MatIconModule, MatCardModule, TranslatePipe, RelativeDatePipe],
   template: `
     <mat-card>
       <mat-card-content class="!p-5">
@@ -30,7 +30,7 @@ import { DatePipe } from '@angular/common';
                     {{ 'portal.notes.types.' + note.type | translate }}
                   </span>
                   <span class="text-[11px] text-gray-400 dark:text-gray-500">
-                    {{ note.createdAt | date : 'dd/MM HH:mm' }}
+                    {{ note.createdAt | relativeDate }}
                   </span>
                 </div>
                 <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{{ note.content }}</p>

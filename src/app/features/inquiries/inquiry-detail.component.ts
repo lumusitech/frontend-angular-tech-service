@@ -16,8 +16,9 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { InquiryContactFormComponent } from './inquiry-contact-form.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
@@ -38,9 +39,9 @@ const STATUS_COLORS: Record<string, string> = {
     MatProgressSpinnerModule,
     PageHeaderComponent,
     ErrorStateComponent,
-    DatePipe,
     DecimalPipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -207,18 +208,18 @@ const STATUS_COLORS: Record<string, string> = {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.created' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.createdAt | relativeDate }}</p>
             </div>
             @if (inquiry.contactedAt) {
               <div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.contactedAt' | translate }}</span>
-                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.contactedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.contactedAt | relativeDate }}</p>
               </div>
             }
             @if (inquiry.reviewedAt) {
               <div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.reviewedAt' | translate }}</span>
-                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.reviewedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.reviewedAt | relativeDate }}</p>
               </div>
             }
           </div>

@@ -17,8 +17,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 const TYPE_ICONS: Record<string, string> = {
   'work_order.created': 'assignment',
@@ -70,8 +70,8 @@ const TYPE_COLORS: Record<string, string> = {
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -169,7 +169,7 @@ const TYPE_COLORS: Record<string, string> = {
                     {{ notification.title }}
                   </p>
                   <span class="text-xs text-gray-400 dark:text-gray-500 ml-2 shrink-0">
-                    {{ notification.createdAt | date: 'dd/MM HH:mm' }}
+                    {{ notification.createdAt | relativeDate }}
                   </span>
                 </div>
                 <p class="text-sm text-gray-600 dark:text-gray-400">

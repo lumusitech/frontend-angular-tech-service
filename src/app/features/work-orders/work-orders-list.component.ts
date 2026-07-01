@@ -27,8 +27,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { WorkOrderFormComponent } from './work-order-form.component';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -50,8 +50,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
-    DatePipe,
     TranslatePipe,
+    RelativeDatePipe,
   ],
   template: `
     <div class="space-y-6">
@@ -272,7 +272,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
                 @if (order.scheduledDate) {
-                  {{ order.scheduledDate | date: 'dd/MM/yyyy' }}
+                  {{ order.scheduledDate | relativeDate }}
                 } @else {
                   -
                 }
@@ -293,7 +293,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 *matCellDef="let order"
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
               >
-                {{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                {{ order.createdAt | relativeDate }}
               </td>
             </ng-container>
 
