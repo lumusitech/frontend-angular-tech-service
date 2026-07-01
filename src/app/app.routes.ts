@@ -230,13 +230,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: ':id',
-        loadComponent: () =>
-          import('./features/technician/tech-work-order-detail.component').then(
-            (m) => m.TechWorkOrderDetailComponent,
-          ),
-      },
-      {
         path: 'notifications',
         loadComponent: () =>
           import('./features/notifications/notifications-page.component').then(
@@ -254,6 +247,13 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () =>
           import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/technician/tech-work-order-detail.component').then(
+            (m) => m.TechWorkOrderDetailComponent,
+          ),
       },
     ],
   },

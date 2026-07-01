@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { form, FormField, required, email } from '@angular/forms/signals';
@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { User } from '../../core/models/user.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -186,15 +185,10 @@ interface PasswordForm {
   `,
 })
 export class ProfileSettingsComponent implements OnInit {
-  private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
   private readonly toastService = inject(ToastService);
 
-  private readonly userId = computed(() => this.authService.user()?.id ?? '');
-
-  readonly profileResource = httpResource<User>(
-    () => this.userId() ? `/api/users/${this.userId()}` : undefined,
-  );
+  readonly profileResource = httpResource<User>(() => '/api/auth/profile');
 
   readonly profileModel = signal<ProfileForm>({
     name: '',
@@ -231,12 +225,9 @@ export class ProfileSettingsComponent implements OnInit {
   }
 
   saveProfile(): void {
-    const userId = this.userId();
-    if (!userId) return;
-
     this.savingProfile.set(true);
     const m = this.profileModel();
-    this.profileService.updateProfile(userId, {
+    this.profileService.updateProfile({
       name: m.name,
       email: m.email,
       phone: m.phone || undefined,
@@ -259,9 +250,6 @@ export class ProfileSettingsComponent implements OnInit {
   }
 
   changePassword(): void {
-    const userId = this.userId();
-    if (!userId) return;
-
     const m = this.passwordModel();
     if (m.newPassword !== m.confirmPassword) {
       this.toastService.show('Las contraseñas no coinciden', 'error');
@@ -269,7 +257,7 @@ export class ProfileSettingsComponent implements OnInit {
     }
 
     this.savingPassword.set(true);
-    this.profileService.changePassword(userId, {
+    this.profileService.changePassword({
       currentPassword: m.currentPassword,
       newPassword: m.newPassword,
     }).subscribe({
