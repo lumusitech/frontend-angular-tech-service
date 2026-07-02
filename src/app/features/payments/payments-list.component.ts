@@ -49,7 +49,6 @@ import { PaymentFormComponent } from './payment-form.component';
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
-    ConfirmDialogComponent,
     CurrencyArsPipe,
     TranslatePipe,
     RelativeDatePipe,
