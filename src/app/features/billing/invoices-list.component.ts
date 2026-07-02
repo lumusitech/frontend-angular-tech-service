@@ -3,6 +3,7 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { Invoice, InvoiceType, InvoiceStatus } from '../../core/models/invoice.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatTableModule } from '@angular/material/table';
@@ -15,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -22,6 +24,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { InvoiceFormComponent } from './invoice-form.component';
@@ -40,12 +43,15 @@ import { InvoiceFormComponent } from './invoice-form.component';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatInputModule,
     MatProgressSpinnerModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     CurrencyArsPipe,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -127,7 +133,20 @@ import { InvoiceFormComponent } from './invoice-form.component';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (invoicesResource.hasValue()) {
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (invoice of invoicesResource.value().data; track invoice.id) {
+            <app-mobile-card
+              [title]="invoice.invoiceNumber"
+              [status]="invoice.status"
+              [statusType]="$any('invoiceStatus')"
+              [fields]="getInvoiceFields(invoice)"
+            />
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
+        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <table
             mat-table
             matSort
@@ -215,6 +234,7 @@ export class InvoicesListComponent {
   private readonly billingService = inject(BillingService);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -296,5 +316,14 @@ export class InvoicesListComponent {
 
   goToDetail(invoice: Invoice): void {
     this.router.navigate(['/admin/billing', invoice.id]);
+  }
+
+  getInvoiceFields(invoice: Invoice): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('billing.invoiceType'), value: invoice.invoiceType },
+      { label: this.translationService.instant('billing.clientName'), value: invoice.clientName || '-' },
+      { label: this.translationService.instant('billing.total'), value: String(invoice.total) },
+      { label: this.translationService.instant('billing.createdAt'), value: invoice.createdAt },
+    ];
   }
 }

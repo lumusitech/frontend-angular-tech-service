@@ -1,12 +1,30 @@
 @use '@angular/material' as mat;
 
+$brand-primary: (
+  0: #000000,
+  10: #091546,
+  20: #11256e,
+  25: #162f86,
+  30: #1b399e,
+  40: #1E40AF,
+  50: #2b52c4,
+  60: #4a6fd1,
+  70: #7091dd,
+  80: #9bb3e8,
+  90: #c5d5f2,
+  95: #dee9f8,
+  99: #f8f9fc,
+  100: #ffffff,
+  hex: #1E40AF,
+);
+
 html {
   height: 100%;
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: $brand-primary,
+        tertiary: mat.$green-palette,
       ),
       typography: Inter,
       density: 0,
@@ -18,8 +36,8 @@ html.dark {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: $brand-primary,
+        tertiary: mat.$green-palette,
       ),
       typography: Inter,
       density: 0,

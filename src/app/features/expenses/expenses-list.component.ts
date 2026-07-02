@@ -19,12 +19,14 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { ExpenseFormComponent } from './expense-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -44,11 +46,13 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     CurrencyArsPipe,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -137,8 +141,31 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (expensesResource.hasValue()) {
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (expense of expensesResource.value().data; track expense.id) {
+            <app-mobile-card
+              [title]="expense.description"
+              [status]="expense.category"
+              [statusType]="$any('expenseCategory')"
+              [fields]="getExpenseFields(expense)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(expense)"
+              [onDelete]="onDeleteSwipe(expense)"
+            >
+              <button mat-icon-button (click)="openEditDialog(expense); $event.stopPropagation()" class="!w-8 !h-8">
+                <mat-icon class="!w-4 !h-4">edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteExpense(expense); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+                <mat-icon class="!w-4 !h-4">delete</mat-icon>
+              </button>
+            </app-mobile-card>
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           <table
             mat-table
@@ -407,6 +434,15 @@ export class ExpensesListComponent implements OnInit {
     this.dateTo.set('');
   }
 
+  getExpenseFields(expense: Expense): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('expenses.amount'), value: String(expense.amount) },
+      { label: this.translationService.instant('expenses.date'), value: expense.date },
+      { label: this.translationService.instant('expenses.recurring'), value: expense.isRecurring ? 'Sí' : 'No' },
+      { label: this.translationService.instant('common.created'), value: expense.createdAt },
+    ];
+  }
+
   deleteExpense(expense: Expense): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -432,5 +468,13 @@ export class ExpensesListComponent implements OnInit {
         });
       }
     });
+  }
+
+  onEditSwipe(expense: Expense): (event: Event) => void {
+    return (_event: Event) => this.openEditDialog(expense);
+  }
+
+  onDeleteSwipe(expense: Expense): (event: Event) => void {
+    return (_event: Event) => this.deleteExpense(expense);
   }
 }

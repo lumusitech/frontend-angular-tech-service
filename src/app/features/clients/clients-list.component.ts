@@ -18,6 +18,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -44,6 +45,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
@@ -115,16 +117,19 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         />
       } @else if (clientsResource.hasValue()) {
         <!-- Mobile: Cards -->
-        <div class="block md:hidden space-y-3">
+        <mat-accordion class="block md:hidden">
           @for (client of clientsResource.value().data; track client.id) {
             <app-mobile-card
               [title]="client.name"
               [status]="client.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
               [statusType]="$any('activeInactive')"
               [fields]="getClientFields(client)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(client)"
+              [onDelete]="onDeleteSwipe(client)"
             />
           }
-        </div>
+        </mat-accordion>
 
         <!-- Desktop: Table -->
         <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -432,5 +437,13 @@ export class ClientsListComponent implements OnInit {
       { label: this.translationService.instant('common.address'), value: client.address || '-' },
       { label: this.translationService.instant('common.created'), value: client.createdAt },
     ];
+  }
+
+  onEditSwipe(client: Client): (event: Event) => void {
+    return (_event: Event) => this.openEditDialog(client);
+  }
+
+  onDeleteSwipe(client: Client): (event: Event) => void {
+    return (_event: Event) => this.deleteClient(client);
   }
 }

@@ -12,12 +12,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatAccordion } from '@angular/material/expansion';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { SkillFormComponent } from './skill-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -38,9 +40,11 @@ import { TranslationService } from '../../core/services/translation.service';
     MatChipsModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -94,7 +98,28 @@ import { TranslationService } from '../../core/services/translation.service';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (skillsResource.hasValue()) {
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (skill of skillsResource.value().data; track skill.id) {
+            <app-mobile-card
+              [title]="skill.name"
+              [fields]="getSkillFields(skill)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(skill)"
+              [onDelete]="onDeleteSwipe(skill)"
+            >
+              <button mat-icon-button (click)="openEditDialog(skill); $event.stopPropagation()" class="!w-8 !h-8">
+                <mat-icon class="!w-4 !h-4">edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteSkill(skill); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+                <mat-icon class="!w-4 !h-4">delete</mat-icon>
+              </button>
+            </app-mobile-card>
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
+        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <table mat-table matSort matSortDisableClear [dataSource]="skillsResource.value().data" (matSortChange)="onSortChange($event)" class="w-full">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
@@ -244,6 +269,14 @@ export class SkillsListComponent {
     });
   }
 
+  getSkillFields(skill: Skill): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('skills.category'), value: skill.category || '-' },
+      { label: this.translationService.instant('skills.description'), value: skill.description || '-' },
+      { label: this.translationService.instant('common.created'), value: skill.createdAt },
+    ];
+  }
+
   deleteSkill(skill: Skill): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -269,5 +302,13 @@ export class SkillsListComponent {
         });
       }
     });
+  }
+
+  onEditSwipe(skill: Skill): (event: Event) => void {
+    return (_event: Event) => this.openEditDialog(skill);
+  }
+
+  onDeleteSwipe(skill: Skill): (event: Event) => void {
+    return (_event: Event) => this.deleteSkill(skill);
   }
 }
