@@ -52,6 +52,43 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Bugs conocidos
+
+### BUG-001: Material Button Colors — Color por defecto persiste
+
+**Problema:** Los botones Material (`mat-flat-button`, `mat-stroked-button`, etc.) muestran el color celeste default de Material en vez del brand color `#1E40AF` (primary) o `#DC2626` (warn).
+
+**Intentos fallidos:**
+- CSS overrides en `styles.css` con `--mdc-filled-button-container-color`
+- Selectores específicos `button[mat-flat-button][color="primary"]`
+- Variables CSS en `material-theme.scss` (`--mat-filled-button-container-color`)
+- `background-color: #1E40AF !important`
+
+**Posible causa:** `material-theme.scss` se carga DESPUÉS de `styles.css` según `angular.json`. El mixin `mat.theme()` genera CSS con mayor especificidad que mis overrides. Necesita investigación profunda de la API de theming de Angular Material M3.
+
+**Archivos involucrados:**
+- `src/material-theme.scss` — tema Material con palette brand
+- `src/styles.css` — overrides CSS
+- `angular.json` — orden de carga de estilos
+
+---
+
+### BUG-002: Datepicker border cortado en desktop
+
+**Problema:** El borde derecho del input de calendario (datepicker) se ve cortado en la vista desktop. El `mat-datepicker-toggle` dentro del `mat-form-field` con `appearance="outline"` y `class="w-40"` causa que el outline se corte.
+
+**Intentos fallidos:**
+- `margin-right: -4px` en `.mat-datepicker-toggle`
+- `padding-right: 0` en `.mdc-notched-outline__trailing`
+
+**Posible causa:** El ancho `w-40` (160px) es insuficiente para el input + el icono del toggle. O el `overflow: hidden` del contenedor padre corta el outline.
+
+**Archivos involucrados:**
+- Todos los componentes de lista con filtros de fecha (11 archivos)
+- `src/styles.css` — overrides de form fields
+
+---
+
 ## Próximos pasos priorizados (por valor al proyecto)
 
 ### ~~1. Push Notifications — PWA real-time en mobile~~ ✅
