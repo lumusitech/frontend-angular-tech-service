@@ -80,7 +80,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 })
 export class PendingItemsWidgetComponent {
   items = input.required<PendingItemSummary[]>();
-  secondaryColor = input<string>('#10B981');
+  secondaryColor = input<string>('#059669');
   viewAll = output<void>();
   itemClick = output<{ id: string; title: string }>();
 }

@@ -322,8 +322,8 @@ export class SettingsComponent implements OnInit {
   readonly businessModel = signal<BusinessForm>({
     businessName: '',
     logoUrl: '',
-    primaryColor: '#3B82F6',
-    secondaryColor: '#10B981',
+    primaryColor: '#1E40AF',
+    secondaryColor: '#059669',
     address: '',
     phone: '',
     email: '',
@@ -339,8 +339,8 @@ export class SettingsComponent implements OnInit {
       this.businessModel.set({
         businessName: data.businessName || '',
         logoUrl: data.logoUrl || '',
-        primaryColor: data.primaryColor || '#3B82F6',
-        secondaryColor: data.secondaryColor || '#10B981',
+        primaryColor: data.primaryColor || '#1E40AF',
+        secondaryColor: data.secondaryColor || '#059669',
         address: data.address || '',
         phone: data.phone || '',
         email: data.email || '',
@@ -394,8 +394,8 @@ export class SettingsComponent implements OnInit {
           this.businessModel.set({
             businessName: data.businessName || '',
             logoUrl: data.logoUrl || '',
-            primaryColor: data.primaryColor || '#3B82F6',
-            secondaryColor: data.secondaryColor || '#10B981',
+            primaryColor: data.primaryColor || '#1E40AF',
+            secondaryColor: data.secondaryColor || '#059669',
             address: data.address || '',
             phone: data.phone || '',
             email: data.email || '',

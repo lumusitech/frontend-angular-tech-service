@@ -45,7 +45,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
 })
 export class TopClientsWidgetComponent {
   clients = input.required<TopClient[]>();
-  primaryColor = input<string>('#3B82F6');
-  secondaryColor = input<string>('#10B981');
+  primaryColor = input<string>('#1E40AF');
+  secondaryColor = input<string>('#059669');
   clientClick = output<{ id: string; name: string }>();
 }

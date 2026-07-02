@@ -45,6 +45,6 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   `,
 })
 export class QuickActionsWidgetComponent {
-  secondaryColor = input<string>('#10B981');
+  secondaryColor = input<string>('#059669');
   navigate = output<string>();
 }

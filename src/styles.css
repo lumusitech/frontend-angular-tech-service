@@ -59,8 +59,10 @@ body {
    ============================================ */
 
 :root {
-  --color-primary: #3B82F6;
-  --color-secondary: #10B981;
+  --color-primary: #1E40AF;
+  --color-secondary: #059669;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
 }
 
 /* --- Mat Table --- */
