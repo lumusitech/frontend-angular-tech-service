@@ -2,11 +2,10 @@ import { Component, input, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CopyToClipboardDirective } from '../../directives/copy-to-clipboard.directive';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { RelativeDatePipe } from '../../pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-copy-field',
-  imports: [MatIconModule, CopyToClipboardDirective, TranslatePipe, RelativeDatePipe],
+  imports: [MatIconModule, CopyToClipboardDirective, TranslatePipe],
   template: `
     <div class="flex items-start justify-between py-2 gap-2">
       <div class="flex items-start gap-2 min-w-0 flex-1">
@@ -25,7 +24,7 @@ import { RelativeDatePipe } from '../../pipes/relative-date.pipe';
             {{ value() }}
           </a>
         } @else if (type() === 'date') {
-          <span class="text-sm text-gray-900 dark:text-gray-100">{{ value() | relativeDate }}</span>
+          <span class="text-sm text-gray-900 dark:text-gray-100">{{ formattedDate() }}</span>
         } @else {
           <span class="text-sm text-gray-900 dark:text-gray-100 break-all">{{ value() }}</span>
         }
@@ -46,11 +45,18 @@ export class CopyFieldComponent {
   readonly value = input.required<string>();
   readonly type = input<'phone' | 'email' | 'address' | 'date' | 'text'>('text');
 
+  readonly formattedDate = computed(() => {
+    if (this.type() !== 'date') return this.value();
+    const d = new Date(this.value());
+    if (isNaN(d.getTime())) return this.value();
+    return this.relativeDate(d);
+  });
+
   readonly copyValue = computed(() => {
     if (this.type() !== 'date') return this.value();
-    const date = new Date(this.value());
-    if (isNaN(date.getTime())) return this.value();
-    return date.toLocaleDateString('es-AR', {
+    const d = new Date(this.value());
+    if (isNaN(d.getTime())) return this.value();
+    return d.toLocaleDateString('es-AR', {
       year: 'numeric', month: 'long', day: 'numeric',
       hour: '2-digit', minute: '2-digit',
     });
@@ -58,5 +64,17 @@ export class CopyFieldComponent {
 
   encodeURIComponent(value: string): string {
     return encodeURIComponent(value);
+  }
+
+  private relativeDate(date: Date): string {
+    const now = Date.now();
+    const diff = date.getTime() - now;
+    const abs = Math.abs(diff);
+    const future = diff > 0;
+    if (abs < 60_000) return future ? 'en unos segundos' : 'hace unos segundos';
+    if (abs < 3_600_000) { const m = Math.round(abs / 60_000); return future ? `en ${m} min` : `hace ${m} min`; }
+    if (abs < 86_400_000) { const h = Math.round(abs / 3_600_000); return future ? `en ~${h}h` : `hace ~${h}h`; }
+    if (abs < 2_592_000_000) { const d = Math.round(abs / 86_400_000); return future ? `en ${d} días` : `hace ${d} días`; }
+    return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 }
