@@ -37,4 +37,8 @@ export class PaymentsService {
   update(id: string, dto: UpdatePaymentDto): Observable<Payment> {
     return this.http.patch<Payment>(`${this.apiUrl}/${id}`, dto);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

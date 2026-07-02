@@ -3,8 +3,11 @@ import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '../../core/services/payments.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { Payment, PaymentStatus, PaymentMethod } from '../../core/models/payment.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -21,9 +24,11 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { PaymentFormComponent } from './payment-form.component';
 
 @Component({
   selector: 'app-payments-list',
@@ -44,15 +49,20 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
+    ConfirmDialogComponent,
     CurrencyArsPipe,
     TranslatePipe,
     RelativeDatePipe,
+    MatDialogModule,
   ],
   template: `
     <div class="space-y-6">
       <app-page-header
         [title]="'payments.title' | translate"
         [subtitle]="'payments.subtitle' | translate"
+        [actionLabel]="'payments.newPayment' | translate"
+        actionIcon="add"
+        [action]="openCreateDialog.bind(this)"
       />
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
@@ -265,18 +275,33 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
                 @if (payment.status === 'pending') {
                   <button
                     mat-icon-button
-                    (click)="approvePayment(payment)"
+                    (click)="approvePayment(payment); $event.stopPropagation()"
                     [title]="'payments.approve' | translate"
                     color="primary"
                   >
                     <mat-icon>check_circle</mat-icon>
                   </button>
                 }
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(payment); $event.stopPropagation()"
+                  [title]="'common.edit' | translate"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="deletePayment(payment); $event.stopPropagation()"
+                  [title]="'common.delete' | translate"
+                  color="warn"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" class="hover:bg-gray-100 dark:hover:bg-gray-700"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
           </table>
 
           <mat-paginator
@@ -294,6 +319,9 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 export class PaymentsListComponent implements OnInit {
   private readonly paymentsService = inject(PaymentsService);
   private readonly route = inject(ActivatedRoute);
+  private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
@@ -411,5 +439,54 @@ export class PaymentsListComponent implements OnInit {
       .subscribe({
         next: () => this.paymentsResource.reload(),
       });
+  }
+
+  openCreateDialog(): void {
+    const dialogRef = this.dialog.open(PaymentFormComponent, {
+      width: '600px',
+      data: { mode: 'create' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.paymentsResource.reload();
+    });
+  }
+
+  openEditDialog(payment: Payment): void {
+    const dialogRef = this.dialog.open(PaymentFormComponent, {
+      width: '600px',
+      data: { mode: 'edit', payment },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.paymentsResource.reload();
+    });
+  }
+
+  deletePayment(payment: Payment): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('payments.deleteTitle'),
+        message: this.translationService.instant('payments.deleteMessage', { amount: String(payment.amount) }),
+        confirmLabel: this.translationService.instant('common.delete'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.paymentsService.delete(payment.id).subscribe({
+          next: () => {
+            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.paymentsResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
+        });
+      }
+    });
   }
 }

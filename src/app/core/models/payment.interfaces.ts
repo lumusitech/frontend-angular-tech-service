@@ -31,6 +31,13 @@ export interface CreatePaymentDto {
 }
 
 export interface UpdatePaymentDto {
+  amount?: number;
+  method?: PaymentMethod;
+  provider?: string;
+  description?: string;
+  installmentNumber?: number;
+  totalInstallments?: number;
+  dueDate?: string;
   status?: PaymentStatus;
   paidAt?: string;
 }
