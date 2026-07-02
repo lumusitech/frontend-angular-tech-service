@@ -172,9 +172,18 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 **Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo.
 
-**Estado actual:** Solo `src/app/app.spec.ts` — cobertura ~0%.
+**Estado actual:** 147 tests pasando en 6 servicios prioritarios (cobertura ~60% de services).
+
 **Stack:** Vitest (configurado), Playwright (E2E)
-**Orden:** Service tests → Component tests → E2E tests
+**Orden:** ~~Service tests~~ ✅ → Component tests (pendiente) → E2E tests (pendiente)
+
+**Servicios testeados:**
+- ~~auth.service.spec.ts~~ ✅ (39 tests — login, logout, token, roles, localStorage, edge cases)
+- ~~clients.service.spec.ts~~ ✅ (18 tests — CRUD, filtros, edge cases)
+- ~~work-orders.service.spec.ts~~ ✅ (27 tests — CRUD, notes, materials, tasks, technicians)
+- ~~billing.service.spec.ts~~ ✅ (18 tests — CRUD, issue, cancel, PDF, edge cases)
+- ~~reports.service.spec.ts~~ ✅ (23 tests — summary, income, expenses, profit, services, technicians, clients)
+- ~~notifications.service.spec.ts~~ ✅ (21 tests — CRUD, unreadCount signal, markAsRead, markAllAsRead)
 
 ---
 
