@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineConfig } from '@stryker-mutator/core';
 
 export default defineConfig({
