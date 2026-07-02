@@ -8,7 +8,7 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
   imports: [TranslatePipe, CurrencyArsPipe],
   template: `
     @if (clients().length > 0) {
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="borderColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.topClients' | translate }}
         </h3>
@@ -47,5 +47,6 @@ export class TopClientsWidgetComponent {
   clients = input.required<TopClient[]>();
   primaryColor = input<string>('#1E40AF');
   secondaryColor = input<string>('#059669');
+  borderColor = input<string>('#1E40AF');
   clientClick = output<{ id: string; name: string }>();
 }

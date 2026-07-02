@@ -97,12 +97,13 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                 }
                 @switch (widgetId) {
                   @case ('kpis') {
-                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (kpiClick)="navigateTo($event)" />
+                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" [borderColor]="primaryColor()" (kpiClick)="navigateTo($event)" />
                   }
                   @case ('pendingItems') {
                     <app-pending-items-widget
                       [items]="pendingItems()"
                       [secondaryColor]="secondaryColor()"
+                      [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()"
                       (viewAll)="navigateTo('/admin/pending-items')"
                       (itemClick)="navigateTo('/admin/pending-items', { highlight: $event.id, search: $event.title })"
                     />
@@ -111,6 +112,7 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                     <app-inquiries-widget
                       [items]="inquiries()"
                       [primaryColor]="primaryColor()"
+                      [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()"
                       (viewAll)="navigateTo('/admin/inquiries')"
                       (itemClick)="navigateTo('/admin/inquiries/' + $event)"
                     />
@@ -120,13 +122,14 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                       [summary]="summary()!"
                       [primaryColor]="primaryColor()"
                       [secondaryColor]="secondaryColor()"
+                      [borderColor]="secondaryColor()"
                     />
                   }
                   @case ('quickActions') {
-                    <app-quick-actions-widget [secondaryColor]="secondaryColor()" (navigate)="navigateTo($event)" />
+                    <app-quick-actions-widget [secondaryColor]="secondaryColor()" [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()" (navigate)="navigateTo($event)" />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" (clientClick)="navigateTo('/admin/reports/clients/' + $event.id)" />
+                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()" (clientClick)="navigateTo('/admin/reports/clients/' + $event.id)" />
                   }
                 }
               </div>

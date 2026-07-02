@@ -7,7 +7,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   selector: 'app-quick-actions-widget',
   imports: [MatIconModule, MatButtonModule, TranslatePipe],
   template: `
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="secondaryColor()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="borderColor()">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
         {{ 'dashboard.quickActions' | translate }}
       </h3>
@@ -46,5 +46,6 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 })
 export class QuickActionsWidgetComponent {
   secondaryColor = input<string>('#059669');
+  borderColor = input<string>('#059669');
   navigate = output<string>();
 }

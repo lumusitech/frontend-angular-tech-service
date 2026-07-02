@@ -11,7 +11,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
   imports: [MatIconModule, MatButtonModule, TranslatePipe, StatusLabelPipe, RelativeDatePipe],
   template: `
     @if (items().length > 0) {
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="secondaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="borderColor()">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ 'dashboard.pendingItems' | translate }}
@@ -81,6 +81,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 export class PendingItemsWidgetComponent {
   items = input.required<PendingItemSummary[]>();
   secondaryColor = input<string>('#059669');
+  borderColor = input<string>('#059669');
   viewAll = output<void>();
   itemClick = output<{ id: string; title: string }>();
 }

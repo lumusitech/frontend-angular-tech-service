@@ -132,8 +132,8 @@ describe('DashboardComponent', () => {
       expect(borderDiv!.style.borderLeftColor).toBe('rgb(255, 85, 0)');
     });
 
-    it('should apply secondaryColor to quick-actions border', () => {
-      const customSecondary = '#00CC88';
+    it('should apply alternating borderColor to quick-actions based on index', () => {
+      const customPrimary = '#FF5500';
 
       getSummarySpy = vi.fn().mockReturnValue(of(mockSummary));
       navigateSpy = vi.fn();
@@ -157,7 +157,7 @@ describe('DashboardComponent', () => {
             useValue: {
               settings: signal({
                 id: '1', businessName: 'Test', logoUrl: '',
-                primaryColor: '#1E40AF', secondaryColor: customSecondary,
+                primaryColor: customPrimary, secondaryColor: '#00CC88',
                 address: '', phone: '', email: '',
               }),
             },
@@ -180,7 +180,8 @@ describe('DashboardComponent', () => {
         (div) => div.style.borderLeftColor,
       );
       expect(borderDiv).toBeTruthy();
-      expect(borderDiv!.style.borderLeftColor).toBe('rgb(0, 204, 136)');
+      // quickActions at index 0 gets primaryColor (i % 2 === 0)
+      expect(borderDiv!.style.borderLeftColor).toBe('rgb(255, 85, 0)');
     });
 
     it('should update colors when business settings change', () => {
