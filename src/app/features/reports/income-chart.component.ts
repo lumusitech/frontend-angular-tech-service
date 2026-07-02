@@ -68,7 +68,7 @@ export class IncomeChartComponent {
   }
 
   private getPrimaryColor(): string {
-    if (typeof document === 'undefined') return '#3B82F6';
-    return getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3B82F6';
+    if (typeof document === 'undefined') return '#1E40AF';
+    return getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#1E40AF';
   }
 }

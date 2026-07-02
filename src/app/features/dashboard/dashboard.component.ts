@@ -149,8 +149,8 @@ export class DashboardComponent implements OnInit {
   readonly editMode = signal(false);
 
   readonly businessSettings = computed(() => this.businessSettingsService.settings());
-  readonly primaryColor = computed(() => this.businessSettings()?.primaryColor ?? '#3B82F6');
-  readonly secondaryColor = computed(() => this.businessSettings()?.secondaryColor ?? '#10B981');
+  readonly primaryColor = computed(() => this.businessSettings()?.primaryColor ?? '#1E40AF');
+  readonly secondaryColor = computed(() => this.businessSettings()?.secondaryColor ?? '#059669');
 
   private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(() => ({
     url: '/api/pending-items',

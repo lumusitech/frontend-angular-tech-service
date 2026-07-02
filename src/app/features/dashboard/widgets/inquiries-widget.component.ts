@@ -54,7 +54,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 })
 export class InquiriesWidgetComponent {
   items = input.required<InquirySummary[]>();
-  primaryColor = input<string>('#3B82F6');
+  primaryColor = input<string>('#1E40AF');
   viewAll = output<void>();
   itemClick = output<string>();
 }

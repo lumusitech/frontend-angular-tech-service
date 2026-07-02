@@ -63,7 +63,7 @@ export class ProfitChartComponent {
         {
           data: [d.income],
           label: 'Ingresos',
-          backgroundColor: '#10B981',
+          backgroundColor: '#059669',
         },
         {
           data: [d.materialCosts],

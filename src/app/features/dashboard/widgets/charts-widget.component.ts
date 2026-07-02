@@ -56,8 +56,8 @@ export class ChartsWidgetComponent {
   private readonly themeService = inject(ThemeService);
 
   readonly summary = input.required<DashboardSummary>();
-  readonly primaryColor = input<string>('#3B82F6');
-  readonly secondaryColor = input<string>('#10B981');
+  readonly primaryColor = input<string>('#1E40AF');
+  readonly secondaryColor = input<string>('#059669');
 
   private readonly isDark = this.themeService.isDark;
 
