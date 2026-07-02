@@ -242,10 +242,10 @@ server.ts                          # Express server (SSR entry point)
       - [x] Header with business name + avatar
       - [x] Content area
 
-- [ ] PortalLayoutComponent
-  - [ ] Minimal header with business logo + name (from API settings)
-  - [ ] No sidebar, no navigation
-  - [ ] Full-screen content area
+- [x] PortalLayoutComponent
+  - [x] Minimal header with business logo + name (from API settings)
+  - [x] No sidebar, no navigation
+  - [x] Full-screen content area
 
 ### 4. `features/auth/` — Autenticacion
 
@@ -351,7 +351,11 @@ server.ts                          # Express server (SSR entry point)
   - [x] Filters: status, method
   - [x] Server-side sorting + pagination
   - [x] Approve button for pending payments
-- [ ] PaymentFormComponent — No implementado (pagos se crean desde work order detail)
+  - [x] Edit + Delete buttons (soft delete)
+  - [x] Row click opens edit dialog
+- [x] PaymentFormComponent (create/edit dialog)
+  - [x] Fields: amount, method, provider, description, installments, due date
+  - [x] Mode create + mode edit
 
 ### 11. `features/expenses/` — Gastos
 

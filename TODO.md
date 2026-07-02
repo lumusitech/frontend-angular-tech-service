@@ -7,10 +7,10 @@
 
 - **Stack:** Angular 22, Signals-only, Tailwind CSS 4, Angular Material 22, SSR híbrido, PWA
 - **Backend:** NestJS 11 en `http://localhost:3000/api/` — Swagger: `http://localhost:3000/api/docs`
-- **Auth:** JWT Bearer token, roles: `admin` (acceso total), `technician` (solo sus órdenes)
+- **Auth:** JWT Bearer token, roles: `admin` (acceso total), `technician` (solo sus órdenes), `seller`
 - **Respuestas API:** `{ statusCode, data, timestamp }` — httpResource usa `parse` en 2do arg
 - **i18n:** Custom JSON en `public/i18n/es.json` + `public/i18n/en.json`, TranslatePipe
-- **SSR:** Landing (`/`) prerender, Portal (`/track`) server-rendered, Admin/Tech client-rendered
+- **SSR:** Landing (`/`) prerender, Portal (`/track`) server-rendered, Admin/Tech/Seller client-rendered
 - **Package manager:** pnpm
 
 ## Patrones de código (MUY IMPORTANTE — seguir siempre)
@@ -45,147 +45,104 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Componentes standalone con `@Component`
 - Lazy loading con `loadComponent()`
 - Rutas hijas con `children: [...]`
-- Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule
+- Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule, MatExpansionPanel
 - Forms: template-driven con signals (no ReactiveFormsModule)
 - Sidebar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar items ahí
-
-## Próximos pasos priorizados
-
-### ~~1. PortalLayoutComponent (layout dedicado para portal público)~~ ✅
-
-**Qué:** Layout minimal para el portal de tracking, con logo del negocio desde API.
-**Dependencias:** Ninguna.
-**Ruta:** Se usa internamente en rutas `/track`.
-
-Archivos a crear/modificar:
-- Crear: `src/app/layouts/portal-layout/portal-layout.component.ts`
-- Modificar: `src/app/app.routes.ts` — envolver rutas `/track` con PortalLayout
-- Modificar: `public/i18n/es.json` + `en.json` — keys `portal.layout.*` si es necesario
-
-Patrón a seguir:
-- Header minimal con logo + nombre del negocio (desde settings API)
-- Sin sidebar, sin navegación
-- `router-outlet` para contenido
-- Mobile-first, `min-h-svh`
-- Dark mode support
-- Referencia: `src/app/layouts/tech-layout/tech-layout.component.ts` (simple, sin sidebar)
 
 ---
 
 ## Próximos pasos priorizados (por valor al proyecto)
 
-### 1. Push Notifications — PWA real-time en mobile
+### ~~1. Push Notifications — PWA real-time en mobile~~ ✅
 
 **Valor:** Feature diferenciador para PWA. Las notificaciones push llegan aunque la app esté cerrada en el celular. Sin costo de infraestructura ($0).
 
-**Qué:** Suscripción a push notifications al hacer login. El backend envía push cuando ocurren eventos (nueva orden asignada, cambio de estado, vencimiento de pendiente).
-
-**Ruta:** Se ejecuta automáticamente (service worker background)
-
-**Frontend (archivos):**
-- Modificar: `src/app/core/services/pwa.service.ts` — agregar lógica de suscripción push
-- Crear: `src/app/core/services/push-notification.service.ts` — suscripción, gestión de permisos
-- Modificar: `src/app/app.config.ts` — registrar service worker con VAPID key
-- Modificar: `public/i18n/es.json` + `en.json` — keys `push.*`
-
-**Backend (archivos):**
-- Crear módulo `push-notifications/` en backend
-- Entity `PushSubscription` (endpoint, keys, userId)
-- Endpoint `POST /push/subscribe` + `POST /push/unsubscribe`
-- Lógica de envío con `web-push` library cuando se emita notificación in-app
-
-**Dependencias:** `web-push` en backend (npm package). VAPID keys generadas localmente (gratis).
-
-**Costo:** $0 — Web Push es gratis, no necesita servicio externo.
+**Frontend:** `push-notification.service.ts` — suscripción, gestión de permisos
+**Backend:** Módulo `push-notifications/` con entity, controller, service, web-push
 
 ---
 
 ### ~~2. ProfileSettingsComponent — Perfil de usuario~~ ✅
 
-**Valor:** Completitud de gestión de usuarios. El admin puede editar su perfil, el técnico puede ver sus datos.
-
-**Qué:** Formulario para editar nombre, email, contraseña del usuario logueado.
-
-**Ruta:** `/admin/profile` o integrar en `/admin/settings`
-
-**Archivos:**
-- Crear: `src/app/features/settings/profile-settings.component.ts` (o integrar en settings)
-- Modificar: `src/app/app.routes.ts` — agregar ruta si es componente separado
-- Modificar: `public/i18n/es.json` + `en.json` — keys `settings.profile.*`
+**Valor:** Completitud de gestión de usuarios. El admin puede editar su perfil.
 
 ---
 
 ### ~~3. PortalLayoutComponent — Layout dedicado para portal~~ ✅
 
-**Valor:** Mejor organización del portal público. Separa el layout del contenido. Mejor SEO y reutilización.
-
-**Qué:** Layout minimal para rutas `/track` con logo del negocio (desde API) y sin sidebar.
-
-**Ruta:** Se usa internamente en rutas `/track`
-
-**Archivos:**
-- Crear: `src/app/layouts/portal-layout/portal-layout.component.ts`
-- Modificar: `src/app/app.routes.ts` — envolver rutas `/track` con PortalLayout
-- Modificar: `public/i18n/es.json` + `en.json` — keys `portal.layout.*`
-
-**Patrón:** Header minimal con logo + nombre. Sin sidebar. `router-outlet`. `min-h-svh`. Dark mode. Referencia: `tech-layout.component.ts`.
+**Valor:** Mejor organización del portal público. Separa el layout del contenido.
 
 ---
 
-### 4. Reportes avanzados — Business intelligence ~~大部分完成~~
+### ~~4. Reportes avanzados — Business intelligence~~ ✅
 
-**Valor:** Da más herramientas de decisión al dueño del negocio. Los reportes son el cierre del ciclo operativo → financiero → estratégico.
-
-| Componente | Estado | Ruta |
-|-----------|--------|------|
-| ~~ProfitChartComponent~~ | ✅ Línea de ganancia agregada al gráfico mensual del dashboard | widget en dashboard |
-| ~~TechnicianDetailComponent~~ | ✅ KPIs + tabla de órdenes + ExportButtons | `/admin/reports/technicians/:id` |
-| ~~ClientReportComponent~~ | ✅ KPIs + tabs órdenes/pagos + ExportButtons | `/admin/reports/clients/:id` |
-| ~~ExportButtons~~ | ✅ Botones de descarga PDF en technician-detail y client-report | botones en reports |
-| ~~Client drill-down~~ | ✅ Top clients del dashboard navega a client report | dashboard → report |
+| Componente | Estado |
+|-----------|--------|
+| ~~ProfitChartComponent~~ | ✅ Línea de ganancia en dashboard |
+| ~~TechnicianDetailComponent~~ | ✅ KPIs + tabla + ExportButtons |
+| ~~ClientReportComponent~~ | ✅ KPIs + tabs + ExportButtons |
+| ~~ExportButtons~~ | ✅ Botones PDF en reportes |
+| ~~Client drill-down~~ | ✅ Top clients → client report |
 
 ---
 
 ### ~~5. RelativeDatePipe + RoleDirective — UX polish~~ ✅
 
-**Valor:** Mejor experiencia de usuario. Fechas más legibles, elementos visibles solo según rol.
-
-#### ~~8a. RelativeDatePipe~~ ✅
-- ~~Crear: `src/app/shared/pipes/relative-date.pipe.ts`~~
-- ~~Formato: "hace 2 días", "en 3 días", "hace 1 hora"~~
-- ~~Usar en listas (createdAt, updatedAt, dueDate)~~
-- Adoptado en TODAS las listas, widgets y vistas resumen (14 componentes)
-- Fechas exactas (`| date:`) solo en vistas de detalle (info-tab, client-detail, tech-detail, profile)
-
-#### ~~8b. RoleDirective~~ ✅
-- ~~Crear: `src/app/shared/directives/role.directive.ts`~~
-- ~~`@Input() appRole: 'admin' | 'technician'`~~
-- ~~Mostrar/ocultar según `AuthService.user()?.role`~~
-- Directiva structural `*role` creada, lista para usar cuando se necesite
+- ~~RelativeDatePipe~~ ✅ — Adoptado en 14+ componentes
+- ~~RoleDirective~~ ✅ — Directiva structural `*role`
 
 ---
 
-### 6. Tests — Calidad y confianza
+### ~~6. Payments CRUD — Editar, eliminar, crear pagos~~ ✅
 
-**Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo. Pero se hace DESPUÉS de tener la base completa.
+**Valor:** CRUD completo para gestión de pagos.
+
+**Frontend:** `payment-form.component.ts` (dialog crear/editar), edit/delete buttons en lista
+**Backend:** PATCH + DELETE (soft/hard) endpoints, cascade WorkOrder→Payment
+
+---
+
+### 7. Material Button Colors — Coherencia visual
+
+**Valor:** Unificar colores de botones Material con la paleta del proyecto (primary: #1E40AF, secondary: #059669, danger: #DC2626).
+
+**Estado:** Pendiente
+
+---
+
+### 8. Mobile UI — Cards expandibles + Copy-to-clipboard
+
+**Valor:** Mejora UX mobile. Tablas → cards expandibles + copiar teléfonos/emails + acciones nativas (tel:, mailto:).
+
+**Componentes:**
+- CopyToClipboardDirective
+- CopyFieldComponent (phone → tel:, email → mailto:, address → maps)
+- MobileCardComponent (expansion panel con fields)
+- Integración en 11 listas
+
+**Estado:** Pendiente
+
+---
+
+### 9. Tests — Calidad y confianza
+
+**Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo.
 
 **Estado actual:** Solo `src/app/app.spec.ts` — cobertura ~0%.
-
 **Stack:** Vitest (configurado), Playwright (E2E)
-
 **Orden:** Service tests → Component tests → E2E tests
 
 ---
 
 ## Checklist rápido de features completadas
 
-- [x] Auth (login, guards, interceptors)
-- [x] Dashboard (KPIs, charts, widgets, drag-drop)
+- [x] Auth (login, guards, interceptors, JWT isActive, role-based redirect)
+- [x] Dashboard (KPIs, charts, widgets, drag-drop, profit chart)
 - [x] Clients CRUD (list, form, search, pagination, detail)
 - [x] Suppliers CRUD
 - [x] Service Types CRUD
 - [x] Work Orders (list, detail, tasks, materials, notes, status transitions, technician assignment)
-- [x] Payments (list, filters, approve)
+- [x] Payments CRUD (list, filters, approve, edit, delete, create dialog)
 - [x] Expenses CRUD
 - [x] Billing (invoices CRUD, issue, cancel, PDF)
 - [x] Reports (dashboard, income, expenses, profit chart, services ranking, technician ranking, export buttons, client drill-down)
@@ -195,15 +152,15 @@ Patrón a seguir:
 - [x] Landing Page (SSG/prerender, 6 sub-components)
 - [x] Portal Tracking (search, result, timeline, tasks, notes, payments)
 - [x] PWA (service worker, manifest, install prompt)
+- [x] Push Notifications (VAPID keys, web-push, PushSubscription entity, PushNotificationService)
 - [x] Technician View (cards, urgency, detail, bottom nav)
-- [x] i18n (es + en, ~300+ keys)
+- [x] i18n (es + en, ~350+ keys)
 - [x] Business Settings (multi-tenant branding: name, logo, colors, contact info)
-- [x] Portal Layout (dedicated layout for public tracking pages with business branding)
+- [x] Portal Layout (dedicated layout for public tracking pages)
 - [x] Profile Settings (admin + tech profile editing, name, email, phone, password change)
 - [x] Self-service Profile API (GET/PATCH /api/auth/profile, POST /api/auth/change-password)
-- [x] JWT isActive verification (session killed immediately when user is deactivated)
 - [x] Tech Layout logout button
-- [x] Route fix: `:id` moved after specific routes in `/tech` to prevent profile/notifications hijack
+- [x] Route fix: `:id` moved after specific routes in `/tech`
 - [x] Role-based login redirect (admin→/admin, tech→/tech, seller→/seller)
 - [x] Role-based route guards (`adminGuard` on `/admin`, `technicianGuard` on `/tech`)
 - [x] RelativeDatePipe (fechas relativas: "hace 2 días", "en 3 horas")
@@ -222,3 +179,5 @@ Patrón a seguir:
 | `src/app/core/services/notifications.service.ts` | Service con signals + WebSocket |
 | `src/app/shared/components/bottom-nav/bottom-nav.component.ts` | Componente con detección de ruta activa |
 | `src/app/core/services/pwa.service.ts` | Service PWA con isPlatformBrowser |
+| `src/app/core/services/push-notification.service.ts` | Service Push Notifications |
+| `src/app/features/payments/payment-form.component.ts` | Dialog form crear/editar pagos |
