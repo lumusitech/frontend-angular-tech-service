@@ -9,7 +9,8 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
   imports: [MatIconModule, TranslatePipe, CurrencyArsPipe],
   template: `
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/work-orders')">
+      <!-- Card 1: Órdenes Totales -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="borderColor()" (click)="kpiClick.emit('/admin/work-orders')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -28,7 +29,8 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/payments')">
+      <!-- Card 2: Ingresos Totales -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="borderColor()" (click)="kpiClick.emit('/admin/payments')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -52,7 +54,8 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/expenses')">
+      <!-- Card 3: Ganancia Neta -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="borderColor()" (click)="kpiClick.emit('/admin/expenses')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -70,13 +73,14 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ 'dashboard.vsLastMonth' | translate }}
             </p>
           </div>
-          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center shrink-0">
-            <mat-icon class="text-purple-600 dark:text-purple-400">trending_up</mat-icon>
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" [style.background-color]="primaryColor() + '1a'">
+            <mat-icon [style.color]="primaryColor()">trending_up</mat-icon>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="primaryColor()" (click)="kpiClick.emit('/admin/billing')">
+      <!-- Card 4: Ticket Promedio -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" [style.border-left-color]="borderColor()" (click)="kpiClick.emit('/admin/billing')">
         <div class="flex items-start gap-3">
           <div class="min-w-0 flex-1">
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -89,8 +93,8 @@ import { CurrencyArsPipe } from '../../../shared/pipes/currency-ars.pipe';
               {{ kpis().completionRate }}% {{ 'dashboard.completionRate' | translate }}
             </p>
           </div>
-          <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center shrink-0">
-            <mat-icon class="text-orange-600 dark:text-orange-400">receipt</mat-icon>
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" [style.background-color]="secondaryColor() + '1a'">
+            <mat-icon [style.color]="secondaryColor()">receipt</mat-icon>
           </div>
         </div>
       </div>
@@ -102,5 +106,6 @@ export class KpiCardsComponent {
   trends = input.required<DashboardTrends>();
   primaryColor = input<string>('#1E40AF');
   secondaryColor = input<string>('#059669');
+  borderColor = input<string>('#1E40AF');
   kpiClick = output<string>();
 }

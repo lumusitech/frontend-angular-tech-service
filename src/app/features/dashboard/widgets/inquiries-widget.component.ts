@@ -11,7 +11,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
   imports: [MatIconModule, MatButtonModule, SlicePipe, TranslatePipe, RelativeDatePipe],
   template: `
     @if (items().length > 0) {
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="borderColor()">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ 'dashboard.newInquiries' | translate }}
@@ -55,6 +55,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 export class InquiriesWidgetComponent {
   items = input.required<InquirySummary[]>();
   primaryColor = input<string>('#1E40AF');
+  borderColor = input<string>('#1E40AF');
   viewAll = output<void>();
   itemClick = output<string>();
 }

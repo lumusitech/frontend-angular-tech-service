@@ -27,7 +27,7 @@ interface TechNavTab {
             type="button"
             (click)="navigate(tab.path)"
             class="flex flex-col items-center justify-center gap-1 w-full h-full rounded-lg transition-colors"
-            [class]="isActive(tab.id) ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+            [class]="isActive(tab.id) ? 'text-[var(--color-secondary)]' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
             [attr.aria-current]="isActive(tab.id) ? 'page' : null"
           >
             <div class="relative">

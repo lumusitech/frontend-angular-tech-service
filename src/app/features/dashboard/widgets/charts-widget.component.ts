@@ -21,7 +21,7 @@ import { ThemeService } from '../../../core/services/theme.service';
   `,
   template: `
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
+      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.monthlyTrend' | translate }}
         </h3>
@@ -29,7 +29,7 @@ import { ThemeService } from '../../../core/services/theme.service';
           <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions()" type="line"></canvas>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.ordersByStatus' | translate }}
         </h3>
@@ -39,7 +39,7 @@ import { ThemeService } from '../../../core/services/theme.service';
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-gray-200 dark:border-gray-700 p-6 chart-entry" [style.border-left-color]="primaryColor()">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.topServices' | translate }}
         </h3>
@@ -58,11 +58,12 @@ export class ChartsWidgetComponent {
   readonly summary = input.required<DashboardSummary>();
   readonly primaryColor = input<string>('#1E40AF');
   readonly secondaryColor = input<string>('#059669');
+  readonly borderColor = input<string>('#1E40AF');
 
   private readonly isDark = this.themeService.isDark;
 
   private readonly labelColor = computed(() => (this.isDark() ? '#e5e7eb' : '#374151'));
-  private readonly borderColor = computed(() => (this.isDark() ? '#1f2937' : '#ffffff'));
+  private readonly chartBgColor = computed(() => (this.isDark() ? '#1f2937' : '#ffffff'));
   private readonly tooltipBg = computed(() => (this.isDark() ? '#374151' : '#1f2937'));
 
   private readonly gridColor = 'rgba(156,163,175,0.15)';
@@ -120,7 +121,7 @@ export class ChartsWidgetComponent {
             '#A78BFA',
             '#9CA3AF',
           ],
-          borderColor: this.borderColor(),
+          borderColor: this.chartBgColor(),
           borderWidth: 2,
         },
       ],

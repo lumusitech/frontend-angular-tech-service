@@ -198,4 +198,61 @@ describe('DashboardComponent', () => {
       expect(img?.getAttribute('src')).toBe('https://example.com/logo.png');
     });
   });
+
+  describe('color propagation', () => {
+    it('should pass primaryColor and secondaryColor from settings', () => {
+      fixture.detectChanges();
+      expect(component.primaryColor()).toBe('#1E40AF');
+      expect(component.secondaryColor()).toBe('#059669');
+    });
+
+    it('should update colors when business settings change', () => {
+      const settingsSignal = signal({
+        id: '1', businessName: 'Test', logoUrl: '',
+        primaryColor: '#FF0000', secondaryColor: '#00FF00',
+        address: '', phone: '', email: '',
+      });
+
+      getSummarySpy = vi.fn().mockReturnValue(of(mockSummary));
+      navigateSpy = vi.fn();
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [DashboardComponent],
+        providers: [
+          { provide: DashboardService, useValue: { getSummary: getSummarySpy } },
+          { provide: Router, useValue: { navigate: navigateSpy } },
+          {
+            provide: DashboardLayoutService,
+            useValue: {
+              layout: signal(['kpis']),
+              widgets: signal({ kpis: true }),
+              reorder: vi.fn(),
+              reset: vi.fn(),
+            },
+          },
+          { provide: BusinessSettingsService, useValue: { settings: settingsSignal } },
+          {
+            provide: TranslationService,
+            useValue: { instant: vi.fn().mockImplementation((key: string) => key) },
+          },
+        ],
+      });
+
+      const freshFixture = TestBed.createComponent(DashboardComponent);
+      const freshComponent = freshFixture.componentInstance;
+
+      expect(freshComponent.primaryColor()).toBe('#FF0000');
+      expect(freshComponent.secondaryColor()).toBe('#00FF00');
+
+      settingsSignal.set({
+        id: '1', businessName: 'Test', logoUrl: '',
+        primaryColor: '#0000FF', secondaryColor: '#FFFF00',
+        address: '', phone: '', email: '',
+      });
+
+      expect(freshComponent.primaryColor()).toBe('#0000FF');
+      expect(freshComponent.secondaryColor()).toBe('#FFFF00');
+    });
+  });
 });

@@ -34,7 +34,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                 (input)="email.set(getInputValue($event))"
                 [placeholder]="'auth.emailPlaceholder' | translate"
                 required
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[var(--color-secondary)] focus:border-[var(--color-secondary)] outline-none transition-colors"
               />
             </div>
 
@@ -52,7 +52,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                 (input)="password.set(getInputValue($event))"
                 [placeholder]="'auth.passwordPlaceholder' | translate"
                 required
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[var(--color-secondary)] focus:border-[var(--color-secondary)] outline-none transition-colors"
               />
             </div>
 
@@ -67,7 +67,9 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
             <button
               type="submit"
               [disabled]="loading()"
-              class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              class="w-full text-white font-medium py-3 px-4 rounded-lg transition-colors focus:ring-2 focus:ring-offset-2"
+              [style.background-color]="'var(--color-secondary)'"
+              [style.--tw-ring-color]="'var(--color-secondary)'"
             >
               @if (loading()) {
                 <span class="inline-flex items-center gap-2">

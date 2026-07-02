@@ -7,10 +7,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   template: `
     <div class="flex flex-col items-center justify-center py-12 px-4">
       <div
-        class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4"
+        class="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+        [style.background-color]="'color-mix(in srgb, var(--color-secondary) 12%, transparent)'"
       >
         <svg
-          class="w-8 h-8 text-gray-400 dark:text-gray-500"
+          class="w-8 h-8"
+          [style.color]="'var(--color-secondary)'"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -32,7 +34,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       @if (actionLabel()) {
         <button
           (click)="onAction()"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+          class="px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors"
+          [style.background-color]="'var(--color-secondary)'"
         >
           {{ actionLabel() }}
         </button>

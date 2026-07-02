@@ -23,8 +23,6 @@ export interface MobileCardField {
   styles: `
     :host { display: block; }
 
-    .hidden { display: none !important; }
-
     .swipe-root {
       position: relative;
       border-radius: 0.75rem;
@@ -36,13 +34,14 @@ export interface MobileCardField {
       top: 0; bottom: 0; left: 0; right: 0;
       display: flex;
       z-index: 0;
+      pointer-events: none;
     }
 
     .action-edit {
       width: 80px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 2px;
-      background: #1E40AF; color: white;
+      background: var(--color-primary, #1E40AF); color: white;
       font-size: 0.7rem; font-weight: 600;
     }
 
@@ -50,7 +49,7 @@ export interface MobileCardField {
       margin-left: auto; width: 80px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 2px;
-      background: #DC2626; color: white;
+      background: var(--color-danger, #DC2626); color: white;
       font-size: 0.7rem; font-weight: 600;
     }
 
@@ -72,7 +71,7 @@ export interface MobileCardField {
          (touchmove)="onTouchMove($event)"
          (touchend)="onTouchEnd()">
 
-      <div class="swipe-actions" [class.hidden]="panelExpanded()">
+      <div class="swipe-actions">
         <div class="action-edit">
           <mat-icon class="!w-5 !h-5">edit</mat-icon>
           <span>Editar</span>
