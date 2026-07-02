@@ -61,6 +61,7 @@ export interface MobileCardField {
       border-radius: 0.75rem;
       will-change: transform;
       transition: transform 0.2s ease-out;
+      overflow: visible !important;
     }
     :host(.dark) .swipe-card { background: #1f2937; }
     .swipe-card.dragging { transition: none; }
