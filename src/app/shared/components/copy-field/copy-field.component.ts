@@ -2,10 +2,11 @@ import { Component, input, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CopyToClipboardDirective } from '../../directives/copy-to-clipboard.directive';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { RelativeDatePipe } from '../../pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-copy-field',
-  imports: [MatIconModule, CopyToClipboardDirective, TranslatePipe],
+  imports: [MatIconModule, CopyToClipboardDirective, TranslatePipe, RelativeDatePipe],
   template: `
     <div class="flex items-start justify-between py-2 gap-2">
       <div class="flex items-start gap-2 min-w-0 flex-1">
@@ -24,7 +25,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             {{ value() }}
           </a>
         } @else if (type() === 'date') {
-          <span class="text-sm text-gray-900 dark:text-gray-100">{{ displayDate() }}</span>
+          <span class="text-sm text-gray-900 dark:text-gray-100">{{ value() | relativeDate }}</span>
         } @else {
           <span class="text-sm text-gray-900 dark:text-gray-100 break-all">{{ value() }}</span>
         }
@@ -45,13 +46,6 @@ export class CopyFieldComponent {
   readonly value = input.required<string>();
   readonly type = input<'phone' | 'email' | 'address' | 'date' | 'text'>('text');
 
-  readonly displayDate = computed(() => {
-    if (this.type() !== 'date') return this.value();
-    const date = new Date(this.value());
-    if (isNaN(date.getTime())) return this.value();
-    return this.relativeDate(date);
-  });
-
   readonly copyValue = computed(() => {
     if (this.type() !== 'date') return this.value();
     const date = new Date(this.value());
@@ -64,27 +58,5 @@ export class CopyFieldComponent {
 
   encodeURIComponent(value: string): string {
     return encodeURIComponent(value);
-  }
-
-  private relativeDate(date: Date): string {
-    const now = Date.now();
-    const diff = date.getTime() - now;
-    const absDiff = Math.abs(diff);
-    const isFuture = diff > 0;
-
-    if (absDiff < 60_000) return isFuture ? 'en unos segundos' : 'hace unos segundos';
-    if (absDiff < 3_600_000) {
-      const mins = Math.round(absDiff / 60_000);
-      return isFuture ? `en ${mins} min` : `hace ${mins} min`;
-    }
-    if (absDiff < 86_400_000) {
-      const hours = Math.round(absDiff / 3_600_000);
-      return isFuture ? `en ~${hours}h` : `hace ~${hours}h`;
-    }
-    if (absDiff < 2_592_000_000) {
-      const days = Math.round(absDiff / 86_400_000);
-      return isFuture ? `en ${days} días` : `hace ${days} días`;
-    }
-    return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 }
