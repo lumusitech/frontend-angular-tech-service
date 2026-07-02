@@ -29,6 +29,9 @@
     "from": "Desde",
     "to": "Hasta",
     "clearFilters": "Limpiar filtros",
+    "copied": "Copiado al portapapeles",
+    "copyToClipboard": "Copiar",
+    "copyError": "Error al copiar",
     "toast": {
       "created": "Creado exitosamente",
       "updated": "Actualizado exitosamente",

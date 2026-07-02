@@ -23,6 +23,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { ClientFormComponent } from './client-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -47,6 +48,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -112,9 +114,20 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (clientsResource.hasValue()) {
-        <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
-        >
+        <!-- Mobile: Cards -->
+        <div class="block md:hidden space-y-3">
+          @for (client of clientsResource.value().data; track client.id) {
+            <app-mobile-card
+              [title]="client.name"
+              [status]="client.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
+              [statusType]="$any('activeInactive')"
+              [fields]="getClientFields(client)"
+            />
+          }
+        </div>
+
+        <!-- Desktop: Table -->
+        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <table
             mat-table
             matSort
@@ -281,7 +294,7 @@ export class ClientsListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
-  private readonly translationService = inject(TranslationService);
+  readonly translationService = inject(TranslationService);
 
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
@@ -410,5 +423,14 @@ export class ClientsListComponent implements OnInit {
         });
       }
     });
+  }
+
+  getClientFields(client: Client): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('clients.email'), value: client.email, type: 'email' },
+      { label: this.translationService.instant('clients.phone'), value: client.phone || '-', type: 'phone' },
+      { label: this.translationService.instant('common.address'), value: client.address || '-' },
+      { label: this.translationService.instant('common.created'), value: client.createdAt },
+    ];
   }
 }
