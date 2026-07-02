@@ -131,6 +131,12 @@ div:has(> table.mat-mdc-table) {
   margin-right: -4px;
 }
 
+.mat-mdc-form-field-icon-suffix,
+[dir=rtl] .mat-mdc-form-field-icon-prefix {
+  padding: 0 0 0 4px;
+  margin: 5px;
+}
+
 .mat-mdc-form-field .mdc-notched-outline__trailing {
   padding-right: 0;
 }
