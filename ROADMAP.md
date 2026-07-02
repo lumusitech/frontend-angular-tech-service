@@ -229,6 +229,9 @@ server.ts                          # Express server (SSR entry point)
 - [x] SafeHtmlPipe (bypass sanitizer para SVG icons)
 - [x] TranslatePipe (i18n custom con JSON files)
 - [x] RoleDirective (show/hide based on role)
+- [x] CopyToClipboardDirective (copy to clipboard with toast feedback)
+- [x] CopyFieldComponent (phone → tel:, email → mailto:, address → maps:, date → relative)
+- [x] MobileCardComponent (expansion panel with swipe gestures, accordion behavior)
 
 ### 3. `layouts/` — Layouts
 
