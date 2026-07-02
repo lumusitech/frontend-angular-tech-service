@@ -108,22 +108,22 @@ div:has(> table.mat-mdc-table) {
 /* --- Mat Paginator --- */
 .mat-mdc-paginator {
   border-radius: 0 0 0.75rem 0.75rem;
-  border-top: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--color-secondary) 20%, transparent);
 }
 
 .mat-mdc-paginator-page-size .mat-mdc-select-value {
-  color: var(--color-primary);
+  color: var(--color-secondary);
 }
 
 /* --- Mat Form Field (inputs, selects, datepickers) --- */
 .mat-mdc-form-field {
-  --mdc-outlined-text-field-focus-outline-color: var(--color-primary);
-  --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
+  --mdc-outlined-text-field-focus-outline-color: var(--color-secondary);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-secondary);
   --mdc-outlined-text-field-label-text-color: #6b7280;
 }
 
 .mat-mdc-form-field:focus-within .mat-mdc-form-field-focus-overlay {
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  background-color: color-mix(in srgb, var(--color-secondary) 5%, transparent);
 }
 
 /* Prevent datepicker toggle from clipping the outline border */
@@ -153,8 +153,9 @@ div:has(> table.mat-mdc-table) {
 
 /* --- Sidebar active link --- */
 .sidebar-active-link {
-  border-left: 3px solid var(--color-primary);
-  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-left: 3px solid var(--color-secondary);
+  background-color: color-mix(in srgb, var(--color-secondary) 8%, transparent);
+  color: var(--color-secondary);
 }
 
 /* --- Notification Toast --- */

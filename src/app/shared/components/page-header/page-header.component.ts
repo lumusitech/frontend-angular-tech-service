@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ title() }}</h1>
           @if (subtitle()) {
-            <p class="text-gray-500 dark:text-gray-400 mt-1">{{ subtitle() }}</p>
+            <p class="text-[var(--color-secondary)] dark:text-[var(--color-secondary)] opacity-80 mt-1">{{ subtitle() }}</p>
           }
         </div>
       </div>

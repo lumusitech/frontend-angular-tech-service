@@ -84,7 +84,7 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
         <app-error-state (retry)="loadSummary()" />
       } @else if (summary()) {
         <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="space-y-6">
-          @for (widgetId of layoutService.layout(); track widgetId) {
+          @for (widgetId of layoutService.layout(); track widgetId; let i = $index) {
             @if (layoutService.widgets()[widgetId]) {
               <div cdkDrag [cdkDragData]="widgetId" [cdkDragDisabled]="!editMode()">
                 @if (editMode()) {
