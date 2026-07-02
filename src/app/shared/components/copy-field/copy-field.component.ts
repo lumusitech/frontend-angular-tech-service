@@ -33,7 +33,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         class="!w-8 !h-8 shrink-0"
         [title]="'common.copyToClipboard' | translate"
       >
-        <mat-icon class="!w-4 !h-4 !text-gray-400">content_copy</mat-icon>
+        <mat-icon class="!w-4 !h-4 !text-gray-400">file_copy</mat-icon>
       </button>
     </div>
   `,
