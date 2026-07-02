@@ -116,21 +116,41 @@ div:has(> table.mat-mdc-table) {
 }
 
 /* --- Mat Buttons — Brand Colors --- */
-button.mat-mdc-button.mat-primary,
-button.mat-mdc-raised-button.mat-primary,
-button.mat-mdc-unelevated-button.mat-primary,
 button[mat-flat-button][color="primary"],
-a[mat-flat-button][color="primary"] {
-  background-color: #1E40AF !important;
-  color: white !important;
+a[mat-flat-button][color="primary"],
+button[mat-raised-button][color="primary"],
+a[mat-raised-button][color="primary"] {
+  --mdc-filled-button-container-color: #1E40AF;
+  --mdc-filled-button-label-text-color: #ffffff;
+  --mdc-protected-button-container-color: #1E40AF;
+  --mdc-protected-button-label-text-color: #ffffff;
 }
 
-button.mat-mdc-button.mat-primary:hover,
-button.mat-mdc-raised-button.mat-primary:hover,
-button.mat-mdc-unelevated-button.mat-primary:hover,
 button[mat-flat-button][color="primary"]:hover,
-a[mat-flat-button][color="primary"]:hover {
-  background-color: #1b399e !important;
+a[mat-flat-button][color="primary"]:hover,
+button[mat-raised-button][color="primary"]:hover,
+a[mat-raised-button][color="primary"]:hover {
+  --mdc-filled-button-container-color: #1b399e;
+}
+
+button[mat-flat-button][color="warn"],
+button[mat-raised-button][color="warn"] {
+  --mdc-filled-button-container-color: #DC2626;
+  --mdc-filled-button-label-text-color: #ffffff;
+}
+
+button[mat-stroked-button][color="primary"],
+a[mat-stroked-button][color="primary"],
+button[mat-outlined-button][color="primary"],
+a[mat-outlined-button][color="primary"] {
+  --mdc-outlined-button-label-text-color: #1E40AF;
+  --mdc-outlined-button-outline-color: #1E40AF;
+}
+
+button[mat-stroked-button][color="warn"],
+button[mat-outlined-button][color="warn"] {
+  --mdc-outlined-button-label-text-color: #DC2626;
+  --mdc-outlined-button-outline-color: #DC2626;
 }
 
 .mat-mdc-button.mat-warn,
