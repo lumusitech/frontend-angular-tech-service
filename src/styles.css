@@ -126,6 +126,15 @@ div:has(> table.mat-mdc-table) {
   background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
 }
 
+/* Prevent datepicker toggle from clipping the outline border */
+.mat-mdc-form-field .mat-datepicker-toggle {
+  margin-right: -4px;
+}
+
+.mat-mdc-form-field .mdc-notched-outline__trailing {
+  padding-right: 0;
+}
+
 /* --- Mat Sort Arrow --- */
 .mat-sort-header-arrow {
   color: var(--color-primary);
