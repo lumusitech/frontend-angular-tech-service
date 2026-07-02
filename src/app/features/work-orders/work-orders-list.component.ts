@@ -32,6 +32,7 @@ import { WorkOrderFormComponent } from './work-order-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { TranslationService } from '../../core/services/translation.service';
+import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -55,6 +56,7 @@ import { TranslationService } from '../../core/services/translation.service';
     StatusBadgeComponent,
     TrackingCodeComponent,
     MobileCardComponent,
+    DateFieldSelectorComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -111,6 +113,12 @@ import { TranslationService } from '../../core/services/translation.service';
               <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <app-date-field-selector
+            [fields]="dateFieldOptions"
+            [value]="dateField()"
+            (valueChange)="onDateFieldChange($event)"
+          />
 
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
@@ -373,10 +381,16 @@ export class WorkOrdersListComponent implements OnInit {
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
+  readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : new Date());
+
+  readonly dateFieldOptions: DateFieldOption[] = [
+    { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
+    { value: 'scheduledDate', labelKey: 'workOrders.scheduledDate' },
+  ];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
@@ -397,20 +411,23 @@ export class WorkOrdersListComponent implements OnInit {
     }
   }
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
-    url: '/api/work-orders',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-      ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
-      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-      sortBy: this.sortBy(),
-      order: this.sortOrder().toUpperCase(),
-      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
-    },
-  }));
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => {
+    const today = toLocalDateString(new Date());
+    return {
+      url: '/api/work-orders',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+        sortBy: this.sortBy(),
+        order: this.sortOrder().toUpperCase(),
+        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+      },
+    };
+  });
 
   displayedColumns = [
     'trackingCode',
@@ -436,6 +453,12 @@ export class WorkOrdersListComponent implements OnInit {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  onDateFieldChange(field: string): void {
+    this.dateField.set(field);
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
@@ -475,6 +498,7 @@ export class WorkOrdersListComponent implements OnInit {
     this.searchFilter.set('');
     this.statusFilter.set('');
     this.priorityFilter.set('');
+    this.dateField.set('createdAt');
     this.dateFrom.set('');
     this.dateTo.set('');
     this.highlightedId.set(null);

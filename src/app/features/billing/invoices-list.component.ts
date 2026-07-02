@@ -28,6 +28,7 @@ import { MobileCardComponent, MobileCardField } from '../../shared/components/mo
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { InvoiceFormComponent } from './invoice-form.component';
+import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
 
 @Component({
   selector: 'app-invoices-list',
@@ -52,6 +53,7 @@ import { InvoiceFormComponent } from './invoice-form.component';
     StatusBadgeComponent,
     CurrencyArsPipe,
     MobileCardComponent,
+    DateFieldSelectorComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -96,6 +98,12 @@ import { InvoiceFormComponent } from './invoice-form.component';
               [placeholder]="'common.search' | translate"
             />
           </mat-form-field>
+
+          <app-date-field-selector
+            [fields]="dateFieldOptions"
+            [value]="dateField()"
+            (valueChange)="onDateFieldChange($event)"
+          />
 
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
@@ -243,25 +251,34 @@ export class InvoicesListComponent {
   readonly clientNameFilter = signal('');
   readonly sortBy = signal('createdAt');
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
+  readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
   readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
 
-  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => ({
-    url: '/api/billing/invoices',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-      ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
-      ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
-      sortBy: this.sortBy(),
-      order: this.sortOrder().toUpperCase(),
-      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
-    },
-  }));
+  readonly dateFieldOptions: DateFieldOption[] = [
+    { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
+    { value: 'issuedAt', labelKey: 'billing.dateFieldIssued' },
+  ];
+
+  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => {
+    const today = toLocalDateString(new Date());
+    return {
+      url: '/api/billing/invoices',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
+        ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
+        sortBy: this.sortBy(),
+        order: this.sortOrder().toUpperCase(),
+        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+      },
+    };
+  });
 
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
 
@@ -273,6 +290,13 @@ export class InvoicesListComponent {
     this.statusFilter.set('');
     this.typeFilter.set('');
     this.clientNameFilter.set('');
+    this.dateField.set('createdAt');
+    this.dateFrom.set('');
+    this.dateTo.set('');
+  }
+
+  onDateFieldChange(field: string): void {
+    this.dateField.set(field);
     this.dateFrom.set('');
     this.dateTo.set('');
   }
