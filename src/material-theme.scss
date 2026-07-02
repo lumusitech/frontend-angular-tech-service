@@ -34,16 +34,16 @@ html {
     )
   );
 
-  /* Force brand primary on all Material M3 buttons */
-  --mat-filled-button-container-color: #1E40AF;
+  /* Force brand primary on all Material M3 buttons — uses --color-primary set by App effect() */
+  --mat-filled-button-container-color: var(--color-primary, #1E40AF);
   --mat-filled-button-label-text-color: #ffffff;
-  --mat-protected-button-container-color: #1E40AF;
+  --mat-protected-button-container-color: var(--color-primary, #1E40AF);
   --mat-protected-button-label-text-color: #ffffff;
-  --mat-outlined-button-label-text-color: #1E40AF;
-  --mat-outlined-button-outline-color: #1E40AF;
-  --mat-fab-small-container-color: #1E40AF;
+  --mat-outlined-button-label-text-color: var(--color-primary, #1E40AF);
+  --mat-outlined-button-outline-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-color: var(--color-primary, #1E40AF);
   --mat-fab-small-container-tint: #ffffff;
-  --mat-fab-large-container-color: #1E40AF;
+  --mat-fab-large-container-color: var(--color-primary, #1E40AF);
   --mat-fab-large-container-tint: #ffffff;
 
   /* Force solid backgrounds on dialogs, selects, datepickers */
@@ -70,16 +70,16 @@ html.dark {
   );
   color-scheme: dark;
 
-  /* Force brand primary on all Material M3 buttons (dark) */
-  --mat-filled-button-container-color: #1E40AF;
+  /* Force brand primary on all Material M3 buttons (dark) — uses --color-primary set by App effect() */
+  --mat-filled-button-container-color: var(--color-primary, #1E40AF);
   --mat-filled-button-label-text-color: #ffffff;
-  --mat-protected-button-container-color: #1E40AF;
+  --mat-protected-button-container-color: var(--color-primary, #1E40AF);
   --mat-protected-button-label-text-color: #ffffff;
-  --mat-outlined-button-label-text-color: #1E40AF;
-  --mat-outlined-button-outline-color: #1E40AF;
-  --mat-fab-small-container-color: #1E40AF;
+  --mat-outlined-button-label-text-color: var(--color-primary, #1E40AF);
+  --mat-outlined-button-outline-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-color: var(--color-primary, #1E40AF);
   --mat-fab-small-container-tint: #ffffff;
-  --mat-fab-large-container-color: #1E40AF;
+  --mat-fab-large-container-color: var(--color-primary, #1E40AF);
   --mat-fab-large-container-tint: #ffffff;
 
   /* Force solid backgrounds on dialogs, selects, datepickers (dark) */

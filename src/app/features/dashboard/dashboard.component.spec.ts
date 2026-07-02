@@ -268,26 +268,4 @@ describe('DashboardComponent', () => {
     });
   });
 
-  describe('Material button color bug', () => {
-    it('BUG: Material buttons use hardcoded CSS variables, not dynamic business colors', () => {
-      // This test documents the known bug:
-      // material-theme.scss sets --mat-filled-button-container-color: #1E40AF
-      // as a hardcoded CSS variable on html element.
-      // When business settings change primaryColor, the buttons don't update
-      // because they read from the hardcoded SCSS variable, not the dynamic
-      // --color-primary CSS variable set by App component effect().
-      //
-      // The fix would be to change material-theme.scss to use:
-      // --mat-filled-button-container-color: var(--color-primary, #1E40AF);
-      //
-      // This is a known issue documented in TODO.md as BUG-001.
-
-      const htmlStyle = document.documentElement.style;
-      const primaryVar = htmlStyle.getPropertyValue('--color-primary').trim();
-
-      // --color-primary should be settable (by App component effect)
-      // but Material buttons don't read from it
-      expect(primaryVar || '#1E40AF').toBeTruthy();
-    });
-  });
 });

@@ -54,22 +54,13 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Bugs conocidos
 
-### BUG-001: Material Button Colors — Color por defecto persiste
+### ~~BUG-001: Material Button Colors — Color por defecto persiste~~ ✅
 
-**Problema:** Los botones Material (`mat-flat-button`, `mat-stroked-button`, etc.) muestran el color celeste default de Material en vez del brand color `#1E40AF` (primary) o `#DC2626` (warn).
+**Solucionado:** Cambiar hardcoded `#1E40AF` a `var(--color-primary, #1E40AF)` en `material-theme.scss`. El `App` component effect() setea `--color-primary` dinámicamente desde `BusinessSettingsService.settings()`.
 
-**Intentos fallidos:**
-- CSS overrides en `styles.css` con `--mdc-filled-button-container-color`
-- Selectores específicos `button[mat-flat-button][color="primary"]`
-- Variables CSS en `material-theme.scss` (`--mat-filled-button-container-color`)
-- `background-color: #1E40AF !important`
-
-**Posible causa:** `material-theme.scss` se carga DESPUÉS de `styles.css` según `angular.json`. El mixin `mat.theme()` genera CSS con mayor especificidad que mis overrides. Necesita investigación profunda de la API de theming de Angular Material M3.
-
-**Archivos involucrados:**
-- `src/material-theme.scss` — tema Material con palette brand
-- `src/styles.css` — overrides CSS
-- `angular.json` — orden de carga de estilos
+**Archivos modificados:**
+- `src/material-theme.scss` — botones usan `var(--color-primary, #1E40AF)` en vez de hardcoded
+- `src/app/app.ts` — effect() setea `--color-primary` y `--color-secondary` en `document.documentElement`
 
 ---
 
