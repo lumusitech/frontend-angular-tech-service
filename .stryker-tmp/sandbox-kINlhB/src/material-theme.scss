@@ -1,0 +1,112 @@
+@use '@angular/material' as mat;
+
+$brand-primary: (
+  0: #000000,
+  10: #091546,
+  20: #11256e,
+  25: #162f86,
+  30: #1b399e,
+  35: #1d3da6,
+  40: #1E40AF,
+  45: #2248ba,
+  50: #2b52c4,
+  55: #3a62ce,
+  60: #4a6fd1,
+  70: #7091dd,
+  80: #9bb3e8,
+  90: #c5d5f2,
+  95: #dee9f8,
+  98: #f2f6fc,
+  99: #f8f9fc,
+  100: #ffffff,
+);
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: $brand-primary,
+        tertiary: mat.$green-palette,
+        warn: mat.$red-palette,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+
+  /* Force brand primary on all Material M3 buttons — uses --color-primary set by App effect() */
+  --mat-filled-button-container-color: var(--color-primary, #1E40AF);
+  --mat-filled-button-label-text-color: #ffffff;
+  --mat-protected-button-container-color: var(--color-primary, #1E40AF);
+  --mat-protected-button-label-text-color: #ffffff;
+  --mat-outlined-button-label-text-color: var(--color-primary, #1E40AF);
+  --mat-outlined-button-outline-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-tint: #ffffff;
+  --mat-fab-large-container-color: var(--color-primary, #1E40AF);
+  --mat-fab-large-container-tint: #ffffff;
+
+  /* Force solid backgrounds on dialogs, selects, datepickers */
+  --mdc-dialog-container-color: #ffffff;
+  --mat-dialog-container-background-color: #ffffff;
+  --mdc-elevated-card-container-color: #ffffff;
+  --mat-select-panel-background-color: #ffffff;
+  --mat-datepicker-calendar-container-background-color: #ffffff;
+  --mat-menu-container-color: #ffffff;
+  --mat-expansion-container-background-color: #ffffff;
+  --mdc-outlined-text-field-container-color: #ffffff;
+}
+
+html.dark {
+  @include mat.theme(
+    (
+      color: (
+        primary: $brand-primary,
+        tertiary: mat.$green-palette,
+        warn: mat.$red-palette,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+  color-scheme: dark;
+
+  /* Force brand primary on all Material M3 buttons (dark) — uses --color-primary set by App effect() */
+  --mat-filled-button-container-color: var(--color-primary, #1E40AF);
+  --mat-filled-button-label-text-color: #ffffff;
+  --mat-protected-button-container-color: var(--color-primary, #1E40AF);
+  --mat-protected-button-label-text-color: #ffffff;
+  --mat-outlined-button-label-text-color: var(--color-primary, #1E40AF);
+  --mat-outlined-button-outline-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-color: var(--color-primary, #1E40AF);
+  --mat-fab-small-container-tint: #ffffff;
+  --mat-fab-large-container-color: var(--color-primary, #1E40AF);
+  --mat-fab-large-container-tint: #ffffff;
+
+  /* Force solid backgrounds on dialogs, selects, datepickers (dark) */
+  --mdc-dialog-container-color: #1f2937;
+  --mat-dialog-container-background-color: #1f2937;
+  --mdc-elevated-card-container-color: #1f2937;
+  --mat-select-panel-background-color: #1f2937;
+  --mat-datepicker-calendar-container-background-color: #1f2937;
+  --mat-menu-container-color: #1f2937;
+  --mat-expansion-container-background-color: #1f2937;
+  --mdc-outlined-text-field-container-color: #111827;
+}
+
+body {
+  color-scheme: light;
+
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+html.dark body {
+  color-scheme: dark;
+}

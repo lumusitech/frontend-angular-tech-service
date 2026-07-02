@@ -1,0 +1,292 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+/* CDK drag-drop smooth transitions */
+.cdk-drag {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  border: 2px dashed #94a3b8;
+  border-radius: 0.75rem;
+  background: transparent;
+  min-height: 60px;
+}
+
+.cdk-drag-preview {
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+}
+
+/* Notification highlight pulse */
+@keyframes highlight-pulse {
+  0%, 100% { background-color: transparent; }
+  25% { background-color: rgba(59, 130, 246, 0.15); }
+  50% { background-color: rgba(59, 130, 246, 0.05); }
+  75% { background-color: rgba(59, 130, 246, 0.12); }
+}
+
+.highlight-pulse {
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+/* ============================================
+   Brand Colors — Primary & Secondary
+   Applied globally to Material components
+   ============================================ */
+
+:root {
+  --color-primary: #1E40AF;
+  --color-secondary: #059669;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --mat-sys-primary: var(--color-primary, #1E40AF);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #dbeafe;
+  --mat-sys-on-primary-container: #1e3a8a;
+}
+
+/* --- Mat Table --- */
+.mat-mdc-table {
+  --mdc-filled-container-color: transparent;
+}
+
+/* Left border on the table wrapper (div:has(> table.mat-mdc-table)) */
+.mat-mdc-table:has(~ .mat-mdc-paginator) {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+div:has(> table.mat-mdc-table) {
+  border-left: 4px solid var(--color-primary) !important;
+}
+
+.mat-mdc-header-row {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.mat-mdc-header-cell {
+  color: color-mix(in srgb, var(--color-primary) 70%, white);
+  font-weight: 600;
+}
+
+:root.dark .mat-mdc-header-cell {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+.mat-mdc-row:not(.mat-mdc-row-disabled):hover {
+  background-color: color-mix(in srgb, var(--color-secondary) 5%, transparent);
+}
+
+.mat-mdc-row:focus-within {
+  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+}
+
+/* --- Mat Paginator --- */
+.mat-mdc-paginator {
+  border-radius: 0 0 0.75rem 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-secondary) 20%, transparent);
+}
+
+.mat-mdc-paginator-page-size .mat-mdc-select-value {
+  color: var(--color-secondary);
+}
+
+/* --- Mat Form Field (inputs, selects, datepickers) --- */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: var(--color-secondary);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-secondary);
+  --mdc-outlined-text-field-label-text-color: #6b7280;
+}
+
+.mat-mdc-form-field:focus-within .mat-mdc-form-field-focus-overlay {
+  background-color: color-mix(in srgb, var(--color-secondary) 5%, transparent);
+}
+
+/* Prevent datepicker toggle from clipping the outline border */
+.mat-mdc-form-field .mat-datepicker-toggle {
+  margin-right: -4px;
+}
+
+.mat-mdc-form-field .mdc-notched-outline__trailing {
+  padding-right: 0;
+}
+
+/* --- Mat Sort Arrow --- */
+.mat-sort-header-arrow {
+  color: var(--color-primary);
+}
+
+/* --- Status Badge (generic) --- */
+.brand-badge-primary {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.brand-badge-secondary {
+  background-color: color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  color: var(--color-secondary);
+}
+
+/* --- Sidebar active link --- */
+.sidebar-active-link {
+  border-left: 3px solid var(--color-secondary);
+  background-color: color-mix(in srgb, var(--color-secondary) 8%, transparent);
+  color: var(--color-secondary);
+}
+
+/* --- Notification Toast --- */
+.notification-toast-panel {
+  --mat-snack-bar-container-color: white;
+  --mat-snack-bar-supporting-text-color: #111827;
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+:root.dark .notification-toast-panel {
+  --mat-snack-bar-container-color: #1f2937;
+  --mat-snack-bar-supporting-text-color: #f3f4f6;
+}
+
+/* --- CRUD Toast --- */
+.toast-success {
+  --mat-snack-bar-container-color: white;
+  --mat-snack-bar-supporting-text-color: #111827;
+  border-left: 4px solid #10b981;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.toast-error {
+  --mat-snack-bar-container-color: white;
+  --mat-snack-bar-supporting-text-color: #111827;
+  border-left: 4px solid #ef4444;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.toast-info {
+  --mat-snack-bar-container-color: white;
+  --mat-snack-bar-supporting-text-color: #111827;
+  border-left: 4px solid #3b82f6;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+:root.dark .toast-success,
+:root.dark .toast-error,
+:root.dark .toast-info {
+  --mat-snack-bar-container-color: #1f2937;
+  --mat-snack-bar-supporting-text-color: #f3f4f6;
+}
+
+/* --- Mat Dialog backdrop --- */
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* --- Mat Expansion Panel z-index for swipe --- */
+.mat-expansion-panel {
+  z-index: 1 !important;
+  position: relative;
+}
+
+/* --- Force opaque backgrounds on all Material overlays (dialogs, menus, selects, datepickers) --- */
+.mat-mdc-dialog-container,
+.mat-mdc-dialog-container .mdc-dialog__surface,
+.mat-mdc-dialog-container .mat-mdc-dialog-surface,
+.cdk-overlay-container .mat-mdc-dialog-container {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-dialog-container,
+:root.dark .mat-mdc-dialog-container .mdc-dialog__surface,
+:root.dark .mat-mdc-dialog-container .mat-mdc-dialog-surface,
+:root.dark .cdk-overlay-container .mat-mdc-dialog-container {
+  background-color: #1f2937 !important;
+}
+
+/* Select dropdown panel */
+.mat-mdc-select-panel,
+.mat-mdc-option,
+.mat-pseudo-checkbox {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-select-panel,
+:root.dark .mat-mdc-option,
+:root.dark .mat-pseudo-checkbox {
+  background-color: #1f2937 !important;
+}
+
+/* Menu panel */
+.mat-mdc-menu-panel,
+.mat-mdc-menu-item {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-menu-panel,
+:root.dark .mat-mdc-menu-item {
+  background-color: #1f2937 !important;
+}
+
+/* Datepicker panel */
+.mat-datepicker-content,
+.mat-calendar,
+.mat-calendar-body,
+.mat-datepicker-toggle {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+:root.dark .mat-datepicker-content,
+:root.dark .mat-calendar,
+:root.dark .mat-calendar-body,
+:root.dark .mat-datepicker-toggle {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+/* Autocomplete panel */
+.mat-mdc-autocomplete-panel,
+.mat-mdc-option {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-autocomplete-panel,
+:root.dark .mat-mdc-option {
+  background-color: #1f2937 !important;
+}
+
+/* Paginator dropdown */
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-select-panel {
+  background-color: #1f2937 !important;
+}
