@@ -32,6 +32,7 @@ import { WorkOrderFormComponent } from './work-order-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { TranslationService } from '../../core/services/translation.service';
+import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -55,6 +56,7 @@ import { TranslationService } from '../../core/services/translation.service';
     StatusBadgeComponent,
     TrackingCodeComponent,
     MobileCardComponent,
+    DateFieldSelectorComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -111,6 +113,12 @@ import { TranslationService } from '../../core/services/translation.service';
               <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <app-date-field-selector
+            [fields]="dateFieldOptions"
+            [value]="dateField()"
+            (valueChange)="dateField.set($event)"
+          />
 
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
@@ -373,10 +381,16 @@ export class WorkOrdersListComponent implements OnInit {
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
+  readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
   readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+
+  readonly dateFieldOptions: DateFieldOption[] = [
+    { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
+    { value: 'scheduledDate', labelKey: 'workOrders.scheduledDate' },
+  ];
 
   ngOnInit(): void {
     const highlightId = this.route.snapshot.queryParamMap.get('highlight');
@@ -407,8 +421,8 @@ export class WorkOrdersListComponent implements OnInit {
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       sortBy: this.sortBy(),
       order: this.sortOrder().toUpperCase(),
-      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
+      ...(this.dateFrom() ? { [this.dateField() + 'From']: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { [this.dateField() + 'To']: this.dateTo() } : {}),
     },
   }));
 
@@ -475,6 +489,7 @@ export class WorkOrdersListComponent implements OnInit {
     this.searchFilter.set('');
     this.statusFilter.set('');
     this.priorityFilter.set('');
+    this.dateField.set('createdAt');
     this.dateFrom.set('');
     this.dateTo.set('');
     this.highlightedId.set(null);

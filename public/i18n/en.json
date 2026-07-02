@@ -29,6 +29,8 @@
     "from": "From",
     "to": "To",
     "clearFilters": "Clear filters",
+    "dateField": "Date field",
+    "dateFieldCreated": "Created date",
     "copied": "Copied to clipboard",
     "copyToClipboard": "Copy",
     "copyError": "Error copying",
