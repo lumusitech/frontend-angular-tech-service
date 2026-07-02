@@ -11,7 +11,7 @@
     "sync:types": "swagger-typescript-api generate -p http://localhost:3000/api/docs-json -o src/app/core/models -n api.interfaces.ts --no-client"
   },
   "private": true,
-  "packageManager": "pnpm@9.15.9",
+  "packageManager": "pnpm@11.9.0",
   "dependencies": {
     "@angular/cdk": "22.0.2",
     "@angular/common": "22.0.2",
