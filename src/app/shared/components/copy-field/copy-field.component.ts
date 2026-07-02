@@ -46,7 +46,6 @@ export class CopyFieldComponent {
   readonly type = input<'phone' | 'email' | 'address' | 'date' | 'text'>('text');
 
   readonly formattedDate = computed(() => {
-    console.log('[CopyField] type:', this.type(), 'value:', this.value());
     if (this.type() !== 'date') return this.value();
     const d = new Date(this.value());
     if (isNaN(d.getTime())) return this.value();
