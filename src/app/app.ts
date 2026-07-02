@@ -20,6 +20,8 @@ export class App {
       if (settings && typeof document !== 'undefined') {
         if (settings.primaryColor) {
           document.documentElement.style.setProperty('--color-primary', settings.primaryColor);
+          document.documentElement.style.setProperty('--mat-sys-primary', settings.primaryColor);
+          document.documentElement.style.setProperty('--mat-sys-on-primary', '#ffffff');
         }
         if (settings.secondaryColor) {
           document.documentElement.style.setProperty('--color-secondary', settings.secondaryColor);

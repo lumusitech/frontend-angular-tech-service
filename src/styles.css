@@ -63,7 +63,7 @@ body {
   --color-secondary: #059669;
   --color-danger: #DC2626;
   --color-warning: #D97706;
-  --mat-sys-primary: #1E40AF;
+  --mat-sys-primary: var(--color-primary, #1E40AF);
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: #dbeafe;
   --mat-sys-on-primary-container: #1e3a8a;

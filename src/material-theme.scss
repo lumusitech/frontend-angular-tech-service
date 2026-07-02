@@ -28,6 +28,7 @@ html {
       color: (
         primary: $brand-primary,
         tertiary: mat.$green-palette,
+        warn: mat.$red-palette,
       ),
       typography: Inter,
       density: 0,
@@ -63,6 +64,7 @@ html.dark {
       color: (
         primary: $brand-primary,
         tertiary: mat.$green-palette,
+        warn: mat.$red-palette,
       ),
       typography: Inter,
       density: 0,
