@@ -12,6 +12,7 @@
 - **i18n:** Custom JSON en `public/i18n/es.json` + `public/i18n/en.json`, TranslatePipe
 - **SSR:** Landing (`/`) prerender, Portal (`/track`) server-rendered, Admin/Tech/Seller client-rendered
 - **Package manager:** pnpm
+- **Colores de marca:** Primary `#1E40AF`, Secondary `#059669`, Danger `#DC2626`, Warning `#D97706`
 
 ## Patrones de código (MUY IMPORTANTE — seguir siempre)
 
@@ -45,7 +46,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Componentes standalone con `@Component`
 - Lazy loading con `loadComponent()`
 - Rutas hijas con `children: [...]`
-- Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule, MatExpansionPanel
+- Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule, MatExpansionPanel, MatAccordion
 - Forms: template-driven con signals (no ReactiveFormsModule)
 - Sidebar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar items ahí
 
@@ -102,25 +103,31 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-### 7. Material Button Colors — Coherencia visual
+### ~~7. Material Button Colors — Coherencia visual~~ ✅
 
-**Valor:** Unificar colores de botones Material con la paleta del proyecto (primary: #1E40AF, secondary: #059669, danger: #DC2626).
+**Valor:** Unificar colores de botones Material con la paleta del proyecto.
 
-**Estado:** Pendiente
+**Implementado:** Custom palette `#1E40AF` en `material-theme.scss` + overrides CSS globales.
 
 ---
 
-### 8. Mobile UI — Cards expandibles + Copy-to-clipboard
+### ~~8. Mobile UI — Cards expandibles + Copy-to-clipboard~~ ✅
 
-**Valor:** Mejora UX mobile. Tablas → cards expandibles + copiar teléfonos/emails + acciones nativas (tel:, mailto:).
+**Valor:** Mejora UX mobile. Tablas → cards expandibles + copiar teléfonos/emails + acciones nativas.
 
-**Componentes:**
-- CopyToClipboardDirective
-- CopyFieldComponent (phone → tel:, email → mailto:, address → maps)
-- MobileCardComponent (expansion panel con fields)
-- Integración en 11 listas
+**Componentes creados:**
+- `CopyToClipboardDirective` — copiar al portapapeles con toast feedback
+- `CopyFieldComponent` — campo con valor + acción nativa (tel:, mailto:, maps:) + copia
+- `MobileCardComponent` — expansion panel con swipe gestures (izq=borrar, der=editar)
 
-**Estado:** Pendiente
+**Integrado en:** 11 listas (clients, suppliers, work-orders, payments, expenses, invoices, pending-items, inquiries, users, service-types, skills)
+
+**Features mobile:**
+- Swipe gestures en cards contraídas (derecha=editar, izquierda=borrar)
+- Accordion behavior (una card expandida a la vez)
+- Edit/Delete buttons en footer de card expandida
+- Fechas relativas en campos date (computed, no pipe)
+- Sidebar overlay en mobile (w-60, fixed positioning)
 
 ---
 
@@ -131,6 +138,36 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Estado actual:** Solo `src/app/app.spec.ts` — cobertura ~0%.
 **Stack:** Vitest (configurado), Playwright (E2E)
 **Orden:** Service tests → Component tests → E2E tests
+
+---
+
+### 10. Search global
+
+**Valor:** Buscar en todas las entidades desde el header. UX significantly improved.
+
+**Estado:** Pendiente
+
+---
+
+### 11. Offline mode — Cola de mutaciones
+
+**Valor:** PWA real. Crear/editar offline, sync al reconectar.
+
+**Estado:** Pendiente (requiere investigación)
+
+---
+
+## Sugerencias adicionales (futuro)
+
+| Feature | Valor | Nota |
+|---------|-------|------|
+| Biometric auth (huella/face ID) | Medio | WebAuthn API |
+| Drag & drop en work orders (kanban board) | Medio | UX visual |
+| Bulk actions (selección múltiple) | Medio | Exportar, cambiar estado |
+| Dashboard: Widget de actividad reciente | Bajo | Timeline |
+| Email templates (confirmación, factura) | Medio | Requiere backend |
+| Multi-language: Portugués | Bajo | Patrón i18n existente |
+| Dark mode: Coherencia total | Bajo | Ya funciona, polish menor |
 
 ---
 
@@ -165,6 +202,10 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - [x] Role-based route guards (`adminGuard` on `/admin`, `technicianGuard` on `/tech`)
 - [x] RelativeDatePipe (fechas relativas: "hace 2 días", "en 3 horas")
 - [x] RoleDirective (directiva structural `*role` para visibilidad por rol)
+- [x] Material Button Colors (brand palette #1E40AF en material-theme.scss)
+- [x] Mobile UI (cards expandibles, swipe gestures, copy-to-clipboard, accordion, tel:/mailto:/maps:)
+- [x] Sidebar mobile overlay (w-60, fixed positioning, backdrop)
+- [x] Dialog transparency fix (backgrounds sólidos en dark mode)
 
 ## Archivos de referencia útiles
 
@@ -174,10 +215,14 @@ if (isPlatformBrowser(this.platformId)) { ... }
 | `src/app/layouts/admin-layout/admin-layout.component.ts` | Sidebar + header + content |
 | `src/app/layouts/tech-layout/tech-layout.component.ts` | Layout simple con BottomNav |
 | `src/app/features/work-orders/work-order-detail.component.ts` | Detalle con tabs y acciones |
-| `src/app/features/clients/clients-list.component.ts` | CRUD list con MatTable |
+| `src/app/features/clients/clients-list.component.ts` | CRUD list con mobile cards |
 | `src/app/features/billing/invoice-form.component.ts` | Form con autocomplete signals |
 | `src/app/core/services/notifications.service.ts` | Service con signals + WebSocket |
 | `src/app/shared/components/bottom-nav/bottom-nav.component.ts` | Componente con detección de ruta activa |
 | `src/app/core/services/pwa.service.ts` | Service PWA con isPlatformBrowser |
 | `src/app/core/services/push-notification.service.ts` | Service Push Notifications |
 | `src/app/features/payments/payment-form.component.ts` | Dialog form crear/editar pagos |
+| `src/app/shared/components/mobile-card/mobile-card.component.ts` | Card expandible con swipe |
+| `src/app/shared/components/copy-field/copy-field.component.ts` | Campo con copy + acciones nativas |
+| `src/app/shared/directives/copy-to-clipboard.directive.ts` | Directive copiar al portapapeles |
+| `src/material-theme.scss` | Brand palette para Material |
