@@ -16,7 +16,7 @@ interface NavItem {
   template: `
     <aside
       class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full transition-all duration-300 flex flex-col"
-      [class.w-64]="!collapsed()"
+      [class.w-60]="!collapsed()"
       [class.w-16]="collapsed()"
     >
       <div

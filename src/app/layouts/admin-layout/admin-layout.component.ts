@@ -8,12 +8,15 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
   imports: [RouterOutlet, HeaderComponent, SidebarComponent],
   template: `
     <div class="h-dvh flex overflow-hidden bg-gray-50 dark:bg-gray-900">
-      <app-sidebar
-        [collapsed]="sidebarCollapsed()"
-        (toggleCollapse)="sidebarCollapsed.set(!sidebarCollapsed())"
-      />
+      <!-- Desktop sidebar -->
+      <div class="hidden lg:block">
+        <app-sidebar
+          [collapsed]="sidebarCollapsed()"
+          (toggleCollapse)="sidebarCollapsed.set(!sidebarCollapsed())"
+        />
+      </div>
 
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <app-header (toggleSidebar)="mobileSidebarOpen.set(!mobileSidebarOpen())" />
 
         <main class="flex-1 overflow-y-auto p-4 lg:p-6">

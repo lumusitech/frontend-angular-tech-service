@@ -25,10 +25,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { PendingItemFormComponent } from './pending-item-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -85,9 +87,11 @@ const TYPE_LABELS: Record<string, string> = {
     MatChipsModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -173,8 +177,31 @@ const TYPE_LABELS: Record<string, string> = {
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (resource.hasValue()) {
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (item of resource.value().data; track item.id) {
+            <app-mobile-card
+              [title]="item.title"
+              [status]="item.status"
+              [statusType]="$any('pendingItemStatus')"
+              [fields]="getPendingItemFields(item)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(item)"
+              [onDelete]="onDeleteSwipe(item)"
+            >
+              <button mat-icon-button (click)="openEditDialog(item); $event.stopPropagation()" class="!w-8 !h-8">
+                <mat-icon class="!w-4 !h-4">edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteItem(item); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+                <mat-icon class="!w-4 !h-4">delete</mat-icon>
+              </button>
+            </app-mobile-card>
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           <table
             mat-table
@@ -540,6 +567,16 @@ export class PendingItemsListComponent implements OnInit {
     });
   }
 
+  getPendingItemFields(item: PendingItem): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('pendingItems.type'), value: this.getTypeLabel(item.type) },
+      { label: this.translationService.instant('pendingItems.priority'), value: this.getPriorityLabel(item.priority) },
+      { label: this.translationService.instant('pendingItems.dueDate'), value: item.dueDate || '-', type: 'date' },
+      { label: this.translationService.instant('pendingItems.assignedTo'), value: item.assignedTo?.name || '-' },
+      { label: this.translationService.instant('common.created'), value: item.createdAt, type: 'date' },
+    ];
+  }
+
   deleteItem(item: PendingItem): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -565,5 +602,13 @@ export class PendingItemsListComponent implements OnInit {
         });
       }
     });
+  }
+
+  onEditSwipe(item: PendingItem): (event: Event) => void {
+    return (_event: Event) => this.openEditDialog(item);
+  }
+
+  onDeleteSwipe(item: PendingItem): (event: Event) => void {
+    return (_event: Event) => this.deleteItem(item);
   }
 }

@@ -21,14 +21,17 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { WorkOrderFormComponent } from './work-order-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -45,11 +48,13 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -150,8 +155,23 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (workOrdersResource.hasValue()) {
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (order of workOrdersResource.value().data; track order.id) {
+            <app-mobile-card
+              [title]="order.trackingCode"
+              [status]="order.status"
+              [statusType]="$any('workOrderStatus')"
+              [fields]="getOrderFields(order)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(order)"
+            />
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           <table
             mat-table
@@ -342,6 +362,7 @@ export class WorkOrdersListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
+  readonly translationService = inject(TranslationService);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -460,7 +481,21 @@ export class WorkOrdersListComponent implements OnInit {
     this.fromNotification.set(false);
   }
 
+  getOrderFields(order: WorkOrder): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('workOrders.client'), value: order.client?.name || '-' },
+      { label: this.translationService.instant('workOrders.service'), value: order.serviceType?.name || '-' },
+      { label: this.translationService.instant('workOrders.priority'), value: order.priority },
+      { label: this.translationService.instant('workOrders.date'), value: order.scheduledDate || '-', type: 'date' },
+      { label: this.translationService.instant('common.created'), value: order.createdAt, type: 'date' },
+    ];
+  }
+
   viewDetail(order: WorkOrder): void {
     this.router.navigate(['/admin/work-orders', order.id]);
+  }
+
+  onEditSwipe(order: WorkOrder): (event: Event) => void {
+    return (_event: Event) => this.viewDetail(order);
   }
 }

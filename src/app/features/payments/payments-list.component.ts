@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -26,6 +27,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
+import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { PaymentFormComponent } from './payment-form.component';
@@ -44,12 +46,14 @@ import { PaymentFormComponent } from './payment-form.component';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
     PageHeaderComponent,
     StatusBadgeComponent,
     TrackingCodeComponent,
     CurrencyArsPipe,
+    MobileCardComponent,
     TranslatePipe,
     RelativeDatePipe,
     MatDialogModule,
@@ -141,8 +145,31 @@ import { PaymentFormComponent } from './payment-form.component';
           [message]="'payments.noPaymentsMessage' | translate"
         />
       } @else if (paymentsResource.hasValue()) {
+        <!-- Mobile: Cards -->
+        <mat-accordion class="block md:hidden">
+          @for (payment of paymentsResource.value().data; track payment.id) {
+            <app-mobile-card
+              [title]="payment.workOrder?.trackingCode ?? '-'"
+              [status]="payment.status"
+              [statusType]="$any('paymentStatus')"
+              [fields]="getPaymentFields(payment)"
+              [canSwipe]="true"
+              [onEdit]="onEditSwipe(payment)"
+              [onDelete]="onDeleteSwipe(payment)"
+            >
+              <button mat-icon-button (click)="openEditDialog(payment); $event.stopPropagation()" class="!w-8 !h-8">
+                <mat-icon class="!w-4 !h-4">edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deletePayment(payment); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+                <mat-icon class="!w-4 !h-4">delete</mat-icon>
+              </button>
+            </app-mobile-card>
+          }
+        </mat-accordion>
+
+        <!-- Desktop: Table -->
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           <table
             mat-table
@@ -462,6 +489,16 @@ export class PaymentsListComponent implements OnInit {
     });
   }
 
+  getPaymentFields(payment: Payment): MobileCardField[] {
+    return [
+      { label: this.translationService.instant('payments.amount'), value: String(payment.amount) },
+      { label: this.translationService.instant('payments.method'), value: payment.method },
+      { label: this.translationService.instant('payments.provider'), value: payment.provider || '-' },
+      { label: this.translationService.instant('payments.paymentDate'), value: payment.paidAt || '-', type: 'date' },
+      { label: this.translationService.instant('common.created'), value: payment.createdAt, type: 'date' },
+    ];
+  }
+
   deletePayment(payment: Payment): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -487,5 +524,13 @@ export class PaymentsListComponent implements OnInit {
         });
       }
     });
+  }
+
+  onEditSwipe(payment: Payment): (event: Event) => void {
+    return (_event: Event) => this.openEditDialog(payment);
+  }
+
+  onDeleteSwipe(payment: Payment): (event: Event) => void {
+    return (_event: Event) => this.deletePayment(payment);
   }
 }
