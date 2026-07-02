@@ -8,7 +8,7 @@ import { CopyFieldComponent } from '../copy-field/copy-field.component';
 export interface MobileCardField {
   label: string;
   value: string;
-  type?: 'phone' | 'email' | 'address' | 'text';
+  type?: 'phone' | 'email' | 'address' | 'text' | 'date';
 }
 
 @Component({

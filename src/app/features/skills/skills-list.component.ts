@@ -273,7 +273,7 @@ export class SkillsListComponent {
     return [
       { label: this.translationService.instant('skills.category'), value: skill.category || '-' },
       { label: this.translationService.instant('skills.description'), value: skill.description || '-' },
-      { label: this.translationService.instant('common.created'), value: skill.createdAt },
+      { label: this.translationService.instant('common.created'), value: skill.createdAt, type: 'date' },
     ];
   }
 

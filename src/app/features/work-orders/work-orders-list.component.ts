@@ -486,8 +486,8 @@ export class WorkOrdersListComponent implements OnInit {
       { label: this.translationService.instant('workOrders.client'), value: order.client?.name || '-' },
       { label: this.translationService.instant('workOrders.service'), value: order.serviceType?.name || '-' },
       { label: this.translationService.instant('workOrders.priority'), value: order.priority },
-      { label: this.translationService.instant('workOrders.date'), value: order.scheduledDate || '-' },
-      { label: this.translationService.instant('common.created'), value: order.createdAt },
+      { label: this.translationService.instant('workOrders.date'), value: order.scheduledDate || '-', type: 'date' },
+      { label: this.translationService.instant('common.created'), value: order.createdAt, type: 'date' },
     ];
   }
 

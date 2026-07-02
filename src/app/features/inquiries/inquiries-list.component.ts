@@ -500,7 +500,7 @@ export class InquiriesListComponent implements OnInit {
     return [
       { label: this.translationService.instant('inquiries.source'), value: inquiry.source },
       { label: this.translationService.instant('inquiries.assignedTo'), value: inquiry.assignedTo?.name || '-' },
-      { label: this.translationService.instant('common.created'), value: inquiry.createdAt },
+      { label: this.translationService.instant('common.created'), value: inquiry.createdAt, type: 'date' },
     ];
   }
 

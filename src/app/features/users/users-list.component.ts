@@ -308,7 +308,7 @@ export class UsersListComponent {
       { label: this.translationService.instant('users.email'), value: user.email, type: 'email' },
       { label: this.translationService.instant('users.phone'), value: user.phone || '-', type: 'phone' },
       { label: this.translationService.instant('users.role'), value: user.role },
-      { label: this.translationService.instant('common.created'), value: user.createdAt },
+      { label: this.translationService.instant('common.created'), value: user.createdAt, type: 'date' },
     ];
   }
 

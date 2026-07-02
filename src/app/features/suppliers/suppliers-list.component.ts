@@ -421,7 +421,7 @@ export class SuppliersListComponent implements OnInit {
       { label: this.translationService.instant('suppliers.phone'), value: supplier.phone || '-', type: 'phone' },
       { label: this.translationService.instant('suppliers.email'), value: supplier.email || '-', type: 'email' },
       { label: this.translationService.instant('common.address'), value: supplier.address || '-' },
-      { label: this.translationService.instant('common.created'), value: supplier.createdAt },
+      { label: this.translationService.instant('common.created'), value: supplier.createdAt, type: 'date' },
     ];
   }
 

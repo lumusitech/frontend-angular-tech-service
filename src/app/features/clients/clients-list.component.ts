@@ -435,7 +435,7 @@ export class ClientsListComponent implements OnInit {
       { label: this.translationService.instant('clients.email'), value: client.email, type: 'email' },
       { label: this.translationService.instant('clients.phone'), value: client.phone || '-', type: 'phone' },
       { label: this.translationService.instant('common.address'), value: client.address || '-' },
-      { label: this.translationService.instant('common.created'), value: client.createdAt },
+      { label: this.translationService.instant('common.created'), value: client.createdAt, type: 'date' },
     ];
   }
 

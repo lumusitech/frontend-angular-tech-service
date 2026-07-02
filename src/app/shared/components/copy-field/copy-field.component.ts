@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CopyToClipboardDirective } from '../../directives/copy-to-clipboard.directive';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -23,13 +23,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
              class="text-sm text-blue-600 dark:text-blue-400 break-all hover:underline">
             {{ value() }}
           </a>
+        } @else if (type() === 'date') {
+          <span class="text-sm text-gray-900 dark:text-gray-100">{{ displayDate() }}</span>
         } @else {
           <span class="text-sm text-gray-900 dark:text-gray-100 break-all">{{ value() }}</span>
         }
       </div>
       <button
         mat-icon-button
-        [appCopyToClipboard]="value()"
+        [appCopyToClipboard]="copyValue()"
         class="!min-w-0 !p-1 shrink-0"
         [title]="'common.copyToClipboard' | translate"
       >
@@ -41,9 +43,48 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class CopyFieldComponent {
   readonly label = input.required<string>();
   readonly value = input.required<string>();
-  readonly type = input<'phone' | 'email' | 'address' | 'text'>('text');
+  readonly type = input<'phone' | 'email' | 'address' | 'date' | 'text'>('text');
+
+  readonly displayDate = computed(() => {
+    if (this.type() !== 'date') return this.value();
+    const date = new Date(this.value());
+    if (isNaN(date.getTime())) return this.value();
+    return this.relativeDate(date);
+  });
+
+  readonly copyValue = computed(() => {
+    if (this.type() !== 'date') return this.value();
+    const date = new Date(this.value());
+    if (isNaN(date.getTime())) return this.value();
+    return date.toLocaleDateString('es-AR', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  });
 
   encodeURIComponent(value: string): string {
     return encodeURIComponent(value);
+  }
+
+  private relativeDate(date: Date): string {
+    const now = Date.now();
+    const diff = date.getTime() - now;
+    const absDiff = Math.abs(diff);
+    const isFuture = diff > 0;
+
+    if (absDiff < 60_000) return isFuture ? 'en unos segundos' : 'hace unos segundos';
+    if (absDiff < 3_600_000) {
+      const mins = Math.round(absDiff / 60_000);
+      return isFuture ? `en ${mins} min` : `hace ${mins} min`;
+    }
+    if (absDiff < 86_400_000) {
+      const hours = Math.round(absDiff / 3_600_000);
+      return isFuture ? `en ~${hours}h` : `hace ~${hours}h`;
+    }
+    if (absDiff < 2_592_000_000) {
+      const days = Math.round(absDiff / 86_400_000);
+      return isFuture ? `en ${days} días` : `hace ${days} días`;
+    }
+    return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 }

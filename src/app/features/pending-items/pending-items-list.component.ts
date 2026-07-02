@@ -571,9 +571,9 @@ export class PendingItemsListComponent implements OnInit {
     return [
       { label: this.translationService.instant('pendingItems.type'), value: this.getTypeLabel(item.type) },
       { label: this.translationService.instant('pendingItems.priority'), value: this.getPriorityLabel(item.priority) },
-      { label: this.translationService.instant('pendingItems.dueDate'), value: item.dueDate || '-' },
+      { label: this.translationService.instant('pendingItems.dueDate'), value: item.dueDate || '-', type: 'date' },
       { label: this.translationService.instant('pendingItems.assignedTo'), value: item.assignedTo?.name || '-' },
-      { label: this.translationService.instant('common.created'), value: item.createdAt },
+      { label: this.translationService.instant('common.created'), value: item.createdAt, type: 'date' },
     ];
   }
 

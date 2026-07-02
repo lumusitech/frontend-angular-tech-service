@@ -323,7 +323,7 @@ export class InvoicesListComponent {
       { label: this.translationService.instant('billing.invoiceType'), value: invoice.invoiceType },
       { label: this.translationService.instant('billing.clientName'), value: invoice.clientName || '-' },
       { label: this.translationService.instant('billing.total'), value: String(invoice.total) },
-      { label: this.translationService.instant('billing.createdAt'), value: invoice.createdAt },
+      { label: this.translationService.instant('billing.createdAt'), value: invoice.createdAt, type: 'date' },
     ];
   }
 }

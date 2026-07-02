@@ -437,9 +437,9 @@ export class ExpensesListComponent implements OnInit {
   getExpenseFields(expense: Expense): MobileCardField[] {
     return [
       { label: this.translationService.instant('expenses.amount'), value: String(expense.amount) },
-      { label: this.translationService.instant('expenses.date'), value: expense.date },
+      { label: this.translationService.instant('expenses.date'), value: expense.date, type: 'date' },
       { label: this.translationService.instant('expenses.recurring'), value: expense.isRecurring ? 'Sí' : 'No' },
-      { label: this.translationService.instant('common.created'), value: expense.createdAt },
+      { label: this.translationService.instant('common.created'), value: expense.createdAt, type: 'date' },
     ];
   }
 

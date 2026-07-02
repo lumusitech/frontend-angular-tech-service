@@ -396,7 +396,7 @@ export class ServiceTypesListComponent implements OnInit {
     return [
       { label: this.translationService.instant('serviceTypes.description'), value: serviceType.description || '-' },
       { label: this.translationService.instant('serviceTypes.estimatedDuration'), value: serviceType.estimatedDuration ? `${serviceType.estimatedDuration} min` : '-' },
-      { label: this.translationService.instant('common.created'), value: serviceType.createdAt },
+      { label: this.translationService.instant('common.created'), value: serviceType.createdAt, type: 'date' },
     ];
   }
 

@@ -494,8 +494,8 @@ export class PaymentsListComponent implements OnInit {
       { label: this.translationService.instant('payments.amount'), value: String(payment.amount) },
       { label: this.translationService.instant('payments.method'), value: payment.method },
       { label: this.translationService.instant('payments.provider'), value: payment.provider || '-' },
-      { label: this.translationService.instant('payments.paymentDate'), value: payment.paidAt || '-' },
-      { label: this.translationService.instant('common.created'), value: payment.createdAt },
+      { label: this.translationService.instant('payments.paymentDate'), value: payment.paidAt || '-', type: 'date' },
+      { label: this.translationService.instant('common.created'), value: payment.createdAt, type: 'date' },
     ];
   }
 
