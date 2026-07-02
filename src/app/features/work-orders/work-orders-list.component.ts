@@ -117,7 +117,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
           <app-date-field-selector
             [fields]="dateFieldOptions"
             [value]="dateField()"
-            (valueChange)="dateField.set($event)"
+            (valueChange)="onDateFieldChange($event)"
           />
 
           <mat-form-field appearance="outline" class="w-40">
@@ -453,6 +453,12 @@ export class WorkOrdersListComponent implements OnInit {
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  onDateFieldChange(field: string): void {
+    this.dateField.set(field);
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {

@@ -109,7 +109,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
           <app-date-field-selector
             [fields]="dateFieldOptions"
             [value]="dateField()"
-            (valueChange)="dateField.set($event)"
+            (valueChange)="onDateFieldChange($event)"
           />
 
           <mat-form-field appearance="outline" class="w-40">
@@ -423,6 +423,12 @@ export class PaymentsListComponent implements OnInit {
     if (searchQuery) {
       this.searchFilter.set(searchQuery);
     }
+  }
+
+  onDateFieldChange(field: string): void {
+    this.dateField.set(field);
+    this.dateFrom.set('');
+    this.dateTo.set('');
   }
 
   onPageChange(event: PageEvent): void {
