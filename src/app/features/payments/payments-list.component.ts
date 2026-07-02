@@ -377,9 +377,7 @@ export class PaymentsListComponent implements OnInit {
     { value: 'paidAt', labelKey: 'payments.paymentDate' },
   ];
 
-  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => {
-    const today = toLocalDateString(new Date());
-    return {
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
       url: '/api/payments',
       params: {
         page: this.currentPage(),
@@ -390,10 +388,9 @@ export class PaymentsListComponent implements OnInit {
         order: this.sortOrder().toUpperCase(),
         ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
         ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
       },
-    };
-  });
+    }));
 
   displayedColumns = [
     'trackingCode',
