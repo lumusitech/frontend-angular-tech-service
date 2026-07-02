@@ -988,5 +988,13 @@
     "passwordMismatch": "Las contraseñas no coinciden",
     "passwordUpdated": "Contraseña actualizada",
     "profileUpdated": "Perfil actualizado"
+  },
+  "push": {
+    "enableNotifications": "Activar notificaciones",
+    "disableNotifications": "Desactivar notificaciones",
+    "permissionDenied": "Permiso de notificaciones denegado",
+    "permissionGranted": "Notificaciones activadas",
+    "subscribeError": "Error al activar notificaciones",
+    "notSupported": "Las notificaciones no son compatibles con este navegador"
   }
 }

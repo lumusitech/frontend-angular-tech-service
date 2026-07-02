@@ -987,5 +987,13 @@
     "passwordMismatch": "Passwords do not match",
     "passwordUpdated": "Password updated",
     "profileUpdated": "Profile updated"
+  },
+  "push": {
+    "enableNotifications": "Enable notifications",
+    "disableNotifications": "Disable notifications",
+    "permissionDenied": "Notification permission denied",
+    "permissionGranted": "Notifications enabled",
+    "subscribeError": "Error enabling notifications",
+    "notSupported": "Notifications are not supported in this browser"
   }
 }
