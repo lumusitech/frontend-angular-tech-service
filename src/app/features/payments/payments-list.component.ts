@@ -377,20 +377,23 @@ export class PaymentsListComponent implements OnInit {
     { value: 'paidAt', labelKey: 'payments.paymentDate' },
   ];
 
-  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
-    url: '/api/payments',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-      ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
-      sortBy: this.sortBy(),
-      order: this.sortOrder().toUpperCase(),
-      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-      ...(this.dateFrom() ? { [this.dateField() + 'From']: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { [this.dateField() + 'To']: this.dateTo() } : {}),
-    },
-  }));
+  readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => {
+    const today = toLocalDateString(new Date());
+    return {
+      url: '/api/payments',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
+        sortBy: this.sortBy(),
+        order: this.sortOrder().toUpperCase(),
+        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+      },
+    };
+  });
 
   displayedColumns = [
     'trackingCode',

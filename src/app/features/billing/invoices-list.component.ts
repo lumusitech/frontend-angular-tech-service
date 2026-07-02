@@ -262,20 +262,23 @@ export class InvoicesListComponent {
     { value: 'issuedAt', labelKey: 'billing.dateFieldIssued' },
   ];
 
-  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => ({
-    url: '/api/billing/invoices',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-      ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
-      ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
-      sortBy: this.sortBy(),
-      order: this.sortOrder().toUpperCase(),
-      ...(this.dateFrom() ? { [this.dateField() + 'From']: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { [this.dateField() + 'To']: this.dateTo() } : {}),
-    },
-  }));
+  readonly invoicesResource = httpResource<PaginatedResponse<Invoice>>(() => {
+    const today = toLocalDateString(new Date());
+    return {
+      url: '/api/billing/invoices',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.typeFilter() ? { invoiceType: this.typeFilter() } : {}),
+        ...(this.clientNameFilter() ? { clientName: this.clientNameFilter() } : {}),
+        sortBy: this.sortBy(),
+        order: this.sortOrder().toUpperCase(),
+        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+      },
+    };
+  });
 
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
 

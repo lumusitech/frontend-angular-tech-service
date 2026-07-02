@@ -385,7 +385,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : new Date());
 
   readonly dateFieldOptions: DateFieldOption[] = [
     { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
@@ -411,20 +411,23 @@ export class WorkOrdersListComponent implements OnInit {
     }
   }
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
-    url: '/api/work-orders',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-      ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
-      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-      sortBy: this.sortBy(),
-      order: this.sortOrder().toUpperCase(),
-      ...(this.dateFrom() ? { [this.dateField() + 'From']: this.dateFrom() } : {}),
-      ...(this.dateTo() ? { [this.dateField() + 'To']: this.dateTo() } : {}),
-    },
-  }));
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => {
+    const today = toLocalDateString(new Date());
+    return {
+      url: '/api/work-orders',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+        ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+        sortBy: this.sortBy(),
+        order: this.sortOrder().toUpperCase(),
+        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
+      },
+    };
+  });
 
   displayedColumns = [
     'trackingCode',
