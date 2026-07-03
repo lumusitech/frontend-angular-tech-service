@@ -1,12 +1,11 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { PaymentsListComponent } from './payments-list.component';
 import { PaymentsService } from '../../core/services/payments.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
-import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
 
 describe('PaymentsListComponent - Date Filtering', () => {
   let component: PaymentsListComponent;
@@ -50,7 +49,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     });
 
     it('should update dateFrom via onDateFromChange', () => {
-      const date = new Date(2026, 4, 15); // May 15, 2026 (local)
+      const date = new Date(2026, 4, 15);
       const event = { value: date } as any;
       component.onDateFromChange(event);
       expect(component.dateFrom()).toMatch(/2026-05-15/);
@@ -64,7 +63,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     });
 
     it('should update dateTo via onDateToChange', () => {
-      const date = new Date(2026, 5, 30); // June 30, 2026 (local)
+      const date = new Date(2026, 5, 30);
       const event = { value: date } as any;
       component.onDateToChange(event);
       expect(component.dateTo()).toMatch(/2026-06-30/);
@@ -136,6 +135,41 @@ describe('PaymentsListComponent - Date Filtering', () => {
         { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
         { value: 'paidAt', labelKey: 'payments.paymentDate' },
       ]);
+    });
+  });
+
+  describe('httpResource params - dateField propagation', () => {
+    it('should not send dateField when no dates are set', () => {
+      component.dateFrom.set('');
+      component.dateTo.set('');
+      component.dateField.set('paidAt');
+
+      fixture.detectChanges();
+
+      const resource = component.paymentsResource;
+      expect(resource).toBeTruthy();
+    });
+
+    it('should send dateField with dateFrom when dateFrom is set', () => {
+      component.dateFrom.set('2026-05-01');
+      component.dateTo.set('');
+      component.dateField.set('paidAt');
+
+      fixture.detectChanges();
+
+      const resource = component.paymentsResource;
+      expect(resource).toBeTruthy();
+    });
+
+    it('should send dateField with dateTo when dateTo is set', () => {
+      component.dateFrom.set('');
+      component.dateTo.set('2026-06-30');
+      component.dateField.set('paidAt');
+
+      fixture.detectChanges();
+
+      const resource = component.paymentsResource;
+      expect(resource).toBeTruthy();
     });
   });
 });

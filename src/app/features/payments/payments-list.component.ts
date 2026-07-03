@@ -378,19 +378,19 @@ export class PaymentsListComponent implements OnInit {
   ];
 
   readonly paymentsResource = httpResource<PaginatedResponse<Payment>>(() => ({
-      url: '/api/payments',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-        ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
-        sortBy: this.sortBy(),
-        order: this.sortOrder().toUpperCase(),
-        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-        ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
-      },
-    }));
+    url: '/api/payments',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.methodFilter() ? { method: this.methodFilter() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom(), dateField: this.dateField() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo(), dateField: this.dateField() } : {}),
+    },
+  }));
 
   displayedColumns = [
     'trackingCode',
