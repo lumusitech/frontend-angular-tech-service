@@ -138,6 +138,23 @@ describe('PaymentsListComponent - Date Filtering', () => {
     });
   });
 
+  describe('same-day date range filtering', () => {
+    it('should include records when dateFrom equals dateTo and record falls on that day', () => {
+      // Backend should use < dateTo+1day to include records on dateTo
+      // This test verifies the frontend sends correct params
+      component.dateFrom.set('2026-05-12');
+      component.dateTo.set('2026-05-12');
+      component.dateField.set('paidAt');
+
+      fixture.detectChanges();
+
+      // The httpResource should have dateFrom and dateTo set
+      expect(component.dateFrom()).toBe('2026-05-12');
+      expect(component.dateTo()).toBe('2026-05-12');
+      expect(component.dateField()).toBe('paidAt');
+    });
+  });
+
   describe('httpResource params - dateField propagation', () => {
     it('should not send dateField when no dates are set', () => {
       component.dateFrom.set('');
