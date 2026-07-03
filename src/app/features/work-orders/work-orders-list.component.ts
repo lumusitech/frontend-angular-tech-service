@@ -119,18 +119,24 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             [value]="dateField()"
             (valueChange)="onDateFieldChange($event)"
           />
-
-          <mat-form-field appearance="outline" class="w-40">
+          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
+            @if (dateError()) {
+              <mat-error>{{ dateError() | translate }}</mat-error>
+            }
           </mat-form-field>
-            <mat-form-field appearance="outline" class="w-40">
+
+          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
+            @if (dateError()) {
+              <mat-error>{{ dateError() | translate }}</mat-error>
+            }
           </mat-form-field>
 
           @if (hasActiveFilters()) {
@@ -384,6 +390,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
+  readonly dateError = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
   readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : new Date());
 
@@ -462,17 +469,37 @@ export class WorkOrdersListComponent implements OnInit {
     const date = event.value;
     if (date) {
       this.dateFrom.set(toLocalDateString(date));
+      this.dateError.set('');
+      if (this.dateTo()) {
+        const from = parseLocalDate(this.dateFrom());
+        const to = parseLocalDate(this.dateTo());
+        if (from > to) {
+          this.dateError.set('common.invalidDateTo');
+        }
+      }
     } else {
       this.dateFrom.set('');
+      this.dateError.set('');
     }
   }
 
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateTo.set(toLocalDateString(date));
+      const newDateTo = toLocalDateString(date);
+      if (this.dateFrom()) {
+        const from = parseLocalDate(this.dateFrom());
+        const to = parseLocalDate(newDateTo);
+        if (to < from) {
+          this.dateError.set('common.invalidDateFrom');
+          return;
+        }
+      }
+      this.dateTo.set(newDateTo);
+      this.dateError.set('');
     } else {
       this.dateTo.set('');
+      this.dateError.set('');
     }
   }
 
@@ -498,6 +525,7 @@ export class WorkOrdersListComponent implements OnInit {
     this.dateField.set('createdAt');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.dateError.set('');
     this.highlightedId.set(null);
     this.fromNotification.set(false);
   }
