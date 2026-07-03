@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { toLocalDateString } from '../../core/utils/date.utils';
+import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -301,8 +301,8 @@ export class ServiceTypesListComponent implements OnInit {
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
 
   readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
     url: '/api/service-types',

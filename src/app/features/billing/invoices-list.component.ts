@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toLocalDateString } from '../../core/utils/date.utils';
+import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
@@ -254,8 +254,8 @@ export class InvoicesListComponent {
   readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
 
   readonly dateFieldOptions: DateFieldOption[] = [
     { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
