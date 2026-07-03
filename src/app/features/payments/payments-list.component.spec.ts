@@ -162,7 +162,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
       const event = { value: new Date(2026, 4, 10) } as any;
       component.onDateToChange(event);
 
-      expect(component.dateError()).toBe('common.invalidDateRange');
+      expect(component.dateError()).toBe('common.invalidDateFrom');
     });
 
     it('should not set dateTo when it is before dateFrom', () => {
@@ -190,13 +190,13 @@ describe('PaymentsListComponent - Date Filtering', () => {
       const event = { value: new Date(2026, 4, 15) } as any;
       component.onDateFromChange(event);
 
-      expect(component.dateError()).toBe('common.invalidDateRange');
+      expect(component.dateError()).toBe('common.invalidDateTo');
     });
 
     it('should clear error when valid date is selected', () => {
       component.dateFrom.set('2026-05-15');
       component.dateTo.set('2026-05-10');
-      component.dateError.set('common.invalidDateRange');
+      component.dateError.set('common.invalidDateTo');
 
       const event = { value: new Date(2026, 4, 20) } as any;
       component.onDateToChange(event);

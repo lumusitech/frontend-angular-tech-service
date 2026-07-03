@@ -319,7 +319,7 @@ export class InvoicesListComponent {
         const from = parseLocalDate(this.dateFrom());
         const to = parseLocalDate(this.dateTo());
         if (from > to) {
-          this.dateError.set('common.invalidDateRange');
+          this.dateError.set('common.invalidDateTo');
         }
       }
     } else {
@@ -336,7 +336,7 @@ export class InvoicesListComponent {
         const from = parseLocalDate(this.dateFrom());
         const to = parseLocalDate(newDateTo);
         if (to < from) {
-          this.dateError.set('common.invalidDateRange');
+          this.dateError.set('common.invalidDateFrom');
           return;
         }
       }
