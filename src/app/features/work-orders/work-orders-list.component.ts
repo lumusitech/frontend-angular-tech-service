@@ -411,23 +411,20 @@ export class WorkOrdersListComponent implements OnInit {
     }
   }
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => {
-    const today = toLocalDateString(new Date());
-    return {
-      url: '/api/work-orders',
-      params: {
-        page: this.currentPage(),
-        limit: this.pageSize(),
-        ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
-        ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
-        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-        sortBy: this.sortBy(),
-        order: this.sortOrder().toUpperCase(),
-        ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
-        ...(this.dateTo() ? { dateTo: this.dateTo() } : { dateTo: today }),
-      },
-    };
-  });
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
+    url: '/api/work-orders',
+    params: {
+      page: this.currentPage(),
+      limit: this.pageSize(),
+      ...(this.statusFilter() ? { status: this.statusFilter() } : {}),
+      ...(this.priorityFilter() ? { priority: this.priorityFilter() } : {}),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      sortBy: this.sortBy(),
+      order: this.sortOrder().toUpperCase(),
+      ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
+      ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
+    },
+  }));
 
   displayedColumns = [
     'trackingCode',
