@@ -105,16 +105,15 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             (valueChange)="onDateFieldChange($event)"
           />
 
-          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
+          <mat-form-field appearance="outline" class="w-40"
+            [class.mat-form-field-invalid]="dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
           </mat-form-field>
-          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
+          <mat-form-field appearance="outline" class="w-40"
+            [class.mat-form-field-invalid]="dateError()">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
@@ -249,6 +248,7 @@ export class InvoicesListComponent {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly translationService = inject(TranslationService);
+  readonly parseLocalDate = parseLocalDate;
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);

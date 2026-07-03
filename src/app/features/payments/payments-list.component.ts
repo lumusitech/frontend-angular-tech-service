@@ -112,24 +112,21 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             (valueChange)="onDateFieldChange($event)"
           />
 
-          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
+          <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
           </mat-form-field>
-            <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
+            <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
           </mat-form-field>
+          @if (dateError()) {
+            <div class="w-40 text-red-500 dark:text-red-400 text-xs">{{ dateError() | translate }}</div>
+          }
 
           @if (hasActiveFilters()) {
             <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
@@ -362,6 +359,7 @@ export class PaymentsListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
+  readonly parseLocalDate = parseLocalDate;
 
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
