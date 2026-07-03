@@ -115,6 +115,17 @@ div:has(> table.mat-mdc-table) {
   color: var(--color-secondary);
 }
 
+/* Date picker validation error */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: #ef4444 !important;
+}
+
+:root.dark .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:root.dark .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: #ef4444 !important;
+}
+
 /* --- Mat Form Field (inputs, selects, datepickers) --- */
 .mat-mdc-form-field {
   --mdc-outlined-text-field-focus-outline-color: var(--color-secondary);
