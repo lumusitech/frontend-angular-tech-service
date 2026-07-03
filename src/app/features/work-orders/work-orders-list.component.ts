@@ -119,25 +119,25 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             [value]="dateField()"
             (valueChange)="onDateFieldChange($event)"
           />
-          <mat-form-field appearance="outline" class="w-40" [class.!border-red-500]="dateError()">
+          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
+            @if (dateError()) {
+              <mat-error>{{ dateError() | translate }}</mat-error>
+            }
           </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-40" [class.!border-red-500]="dateError()">
+          <mat-form-field appearance="outline" class="w-40" [style.border-color]="dateError() ? '#ef4444' : ''">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
+            @if (dateError()) {
+              <mat-error>{{ dateError() | translate }}</mat-error>
+            }
           </mat-form-field>
-
-          @if (dateError()) {
-            <span class="text-red-500 dark:text-red-400 text-xs w-full">
-              {{ dateError() | translate }}
-            </span>
-          }
 
           @if (hasActiveFilters()) {
             <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
