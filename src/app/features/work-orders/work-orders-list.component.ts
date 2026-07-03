@@ -119,27 +119,22 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             [value]="dateField()"
             (valueChange)="onDateFieldChange($event)"
           />
-          <mat-form-field appearance="outline" class="w-40"
-            [class.mat-form-field-invalid]="dateError()">
+          <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40"
-            [class.mat-form-field-invalid]="dateError()">
+          <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
           </mat-form-field>
+          @if (dateError()) {
+            <div class="w-40 text-red-500 dark:text-red-400 text-xs">{{ dateError() | translate }}</div>
+          }
 
           @if (hasActiveFilters()) {
             <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
@@ -379,6 +374,7 @@ export class WorkOrdersListComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   readonly translationService = inject(TranslationService);
+  readonly parseLocalDate = parseLocalDate;
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -394,7 +390,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly dateTo = signal('');
   readonly dateError = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : new Date());
+  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
 
   readonly dateFieldOptions: DateFieldOption[] = [
     { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
