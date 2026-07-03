@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { toLocalDateString } from '../../core/utils/date.utils';
+import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { ReportsService } from '../../core/services/reports.service';
 import {
   PeriodFilter,
@@ -173,8 +173,8 @@ export class ReportsDashboardComponent {
   readonly period = signal<string>('monthly');
   readonly dateFrom = signal<string>('');
   readonly dateTo = signal<string>('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? new Date(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? new Date(this.dateTo()) : null);
+  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
+  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
   readonly dateError = signal(false);
   readonly loading = signal(true);
   readonly error = signal(false);
@@ -248,8 +248,8 @@ export class ReportsDashboardComponent {
 
   private validateDates(): boolean {
     if (this.dateFrom() && this.dateTo()) {
-      const from = new Date(this.dateFrom());
-      const to = new Date(this.dateTo());
+      const from = parseLocalDate(this.dateFrom());
+      const to = parseLocalDate(this.dateTo());
       if (from > to) {
         this.dateError.set(true);
         return false;
