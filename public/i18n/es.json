@@ -10,7 +10,7 @@
     "loading": "Cargando...",
     "noResults": "Sin resultados",
     "noResultsMessage": "No se encontraron elementos para mostrar.",
-    "invalidDateRange": "La fecha desde no puede ser mayor que la fecha hasta",
+    "invalidDateRange": "Fecha hasta menor que desde",
     "errorLoading": "Error al cargar",
     "errorMessage": "No se pudieron obtener los datos. Verifica tu conexión e intenta de nuevo.",
     "retry": "Reintentar",

@@ -10,7 +10,7 @@
     "loading": "Loading...",
     "noResults": "No results",
     "noResultsMessage": "No items found to display.",
-    "invalidDateRange": "The start date cannot be later than the end date",
+    "invalidDateRange": "End date before start date",
     "errorLoading": "Error loading",
     "errorMessage": "Could not fetch data. Check your connection and try again.",
     "retry": "Retry",
