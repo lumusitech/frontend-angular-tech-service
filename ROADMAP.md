@@ -505,9 +505,14 @@ server.ts                          # Express server (SSR entry point)
 
 ### 20. Testing
 
-- [ ] Component unit tests (Karma/Jest)
-- [ ] Service unit tests (mock HTTP)
-- [ ] E2E tests (Cypress or Playwright)
+- [x] Service unit tests (6 services, 147 tests) — auth, clients, work-orders, billing, reports, notifications
+- [x] Pipe unit tests (4 pipes, 125 tests) — status-class, status-label, currency-ars, relative-date
+- [x] Guard + Interceptor tests (2 files, 26 tests) — auth.guard, auth.interceptor
+- [x] Directive + Component tests (3 files, 44 tests) — role.directive, copy-to-clipboard, status-badge
+- [x] Feature component tests (3 files, 58 tests) — login, clients-list, dashboard
+- [x] Date filtering tests (3 files, 58 tests) — payments, work-orders, invoices
+- [ ] E2E tests (Playwright configurado, 8 test files — pendiente de servidor backend)
+- [ ] Mutation testing (Stryker configurado — pendiente compatibilidad con Angular builder)
 - [ ] Accessibility tests (axe-core)
 
 ### 21. `features/landing/` — Landing Page (SSG/Prerender)
