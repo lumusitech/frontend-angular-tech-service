@@ -125,6 +125,12 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
 
+          @if (dateError()) {
+            <span class="text-red-500 dark:text-red-400 text-xs self-center">
+              {{ dateError() | translate }}
+            </span>
+          }
+
           @if (hasActiveFilters()) {
             <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
               <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
@@ -369,6 +375,7 @@ export class PaymentsListComponent implements OnInit {
   readonly dateField = signal('createdAt');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
+  readonly dateError = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
   readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
 
@@ -446,17 +453,39 @@ export class PaymentsListComponent implements OnInit {
     const date = event.value;
     if (date) {
       this.dateFrom.set(toLocalDateString(date));
+      this.dateError.set('');
+      // Validate dateTo is not before dateFrom
+      if (this.dateTo()) {
+        const from = parseLocalDate(this.dateFrom());
+        const to = parseLocalDate(this.dateTo());
+        if (from > to) {
+          this.dateError.set('common.invalidDateRange');
+        }
+      }
     } else {
       this.dateFrom.set('');
+      this.dateError.set('');
     }
   }
 
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateTo.set(toLocalDateString(date));
+      const newDateTo = toLocalDateString(date);
+      // Validate dateTo is not before dateFrom
+      if (this.dateFrom()) {
+        const from = parseLocalDate(this.dateFrom());
+        const to = parseLocalDate(newDateTo);
+        if (to < from) {
+          this.dateError.set('common.invalidDateRange');
+          return;
+        }
+      }
+      this.dateTo.set(newDateTo);
+      this.dateError.set('');
     } else {
       this.dateTo.set('');
+      this.dateError.set('');
     }
   }
 
@@ -471,6 +500,7 @@ export class PaymentsListComponent implements OnInit {
     this.dateField.set('createdAt');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.dateError.set('');
     this.highlightedId.set(null);
     this.fromNotification.set(false);
   }

@@ -155,6 +155,56 @@ describe('PaymentsListComponent - Date Filtering', () => {
     });
   });
 
+  describe('date validation', () => {
+    it('should show error when dateTo is before dateFrom', () => {
+      component.dateFrom.set('2026-05-15');
+
+      const event = { value: new Date(2026, 4, 10) } as any;
+      component.onDateToChange(event);
+
+      expect(component.dateError()).toBe('common.invalidDateRange');
+    });
+
+    it('should not set dateTo when it is before dateFrom', () => {
+      component.dateFrom.set('2026-05-15');
+
+      const event = { value: new Date(2026, 4, 10) } as any;
+      component.onDateToChange(event);
+
+      expect(component.dateTo()).toBe('');
+    });
+
+    it('should accept same-day range', () => {
+      component.dateFrom.set('2026-05-12');
+
+      const event = { value: new Date(2026, 4, 12) } as any;
+      component.onDateToChange(event);
+
+      expect(component.dateTo()).toMatch(/2026-05-12/);
+      expect(component.dateError()).toBe('');
+    });
+
+    it('should show error when dateFrom is after dateTo', () => {
+      component.dateTo.set('2026-05-10');
+
+      const event = { value: new Date(2026, 4, 15) } as any;
+      component.onDateFromChange(event);
+
+      expect(component.dateError()).toBe('common.invalidDateRange');
+    });
+
+    it('should clear error when valid date is selected', () => {
+      component.dateFrom.set('2026-05-15');
+      component.dateTo.set('2026-05-10');
+      component.dateError.set('common.invalidDateRange');
+
+      const event = { value: new Date(2026, 4, 20) } as any;
+      component.onDateToChange(event);
+
+      expect(component.dateError()).toBe('');
+    });
+  });
+
   describe('httpResource params - dateField propagation', () => {
     it('should not send dateField when no dates are set', () => {
       component.dateFrom.set('');
