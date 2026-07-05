@@ -47,7 +47,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Lazy loading con `loadComponent()`
 - Rutas hijas con `children: [...]`
 - Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule, MatExpansionPanel, MatAccordion
-- Forms: template-driven con signals (no ReactiveFormsModule)
+- Forms: Signal Forms exclusivamente (`form()`, `FormField`). Prohibido `FormsModule`, `NgForm`, `[(ngModel)]`. El código legacy que usa template-driven está pendiente de migración.
 - Sidebar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar items ahí
 
 ---
@@ -191,6 +191,36 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Valor:** PWA real. Crear/editar offline, sync al reconectar.
 
 **Estado:** Pendiente (requiere investigación)
+
+---
+
+### 12. Migración a Signal Forms — Eliminar template-driven forms legacy
+
+**Valor:** Consistencia con la arquitectura Signals-Only. Eliminar deuda técnica.
+
+**15 componentes** usan `FormsModule`/`NgForm`/`[(ngModel)]` y deben migrarse a `form()` + `FormField`:
+
+| Componente | Archivo |
+|---|---|
+| ClientFormComponent | `src/app/features/clients/client-form.component.ts` |
+| WorkOrderFormComponent | `src/app/features/work-orders/work-order-form.component.ts` |
+| PaymentFormComponent | `src/app/features/payments/payment-form.component.ts` |
+| ExpenseFormComponent | `src/app/features/expenses/expense-form.component.ts` |
+| InvoiceFormComponent | `src/app/features/billing/invoice-form.component.ts` |
+| SupplierFormComponent | `src/app/features/suppliers/supplier-form.component.ts` |
+| SkillFormComponent | `src/app/features/skills/skill-form.component.ts` |
+| ServiceTypeFormComponent | `src/app/features/service-types/service-type-form.component.ts` |
+| UserFormComponent | `src/app/features/users/user-form.component.ts` |
+| InquiryFormComponent | `src/app/features/inquiries/inquiry-form.component.ts` |
+| InquiryContactFormComponent | `src/app/features/inquiries/inquiry-contact-form.component.ts` |
+| PendingItemFormComponent | `src/app/features/pending-items/pending-item-form.component.ts` |
+| SkillSelectorComponent | `src/app/features/users/skill-selector.component.ts` |
+| TechnicianAssignmentDialogComponent | `src/app/features/work-orders/technician-assignment-dialog.component.ts` |
+| PortalSearchComponent | `src/app/features/portal/portal-search.component.ts` |
+
+**Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
+
+**Estado:** Pendiente
 
 ---
 
