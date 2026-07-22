@@ -696,6 +696,7 @@
     "dueToday": "Vence hoy",
     "overdue": "Vencida",
     "noDate": "Sin fecha",
+    "unassignedMessage": "Ya no estás asignado a esta orden",
     "nav": {
       "orders": "Órdenes",
       "notifications": "Notificaciones",

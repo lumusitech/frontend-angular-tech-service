@@ -702,6 +702,7 @@
     "dueToday": "Due today",
     "overdue": "Overdue",
     "noDate": "No date",
+    "unassignedMessage": "You are no longer assigned to this order",
     "nav": {
       "orders": "Orders",
       "notifications": "Notifications",

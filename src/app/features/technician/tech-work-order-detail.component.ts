@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -65,6 +65,16 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
       </div>
     } @else if (resource.error()) {
       <app-error-state (retry)="resource.reload()" />
+    } @else if (unassigned()) {
+      <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
+        <mat-icon class="!w-16 !h-16">info</mat-icon>
+        <p class="text-gray-500 dark:text-gray-400">
+          {{ 'technician.unassignedMessage' | translate }}
+        </p>
+        <button mat-flat-button color="primary" (click)="goBack()">
+          {{ 'common.back' | translate }}
+        </button>
+      </div>
     } @else if (resource.hasValue()) {
       @let order = resource.value();
 
@@ -265,18 +275,13 @@ export class TechWorkOrderDetailComponent {
     return this.orderId ? `/api/work-orders/${this.orderId}` : '';
   });
 
-  constructor() {
-    effect(() => {
-      const notification = this.websocketService.lastNotification();
-      if (
-        notification &&
-        notification.type === 'work_order.technician_unassigned' as any &&
-        notification.referenceId === this.orderId
-      ) {
-        this.router.navigate(['/tech']);
-      }
-    });
-  }
+  readonly unassigned = computed(() => {
+    const notification = this.websocketService.lastNotification();
+    return (
+      notification?.type === ('work_order.technician_unassigned' as any) &&
+      notification?.referenceId === this.orderId
+    );
+  });
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
