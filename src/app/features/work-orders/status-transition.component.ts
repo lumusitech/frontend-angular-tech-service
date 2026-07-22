@@ -18,6 +18,8 @@ interface StatusAction {
 const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
   pending: [
     { label: 'Asignar Técnicos', icon: 'engineering', color: 'primary', nextStatus: 'assigned' },
+    { label: 'Pausar', icon: 'pause', color: '', nextStatus: 'postponed' },
+    { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
   assigned: [
     {
