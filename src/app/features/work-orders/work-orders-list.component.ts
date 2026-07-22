@@ -3,6 +3,7 @@ import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -158,7 +159,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
         </div>
       } @else if (workOrdersResource.error()) {
         <app-error-state (retry)="workOrdersResource.reload()" />
-      } @else if (workOrdersResource.hasValue() && workOrdersResource.value().data.length === 0) {
+      } @else if (workOrdersResource.hasValue() && liveOrders()!.data.length === 0) {
         <app-empty-state
           [title]="'workOrders.noOrders' | translate"
           [message]="'workOrders.noOrdersMessage' | translate"
@@ -168,7 +169,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
       } @else if (workOrdersResource.hasValue()) {
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
-          @for (order of workOrdersResource.value().data; track order.id) {
+          @for (order of liveOrders()!.data; track order.id) {
             <app-mobile-card
               [title]="order.trackingCode"
               [status]="order.status"
@@ -188,7 +189,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             mat-table
             matSort
             matSortDisableClear
-            [dataSource]="workOrdersResource.value().data"
+            [dataSource]="liveOrders()!.data"
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
@@ -358,7 +359,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
           </table>
 
           <mat-paginator
-            [length]="workOrdersResource.value().total"
+            [length]="liveOrders()!.total"
             [pageSize]="pageSize()"
             [pageSizeOptions]="[10, 25, 50]"
             (page)="onPageChange($event)"
@@ -373,6 +374,7 @@ export class WorkOrdersListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
+  private readonly websocketService = inject(WebsocketService);
   readonly translationService = inject(TranslationService);
   readonly parseLocalDate = parseLocalDate;
 
@@ -430,6 +432,22 @@ export class WorkOrdersListComponent implements OnInit {
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
   }));
+
+  readonly liveOrders = computed(() => {
+    const response = this.workOrdersResource.value();
+    if (!response) return null;
+    const changes = this.websocketService.workOrderStatusChanges();
+    const keys = Object.keys(changes);
+    if (keys.length === 0) return response;
+    return {
+      ...response,
+      data: response.data.map((order) =>
+        changes[order.id]
+          ? { ...order, status: changes[order.id] as WorkOrderStatus }
+          : order,
+      ),
+    };
+  });
 
   displayedColumns = [
     'trackingCode',
