@@ -222,18 +222,21 @@ export class NotificationsListComponent {
   readonly typeFilter = signal('');
   readonly searchFilter = signal('');
 
-  readonly resource = httpResource<PaginatedNotifications>(() => ({
-    url: '/api/notifications',
-    params: {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      sortBy: 'createdAt',
-      order: 'DESC',
-      ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
-      ...(this.typeFilter() ? { type: this.typeFilter() } : {}),
-      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-    },
-  }));
+  readonly resource = httpResource<PaginatedNotifications>(() => {
+    this.notificationsService.refreshCounter();
+    return {
+      url: '/api/notifications',
+      params: {
+        page: this.currentPage(),
+        limit: this.pageSize(),
+        sortBy: 'createdAt',
+        order: 'DESC',
+        ...(this.readFilter() === 'unread' ? { isRead: 'false' } : {}),
+        ...(this.typeFilter() ? { type: this.typeFilter() } : {}),
+        ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
+      },
+    };
+  });
 
   getTypeIcon(type: string): string {
     return TYPE_ICONS[type] || 'notifications';
