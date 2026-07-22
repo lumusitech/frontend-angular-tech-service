@@ -52,6 +52,18 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (22/07/2026)
+
+- Notificaciones en tiempo real: toast directo desde WebsocketService (sin effect)
+- Conexión WebSocket en layouts via afterNextRender (solo browser)
+- Proxy /socket.io para conexión LAN desde celular
+- Auto-refresh de lista de notificaciones al recibir nuevas vía WebSocket (refreshCounter)
+- Editar/eliminar notas desde notes-tab (admin only) con NoteDialogComponent
+- workOrderRefreshKey para auto-refresh de detalle de orden al recibir notificaciones
+- Routing role-aware en notificaciones: admin→/admin/work-orders/:id, tech→/tech/:id
+- Nuevos tipos de notificación: iconos, colores, filtros en lista
+- Eliminado NotificationToastComponent (vive en WebsocketService)
+
 ## Bugs conocidos
 
 ### ~~BUG-001: Material Button Colors — Color por defecto persiste~~ ✅
