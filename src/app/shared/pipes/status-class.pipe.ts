@@ -15,6 +15,7 @@ const CLASSES: Record<ClassType, Record<string, string>> = {
   workOrderStatus: {
     pending: 'bg-yellow-500/15 text-yellow-400',
     assigned: 'bg-blue-500/15 text-blue-400',
+    on_the_way: 'bg-cyan-500/15 text-cyan-400',
     in_progress: 'bg-indigo-500/15 text-indigo-400',
     postponed: 'bg-gray-500/15 text-gray-400',
     completed: 'bg-green-500/15 text-green-400',

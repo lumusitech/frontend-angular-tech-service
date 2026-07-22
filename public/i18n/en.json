@@ -256,6 +256,8 @@
     "actions": {
       "assignTechnicians": "Assign Technicians",
       "startWork": "Start Work",
+      "onTheWay": "On The Way",
+      "reAssign": "Back to Assigned",
       "complete": "Complete",
       "pause": "Pause",
       "cancel": "Cancel",
@@ -481,6 +483,7 @@
   "statusLabels": {
     "pending": "Pending",
     "assigned": "Assigned",
+    "on_the_way": "On The Way",
     "in_progress": "In Progress",
     "postponed": "Postponed",
     "completed": "Completed",

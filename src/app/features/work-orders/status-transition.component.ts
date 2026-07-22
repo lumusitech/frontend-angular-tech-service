@@ -30,6 +30,9 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
       setStartedAt: true,
     },
   ],
+  on_the_way: [
+    { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
   in_progress: [
     {
       label: 'Completar',

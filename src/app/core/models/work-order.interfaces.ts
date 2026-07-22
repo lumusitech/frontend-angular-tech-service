@@ -1,6 +1,7 @@
 export type WorkOrderStatus =
   | 'pending'
   | 'assigned'
+  | 'on_the_way'
   | 'in_progress'
   | 'postponed'
   | 'completed'

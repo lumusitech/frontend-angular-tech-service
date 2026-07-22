@@ -22,6 +22,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-500/15 text-yellow-400',
   assigned: 'bg-blue-500/15 text-blue-400',
+  on_the_way: 'bg-cyan-500/15 text-cyan-400',
   in_progress: 'bg-purple-500/15 text-purple-400',
   completed: 'bg-green-500/15 text-green-400',
   delivered: 'bg-gray-500/15 text-gray-400',

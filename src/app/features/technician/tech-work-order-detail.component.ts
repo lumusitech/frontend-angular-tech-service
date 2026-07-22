@@ -32,7 +32,12 @@ interface TechStatusAction {
 
 const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
   assigned: [
+    { labelKey: 'workOrders.actions.onTheWay', icon: 'directions_car', color: 'primary', nextStatus: 'on_the_way' },
+    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
+  on_the_way: [
     { labelKey: 'workOrders.actions.startWork', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
+    { labelKey: 'workOrders.actions.reAssign', icon: 'assignment_return', color: '', nextStatus: 'assigned' },
     { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
   in_progress: [
@@ -293,6 +298,7 @@ export class TechWorkOrderDetailComponent {
     const colors: Record<string, string> = {
       pending: 'bg-yellow-500/15 text-yellow-400',
       assigned: 'bg-blue-500/15 text-blue-400',
+      on_the_way: 'bg-cyan-500/15 text-cyan-400',
       in_progress: 'bg-purple-500/15 text-purple-400',
       completed: 'bg-green-500/15 text-green-400',
       delivered: 'bg-gray-500/15 text-gray-400',

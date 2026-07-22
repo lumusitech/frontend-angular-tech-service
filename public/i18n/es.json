@@ -249,6 +249,8 @@
     "actions": {
       "assignTechnicians": "Asignar Técnicos",
       "startWork": "Iniciar Trabajo",
+      "onTheWay": "En Camino",
+      "reAssign": "Volver a Asignada",
       "complete": "Completar",
       "pause": "Pausar",
       "cancel": "Cancelar",
@@ -474,6 +476,7 @@
   "statusLabels": {
     "pending": "Pendiente",
     "assigned": "Asignada",
+    "on_the_way": "En Camino",
     "in_progress": "En Progreso",
     "postponed": "Pospuesta",
     "completed": "Completada",
