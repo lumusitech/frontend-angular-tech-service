@@ -110,6 +110,8 @@ export interface CreateWorkOrderNoteDto {
   content: string;
 }
 
+export type UpdateWorkOrderNoteDto = Partial<CreateWorkOrderNoteDto>;
+
 export interface CreateWorkOrderMaterialDto {
   description: string;
   quantity: number;

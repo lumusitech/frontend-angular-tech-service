@@ -21,6 +21,8 @@ export const NOTIFICATION_TOAST_ICONS: Record<string, string> = {
   [NotificationType.INQUIRY_CONTACTED]: 'phone',
   [NotificationType.INQUIRY_REVIEWED]: 'rate_review',
   [NotificationType.WORK_ORDER_NOTE_ADDED]: 'note_add',
+  [NotificationType.WORK_ORDER_NOTE_UPDATED]: 'edit_note',
+  [NotificationType.WORK_ORDER_NOTE_DELETED]: 'delete_outline',
   [NotificationType.WORK_ORDER_MATERIAL_ADDED]: 'inventory_2',
 };
 

@@ -6,6 +6,8 @@ import {
   CreateWorkOrderDto,
   UpdateWorkOrderDto,
   CreateWorkOrderNoteDto,
+  UpdateWorkOrderNoteDto,
+  WorkOrderNote,
   CreateWorkOrderMaterialDto,
   CreateTaskDto,
   UpdateTaskDto,
@@ -59,6 +61,14 @@ export class WorkOrdersService {
 
   updateTask(workOrderId: string, taskId: string, dto: UpdateTaskDto): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${workOrderId}/tasks/${taskId}`, dto);
+  }
+
+  updateNote(workOrderId: string, noteId: string, dto: UpdateWorkOrderNoteDto): Observable<WorkOrderNote> {
+    return this.http.patch<WorkOrderNote>(`${this.apiUrl}/${workOrderId}/notes/${noteId}`, dto);
+  }
+
+  deleteNote(workOrderId: string, noteId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${workOrderId}/notes/${noteId}`);
   }
 
   replaceTechnicians(workOrderId: string, technicianIds: string[]): Observable<void> {

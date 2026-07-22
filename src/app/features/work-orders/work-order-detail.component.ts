@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
@@ -17,7 +18,7 @@ import { TrackingCodeComponent } from '../../shared/components/tracking-code/tra
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusTransitionComponent } from './status-transition.component';
-import { AddNoteDialogComponent } from './add-note-dialog.component';
+import { NoteDialogComponent } from './add-note-dialog.component';
 import { AddMaterialDialogComponent } from './add-material-dialog.component';
 import { AddTaskDialogComponent } from './add-task-dialog.component';
 import { TechnicianAssignmentDialogComponent } from './technician-assignment-dialog.component';
@@ -141,7 +142,9 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                 </ng-template>
                 <app-notes-tab
                   [notes]="workOrderResource.value().notes || []"
+                  [workOrderId]="workOrderResource.value().id"
                   (addNote)="openAddNoteDialog()"
+                  (noteChanged)="workOrderResource.reload()"
                 />
               </mat-tab>
             </mat-tab-group>
@@ -165,12 +168,16 @@ export class WorkOrderDetailComponent {
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
+  private readonly websocketService = inject(WebsocketService);
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
 
-  readonly workOrderResource = httpResource<WorkOrder>(() => ({
-    url: `/api/work-orders/${this.orderId()}`,
-  }));
+  readonly workOrderResource = httpResource<WorkOrder>(() => {
+    this.websocketService.workOrderRefreshKey();
+    return {
+      url: `/api/work-orders/${this.orderId()}`,
+    };
+  });
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
@@ -231,7 +238,7 @@ export class WorkOrderDetailComponent {
     const workOrder = this.workOrderResource.value();
     if (!workOrder) return;
 
-    const dialogRef = this.dialog.open(AddNoteDialogComponent, {
+    const dialogRef = this.dialog.open(NoteDialogComponent, {
       width: '500px',
       data: { workOrderId: workOrder.id },
     });

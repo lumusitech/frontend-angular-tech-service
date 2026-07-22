@@ -343,7 +343,8 @@ server.ts                          # Express server (SSR entry point)
   - [x] Only valid transitions shown as buttons
   - [x] Confirmation dialog for cancel
 - [x] TechnicianAssignmentComponent (dialog multi-select)
-- [x] AddNoteDialogComponent
+- [x] NoteDialogComponent (add-note-dialog refactorizado con modo edición)
+- [x] NotesTabComponent con botones editar/eliminar (admin only)
 - [x] AddMaterialDialogComponent
 - [x] AddTaskDialogComponent
 
@@ -410,14 +411,17 @@ server.ts                          # Express server (SSR entry point)
   - [x] List with type icon, title, message, timestamp
   - [x] Unread indicator
   - [x] Mark as read / mark all as read
-- [x] NotificationBellComponent (inline en HeaderComponent)
-  - [x] Badge con unread count
-  - [x] Click navega a `/admin/notifications`
-  - [x] WebSocket para real-time
+  - [x] Auto-refresh al recibir nueva notificación vía WebSocket (refreshCounter)
+  - [x] Filtro por tipo: work_order.note_added/updated/deleted, work_order.material_added
+- [x] NotificationsPageComponent
+  - [x] Click navega según rol: admin→/admin/work-orders/:id, tech→/tech/:id
+- [x] NotificationToastComponent (eliminado — vive en WebsocketService)
 - [x] WebSocketService
   - [x] Connect with JWT token
   - [x] Listen for new notifications
-  - [x] Update unread count in real-time
+  - [x] Show toast directo (MatSnackBar.openFromComponent)
+  - [x] Update unread count + refreshCounter en real-time
+  - [x] workOrderRefreshKey para auto-refetch de detalle de orden
   - [x] Reconnect on disconnect
 
 ### 15. `features/settings/` — Configuracion

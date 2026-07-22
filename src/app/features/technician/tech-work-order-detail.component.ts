@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
@@ -15,7 +16,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { UrgencyIndicatorComponent } from '../../shared/components/urgency-indicator/urgency-indicator.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { AddNoteDialogComponent } from '../work-orders/add-note-dialog.component';
+import { NoteDialogComponent } from '../work-orders/add-note-dialog.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -237,8 +238,10 @@ export class TechWorkOrderDetailComponent {
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
+  private readonly websocketService = inject(WebsocketService);
 
   readonly resource = httpResource<WorkOrder>(() => {
+    this.websocketService.workOrderRefreshKey();
     const id = this.route.snapshot.paramMap.get('id');
     return id ? `/api/work-orders/${id}` : '';
   });
@@ -313,7 +316,7 @@ export class TechWorkOrderDetailComponent {
   }
 
   addNote(workOrderId: string): void {
-    const dialogRef = this.dialog.open(AddNoteDialogComponent, {
+    const dialogRef = this.dialog.open(NoteDialogComponent, {
       width: '500px',
       data: { workOrderId },
     });
