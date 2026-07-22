@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -145,6 +146,7 @@ const STATUS_COLORS: Record<string, string> = {
 export class TechWorkOrdersComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly router = inject(Router);
+  private readonly websocketService = inject(WebsocketService);
 
   readonly activeFilter = signal<string | null>(null);
 
@@ -157,16 +159,19 @@ export class TechWorkOrdersComponent {
     { value: 'cancelled', label: 'workOrders.statuses.cancelled' },
   ];
 
-  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
-    url: '/api/work-orders',
-    params: {
-      page: 1,
-      limit: 50,
-      sortBy: 'scheduledDate',
-      order: 'ASC',
-      ...(this.activeFilter() ? { status: this.activeFilter()! } : {}),
-    },
-  }));
+  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(() => {
+    this.websocketService.workOrderRefreshKey();
+    return {
+      url: '/api/work-orders',
+      params: {
+        page: 1,
+        limit: 50,
+        sortBy: 'scheduledDate',
+        order: 'ASC',
+        ...(this.activeFilter() ? { status: this.activeFilter()! } : {}),
+      },
+    };
+  });
 
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'bg-gray-500/15 text-gray-400';

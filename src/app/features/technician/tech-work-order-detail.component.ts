@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -258,11 +258,25 @@ export class TechWorkOrderDetailComponent {
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
 
+  readonly orderId = this.route.snapshot.paramMap.get('id') || '';
+
   readonly resource = httpResource<WorkOrder>(() => {
     this.websocketService.workOrderRefreshKey();
-    const id = this.route.snapshot.paramMap.get('id');
-    return id ? `/api/work-orders/${id}` : '';
+    return this.orderId ? `/api/work-orders/${this.orderId}` : '';
   });
+
+  constructor() {
+    effect(() => {
+      const notification = this.websocketService.lastNotification();
+      if (
+        notification &&
+        notification.type === 'work_order.technician_unassigned' as any &&
+        notification.referenceId === this.orderId
+      ) {
+        this.router.navigate(['/tech']);
+      }
+    });
+  }
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
