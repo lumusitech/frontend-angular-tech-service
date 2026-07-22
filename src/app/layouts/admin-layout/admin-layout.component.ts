@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { afterNextRender, Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 
@@ -39,4 +41,14 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
 export class AdminLayoutComponent {
   sidebarCollapsed = signal(false);
   mobileSidebarOpen = signal(false);
+  private readonly authService = inject(AuthService);
+  private readonly websocketService = inject(WebsocketService);
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.authService.isAuthenticated()) {
+        this.websocketService.connect();
+      }
+    });
+  }
 }

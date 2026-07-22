@@ -16,7 +16,15 @@ export function getSearchTerm(notification: AppNotification): string {
     if (notification.referenceType === 'pending_item') {
       return (meta['title'] as string) || '';
     }
-    if (notification.referenceType === 'inquiry') {
+  if (
+    notification.referenceType === 'work_order' &&
+    (notification.type === 'work_order.note_added' ||
+      notification.type === 'work_order.material_added')
+  ) {
+    return (meta?.['trackingCode'] as string) || '';
+  }
+
+  if (notification.referenceType === 'inquiry') {
       return (meta['clientName'] as string) || '';
     }
   }

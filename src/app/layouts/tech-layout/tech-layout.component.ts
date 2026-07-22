@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { afterNextRender, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-nav.component';
 
 @Component({
@@ -70,4 +71,14 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-na
 })
 export class TechLayoutComponent {
   readonly authService = inject(AuthService);
+  private readonly websocketService = inject(WebsocketService);
+
+  constructor() {
+    // afterNextRender runs only in the browser (SSR constructor never reconnects on hydrate)
+    afterNextRender(() => {
+      if (this.authService.isAuthenticated()) {
+        this.websocketService.connect();
+      }
+    });
+  }
 }

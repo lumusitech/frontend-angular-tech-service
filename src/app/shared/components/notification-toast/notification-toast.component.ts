@@ -1,11 +1,10 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { WebsocketService } from '../../../core/services/websocket.service';
 import { NotificationType } from '../../../core/models/notification.interfaces';
 
-const TYPE_ICONS: Record<string, string> = {
+export const NOTIFICATION_TOAST_ICONS: Record<string, string> = {
   [NotificationType.WORK_ORDER_CREATED]: 'assignment',
   [NotificationType.WORK_ORDER_STATUS_CHANGED]: 'sync',
   [NotificationType.WORK_ORDER_TECHNICIAN_ASSIGNED]: 'person_add',
@@ -21,6 +20,8 @@ const TYPE_ICONS: Record<string, string> = {
   [NotificationType.INQUIRY_ASSIGNED]: 'person_add',
   [NotificationType.INQUIRY_CONTACTED]: 'phone',
   [NotificationType.INQUIRY_REVIEWED]: 'rate_review',
+  [NotificationType.WORK_ORDER_NOTE_ADDED]: 'note_add',
+  [NotificationType.WORK_ORDER_MATERIAL_ADDED]: 'inventory_2',
 };
 
 interface ToastData {
@@ -52,36 +53,5 @@ export class ToastContentComponent {
 
   dismiss(): void {
     this.snackBar.dismiss();
-  }
-}
-
-@Component({
-  selector: 'app-notification-toast',
-  imports: [],
-  template: '',
-})
-export class NotificationToastComponent {
-  private readonly websocketService = inject(WebsocketService);
-  private readonly snackBar = inject(MatSnackBar);
-
-  constructor() {
-    effect(() => {
-      const notification = this.websocketService.lastNotification();
-      if (!notification) return;
-
-      const icon = TYPE_ICONS[notification.type] || 'notifications';
-
-      this.snackBar.openFromComponent(ToastContentComponent, {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['notification-toast-panel'],
-        data: {
-          title: notification.title,
-          message: notification.message,
-          icon,
-        } satisfies ToastData,
-      });
-    });
   }
 }

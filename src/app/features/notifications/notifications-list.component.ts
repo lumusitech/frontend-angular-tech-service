@@ -36,6 +36,8 @@ const TYPE_ICONS: Record<string, string> = {
   'inquiry.assigned': 'person_add',
   'inquiry.contacted': 'phone',
   'inquiry.reviewed': 'rate_review',
+  'work_order.note_added': 'note_add',
+  'work_order.material_added': 'inventory_2',
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -54,6 +56,8 @@ const TYPE_COLORS: Record<string, string> = {
   'inquiry.assigned': 'text-green-500 bg-green-100 dark:bg-green-900/30',
   'inquiry.contacted': 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30',
   'inquiry.reviewed': 'text-purple-500 bg-purple-100 dark:bg-purple-900/30',
+  'work_order.note_added': 'text-blue-500 bg-blue-100 dark:bg-blue-900/30',
+  'work_order.material_added': 'text-orange-500 bg-orange-100 dark:bg-orange-900/30',
 };
 
 @Component({
@@ -118,6 +122,8 @@ const TYPE_COLORS: Record<string, string> = {
               <mat-option value="inquiry.assigned">{{ 'notifications.types.inquiryAssigned' | translate }}</mat-option>
               <mat-option value="inquiry.contacted">{{ 'notifications.types.inquiryContacted' | translate }}</mat-option>
               <mat-option value="inquiry.reviewed">{{ 'notifications.types.inquiryReviewed' | translate }}</mat-option>
+              <mat-option value="work_order.note_added">{{ 'notifications.types.noteAdded' | translate }}</mat-option>
+              <mat-option value="work_order.material_added">{{ 'notifications.types.materialAdded' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
 

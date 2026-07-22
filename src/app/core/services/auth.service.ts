@@ -1,9 +1,10 @@
-import { Service, inject, signal, computed } from '@angular/core';
+import { Service, inject, signal, computed, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models/auth.interfaces';
 import { LoginPreferencesResponse } from '../models/user-preferences.interfaces';
+import { WebsocketService } from './websocket.service';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
@@ -13,6 +14,7 @@ const PREFS_KEY = 'auth_preferences';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
 
   private readonly tokenSignal = signal<string | null>(this.getStoredToken());
   private readonly userSignal = signal<User | null>(this.getStoredUser());
@@ -50,6 +52,8 @@ export class AuthService {
   }
 
   logout(): void {
+    // Lazy get avoids circular DI at construction (WebsocketService → AuthService)
+    this.injector.get(WebsocketService).disconnect();
     this.tokenSignal.set(null);
     this.userSignal.set(null);
     this.preferencesSignal.set(null);

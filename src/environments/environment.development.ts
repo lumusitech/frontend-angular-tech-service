@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
   apiUrl: '/api',
-  wsUrl: 'http://localhost:3000',
+  // Empty = same origin (Angular proxy /socket.io → backend). Works on PC and phone via LAN IP.
+  wsUrl: '',
 };
