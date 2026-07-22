@@ -86,18 +86,18 @@ interface DialogData {
           {{ 'serviceTypes.activeService' | translate }}
         </mat-checkbox>
 
-        <div class="pt-2">
+        <div class="flex items-center gap-1.5 pt-2 overflow-visible">
           <mat-checkbox [(ngModel)]="requiresDelivery" name="requiresDelivery">
-            <span class="inline-flex items-center gap-1.5">
-              {{ 'serviceTypes.requiresDeliveryLabel' | translate }}
-              <mat-icon
-                class="text-gray-400 dark:text-gray-500 !text-lg cursor-help"
-                [matTooltip]="'serviceTypes.requiresDeliveryHint' | translate"
-                (click)="$event.stopPropagation()"
-                style="width: 1.25rem; height: 1.25rem; font-size: 1.25rem; line-height: 1; overflow: visible;"
-              >info</mat-icon>
-            </span>
+            {{ 'serviceTypes.requiresDeliveryLabel' | translate }}
           </mat-checkbox>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center shrink-0 p-0.5 rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-300 cursor-help border-0 bg-transparent"
+            [matTooltip]="'serviceTypes.requiresDeliveryHint' | translate"
+            [attr.aria-label]="'serviceTypes.requiresDeliveryHint' | translate"
+          >
+            <mat-icon class="!w-5 !h-5 !text-[20px] !leading-none">info</mat-icon>
+          </button>
         </div>
       </form>
     </mat-dialog-content>
