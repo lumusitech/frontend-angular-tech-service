@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { TranslationService } from '../../core/services/translation.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -22,9 +23,22 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
 
-const VALID_TRANSITIONS: Record<string, string[]> = {
-  assigned: ['in_progress', 'cancelled'],
-  in_progress: ['completed', 'cancelled'],
+interface TechStatusAction {
+  labelKey: string;
+  icon: string;
+  color: string;
+  nextStatus: string;
+}
+
+const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
+  assigned: [
+    { labelKey: 'workOrders.actions.startWork', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
+    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
+  in_progress: [
+    { labelKey: 'workOrders.actions.complete', icon: 'check_circle', color: 'primary', nextStatus: 'completed' },
+    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
 };
 
 @Component({
@@ -85,18 +99,21 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
         </div>
 
         <!-- Action buttons -->
-        @if (getValidTransitions(order.status).length > 0) {
-          <div class="flex gap-2 flex-wrap">
-            @for (transition of getValidTransitions(order.status); track transition) {
-              <button
-                mat-flat-button
-                [color]="transition === 'cancelled' ? 'warn' : 'primary'"
-                (click)="changeStatus(order, transition)"
-              >
-                {{ 'workOrders.changeStatus' | translate }} → {{ transition | statusLabel: 'workOrderStatus' }}
-              </button>
-            }
-          </div>
+        @if (getActions(order.status); as actions) {
+          @if (actions.length > 0) {
+            <div class="flex gap-2 flex-wrap">
+              @for (action of actions; track action.nextStatus) {
+                <button
+                  mat-flat-button
+                  [color]="action.color"
+                  (click)="changeStatus(order, action)"
+                >
+                  <mat-icon>{{ action.icon }}</mat-icon>
+                  {{ action.labelKey | translate }}
+                </button>
+              }
+            </div>
+          }
         }
 
         <!-- Tasks checklist -->
@@ -239,6 +256,7 @@ export class TechWorkOrderDetailComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
+  private readonly translationService = inject(TranslationService);
 
   readonly resource = httpResource<WorkOrder>(() => {
     this.websocketService.workOrderRefreshKey();
@@ -258,8 +276,8 @@ export class TechWorkOrderDetailComponent {
     return colors[status] || 'bg-gray-500/15 text-gray-400';
   }
 
-  getValidTransitions(status: string): string[] {
-    return VALID_TRANSITIONS[status] || [];
+  getActions(status: string): TechStatusAction[] {
+    return ACTIONS_BY_STATUS[status] || [];
   }
 
   getCompletedTasks(order: WorkOrder): number {
@@ -293,21 +311,25 @@ export class TechWorkOrderDetailComponent {
       });
   }
 
-  changeStatus(order: WorkOrder, newStatus: string): void {
+  changeStatus(order: WorkOrder, action: TechStatusAction): void {
+    const label = this.translationService.instant(
+      `workOrders.statuses.${action.nextStatus === 'in_progress' ? 'inProgress' : action.nextStatus}`,
+    );
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'workOrders.changeStatus',
-        message: `¿Cambiar estado a "${newStatus}"?`,
+        titleKey: 'workOrders.changeStatus',
+        message: `¿Cambiar estado a "${label}"?`,
         confirmLabel: 'Confirmar',
-        color: newStatus === 'cancelled' ? 'warn' : 'primary',
+        color: action.nextStatus === 'cancelled' ? 'warn' : 'primary',
       },
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.workOrdersService
-          .update(order.id, { status: newStatus as WorkOrderStatus })
+          .update(order.id, { status: action.nextStatus as WorkOrderStatus })
           .subscribe({
             next: () => this.resource.reload(),
           });
