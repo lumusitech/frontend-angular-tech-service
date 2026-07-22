@@ -19,6 +19,8 @@ export function getSearchTerm(notification: AppNotification): string {
   if (
     notification.referenceType === 'work_order' &&
     (notification.type === 'work_order.note_added' ||
+      notification.type === 'work_order.note_updated' ||
+      notification.type === 'work_order.note_deleted' ||
       notification.type === 'work_order.material_added')
   ) {
     return (meta?.['trackingCode'] as string) || '';

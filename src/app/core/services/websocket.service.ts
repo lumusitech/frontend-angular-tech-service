@@ -22,6 +22,7 @@ export class WebsocketService implements OnDestroy {
   private socket: Socket | null = null;
   readonly connected = signal(false);
   readonly lastNotification = signal<AppNotification | null>(null);
+  readonly workOrderRefreshKey = signal(0);
 
   connect(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -61,6 +62,9 @@ export class WebsocketService implements OnDestroy {
         this.lastNotification.set(data);
         this.notificationsService.incrementUnread();
         this.showNotificationToast(data);
+        if (data.referenceType === 'work_order') {
+          this.workOrderRefreshKey.update((n) => n + 1);
+        }
       });
     });
 

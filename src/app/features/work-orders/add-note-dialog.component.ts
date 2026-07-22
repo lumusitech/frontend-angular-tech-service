@@ -6,15 +6,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
-import { NoteType } from '../../core/models/work-order.interfaces';
+import { NoteType, WorkOrderNote } from '../../core/models/work-order.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
+  note?: WorkOrderNote;
 }
 
 @Component({
-  selector: 'app-add-note-dialog',
+  selector: 'app-note-dialog',
   imports: [
     MatDialogModule,
     MatButtonModule,
@@ -26,8 +27,13 @@ interface DialogData {
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
-      <mat-icon>note_add</mat-icon>
-      {{ 'workOrders.notes.addNote' | translate }}
+      @if (data.note) {
+        <mat-icon>edit_note</mat-icon>
+        {{ 'workOrders.notes.editNote' | translate }}
+      } @else {
+        <mat-icon>note_add</mat-icon>
+        {{ 'workOrders.notes.addNote' | translate }}
+      }
     </h2>
 
     <mat-dialog-content class="!p-6">
@@ -69,18 +75,22 @@ interface DialogData {
         (click)="onSubmit($event)"
         [disabled]="saving() || !content()"
       >
-        {{ saving() ? ('common.saving' | translate) : ('workOrders.notes.saveNote' | translate) }}
+        {{
+          saving()
+            ? ('common.saving' | translate)
+            : (data.note ? ('workOrders.notes.saveNote' | translate) : ('workOrders.notes.saveNote' | translate))
+        }}
       </button>
     </mat-dialog-actions>
   `,
 })
-export class AddNoteDialogComponent {
-  private readonly dialogRef = inject(MatDialogRef<AddNoteDialogComponent>);
+export class NoteDialogComponent {
+  private readonly dialogRef = inject(MatDialogRef<NoteDialogComponent>);
   private readonly workOrdersService = inject(WorkOrdersService);
-  private readonly data = inject<DialogData>(MAT_DIALOG_DATA);
+  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly noteType = signal<NoteType>('observation');
-  readonly content = signal('');
+  readonly noteType = signal<NoteType>(this.data.note?.type || 'observation');
+  readonly content = signal(this.data.note?.content || '');
   readonly saving = signal(false);
 
   getInputValue(event: Event): string {
@@ -92,12 +102,11 @@ export class AddNoteDialogComponent {
     if (!this.content()) return;
 
     this.saving.set(true);
-    this.workOrdersService
-      .addNote(this.data.workOrderId, {
-        type: this.noteType(),
-        content: this.content(),
-      })
-      .subscribe({
+
+    const dto = { type: this.noteType(), content: this.content() };
+
+    if (this.data.note) {
+      this.workOrdersService.updateNote(this.data.workOrderId, this.data.note.id, dto).subscribe({
         next: () => {
           this.saving.set(false);
           this.dialogRef.close(true);
@@ -106,5 +115,16 @@ export class AddNoteDialogComponent {
           this.saving.set(false);
         },
       });
+    } else {
+      this.workOrdersService.addNote(this.data.workOrderId, dto).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.saving.set(false);
+        },
+      });
+    }
   }
 }
