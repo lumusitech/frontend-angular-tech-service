@@ -45,7 +45,10 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
     { label: 'Reanudar', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
     { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
-  completed: [{ label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' }],
+  completed: [
+    { label: 'Reabrir', icon: 'replay', color: '', nextStatus: 'in_progress' },
+    { label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' },
+  ],
   delivered: [],
   cancelled: [],
 };
@@ -81,6 +84,7 @@ export class StatusTransitionComponent {
       'Iniciar Trabajo': 'workOrders.actions.startWork',
       Completar: 'workOrders.actions.complete',
       Pausar: 'workOrders.actions.pause',
+      Reabrir: 'workOrders.actions.reopen',
       Cancelar: 'workOrders.actions.cancel',
       Reanudar: 'workOrders.actions.resume',
       Entregar: 'workOrders.actions.deliver',

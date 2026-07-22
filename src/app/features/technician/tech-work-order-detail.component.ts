@@ -39,6 +39,9 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     { labelKey: 'workOrders.actions.complete', icon: 'check_circle', color: 'primary', nextStatus: 'completed' },
     { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
+  completed: [
+    { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: '', nextStatus: 'in_progress' },
+  ],
 };
 
 @Component({

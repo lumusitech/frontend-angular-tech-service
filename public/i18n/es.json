@@ -251,6 +251,7 @@
       "pause": "Pausar",
       "cancel": "Cancelar",
       "resume": "Reanudar",
+      "reopen": "Reabrir",
       "deliver": "Entregar"
     },
     "serviceType": "Tipo de Servicio",

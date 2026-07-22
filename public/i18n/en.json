@@ -258,6 +258,7 @@
       "pause": "Pause",
       "cancel": "Cancel",
       "resume": "Resume",
+      "reopen": "Reopen",
       "deliver": "Deliver"
     },
     "serviceType": "Service Type",
