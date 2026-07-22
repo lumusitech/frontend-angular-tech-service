@@ -278,7 +278,6 @@ export class TechWorkOrderDetailComponent {
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
-
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
   readonly resource = httpResource<WorkOrder>(() => {
