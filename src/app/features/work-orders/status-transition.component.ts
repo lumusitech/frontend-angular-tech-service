@@ -50,7 +50,9 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
     { label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' },
   ],
   delivered: [],
-  cancelled: [],
+  cancelled: [
+    { label: 'Reabrir', icon: 'replay', color: 'primary', nextStatus: 'pending' },
+  ],
 };
 
 @Component({
