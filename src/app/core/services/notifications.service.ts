@@ -13,6 +13,7 @@ export class NotificationsService {
   private readonly apiUrl = '/api/notifications';
 
   readonly unreadCount = signal(0);
+  readonly refreshCounter = signal(0);
 
   getAll(filters?: NotificationFilters): Observable<PaginatedNotifications> {
     let params = new HttpParams();
@@ -40,5 +41,6 @@ export class NotificationsService {
 
   incrementUnread(): void {
     this.unreadCount.update((c) => c + 1);
+    this.refreshCounter.update((c) => c + 1);
   }
 }
