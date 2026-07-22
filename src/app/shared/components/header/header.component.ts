@@ -4,7 +4,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { NotificationsService } from '../../../core/services/notifications.service';
-import { WebsocketService } from '../../../core/services/websocket.service';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { MatMenuModule } from '@angular/material/menu';
@@ -162,7 +161,6 @@ export class HeaderComponent implements OnInit {
   readonly themeService = inject(ThemeService);
   readonly translationService = inject(TranslationService);
   readonly notificationsService = inject(NotificationsService);
-  private readonly websocketService = inject(WebsocketService);
   private readonly router = inject(Router);
 
   toggleSidebar = output<void>();
@@ -182,7 +180,6 @@ export class HeaderComponent implements OnInit {
       this.notificationsService.getUnreadCount().subscribe({
         next: (count) => this.notificationsService.unreadCount.set(count),
       });
-      this.websocketService.connect();
     }
   }
 

@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { afterNextRender, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { SellerBottomNavComponent } from '../../shared/components/seller-bottom-nav/seller-bottom-nav.component';
 
 @Component({
@@ -38,4 +39,13 @@ import { SellerBottomNavComponent } from '../../shared/components/seller-bottom-
 })
 export class SellerLayoutComponent {
   readonly authService = inject(AuthService);
+  private readonly websocketService = inject(WebsocketService);
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.authService.isAuthenticated()) {
+        this.websocketService.connect();
+      }
+    });
+  }
 }

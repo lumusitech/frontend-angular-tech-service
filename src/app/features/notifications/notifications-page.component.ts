@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsListComponent } from './notifications-list.component';
-import { AppNotification } from '../../core/models/notification.interfaces';
-import { getSearchTerm } from '../../core/utils/notification.utils';
+import { AppNotification, NotificationType } from '../../core/models/notification.interfaces';
 
 @Component({
   selector: 'app-notifications-page',
@@ -17,9 +16,17 @@ export class NotificationsPageComponent {
   handleClick(notification: AppNotification): void {
     if (!notification.referenceType) return;
 
+    if (notification.referenceType === 'work_order' && notification.referenceId) {
+      this.router.navigate(['/admin/work-orders', notification.referenceId]);
+      return;
+    }
+
+    if (notification.referenceType === 'task' && notification.referenceId) {
+      this.router.navigate(['/admin/work-orders', notification.referenceId]);
+      return;
+    }
+
     const routes: Record<string, string> = {
-      work_order: '/admin/work-orders',
-      task: '/admin/work-orders',
       payment: '/admin/payments',
       pending_item: '/admin/pending-items',
       inquiry: '/admin/inquiries',
@@ -28,22 +35,6 @@ export class NotificationsPageComponent {
     const baseRoute = routes[notification.referenceType];
     if (!baseRoute) return;
 
-    const search = getSearchTerm(notification);
-
-    const queryParams: Record<string, string> = {};
-
-    if (notification.referenceId) {
-      queryParams['highlight'] = notification.referenceId;
-    } else if (search) {
-      queryParams['highlight'] = search;
-    }
-
-    if (search) {
-      queryParams['search'] = search;
-    }
-
-    queryParams['fromNotification'] = 'true';
-
-    this.router.navigate([baseRoute], { queryParams });
+    this.router.navigate([baseRoute], { queryParams: { fromNotification: 'true' } });
   }
 }
