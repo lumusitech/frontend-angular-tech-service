@@ -1,6 +1,7 @@
 export type WorkOrderStatus =
   | 'pending'
   | 'assigned'
+  | 'on_the_way'
   | 'in_progress'
   | 'postponed'
   | 'completed'
@@ -38,6 +39,7 @@ export interface WorkOrder {
   serviceType: {
     id: string;
     name: string;
+    requiresDelivery?: boolean;
   };
   technicians: {
     id: string;

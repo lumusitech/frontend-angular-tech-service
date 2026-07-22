@@ -30,6 +30,9 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
       setStartedAt: true,
     },
   ],
+  on_the_way: [
+    { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
   in_progress: [
     {
       label: 'Completar',
@@ -45,9 +48,14 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
     { label: 'Reanudar', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
     { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
-  completed: [{ label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' }],
+  completed: [
+    { label: 'Reabrir', icon: 'replay', color: '', nextStatus: 'in_progress' },
+    { label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' },
+  ],
   delivered: [],
-  cancelled: [],
+  cancelled: [
+    { label: 'Reabrir', icon: 'replay', color: 'primary', nextStatus: 'pending' },
+  ],
 };
 
 @Component({
@@ -68,11 +76,16 @@ export class StatusTransitionComponent {
   private readonly dialog = inject(MatDialog);
 
   status = input.required<WorkOrderStatus>();
+  requiresDelivery = input(false);
   transition = output<{ status: WorkOrderStatus; startedAt?: string; completedAt?: string }>();
   openTechnicianAssignment = output<void>();
 
   actions(): StatusAction[] {
-    return ACTIONS_BY_STATUS[this.status()] || [];
+    const all = ACTIONS_BY_STATUS[this.status()] || [];
+    if (!this.requiresDelivery()) {
+      return all.filter((a) => a.nextStatus !== 'delivered');
+    }
+    return all;
   }
 
   getActionLabel(label: string): string {
@@ -81,6 +94,7 @@ export class StatusTransitionComponent {
       'Iniciar Trabajo': 'workOrders.actions.startWork',
       Completar: 'workOrders.actions.complete',
       Pausar: 'workOrders.actions.pause',
+      Reabrir: 'workOrders.actions.reopen',
       Cancelar: 'workOrders.actions.cancel',
       Reanudar: 'workOrders.actions.resume',
       Entregar: 'workOrders.actions.deliver',

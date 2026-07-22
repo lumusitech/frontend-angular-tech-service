@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -32,12 +32,23 @@ interface TechStatusAction {
 
 const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
   assigned: [
+    { labelKey: 'workOrders.actions.onTheWay', icon: 'directions_car', color: 'primary', nextStatus: 'on_the_way' },
+    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
+  on_the_way: [
     { labelKey: 'workOrders.actions.startWork', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
+    { labelKey: 'workOrders.actions.reAssign', icon: 'assignment_return', color: '', nextStatus: 'assigned' },
     { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
   ],
   in_progress: [
     { labelKey: 'workOrders.actions.complete', icon: 'check_circle', color: 'primary', nextStatus: 'completed' },
     { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+  ],
+  completed: [
+    { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: '', nextStatus: 'in_progress' },
+  ],
+  cancelled: [
+    { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: 'primary', nextStatus: 'pending' },
   ],
 };
 
@@ -65,6 +76,16 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
       </div>
     } @else if (resource.error()) {
       <app-error-state (retry)="resource.reload()" />
+    } @else if (unassigned()) {
+      <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
+        <mat-icon class="!w-16 !h-16">info</mat-icon>
+        <p class="text-gray-500 dark:text-gray-400">
+          {{ 'technician.unassignedMessage' | translate }}
+        </p>
+        <button mat-flat-button color="primary" (click)="goBack()">
+          {{ 'common.back' | translate }}
+        </button>
+      </div>
     } @else if (resource.hasValue()) {
       @let order = resource.value();
 
@@ -257,17 +278,26 @@ export class TechWorkOrderDetailComponent {
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
+  readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
   readonly resource = httpResource<WorkOrder>(() => {
     this.websocketService.workOrderRefreshKey();
-    const id = this.route.snapshot.paramMap.get('id');
-    return id ? `/api/work-orders/${id}` : '';
+    return this.orderId ? `/api/work-orders/${this.orderId}` : '';
+  });
+
+  readonly unassigned = computed(() => {
+    const notification = this.websocketService.lastNotification();
+    return (
+      notification?.type === ('work_order.technician_unassigned' as any) &&
+      notification?.referenceId === this.orderId
+    );
   });
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
       pending: 'bg-yellow-500/15 text-yellow-400',
       assigned: 'bg-blue-500/15 text-blue-400',
+      on_the_way: 'bg-cyan-500/15 text-cyan-400',
       in_progress: 'bg-purple-500/15 text-purple-400',
       completed: 'bg-green-500/15 text-green-400',
       delivered: 'bg-gray-500/15 text-gray-400',

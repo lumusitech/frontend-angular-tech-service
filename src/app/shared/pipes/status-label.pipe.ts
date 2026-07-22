@@ -15,6 +15,7 @@ type LabelType =
 const VALUE_TO_KEY: Record<string, string> = {
   pending: 'statusLabels.pending',
   assigned: 'statusLabels.assigned',
+  on_the_way: 'statusLabels.on_the_way',
   in_progress: 'statusLabels.in_progress',
   postponed: 'statusLabels.postponed',
   completed: 'statusLabels.completed',

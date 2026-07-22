@@ -4,6 +4,7 @@ export interface ServiceType {
   description?: string;
   estimatedDuration?: number;
   isActive: boolean;
+  requiresDelivery: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,6 +14,7 @@ export interface CreateServiceTypeDto {
   description?: string;
   estimatedDuration?: number;
   isActive?: boolean;
+  requiresDelivery?: boolean;
 }
 
 export interface UpdateServiceTypeDto {
@@ -20,6 +22,7 @@ export interface UpdateServiceTypeDto {
   description?: string;
   estimatedDuration?: number;
   isActive?: boolean;
+  requiresDelivery?: boolean;
 }
 
 export interface ServiceTypeFilters {

@@ -215,7 +215,9 @@
     "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
     "editServiceType": "Editar Tipo de Servicio",
     "estimatedDurationLabel": "Duración estimada (minutos)",
-    "activeService": "Servicio activo"
+    "activeService": "Servicio activo",
+    "requiresDeliveryLabel": "Requiere entrega",
+    "requiresDeliveryHint": "El servicio se realiza en taller y el cliente debe retirar"
   },
   "workOrders": {
     "title": "Órdenes de Trabajo",
@@ -247,10 +249,13 @@
     "actions": {
       "assignTechnicians": "Asignar Técnicos",
       "startWork": "Iniciar Trabajo",
+      "onTheWay": "En Camino",
+      "reAssign": "Volver a Asignada",
       "complete": "Completar",
       "pause": "Pausar",
       "cancel": "Cancelar",
       "resume": "Reanudar",
+      "reopen": "Reabrir",
       "deliver": "Entregar"
     },
     "serviceType": "Tipo de Servicio",
@@ -471,6 +476,7 @@
   "statusLabels": {
     "pending": "Pendiente",
     "assigned": "Asignada",
+    "on_the_way": "En Camino",
     "in_progress": "En Progreso",
     "postponed": "Pospuesta",
     "completed": "Completada",
@@ -696,6 +702,7 @@
     "dueToday": "Vence hoy",
     "overdue": "Vencida",
     "noDate": "Sin fecha",
+    "unassignedMessage": "Ya no estás asignado a esta orden",
     "nav": {
       "orders": "Órdenes",
       "notifications": "Notificaciones",

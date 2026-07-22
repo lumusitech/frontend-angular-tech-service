@@ -222,7 +222,9 @@
     "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
     "editServiceType": "Edit Service Type",
     "estimatedDurationLabel": "Estimated duration (minutes)",
-    "activeService": "Active service"
+    "activeService": "Active service",
+    "requiresDeliveryLabel": "Requires delivery",
+    "requiresDeliveryHint": "Service is done at the workshop, client must pick up"
   },
   "workOrders": {
     "title": "Work Orders",
@@ -254,10 +256,13 @@
     "actions": {
       "assignTechnicians": "Assign Technicians",
       "startWork": "Start Work",
+      "onTheWay": "On The Way",
+      "reAssign": "Back to Assigned",
       "complete": "Complete",
       "pause": "Pause",
       "cancel": "Cancel",
       "resume": "Resume",
+      "reopen": "Reopen",
       "deliver": "Deliver"
     },
     "serviceType": "Service Type",
@@ -478,6 +483,7 @@
   "statusLabels": {
     "pending": "Pending",
     "assigned": "Assigned",
+    "on_the_way": "On The Way",
     "in_progress": "In Progress",
     "postponed": "Postponed",
     "completed": "Completed",
@@ -702,6 +708,7 @@
     "dueToday": "Due today",
     "overdue": "Overdue",
     "noDate": "No date",
+    "unassignedMessage": "You are no longer assigned to this order",
     "nav": {
       "orders": "Orders",
       "notifications": "Notifications",

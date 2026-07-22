@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -29,6 +30,7 @@ interface DialogData {
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
+    MatTooltipModule,
     MatIconModule,
     FormsModule,
     TranslatePipe,
@@ -83,6 +85,20 @@ interface DialogData {
         <mat-checkbox [(ngModel)]="isActive" name="isActive">
           {{ 'serviceTypes.activeService' | translate }}
         </mat-checkbox>
+
+        <div class="flex items-center gap-1.5 pt-2 overflow-visible">
+          <mat-checkbox [(ngModel)]="requiresDelivery" name="requiresDelivery">
+            {{ 'serviceTypes.requiresDeliveryLabel' | translate }}
+          </mat-checkbox>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center shrink-0 p-0.5 rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-300 cursor-help border-0 bg-transparent"
+            [matTooltip]="'serviceTypes.requiresDeliveryHint' | translate"
+            [attr.aria-label]="'serviceTypes.requiresDeliveryHint' | translate"
+          >
+            <mat-icon class="!w-5 !h-5 !text-[20px] !leading-none">info</mat-icon>
+          </button>
+        </div>
       </form>
     </mat-dialog-content>
 
@@ -105,6 +121,7 @@ export class ServiceTypeFormComponent {
   description = this.data.serviceType?.description || '';
   estimatedDuration = this.data.serviceType?.estimatedDuration?.toString() || '';
   isActive = this.data.serviceType?.isActive ?? true;
+  requiresDelivery = this.data.serviceType?.requiresDelivery ?? false;
   readonly saving = signal(false);
 
   t(key: string): string {
@@ -127,6 +144,7 @@ export class ServiceTypeFormComponent {
         description: this.description || undefined,
         estimatedDuration: duration,
         isActive: this.isActive,
+        requiresDelivery: this.requiresDelivery,
       };
 
       this.serviceTypesService.create(dto).subscribe({
@@ -147,6 +165,7 @@ export class ServiceTypeFormComponent {
         description: this.description || undefined,
         estimatedDuration: duration,
         isActive: this.isActive,
+        requiresDelivery: this.requiresDelivery,
       };
 
       this.serviceTypesService.update(this.data.serviceType!.id, dto).subscribe({

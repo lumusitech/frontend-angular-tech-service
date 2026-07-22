@@ -23,6 +23,7 @@ export class WebsocketService implements OnDestroy {
   readonly connected = signal(false);
   readonly lastNotification = signal<AppNotification | null>(null);
   readonly workOrderRefreshKey = signal(0);
+  readonly workOrderStatusChanges = signal<Record<string, string>>({});
 
   connect(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -64,6 +65,20 @@ export class WebsocketService implements OnDestroy {
         this.showNotificationToast(data);
         if (data.referenceType === 'work_order') {
           this.workOrderRefreshKey.update((n) => n + 1);
+        }
+        if (
+          data.type === ('work_order.status_changed' as any) &&
+          data.referenceId &&
+          data.metadata
+        ) {
+          const newStatus = data.metadata['newStatus'];
+          const refId = data.referenceId;
+          if (typeof newStatus === 'string' && refId) {
+            this.workOrderStatusChanges.update((map) => ({
+              ...map,
+              [refId]: newStatus,
+            }));
+          }
         }
       });
     });
