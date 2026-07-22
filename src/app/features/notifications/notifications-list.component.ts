@@ -225,6 +225,7 @@ export class NotificationsListComponent {
   readonly resource = httpResource<PaginatedNotifications>(() => ({
     url: '/api/notifications',
     params: {
+      _: this.notificationsService.refreshCounter(),
       page: this.currentPage(),
       limit: this.pageSize(),
       sortBy: 'createdAt',
