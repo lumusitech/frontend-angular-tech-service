@@ -91,7 +91,7 @@ interface DialogData {
             <span class="inline-flex items-center gap-1.5">
               {{ 'serviceTypes.requiresDeliveryLabel' | translate }}
               <mat-icon
-                class="text-gray-400 dark:text-gray-500 !w-4 !h-4 !text-base cursor-help align-middle"
+                class="text-gray-400 dark:text-gray-500 !w-[18px] !h-[18px] !text-[18px] cursor-help inline-block leading-none"
                 [matTooltip]="'serviceTypes.requiresDeliveryHint' | translate"
                 (click)="$event.stopPropagation()"
               >info</mat-icon>
