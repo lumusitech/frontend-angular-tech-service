@@ -73,11 +73,16 @@ export class StatusTransitionComponent {
   private readonly dialog = inject(MatDialog);
 
   status = input.required<WorkOrderStatus>();
+  requiresDelivery = input(false);
   transition = output<{ status: WorkOrderStatus; startedAt?: string; completedAt?: string }>();
   openTechnicianAssignment = output<void>();
 
   actions(): StatusAction[] {
-    return ACTIONS_BY_STATUS[this.status()] || [];
+    const all = ACTIONS_BY_STATUS[this.status()] || [];
+    if (!this.requiresDelivery()) {
+      return all.filter((a) => a.nextStatus !== 'delivered');
+    }
+    return all;
   }
 
   getActionLabel(label: string): string {

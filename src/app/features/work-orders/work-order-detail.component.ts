@@ -91,6 +91,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
             <app-export-buttons [workOrderId]="workOrderResource.value().id" />
             <app-status-transition
               [status]="workOrderResource.value().status"
+              [requiresDelivery]="workOrderResource.value().serviceType?.requiresDelivery ?? false"
               (transition)="onStatusTransition($event)"
               (openTechnicianAssignment)="openTechnicianDialog()"
             />

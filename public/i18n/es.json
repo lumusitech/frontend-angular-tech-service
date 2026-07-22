@@ -215,7 +215,9 @@
     "deleteMessage": "¿Estás seguro de eliminar \"{{name}}\"?",
     "editServiceType": "Editar Tipo de Servicio",
     "estimatedDurationLabel": "Duración estimada (minutos)",
-    "activeService": "Servicio activo"
+    "activeService": "Servicio activo",
+    "requiresDeliveryLabel": "Requiere entrega",
+    "requiresDeliveryHint": "El servicio se realiza en taller y el cliente debe retirar"
   },
   "workOrders": {
     "title": "Órdenes de Trabajo",

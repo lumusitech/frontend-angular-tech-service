@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -29,6 +30,7 @@ interface DialogData {
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
+    MatTooltipModule,
     MatIconModule,
     FormsModule,
     TranslatePipe,
@@ -83,6 +85,16 @@ interface DialogData {
         <mat-checkbox [(ngModel)]="isActive" name="isActive">
           {{ 'serviceTypes.activeService' | translate }}
         </mat-checkbox>
+
+        <div class="flex items-start gap-2 pt-2">
+          <mat-checkbox [(ngModel)]="requiresDelivery" name="requiresDelivery">
+            {{ 'serviceTypes.requiresDeliveryLabel' | translate }}
+          </mat-checkbox>
+          <mat-icon
+            class="text-gray-400 dark:text-gray-500 !w-4 !h-4 cursor-help"
+            [matTooltip]="'serviceTypes.requiresDeliveryHint' | translate"
+          >info</mat-icon>
+        </div>
       </form>
     </mat-dialog-content>
 
@@ -105,6 +117,7 @@ export class ServiceTypeFormComponent {
   description = this.data.serviceType?.description || '';
   estimatedDuration = this.data.serviceType?.estimatedDuration?.toString() || '';
   isActive = this.data.serviceType?.isActive ?? true;
+  requiresDelivery = this.data.serviceType?.requiresDelivery ?? false;
   readonly saving = signal(false);
 
   t(key: string): string {
@@ -127,6 +140,7 @@ export class ServiceTypeFormComponent {
         description: this.description || undefined,
         estimatedDuration: duration,
         isActive: this.isActive,
+        requiresDelivery: this.requiresDelivery,
       };
 
       this.serviceTypesService.create(dto).subscribe({
@@ -147,6 +161,7 @@ export class ServiceTypeFormComponent {
         description: this.description || undefined,
         estimatedDuration: duration,
         isActive: this.isActive,
+        requiresDelivery: this.requiresDelivery,
       };
 
       this.serviceTypesService.update(this.data.serviceType!.id, dto).subscribe({

@@ -222,7 +222,9 @@
     "deleteMessage": "Are you sure you want to delete \"{{name}}\"?",
     "editServiceType": "Edit Service Type",
     "estimatedDurationLabel": "Estimated duration (minutes)",
-    "activeService": "Active service"
+    "activeService": "Active service",
+    "requiresDeliveryLabel": "Requires delivery",
+    "requiresDeliveryHint": "Service is done at the workshop, client must pick up"
   },
   "workOrders": {
     "title": "Work Orders",

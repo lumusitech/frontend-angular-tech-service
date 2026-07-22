@@ -38,6 +38,7 @@ export interface WorkOrder {
   serviceType: {
     id: string;
     name: string;
+    requiresDelivery?: boolean;
   };
   technicians: {
     id: string;
