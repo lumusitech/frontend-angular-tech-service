@@ -150,9 +150,11 @@ export class TechWorkOrdersComponent {
 
   readonly statusFilters = [
     { value: null, label: 'workOrders.filters.all' },
-    { value: 'assigned', label: 'workOrders.statuses.assigned' },
+    { value: 'pending', label: 'workOrders.statuses.pending' },
     { value: 'in_progress', label: 'workOrders.statuses.inProgress' },
     { value: 'completed', label: 'workOrders.statuses.completed' },
+    { value: 'delivered', label: 'workOrders.statuses.delivered' },
+    { value: 'cancelled', label: 'workOrders.statuses.cancelled' },
   ];
 
   readonly resource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
