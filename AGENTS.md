@@ -14,6 +14,7 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - **Acción directa:** Tareas simples y bien definidas se ejecutan directamente.
 - **Validación de cambios complejos:** Refactors, nuevas features o decisiones de arquitectura requieren confirmar entendimiento antes de actuar.
 - **Documentación continua:** Si se introduce una nueva restricción ("nunca X", "siempre Y"), documentarla en este archivo.
+- **Verificación pre-finalización:** Antes de marcar una tarea como completada, verificar que los endpoints del backend que consume la feature modificada respondan correctamente (200 OK) y que `ng build` compile sin errores. Si se modificó el backend, validar también `pnpm lint` y `pnpm test:unit`.
 
 ---
 

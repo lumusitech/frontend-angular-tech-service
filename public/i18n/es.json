@@ -304,7 +304,8 @@
       "materialsCost": "Costo materiales",
       "created": "Creada",
       "loadError": "Error al cargar",
-      "loadErrorMessage": "No se pudo cargar la orden de trabajo"
+      "loadErrorMessage": "No se pudo cargar la orden de trabajo",
+      "statusTimeline": "Línea de tiempo"
     },
     "tasks": {
       "addTask": "Agregar tarea",
@@ -1010,5 +1011,8 @@
     "permissionGranted": "Notificaciones activadas",
     "subscribeError": "Error al activar notificaciones",
     "notSupported": "Las notificaciones no son compatibles con este navegador"
+  },
+  "statusTimeline": {
+    "duration": "Duración"
   }
 }

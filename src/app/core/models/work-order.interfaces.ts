@@ -132,6 +132,18 @@ export interface UpdateTaskDto {
   completedAt?: string;
 }
 
+export interface WorkOrderStatusLog {
+  id: string;
+  workOrderId: string;
+  fromStatus: WorkOrderStatus | null;
+  toStatus: WorkOrderStatus;
+  changedByUserId: string;
+  changedBy?: { id: string; name: string };
+  changedByRole: string;
+  timestamp: string;
+  duration: number | null;
+}
+
 export interface WorkOrderFilters {
   search?: string;
   status?: WorkOrderStatus;

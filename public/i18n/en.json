@@ -311,7 +311,8 @@
       "materialsCost": "Materials cost",
       "created": "Created",
       "loadError": "Error loading",
-      "loadErrorMessage": "Could not load the work order"
+      "loadErrorMessage": "Could not load the work order",
+      "statusTimeline": "Status Timeline"
     },
     "tasks": {
       "addTask": "Add task",
@@ -1008,5 +1009,8 @@
     "permissionGranted": "Notifications enabled",
     "subscribeError": "Error enabling notifications",
     "notSupported": "Notifications are not supported in this browser"
+  },
+  "statusTimeline": {
+    "duration": "Duration"
   }
 }

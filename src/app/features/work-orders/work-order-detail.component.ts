@@ -6,6 +6,7 @@ import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
   WorkOrderStatus,
+  WorkOrderStatusLog,
   UpdateWorkOrderDto,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +19,7 @@ import { TrackingCodeComponent } from '../../shared/components/tracking-code/tra
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusTransitionComponent } from './status-transition.component';
+import { StatusTimelineComponent } from '../../shared/components/status-timeline/status-timeline.component';
 import { NoteDialogComponent } from './add-note-dialog.component';
 import { AddMaterialDialogComponent } from './add-material-dialog.component';
 import { AddTaskDialogComponent } from './add-task-dialog.component';
@@ -41,6 +43,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     TrackingCodeComponent,
     TranslatePipe,
     StatusTransitionComponent,
+    StatusTimelineComponent,
     InfoTabComponent,
     TasksTabComponent,
     MaterialsTabComponent,
@@ -148,6 +151,22 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   (noteChanged)="workOrderResource.reload()"
                 />
               </mat-tab>
+
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon class="mr-2">timeline</mat-icon>
+                  {{ 'workOrders.detail.statusTimeline' | translate }}
+                </ng-template>
+                @if (statusLogsResource.hasValue()) {
+                  <div class="p-4">
+                    <app-status-timeline [logs]="statusLogsResource.value()" />
+                  </div>
+                } @else if (statusLogsResource.isLoading()) {
+                  <div class="flex justify-center py-8">
+                    <mat-spinner diameter="32" />
+                  </div>
+                }
+              </mat-tab>
             </mat-tab-group>
           </div>
 
@@ -179,6 +198,10 @@ export class WorkOrderDetailComponent {
       url: `/api/work-orders/${this.orderId()}`,
     };
   });
+
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => ({
+    url: `/api/work-orders/${this.orderId()}/status-logs`,
+  }));
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
