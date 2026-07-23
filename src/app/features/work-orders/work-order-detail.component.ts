@@ -109,7 +109,12 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   <mat-icon class="mr-2">info</mat-icon>
                   {{ 'workOrders.detail.generalInfo' | translate }}
                 </ng-template>
-                <app-info-tab [workOrder]="workOrderResource.value()" />
+                <app-info-tab
+                  [workOrder]="workOrderResource.value()"
+                  [editable]="true"
+                  [saving]="savingInfo()"
+                  (saved)="onInfoSaved($event)"
+                />
               </mat-tab>
 
               <mat-tab>
@@ -207,6 +212,21 @@ export class WorkOrderDetailComponent {
   });
 
   readonly selectedTabIndex = signal(0);
+  readonly savingInfo = signal(false);
+
+  onInfoSaved(dto: UpdateWorkOrderDto): void {
+    const id = this.workOrderResource.value()?.id;
+    if (!id) return;
+
+    this.savingInfo.set(true);
+    this.workOrdersService.update(id, dto).subscribe({
+      next: () => {
+        this.savingInfo.set(false);
+        this.workOrderResource.reload();
+      },
+      error: () => this.savingInfo.set(false),
+    });
+  }
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
