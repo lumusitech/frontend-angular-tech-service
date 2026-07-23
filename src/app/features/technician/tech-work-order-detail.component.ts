@@ -298,9 +298,10 @@ export class TechWorkOrderDetailComponent {
     return this.orderId ? `/api/work-orders/${this.orderId}` : '';
   });
 
-  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() =>
-    this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined,
-  );
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => {
+    this.websocketService.workOrderRefreshKey();
+    return this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined;
+  });
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
