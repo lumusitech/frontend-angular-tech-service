@@ -102,6 +102,12 @@ export interface CreateWorkOrderDto {
 
 export interface UpdateWorkOrderDto {
   status?: WorkOrderStatus;
+  diagnosis?: string;
+  workAddress?: string;
+  scheduledDate?: string;
+  warrantyUntil?: string;
+  priority?: WorkOrderPriority;
+  location?: WorkOrderLocation;
   startedAt?: string;
   completedAt?: string;
   commissionPercent?: number;
