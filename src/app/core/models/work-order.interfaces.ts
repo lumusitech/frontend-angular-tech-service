@@ -25,6 +25,8 @@ export interface WorkOrder {
   completedAt?: string;
   commissionPercent?: number;
   sellerId?: string;
+  clientId?: string;
+  serviceTypeId?: string;
   seller?: {
     id: string;
     name: string;

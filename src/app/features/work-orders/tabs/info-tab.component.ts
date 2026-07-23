@@ -171,8 +171,8 @@ export class InfoTabComponent {
 
   startEdit(): void {
     const wo = this.workOrder();
-    this.editClientId.set(wo.clientId || wo.client?.id || '');
-    this.editServiceTypeId.set(wo.serviceTypeId || wo.serviceType?.id || '');
+    this.editClientId.set(wo.client?.id || wo.clientId || '');
+    this.editServiceTypeId.set(wo.serviceType?.id || wo.serviceTypeId || '');
     this.editDiagnosis.set(wo.diagnosis || '');
     this.editWorkAddress.set(wo.workAddress || '');
     this.editScheduledDate.set(wo.scheduledDate ? new Date(wo.scheduledDate) : null);
@@ -202,10 +202,10 @@ export class InfoTabComponent {
     const wo = this.workOrder();
 
     const clientId = this.editClientId();
-    if (clientId !== (wo.clientId || wo.client?.id)) dto.clientId = clientId;
+    if (clientId !== (wo.client?.id || wo.clientId)) dto.clientId = clientId;
 
     const serviceTypeId = this.editServiceTypeId();
-    if (serviceTypeId !== (wo.serviceTypeId || wo.serviceType?.id)) dto.serviceTypeId = serviceTypeId;
+    if (serviceTypeId !== (wo.serviceType?.id || wo.serviceTypeId)) dto.serviceTypeId = serviceTypeId;
 
     const diagnosis = this.editDiagnosis().trim();
     if (diagnosis !== (wo.diagnosis || '')) dto.diagnosis = diagnosis || undefined;
