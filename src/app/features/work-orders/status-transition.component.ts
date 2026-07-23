@@ -82,16 +82,29 @@ export class StatusTransitionComponent {
 
   actions(): StatusAction[] {
     const all = ACTIONS_BY_STATUS[this.status()] || [];
-    if (!this.requiresDelivery()) {
-      return all.filter((a) => a.nextStatus !== 'delivered');
+    let filtered = all;
+    if (!this.requiresDelivery() && this.status() === 'assigned') {
+      filtered = [
+        {
+          label: 'En Camino',
+          icon: 'directions_car',
+          color: 'primary',
+          nextStatus: 'on_the_way',
+        },
+        { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+      ];
     }
-    return all;
+    if (!this.requiresDelivery()) {
+      filtered = filtered.filter((a) => a.nextStatus !== 'delivered');
+    }
+    return filtered;
   }
 
   getActionLabel(label: string): string {
     const labelMap: Record<string, string> = {
       'Asignar Técnicos': 'workOrders.actions.assignTechnicians',
       'Iniciar Trabajo': 'workOrders.actions.startWork',
+      'En Camino': 'workOrders.actions.onTheWay',
       Completar: 'workOrders.actions.complete',
       Pausar: 'workOrders.actions.pause',
       Reabrir: 'workOrders.actions.reopen',
