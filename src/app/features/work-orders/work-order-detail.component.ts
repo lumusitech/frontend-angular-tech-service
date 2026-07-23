@@ -103,7 +103,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
-            <mat-tab-group>
+            <mat-tab-group [(selectedIndex)]="selectedTabIndex">
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">info</mat-icon>
@@ -199,9 +199,14 @@ export class WorkOrderDetailComponent {
     };
   });
 
-  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => ({
-    url: `/api/work-orders/${this.orderId()}/status-logs`,
-  }));
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => {
+    this.websocketService.workOrderRefreshKey();
+    return {
+      url: `/api/work-orders/${this.orderId()}/status-logs`,
+    };
+  });
+
+  readonly selectedTabIndex = signal(0);
 
   getCompletedTasks(): number {
     return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
