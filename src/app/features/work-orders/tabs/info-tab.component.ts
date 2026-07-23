@@ -1,5 +1,6 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,10 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ClientsService } from '../../../core/services/clients.service';
-import { ServiceTypesService } from '../../../core/services/service-types.service';
 import { Client } from '../../../core/models/client.interfaces';
 import { ServiceType } from '../../../core/models/service-type.interfaces';
+import { PaginatedResponse } from '../../../core/models/dashboard.interfaces';
 import {
   WorkOrder,
   WorkOrderPriority,
@@ -147,17 +147,23 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   `,
 })
 export class InfoTabComponent {
-  private readonly clientsService = inject(ClientsService);
-  private readonly serviceTypesService = inject(ServiceTypesService);
-
   workOrder = input.required<WorkOrder>();
   editable = input(false);
   saving = input(false);
 
   saved = output<UpdateWorkOrderDto>();
 
-  readonly clients = signal<Client[]>([]);
-  readonly serviceTypes = signal<ServiceType[]>([]);
+  private readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
+    url: '/api/clients',
+    params: { limit: '100' },
+  }));
+  readonly clients = computed(() => this.clientsResource.value()?.data ?? []);
+
+  private readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
+    url: '/api/service-types',
+    params: { limit: '100' },
+  }));
+  readonly serviceTypes = computed(() => this.serviceTypesResource.value()?.data ?? []);
 
   readonly editMode = signal(false);
 
@@ -179,14 +185,6 @@ export class InfoTabComponent {
     this.editWarrantyUntil.set(wo.warrantyUntil ? new Date(wo.warrantyUntil) : null);
     this.editLocation.set(wo.location || 'workshop');
     this.editMode.set(true);
-
-    this.clientsService.getAll({ limit: 100 }).subscribe({
-      next: (data) => this.clients.set(data.data),
-    });
-
-    this.serviceTypesService.getAll({ limit: 100 }).subscribe({
-      next: (data) => this.serviceTypes.set(data.data),
-    });
   }
 
   onClientChange(clientId: string): void {
