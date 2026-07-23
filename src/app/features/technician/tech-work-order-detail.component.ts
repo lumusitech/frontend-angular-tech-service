@@ -7,6 +7,7 @@ import { TranslationService } from '../../core/services/translation.service';
 import {
   WorkOrder,
   WorkOrderStatus,
+  WorkOrderStatusLog,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +23,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
+import { StatusTimelineComponent } from '../../shared/components/status-timeline/status-timeline.component';
 
 interface TechStatusAction {
   labelKey: string;
@@ -68,6 +70,7 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     TranslatePipe,
     StatusLabelPipe,
     RelativeDatePipe,
+    StatusTimelineComponent,
   ],
   template: `
     @if (resource.status() === 'loading' && !resource.hasValue()) {
@@ -267,6 +270,16 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
             </div>
           </div>
         </mat-card>
+
+        <!-- Status Timeline -->
+        @if (statusLogsResource.hasValue()) {
+          <mat-card class="p-4">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              {{ 'workOrders.detail.statusTimeline' | translate }}
+            </h3>
+            <app-status-timeline [logs]="statusLogsResource.value()" />
+          </mat-card>
+        }
       </div>
     }
   `,
@@ -284,6 +297,10 @@ export class TechWorkOrderDetailComponent {
     this.websocketService.workOrderRefreshKey();
     return this.orderId ? `/api/work-orders/${this.orderId}` : '';
   });
+
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() =>
+    this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined,
+  );
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
