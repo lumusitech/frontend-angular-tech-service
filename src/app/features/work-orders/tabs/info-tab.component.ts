@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ClientsService } from '../../../core/services/clients.service';
+import { ServiceTypesService } from '../../../core/services/service-types.service';
+import { Client } from '../../../core/models/client.interfaces';
+import { ServiceType } from '../../../core/models/service-type.interfaces';
 import {
   WorkOrder,
   WorkOrderPriority,
@@ -34,11 +38,25 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
     <div class="p-4 space-y-4">
       @if (editable() && editMode()) {
         <!-- Edit mode -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
+          <mat-select [value]="editClientId()" (selectionChange)="onClientChange($event.value)">
+            @for (c of clients(); track c.id) {
+              <mat-option [value]="c.id">{{ c.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
+          <mat-select [value]="editServiceTypeId()" (selectionChange)="editServiceTypeId.set($event.value)">
+            @for (st of serviceTypes(); track st.id) {
+              <mat-option [value]="st.id">{{ st.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.client' | translate }}</p>
-            <p class="font-medium">{{ workOrder().client.name }}</p>
-          </div>
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.detail.location' | translate }}</mat-label>
             <mat-select [value]="editLocation()" (selectionChange)="editLocation.set($event.value)">
@@ -129,14 +147,22 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   `,
 })
 export class InfoTabComponent {
+  private readonly clientsService = inject(ClientsService);
+  private readonly serviceTypesService = inject(ServiceTypesService);
+
   workOrder = input.required<WorkOrder>();
   editable = input(false);
   saving = input(false);
 
   saved = output<UpdateWorkOrderDto>();
 
+  readonly clients = signal<Client[]>([]);
+  readonly serviceTypes = signal<ServiceType[]>([]);
+
   readonly editMode = signal(false);
 
+  readonly editClientId = signal('');
+  readonly editServiceTypeId = signal('');
   readonly editDiagnosis = signal('');
   readonly editWorkAddress = signal('');
   readonly editScheduledDate = signal<Date | null>(null);
@@ -145,12 +171,26 @@ export class InfoTabComponent {
 
   startEdit(): void {
     const wo = this.workOrder();
+    this.editClientId.set(wo.clientId || wo.client?.id || '');
+    this.editServiceTypeId.set(wo.serviceTypeId || wo.serviceType?.id || '');
     this.editDiagnosis.set(wo.diagnosis || '');
     this.editWorkAddress.set(wo.workAddress || '');
     this.editScheduledDate.set(wo.scheduledDate ? new Date(wo.scheduledDate) : null);
     this.editWarrantyUntil.set(wo.warrantyUntil ? new Date(wo.warrantyUntil) : null);
     this.editLocation.set(wo.location || 'workshop');
     this.editMode.set(true);
+
+    this.clientsService.getAll({ limit: 100 }).subscribe({
+      next: (data) => this.clients.set(data.data),
+    });
+
+    this.serviceTypesService.getAll({ limit: 100 }).subscribe({
+      next: (data) => this.serviceTypes.set(data.data),
+    });
+  }
+
+  onClientChange(clientId: string): void {
+    this.editClientId.set(clientId);
   }
 
   cancelEdit(): void {
@@ -160,6 +200,12 @@ export class InfoTabComponent {
   save(): void {
     const dto: UpdateWorkOrderDto = {};
     const wo = this.workOrder();
+
+    const clientId = this.editClientId();
+    if (clientId !== (wo.clientId || wo.client?.id)) dto.clientId = clientId;
+
+    const serviceTypeId = this.editServiceTypeId();
+    if (serviceTypeId !== (wo.serviceTypeId || wo.serviceType?.id)) dto.serviceTypeId = serviceTypeId;
 
     const diagnosis = this.editDiagnosis().trim();
     if (diagnosis !== (wo.diagnosis || '')) dto.diagnosis = diagnosis || undefined;

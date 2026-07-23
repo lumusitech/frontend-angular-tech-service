@@ -101,6 +101,8 @@ export interface CreateWorkOrderDto {
 }
 
 export interface UpdateWorkOrderDto {
+  clientId?: string;
+  serviceTypeId?: string;
   status?: WorkOrderStatus;
   diagnosis?: string;
   workAddress?: string;
