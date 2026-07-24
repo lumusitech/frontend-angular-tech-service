@@ -1,5 +1,5 @@
-import { Component, inject, signal, computed, afterNextRender } from '@angular/core';
-import { httpResource, HttpClient } from '@angular/common/http';
+import { Component, inject, signal, computed } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -7,7 +7,6 @@ import { TranslationService } from '../../core/services/translation.service';
 import {
   WorkOrder,
   WorkOrderStatus,
-  WorkOrderStatusLog,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +22,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { StatusLabelPipe } from '../../shared/pipes/status-label.pipe';
-import { StatusTimelineComponent } from '../../shared/components/status-timeline/status-timeline.component';
+import { TimelineTabComponent } from '../../shared/components/timeline-tab/timeline-tab.component';
 
 interface TechStatusAction {
   labelKey: string;
@@ -70,7 +69,7 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     TranslatePipe,
     StatusLabelPipe,
     RelativeDatePipe,
-    StatusTimelineComponent,
+    TimelineTabComponent,
   ],
   template: `
     @if (resource.error()) {
@@ -268,14 +267,12 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
         </mat-card>
 
         <!-- Status Timeline -->
-        @if (statusLogs().length > 0) {
-          <mat-card class="p-4">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              {{ 'workOrders.detail.statusTimeline' | translate }}
-            </h3>
-            <app-status-timeline [logs]="statusLogs()" />
-          </mat-card>
-        }
+        <mat-card class="p-4">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            {{ 'workOrders.detail.statusTimeline' | translate }}
+          </h3>
+          <app-timeline-tab [orderId]="orderId" />
+        </mat-card>
       </div>
     }
   `,
@@ -286,25 +283,12 @@ export class TechWorkOrderDetailComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
-  private readonly http = inject(HttpClient);
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
   readonly resource = httpResource<WorkOrder>(() =>
     this.orderId ? `/api/work-orders/${this.orderId}` : undefined,
   );
-
-  readonly statusLogs = signal<WorkOrderStatusLog[]>([]);
-
-  constructor() {
-    afterNextRender(() => {
-      if (this.orderId) {
-        this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${this.orderId}/status-logs`).subscribe({
-          next: (data) => this.statusLogs.set(data),
-        });
-      }
-    });
-  }
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
