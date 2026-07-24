@@ -3,7 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule, MatSelectionListChange } from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -39,7 +39,7 @@ interface DialogData {
           <mat-spinner diameter="36" />
         </div>
       } @else if (techniciansResource.hasValue()) {
-        <mat-selection-list [(ngModel)]="selectedIds" [ngModelOptions]="{standalone: true}" (selectionChange)="onSelectionChange($event)">
+        <mat-selection-list [(ngModel)]="selectedIds" [ngModelOptions]="{standalone: true}">
           @for (tech of techniciansResource.value().data; track tech.id) {
             <mat-list-option [value]="tech.id">
               <div class="flex items-center gap-3">
@@ -84,15 +84,6 @@ export class TechnicianAssignmentDialogComponent {
   readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users?role=technician&limit=100',
   }));
-
-  onSelectionChange(event: MatSelectionListChange): void {
-    this.selectedIds.length = 0;
-    for (const option of event.options) {
-      if (option.selected) {
-        this.selectedIds.push(option.value);
-      }
-    }
-  }
 
   onSave(): void {
     this.saving.set(true);
