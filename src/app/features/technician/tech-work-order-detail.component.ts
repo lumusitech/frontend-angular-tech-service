@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { httpResource } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -72,8 +72,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     TimelineTabComponent,
   ],
   template: `
-    @if (resource.error()) {
-      <app-error-state (retry)="resource.reload()" />
+    @if (orderError()) {
+      <app-error-state (retry)="loadOrder()" />
     } @else if (unassigned()) {
       <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
         <mat-icon class="!w-16 !h-16">info</mat-icon>
@@ -84,8 +84,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           {{ 'common.back' | translate }}
         </button>
       </div>
-    } @else if (resource.hasValue()) {
-      @let order = resource.value()!;
+    } @else if (orderData() !== null) {
+      @let order = orderData()!;
 
       <div class="space-y-4">
         <app-page-header
@@ -280,15 +280,31 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
 export class TechWorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
+  readonly orderData = signal<WorkOrder | null>(null);
+  readonly orderError = signal(false);
 
-  readonly resource = httpResource<WorkOrder>(() =>
-    this.orderId ? `/api/work-orders/${this.orderId}` : undefined,
-  );
+  constructor() {
+    if (this.orderId) {
+      this.http.get<WorkOrder>(`/api/work-orders/${this.orderId}`).subscribe({
+        next: (data) => this.orderData.set(data),
+        error: () => this.orderError.set(true),
+      });
+    }
+  }
+
+  loadOrder(): void {
+    if (!this.orderId) return;
+    this.http.get<WorkOrder>(`/api/work-orders/${this.orderId}`).subscribe({
+      next: (data) => this.orderData.set(data),
+      error: () => this.orderError.set(true),
+    });
+  }
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
@@ -342,7 +358,7 @@ export class TechWorkOrderDetailComponent {
     this.workOrdersService
       .updateTask(workOrderId, task.id, { isCompleted: !task.isCompleted })
       .subscribe({
-        next: () => this.resource.reload(),
+        next: () => this.loadOrder(),
       });
   }
 
@@ -366,7 +382,7 @@ export class TechWorkOrderDetailComponent {
         this.workOrdersService
           .update(order.id, { status: action.nextStatus as WorkOrderStatus })
           .subscribe({
-            next: () => this.resource.reload(),
+            next: () => this.loadOrder(),
           });
       }
     });
@@ -379,7 +395,7 @@ export class TechWorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.resource.reload();
+      if (result) this.loadOrder();
     });
   }
 }

@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { httpResource } from '@angular/common/http';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
@@ -50,13 +50,13 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     ExportButtonsComponent,
   ],
   template: `
-    @if (workOrderResource.error()) {
+    @if (orderError()) {
       <app-error-state
         [title]="'workOrders.detail.loadError' | translate"
         [message]="'workOrders.detail.loadErrorMessage' | translate"
-        (retry)="workOrderResource.reload()"
+        (retry)="loadOrder()"
       />
-    } @else if (workOrderResource.hasValue()) {
+    } @else if (orderData() !== null) {
       <div class="space-y-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
@@ -66,29 +66,29 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
             <div>
               <div class="flex items-center gap-3">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  <app-tracking-code [code]="workOrderResource.value()!.trackingCode" />
+                  <app-tracking-code [code]="orderData()!.trackingCode" />
                 </h1>
                 <app-status-badge
-                  [value]="workOrderResource.value()!.status"
+                  [value]="orderData()!.status"
                   type="workOrderStatus"
                 />
                 <app-status-badge
-                  [value]="workOrderResource.value()!.priority"
+                  [value]="orderData()!.priority"
                   type="workOrderPriority"
                 />
               </div>
               <p class="text-gray-500 dark:text-gray-400 mt-1">
-                {{ workOrderResource.value()!.serviceType.name }} -
-                {{ workOrderResource.value()!.client.name }}
+                {{ orderData()!.serviceType.name }} -
+                {{ orderData()!.client.name }}
               </p>
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <app-export-buttons [workOrderId]="workOrderResource.value()!.id" />
+            <app-export-buttons [workOrderId]="orderData()!.id" />
             <app-status-transition
-              [status]="workOrderResource.value()!.status"
-              [requiresDelivery]="workOrderResource.value()!.serviceType?.requiresDelivery ?? false"
+              [status]="orderData()!.status"
+              [requiresDelivery]="orderData()!.serviceType?.requiresDelivery ?? false"
               (transition)="onStatusTransition($event)"
               (openTechnicianAssignment)="openTechnicianDialog()"
             />
@@ -104,7 +104,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   {{ 'workOrders.detail.generalInfo' | translate }}
                 </ng-template>
                 <app-info-tab
-                  [workOrder]="workOrderResource.value()!"
+                  [workOrder]="orderData()!"
                   [editable]="true"
                   [saving]="savingInfo()"
                   (saved)="onInfoSaved($event)"
@@ -115,11 +115,11 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">checklist</mat-icon>
                   {{ 'workOrders.detail.tasks' | translate }} ({{ getCompletedTasks() }}/{{
-                    workOrderResource.value()!.tasks?.length || 0
+                    orderData()!.tasks?.length || 0
                   }})
                 </ng-template>
                 <app-tasks-tab
-                  [tasks]="workOrderResource.value()!.tasks || []"
+                  [tasks]="orderData()!.tasks || []"
                   [completedCount]="getCompletedTasks()"
                   (addTask)="openAddTaskDialog()"
                   (toggleTask)="onToggleTask($event)"
@@ -132,7 +132,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   {{ 'workOrders.detail.materials' | translate }}
                 </ng-template>
                 <app-materials-tab
-                  [materials]="workOrderResource.value()!.materials || []"
+                  [materials]="orderData()!.materials || []"
                   [total]="getMaterialsTotal()"
                   (addMaterial)="openAddMaterialDialog()"
                 />
@@ -144,10 +144,10 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   {{ 'workOrders.detail.notes' | translate }}
                 </ng-template>
                 <app-notes-tab
-                  [notes]="workOrderResource.value()!.notes || []"
-                  [workOrderId]="workOrderResource.value()!.id"
+                  [notes]="orderData()!.notes || []"
+                  [workOrderId]="orderData()!.id"
                   (addNote)="openAddNoteDialog()"
-                  (noteChanged)="workOrderResource.reload()"
+                  (noteChanged)="loadOrder()"
                 />
               </mat-tab>
 
@@ -162,11 +162,11 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
           </div>
 
           <app-work-order-sidebar
-            [technicians]="workOrderResource.value()!.technicians"
+            [technicians]="orderData()!.technicians"
             [completedTasks]="getCompletedTasks()"
-            [totalTasks]="workOrderResource.value()!.tasks?.length || 0"
+            [totalTasks]="orderData()!.tasks?.length || 0"
             [materialsTotal]="getMaterialsTotal()"
-            [createdAt]="workOrderResource.value()!.createdAt"
+            [createdAt]="orderData()!.createdAt"
             (editTechnicians)="openTechnicianDialog()"
           />
         </div>
@@ -177,38 +177,55 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
-
-  readonly workOrderResource = httpResource<WorkOrder>(() => ({
-    url: `/api/work-orders/${this.orderId()}`,
-  }));
-
+  readonly orderData = signal<WorkOrder | null>(null);
+  readonly orderError = signal(false);
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
 
+  constructor() {
+    const id = this.orderId();
+    if (id) {
+      this.http.get<WorkOrder>(`/api/work-orders/${id}`).subscribe({
+        next: (data) => this.orderData.set(data),
+        error: () => this.orderError.set(true),
+      });
+    }
+  }
+
   onInfoSaved(dto: UpdateWorkOrderDto): void {
-    const id = this.workOrderResource.value()?.id;
+    const id = this.orderData()?.id;
     if (!id) return;
 
     this.savingInfo.set(true);
     this.workOrdersService.update(id, dto).subscribe({
       next: () => {
         this.savingInfo.set(false);
-        this.workOrderResource.reload();
+        this.loadOrder();
       },
       error: () => this.savingInfo.set(false),
     });
   }
 
+  loadOrder(): void {
+    const id = this.orderId();
+    if (!id) return;
+    this.http.get<WorkOrder>(`/api/work-orders/${id}`).subscribe({
+      next: (data) => this.orderData.set(data),
+      error: () => this.orderError.set(true),
+    });
+  }
+
   getCompletedTasks(): number {
-    return this.workOrderResource.value()?.tasks?.filter((t) => t.isCompleted).length || 0;
+    return this.orderData()?.tasks?.filter((t) => t.isCompleted).length || 0;
   }
 
   getMaterialsTotal(): number {
-    return this.workOrderResource.value()?.materials?.reduce((sum, m) => sum + m.totalCost, 0) || 0;
+    return this.orderData()?.materials?.reduce((sum, m) => sum + m.totalCost, 0) || 0;
   }
 
   goBack(): void {
@@ -216,10 +233,10 @@ export class WorkOrderDetailComponent {
   }
 
   onToggleTask(event: { taskId: string; isCompleted: boolean }): void {
-    const id = this.workOrderResource.value()?.id;
+    const id = this.orderData()?.id;
     if (id) {
       this.workOrdersService.updateTask(id, event.taskId, { isCompleted: event.isCompleted }).subscribe({
-        next: () => this.workOrderResource.reload(),
+        next: () => this.loadOrder(),
       });
     }
   }
@@ -229,7 +246,7 @@ export class WorkOrderDetailComponent {
     startedAt?: string;
     completedAt?: string;
   }): void {
-    const id = this.workOrderResource.value()?.id;
+    const id = this.orderData()?.id;
     if (!id) return;
 
     const dto: UpdateWorkOrderDto = { status: event.status };
@@ -237,12 +254,12 @@ export class WorkOrderDetailComponent {
     if (event.completedAt) dto.completedAt = event.completedAt;
 
     this.workOrdersService.update(id, dto).subscribe({
-      next: () => this.workOrderResource.reload(),
+      next: () => this.loadOrder(),
     });
   }
 
   openTechnicianDialog(): void {
-    const workOrder = this.workOrderResource.value();
+    const workOrder = this.orderData();
     if (!workOrder) return;
 
     const dialogRef = this.dialog.open(TechnicianAssignmentDialogComponent, {
@@ -254,12 +271,12 @@ export class WorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.workOrderResource.reload();
+      if (result) this.loadOrder();
     });
   }
 
   openAddNoteDialog(): void {
-    const workOrder = this.workOrderResource.value();
+    const workOrder = this.orderData();
     if (!workOrder) return;
 
     const dialogRef = this.dialog.open(NoteDialogComponent, {
@@ -268,12 +285,12 @@ export class WorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.workOrderResource.reload();
+      if (result) this.loadOrder();
     });
   }
 
   openAddMaterialDialog(): void {
-    const workOrder = this.workOrderResource.value();
+    const workOrder = this.orderData();
     if (!workOrder) return;
 
     const dialogRef = this.dialog.open(AddMaterialDialogComponent, {
@@ -282,12 +299,12 @@ export class WorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.workOrderResource.reload();
+      if (result) this.loadOrder();
     });
   }
 
   openAddTaskDialog(): void {
-    const workOrder = this.workOrderResource.value();
+    const workOrder = this.orderData();
     if (!workOrder) return;
 
     const dialogRef = this.dialog.open(AddTaskDialogComponent, {
@@ -296,7 +313,7 @@ export class WorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.workOrderResource.reload();
+      if (result) this.loadOrder();
     });
   }
 }
