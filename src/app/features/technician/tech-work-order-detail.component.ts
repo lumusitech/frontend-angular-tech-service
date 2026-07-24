@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, afterNextRender } from '@angular/core';
 import { httpResource, HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -297,11 +297,13 @@ export class TechWorkOrderDetailComponent {
   readonly statusLogs = signal<WorkOrderStatusLog[]>([]);
 
   constructor() {
-    if (this.orderId) {
-      this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${this.orderId}/status-logs`).subscribe({
-        next: (data) => this.statusLogs.set(data),
-      });
-    }
+    afterNextRender(() => {
+      if (this.orderId) {
+        this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${this.orderId}/status-logs`).subscribe({
+          next: (data) => this.statusLogs.set(data),
+        });
+      }
+    });
   }
 
   readonly unassigned = computed(() => {

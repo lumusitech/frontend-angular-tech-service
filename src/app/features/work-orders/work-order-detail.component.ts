@@ -98,7 +98,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
-            <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+            <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">info</mat-icon>
@@ -196,13 +196,20 @@ export class WorkOrderDetailComponent {
 
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
+  private timelineLoaded = false;
 
-  constructor() {
-    const id = this.orderId();
-    if (id) {
-      this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${id}/status-logs`).subscribe({
-        next: (data) => this.statusLogs.set(data),
-      });
+  constructor() {}
+
+  onTabChange(index: number): void {
+    this.selectedTabIndex.set(index);
+    if (index === 4 && !this.timelineLoaded) {
+      this.timelineLoaded = true;
+      const id = this.orderId();
+      if (id) {
+        this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${id}/status-logs`).subscribe({
+          next: (data) => this.statusLogs.set(data),
+        });
+      }
     }
   }
 
