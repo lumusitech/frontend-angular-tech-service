@@ -52,11 +52,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     ExportButtonsComponent,
   ],
   template: `
-    @if (workOrderResource.status() === 'loading' && !workOrderResource.hasValue()) {
-      <div class="flex justify-center py-12">
-        <mat-spinner diameter="48" />
-      </div>
-    } @else if (workOrderResource.error()) {
+    @if (workOrderResource.error()) {
       <app-error-state
         [title]="'workOrders.detail.loadError' | translate"
         [message]="'workOrders.detail.loadErrorMessage' | translate"

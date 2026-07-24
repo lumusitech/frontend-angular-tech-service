@@ -73,11 +73,7 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     StatusTimelineComponent,
   ],
   template: `
-    @if (resource.status() === 'loading' && !resource.hasValue()) {
-      <div class="flex justify-center py-12">
-        <mat-spinner diameter="40" />
-      </div>
-    } @else if (resource.error()) {
+    @if (resource.error()) {
       <app-error-state (retry)="resource.reload()" />
     } @else if (unassigned()) {
       <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
