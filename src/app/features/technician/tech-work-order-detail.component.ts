@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
@@ -73,8 +72,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     StatusTimelineComponent,
   ],
   template: `
-    @if (resource.error()) {
-      <app-error-state (retry)="resource.reload()" />
+    @if (orderError()) {
+      <app-error-state (retry)="loadOrder()" />
     } @else if (unassigned()) {
       <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
         <mat-icon class="!w-16 !h-16">info</mat-icon>
@@ -85,8 +84,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           {{ 'common.back' | translate }}
         </button>
       </div>
-    } @else if (resource.hasValue()) {
-      @let order = resource.value();
+    } @else if (orderData() !== null) {
+      @let order = orderData()!;
 
       <div class="space-y-4">
         <app-page-header
@@ -268,12 +267,12 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
         </mat-card>
 
         <!-- Status Timeline -->
-        @if (statusLogsResource.hasValue()) {
+        @if (statusLogs().length > 0) {
           <mat-card class="p-4">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
               {{ 'workOrders.detail.statusTimeline' | translate }}
             </h3>
-            <app-status-timeline [logs]="statusLogsResource.value()" />
+            <app-status-timeline [logs]="statusLogs()" />
           </mat-card>
         }
       </div>
@@ -289,13 +288,48 @@ export class TechWorkOrderDetailComponent {
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
-  readonly resource = httpResource<WorkOrder>(() =>
-    this.orderId ? `/api/work-orders/${this.orderId}` : undefined,
-  );
+  readonly orderData = signal<WorkOrder | null>(null);
+  readonly orderLoading = signal(true);
+  readonly orderError = signal(false);
 
-  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() =>
-    this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined,
-  );
+  readonly statusLogs = signal<WorkOrderStatusLog[]>([]);
+  readonly statusLogsLoading = signal(false);
+
+  constructor() {
+    this.loadOrder();
+    this.loadStatusLogs();
+  }
+
+  loadOrder(): void {
+    if (!this.orderId) {
+      this.orderLoading.set(false);
+      return;
+    }
+    this.orderLoading.set(true);
+    this.orderError.set(false);
+    this.workOrdersService.getById(this.orderId).subscribe({
+      next: (data) => {
+        this.orderData.set(data);
+        this.orderLoading.set(false);
+      },
+      error: () => {
+        this.orderError.set(true);
+        this.orderLoading.set(false);
+      },
+    });
+  }
+
+  private loadStatusLogs(): void {
+    if (!this.orderId) return;
+    this.statusLogsLoading.set(true);
+    this.workOrdersService.getStatusLogs(this.orderId).subscribe({
+      next: (data) => {
+        this.statusLogs.set(data);
+        this.statusLogsLoading.set(false);
+      },
+      error: () => this.statusLogsLoading.set(false),
+    });
+  }
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
@@ -349,7 +383,7 @@ export class TechWorkOrderDetailComponent {
     this.workOrdersService
       .updateTask(workOrderId, task.id, { isCompleted: !task.isCompleted })
       .subscribe({
-        next: () => this.resource.reload(),
+        next: () => this.loadOrder(),
       });
   }
 
@@ -373,7 +407,7 @@ export class TechWorkOrderDetailComponent {
         this.workOrdersService
           .update(order.id, { status: action.nextStatus as WorkOrderStatus })
           .subscribe({
-            next: () => this.resource.reload(),
+            next: () => this.loadOrder(),
           });
       }
     });
@@ -386,7 +420,7 @@ export class TechWorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.resource.reload();
+      if (result) this.loadOrder();
     });
   }
 }

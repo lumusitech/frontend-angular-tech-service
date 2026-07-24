@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   WorkOrder,
+  WorkOrderStatusLog,
   CreateWorkOrderDto,
   UpdateWorkOrderDto,
   CreateWorkOrderNoteDto,
@@ -73,5 +74,9 @@ export class WorkOrdersService {
 
   replaceTechnicians(workOrderId: string, technicianIds: string[]): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${workOrderId}/technicians`, { technicianIds });
+  }
+
+  getStatusLogs(workOrderId: string): Observable<WorkOrderStatusLog[]> {
+    return this.http.get<WorkOrderStatusLog[]>(`${this.apiUrl}/${workOrderId}/status-logs`);
   }
 }
