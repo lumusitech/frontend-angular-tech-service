@@ -9,7 +9,6 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
@@ -33,7 +32,6 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     MatIconModule,
     MatButtonModule,
     MatTabsModule,
-    MatProgressSpinnerModule,
     StatusBadgeComponent,
     TrackingCodeComponent,
     TranslatePipe,

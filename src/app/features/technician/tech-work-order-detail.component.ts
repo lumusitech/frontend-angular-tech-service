@@ -10,7 +10,6 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { UrgencyIndicatorComponent } from '../../shared/components/urgency-indicator/urgency-indicator.component';
@@ -57,7 +56,6 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatProgressSpinnerModule,
     MatDialogModule,
     PageHeaderComponent,
     UrgencyIndicatorComponent,
