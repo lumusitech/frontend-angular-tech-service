@@ -167,8 +167,8 @@ export class TechWorkOrdersComponent {
       params: {
         page: 1,
         limit: 50,
-        sortBy: 'scheduledDate',
-        order: 'ASC',
+        sortBy: 'updatedAt',
+        order: 'DESC',
         ...(this.activeFilter() ? { status: this.activeFilter()! } : {}),
       },
     };
