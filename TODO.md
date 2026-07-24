@@ -93,6 +93,52 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+### BUG-003: 🔴 Flicker en detail de órdenes (NO RESUELTO)
+
+**Problema:** Al navegar al detalle de una orden (admin o técnico), la UI se ve
+completa por un instante y luego "pestañea" — los datos desaparecen y reaparecen
+en menos de un segundo.
+
+**Comportamiento:** Funciona bien la primera vez después de un hard refresh.
+Falla en la segunda navegación a cualquier orden. No ocurre en detalle de
+facturación ni otros componentes.
+
+**Intentos fallidos (orden cronológico):**
+
+| # | Intento | Resultado |
+|---|---------|-----------|
+| 1 | Remover `workOrderRefreshKey` de `httpResource` | ❌ No fix |
+| 2 | Remover `<mat-spinner>` de loading state en template | ❌ No fix |
+| 3 | Reemplazar `httpResource` por señales manuales + `HttpClient.get()` | ❌ No fix |
+| 4 | Timeline en componente hijo (`TimelineTabComponent`) | ❌ No fix |
+| 5 | Lazy load timeline solo al clickear la pestaña | ❌ No fix |
+| 6 | `afterNextRender` para diferir carga de timeline | ❌ No fix |
+| 7 | Route Resolver (`workOrderResolver`) — precarga datos antes de crear el componente | ❌ No fix |
+| 8 | Eliminar `<mat-spinner>` y `MatProgressSpinnerModule` de detail components | ❌ No fix |
+
+**Pista clave:** El usuario observa un "punto azul casi en el centro" que aparece
+junto con el pestañeo. El punto azul podría ser:
+- `<mat-spinner>` del TimelineTabComponent (eliminado en PR #173, no mergeado)
+- `<mat-spinner>` del autocomplete de cliente en info-tab (solo en edit mode)
+- Algún otro elemento azul circular de Material que se renderice durante la transición
+
+**Archivos involucrados:**
+- `src/app/features/work-orders/work-order-detail.component.ts`
+- `src/app/features/technician/tech-work-order-detail.component.ts`
+- `src/app/shared/components/timeline-tab/timeline-tab.component.ts`
+- `src/app/features/work-orders/tabs/info-tab.component.ts`
+- `src/app/features/work-orders/work-order.resolver.ts`
+- `src/app/app.routes.ts`
+
+**Próximos pasos a investigar:**
+1. Verificar si el `<mat-spinner>` en `info-tab.component.ts` (autocomplete de cliente) o el `loading-spinner` global se activan incorrectamente
+2. Probar con `ChangeDetectionStrategy.OnPush` explícito en los detail components (Angular 22 lo usa por defecto, pero podría forzarse)
+3. Aislar el componente mínimo que reproduce el flicker (commentar secciones hasta que desaparezca)
+4. Verificar si el `apiResponseInterceptor` o el `authInterceptor` causan un ciclo extra de CD
+5. Grabar un video en cámara lenta para identificar exactamente qué elemento aparece/desaparece
+
+---
+
 ## Próximos pasos priorizados (por valor al proyecto)
 
 ### ~~1. Push Notifications — PWA real-time en mobile~~ ✅
