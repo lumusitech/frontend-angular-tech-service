@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { httpResource, HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -72,8 +73,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     StatusTimelineComponent,
   ],
   template: `
-    @if (orderError()) {
-      <app-error-state (retry)="loadOrder()" />
+    @if (resource.error()) {
+      <app-error-state (retry)="resource.reload()" />
     } @else if (unassigned()) {
       <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
         <mat-icon class="!w-16 !h-16">info</mat-icon>
@@ -84,8 +85,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           {{ 'common.back' | translate }}
         </button>
       </div>
-    } @else if (orderData() !== null) {
-      @let order = orderData()!;
+    } @else if (resource.hasValue()) {
+      @let order = resource.value()!;
 
       <div class="space-y-4">
         <app-page-header
@@ -285,50 +286,22 @@ export class TechWorkOrderDetailComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
+  private readonly http = inject(HttpClient);
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
-  readonly orderData = signal<WorkOrder | null>(null);
-  readonly orderLoading = signal(true);
-  readonly orderError = signal(false);
+  readonly resource = httpResource<WorkOrder>(() =>
+    this.orderId ? `/api/work-orders/${this.orderId}` : undefined,
+  );
 
   readonly statusLogs = signal<WorkOrderStatusLog[]>([]);
-  readonly statusLogsLoading = signal(false);
 
   constructor() {
-    this.loadOrder();
-    this.loadStatusLogs();
-  }
-
-  loadOrder(): void {
-    if (!this.orderId) {
-      this.orderLoading.set(false);
-      return;
+    if (this.orderId) {
+      this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${this.orderId}/status-logs`).subscribe({
+        next: (data) => this.statusLogs.set(data),
+      });
     }
-    this.orderLoading.set(true);
-    this.orderError.set(false);
-    this.workOrdersService.getById(this.orderId).subscribe({
-      next: (data) => {
-        this.orderData.set(data);
-        this.orderLoading.set(false);
-      },
-      error: () => {
-        this.orderError.set(true);
-        this.orderLoading.set(false);
-      },
-    });
-  }
-
-  private loadStatusLogs(): void {
-    if (!this.orderId) return;
-    this.statusLogsLoading.set(true);
-    this.workOrdersService.getStatusLogs(this.orderId).subscribe({
-      next: (data) => {
-        this.statusLogs.set(data);
-        this.statusLogsLoading.set(false);
-      },
-      error: () => this.statusLogsLoading.set(false),
-    });
   }
 
   readonly unassigned = computed(() => {
@@ -383,7 +356,7 @@ export class TechWorkOrderDetailComponent {
     this.workOrdersService
       .updateTask(workOrderId, task.id, { isCompleted: !task.isCompleted })
       .subscribe({
-        next: () => this.loadOrder(),
+        next: () => this.resource.reload(),
       });
   }
 
@@ -407,7 +380,7 @@ export class TechWorkOrderDetailComponent {
         this.workOrdersService
           .update(order.id, { status: action.nextStatus as WorkOrderStatus })
           .subscribe({
-            next: () => this.loadOrder(),
+            next: () => this.resource.reload(),
           });
       }
     });
@@ -420,7 +393,7 @@ export class TechWorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadOrder();
+      if (result) this.resource.reload();
     });
   }
 }
