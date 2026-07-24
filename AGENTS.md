@@ -52,45 +52,31 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 
 ---
 
-## ⚠️ EXCEPCIÓN: `httpResource` NO usar en componentes de detalle
+## ⚠️ EXCEPCIÓN: Route Resolver para vistas de detalle
 
-**Contexto:** En Angular 22, `httpResource` tiene un bug que causa un doble fetch
-automático al montar el componente. Esto genera un pestañeo visual (flicker)
-donde los datos aparecen, desaparecen y reaparecen en menos de un segundo.
+**Contexto:** En Angular 22, `httpResource` y `HttpClient` en el constructor
+causan un pestañeo (flicker) en vistas de detalle. El componente renderiza
+sin datos (estado vacío) y luego con datos cuando la respuesta llega.
 
-**Síntoma:** Las vistas de detalle (WorkOrderDetail, etc.) tienen un pestañeo
-consistente que no ocurre en listas ni otros componentes.
-
-**Causa:** El `httpResource` ejecuta el factory function dos veces durante la
-inicialización del componente, gatillando dos requests. El segundo request
-resetea `hasValue()` brevemente, haciendo que la template oculte el contenido
-y lo vuelva a mostrar.
-
-**Solución:** En componentes de detalle, usar `HttpClient` + `signal()` manual:
+**Solución correcta:** Usar un **Route Resolver** que precarga los datos
+ANTES de que el componente se cree. Así el componente nace con los datos
+listos y nunca pasa por un estado vacío.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+// work-order.resolver.ts
+export const workOrderResolver: ResolveFn<WorkOrder> = (route) => {
+  const http = inject(HttpClient);
+  return firstValueFrom(http.get<WorkOrder>(`/api/work-orders/${route.paramMap.get('id')}`));
+};
 
-@Component({...})
-export class DetailComponent {
-  private readonly http = inject(HttpClient);
+// app.routes.ts
+{ path: ':id', component: DetailComponent, resolve: { workOrder: workOrderResolver } }
 
-  readonly data = signal<Entity | null>(null);
-  readonly error = signal(false);
+// detail.component.ts — simplificado, sin constructor ni httpResource
+readonly data = signal<Entity>(this.route.snapshot.data['workOrder']);
 
-  constructor() {
-    this.http.get<Entity>(`/api/entities/${id}`).subscribe({
-      next: (data) => this.data.set(data),
-      error: () => this.error.set(true),
-    });
-  }
-
-  load(): void {
-    this.http.get<Entity>(`/api/entities/${id}`).subscribe({
-      next: (data) => this.data.set(data),
-    });
-  }
+load(): void {
+  this.service.getById(id).subscribe({ next: (data) => this.data.set(data) });
 }
 ```
 

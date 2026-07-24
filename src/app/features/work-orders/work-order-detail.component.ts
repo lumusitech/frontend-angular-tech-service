@@ -1,5 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
@@ -50,13 +49,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     ExportButtonsComponent,
   ],
   template: `
-    @if (orderError()) {
-      <app-error-state
-        [title]="'workOrders.detail.loadError' | translate"
-        [message]="'workOrders.detail.loadErrorMessage' | translate"
-        (retry)="loadOrder()"
-      />
-    } @else if (orderData() !== null) {
+    @if (orderData() !== null) {
       <div class="space-y-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
@@ -177,25 +170,13 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
-  readonly orderData = signal<WorkOrder | null>(null);
-  readonly orderError = signal(false);
+  readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
-
-  constructor() {
-    const id = this.orderId();
-    if (id) {
-      this.http.get<WorkOrder>(`/api/work-orders/${id}`).subscribe({
-        next: (data) => this.orderData.set(data),
-        error: () => this.orderError.set(true),
-      });
-    }
-  }
 
   onInfoSaved(dto: UpdateWorkOrderDto): void {
     const id = this.orderData()?.id;
@@ -214,9 +195,8 @@ export class WorkOrderDetailComponent {
   loadOrder(): void {
     const id = this.orderId();
     if (!id) return;
-    this.http.get<WorkOrder>(`/api/work-orders/${id}`).subscribe({
+    this.workOrdersService.getById(id).subscribe({
       next: (data) => this.orderData.set(data),
-      error: () => this.orderError.set(true),
     });
   }
 

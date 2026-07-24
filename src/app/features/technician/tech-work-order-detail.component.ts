@@ -1,5 +1,4 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
@@ -72,9 +71,7 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     TimelineTabComponent,
   ],
   template: `
-    @if (orderError()) {
-      <app-error-state (retry)="loadOrder()" />
-    } @else if (unassigned()) {
+    @if (unassigned()) {
       <div class="flex flex-col items-center justify-center py-12 text-center space-y-4">
         <mat-icon class="!w-16 !h-16">info</mat-icon>
         <p class="text-gray-500 dark:text-gray-400">
@@ -278,31 +275,19 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
   `,
 })
 export class TechWorkOrderDetailComponent {
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
-  readonly orderData = signal<WorkOrder | null>(null);
-  readonly orderError = signal(false);
-
-  constructor() {
-    if (this.orderId) {
-      this.http.get<WorkOrder>(`/api/work-orders/${this.orderId}`).subscribe({
-        next: (data) => this.orderData.set(data),
-        error: () => this.orderError.set(true),
-      });
-    }
-  }
+  readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
 
   loadOrder(): void {
     if (!this.orderId) return;
-    this.http.get<WorkOrder>(`/api/work-orders/${this.orderId}`).subscribe({
+    this.workOrdersService.getById(this.orderId).subscribe({
       next: (data) => this.orderData.set(data),
-      error: () => this.orderError.set(true),
     });
   }
 

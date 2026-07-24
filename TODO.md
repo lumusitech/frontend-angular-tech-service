@@ -23,6 +23,7 @@ import { Service, inject, signal } from '@angular/core';
 export class ClientsService { ... }
 
 // Queries GET: httpResource (reactivo, auto-cancela, eager)
+// ⚠️ EXCEPCIÓN vistas de detalle: usar Route Resolver (ver AGENTS.md)
 readonly clientsResource = httpResource<PaginatedResponse<Client>>(
   () => `/api/clients?page=${this.page()}`,
 );
