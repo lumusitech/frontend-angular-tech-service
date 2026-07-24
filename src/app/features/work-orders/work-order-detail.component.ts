@@ -1,11 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { httpResource, HttpClient } from '@angular/common/http';
+import { httpResource } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
   WorkOrderStatus,
-  WorkOrderStatusLog,
   UpdateWorkOrderDto,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +17,7 @@ import { TrackingCodeComponent } from '../../shared/components/tracking-code/tra
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusTransitionComponent } from './status-transition.component';
-import { StatusTimelineComponent } from '../../shared/components/status-timeline/status-timeline.component';
+import { TimelineTabComponent } from '../../shared/components/timeline-tab/timeline-tab.component';
 import { NoteDialogComponent } from './add-note-dialog.component';
 import { AddMaterialDialogComponent } from './add-material-dialog.component';
 import { AddTaskDialogComponent } from './add-task-dialog.component';
@@ -42,7 +41,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     TrackingCodeComponent,
     TranslatePipe,
     StatusTransitionComponent,
-    StatusTimelineComponent,
+    TimelineTabComponent,
     InfoTabComponent,
     TasksTabComponent,
     MaterialsTabComponent,
@@ -98,7 +97,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
-            <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+            <mat-tab-group [(selectedIndex)]="selectedTabIndex">
               <mat-tab>
                 <ng-template mat-tab-label>
                   <mat-icon class="mr-2">info</mat-icon>
@@ -157,11 +156,7 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   <mat-icon class="mr-2">timeline</mat-icon>
                   {{ 'workOrders.detail.statusTimeline' | translate }}
                 </ng-template>
-                @if (statusLogs().length > 0) {
-                  <div class="p-4">
-                    <app-status-timeline [logs]="statusLogs()" />
-                  </div>
-                }
+                <app-timeline-tab [orderId]="orderId()" />
               </mat-tab>
             </mat-tab-group>
           </div>
@@ -182,7 +177,6 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
 
@@ -192,26 +186,8 @@ export class WorkOrderDetailComponent {
     url: `/api/work-orders/${this.orderId()}`,
   }));
 
-  readonly statusLogs = signal<WorkOrderStatusLog[]>([]);
-
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
-  private timelineLoaded = false;
-
-  constructor() {}
-
-  onTabChange(index: number): void {
-    this.selectedTabIndex.set(index);
-    if (index === 4 && !this.timelineLoaded) {
-      this.timelineLoaded = true;
-      const id = this.orderId();
-      if (id) {
-        this.http.get<WorkOrderStatusLog[]>(`/api/work-orders/${id}/status-logs`).subscribe({
-          next: (data) => this.statusLogs.set(data),
-        });
-      }
-    }
-  }
 
   onInfoSaved(dto: UpdateWorkOrderDto): void {
     const id = this.workOrderResource.value()?.id;
