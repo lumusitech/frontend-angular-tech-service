@@ -6,10 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Client } from '../../../core/models/client.interfaces';
+import { ClientsService } from '../../../core/services/clients.service';
 import { ServiceType } from '../../../core/models/service-type.interfaces';
 import { PaginatedResponse } from '../../../core/models/dashboard.interfaces';
 import {
@@ -29,6 +31,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
@@ -40,11 +43,26 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         <!-- Edit mode -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [value]="editClientId()" (selectionChange)="onClientChange($event.value)">
-            @for (c of clients(); track c.id) {
-              <mat-option [value]="c.id">{{ c.name }}</mat-option>
+          <input
+            matInput
+            [matAutocomplete]="clientAuto"
+            [value]="selectedClientName()"
+            (input)="onClientSearch($event)"
+            (focus)="onClientFocus()"
+          />
+          @if (clientSearching()) {
+            <mat-spinner matSuffix diameter="16" />
+          }
+          <mat-autocomplete #clientAuto="matAutocomplete" (optionSelected)="onClientSelected($event.option.value)">
+            @for (c of filteredClients(); track c.id) {
+              <mat-option [value]="c.id">
+                <div class="flex flex-col leading-tight">
+                  <span class="font-medium">{{ c.name }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ c.email }} · {{ c.phone }}</span>
+                </div>
+              </mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -147,17 +165,15 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   `,
 })
 export class InfoTabComponent {
+  private readonly clientsService = inject(ClientsService);
+
   workOrder = input.required<WorkOrder>();
   editable = input(false);
   saving = input(false);
 
   saved = output<UpdateWorkOrderDto>();
 
-  private readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
-    url: '/api/clients',
-    params: { limit: '100' },
-  }));
-  readonly clients = computed(() => this.clientsResource.value()?.data ?? []);
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
     url: '/api/service-types',
@@ -175,6 +191,10 @@ export class InfoTabComponent {
   readonly editWarrantyUntil = signal<Date | null>(null);
   readonly editLocation = signal<WorkOrderLocation>('workshop');
 
+  readonly filteredClients = signal<Client[]>([]);
+  readonly selectedClientName = signal('');
+  readonly clientSearching = signal(false);
+
   startEdit(): void {
     const wo = this.workOrder();
     this.editClientId.set(wo.client?.id || wo.clientId || '');
@@ -184,11 +204,44 @@ export class InfoTabComponent {
     this.editScheduledDate.set(wo.scheduledDate ? new Date(wo.scheduledDate) : null);
     this.editWarrantyUntil.set(wo.warrantyUntil ? new Date(wo.warrantyUntil) : null);
     this.editLocation.set(wo.location || 'workshop');
+    this.selectedClientName.set(wo.client?.name || '');
     this.editMode.set(true);
+    this.searchClients(wo.client?.name || '');
   }
 
-  onClientChange(clientId: string): void {
+  onClientSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.selectedClientName.set(value);
+    if (this.editClientId() && value !== this.selectedClientName()) {
+      this.editClientId.set('');
+    }
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => this.searchClients(value), 300);
+  }
+
+  onClientFocus(): void {
+    if (this.filteredClients().length === 0) {
+      this.searchClients('');
+    }
+  }
+
+  onClientSelected(clientId: string): void {
     this.editClientId.set(clientId);
+    const client = this.filteredClients().find((c) => c.id === clientId);
+    if (client) {
+      this.selectedClientName.set(client.name);
+    }
+  }
+
+  private searchClients(query: string): void {
+    this.clientSearching.set(true);
+    this.clientsService.getAll({ search: query || undefined, limit: 10 }).subscribe({
+      next: (data) => {
+        this.filteredClients.set(data.data);
+        this.clientSearching.set(false);
+      },
+      error: () => this.clientSearching.set(false),
+    });
   }
 
   cancelEdit(): void {

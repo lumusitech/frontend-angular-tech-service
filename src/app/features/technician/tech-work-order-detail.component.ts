@@ -293,15 +293,13 @@ export class TechWorkOrderDetailComponent {
   private readonly translationService = inject(TranslationService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
 
-  readonly resource = httpResource<WorkOrder>(() => {
-    this.websocketService.workOrderRefreshKey();
-    return this.orderId ? `/api/work-orders/${this.orderId}` : '';
-  });
+  readonly resource = httpResource<WorkOrder>(() =>
+    this.orderId ? `/api/work-orders/${this.orderId}` : undefined,
+  );
 
-  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => {
-    this.websocketService.workOrderRefreshKey();
-    return this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined;
-  });
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() =>
+    this.orderId ? `/api/work-orders/${this.orderId}/status-logs` : undefined,
+  );
 
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();

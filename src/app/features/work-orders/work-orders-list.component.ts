@@ -383,7 +383,7 @@ export class WorkOrdersListComponent implements OnInit {
   readonly statusFilter = signal<WorkOrderStatus | ''>('');
   readonly priorityFilter = signal<WorkOrderPriority | ''>('');
   readonly searchFilter = signal('');
-  readonly sortBy = signal('createdAt');
+  readonly sortBy = signal('updatedAt');
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);

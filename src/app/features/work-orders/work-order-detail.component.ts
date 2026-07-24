@@ -197,19 +197,13 @@ export class WorkOrderDetailComponent {
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
 
-  readonly workOrderResource = httpResource<WorkOrder>(() => {
-    this.websocketService.workOrderRefreshKey();
-    return {
-      url: `/api/work-orders/${this.orderId()}`,
-    };
-  });
+  readonly workOrderResource = httpResource<WorkOrder>(() => ({
+    url: `/api/work-orders/${this.orderId()}`,
+  }));
 
-  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => {
-    this.websocketService.workOrderRefreshKey();
-    return {
-      url: `/api/work-orders/${this.orderId()}/status-logs`,
-    };
-  });
+  readonly statusLogsResource = httpResource<WorkOrderStatusLog[]>(() => ({
+    url: `/api/work-orders/${this.orderId()}/status-logs`,
+  }));
 
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
