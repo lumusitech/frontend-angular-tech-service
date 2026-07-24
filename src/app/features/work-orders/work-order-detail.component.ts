@@ -13,7 +13,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
-import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { StatusTransitionComponent } from './status-transition.component';
 import { TimelineTabComponent } from '../../shared/components/timeline-tab/timeline-tab.component';
@@ -36,7 +35,6 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
     MatTabsModule,
     MatProgressSpinnerModule,
     StatusBadgeComponent,
-    ErrorStateComponent,
     TrackingCodeComponent,
     TranslatePipe,
     StatusTransitionComponent,

@@ -13,7 +13,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { UrgencyIndicatorComponent } from '../../shared/components/urgency-indicator/urgency-indicator.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NoteDialogComponent } from '../work-orders/add-note-dialog.component';
@@ -61,7 +60,6 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
     MatProgressSpinnerModule,
     MatDialogModule,
     PageHeaderComponent,
-    ErrorStateComponent,
     UrgencyIndicatorComponent,
     DatePipe,
     DecimalPipe,
