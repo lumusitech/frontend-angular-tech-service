@@ -36,6 +36,7 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - ❌ `subscribe()`, `pipe()`, `map()`, `filter()`, `tap()`, `switchMap()`, `mergeMap()`
 - ❌ `import { ... } from 'rxjs'` (excepto `HttpErrorResponse`, `catchError`, `throwError` en interceptors, y `firstValueFrom` si es estrictamente necesario)
 - ❌ `@Injectable({ providedIn: 'root' })` → usar `@Service()`
+- ❌ **`httpResource` en componentes de detalle.** En Angular 22, `httpResource` causa un doble fetch fantasma al montar el componente, generando un pestañeo (flicker) donde los datos aparecen, desaparecen y reaparecen. Para componentes de detalle se debe usar `HttpClient` directo con `signal()` manual. Ver excepción abajo.
 - ❌ Servicios que devuelvan `Promise` para consultas
 - ❌ Uso directo de `fetch()` nativo del navegador
 - ❌ Template-driven forms (`FormsModule`, `NgForm`, `[(ngModel)]`) → usar exclusivamente **Signal Forms**
@@ -48,6 +49,55 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - ✅ `signal()`, `computed()`, `effect()`, `linkedSignal()`
 - ✅ Signal Forms (`form()`, `FormField`) para **todos** los formularios, sin excepción
 - ✅ `resource()` con `fetch` solo si no se necesita el stack HTTP de Angular
+
+---
+
+## ⚠️ EXCEPCIÓN: `httpResource` NO usar en componentes de detalle
+
+**Contexto:** En Angular 22, `httpResource` tiene un bug que causa un doble fetch
+automático al montar el componente. Esto genera un pestañeo visual (flicker)
+donde los datos aparecen, desaparecen y reaparecen en menos de un segundo.
+
+**Síntoma:** Las vistas de detalle (WorkOrderDetail, etc.) tienen un pestañeo
+consistente que no ocurre en listas ni otros componentes.
+
+**Causa:** El `httpResource` ejecuta el factory function dos veces durante la
+inicialización del componente, gatillando dos requests. El segundo request
+resetea `hasValue()` brevemente, haciendo que la template oculte el contenido
+y lo vuelva a mostrar.
+
+**Solución:** En componentes de detalle, usar `HttpClient` + `signal()` manual:
+
+```typescript
+import { Component, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({...})
+export class DetailComponent {
+  private readonly http = inject(HttpClient);
+
+  readonly data = signal<Entity | null>(null);
+  readonly error = signal(false);
+
+  constructor() {
+    this.http.get<Entity>(`/api/entities/${id}`).subscribe({
+      next: (data) => this.data.set(data),
+      error: () => this.error.set(true),
+    });
+  }
+
+  load(): void {
+    this.http.get<Entity>(`/api/entities/${id}`).subscribe({
+      next: (data) => this.data.set(data),
+    });
+  }
+}
+```
+
+**`httpResource` sigue siendo la opción correcta para:**
+- Listas con filtros reactivos
+- Consultas que cambian por signals
+- Componentes sin problemas de flicker (dashboard, reportes, etc.)
 
 ---
 
