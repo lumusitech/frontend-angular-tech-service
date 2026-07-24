@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard, technicianGuard, sellerGuard } from './core/guards/auth.guard';
+import { workOrderResolver } from './features/work-orders/work-order.resolver';
 
 export const routes: Routes = [
   {
@@ -104,6 +105,7 @@ export const routes: Routes = [
               import('./features/work-orders/work-order-detail.component').then(
                 (m) => m.WorkOrderDetailComponent,
               ),
+            resolve: { workOrder: workOrderResolver },
           },
         ],
       },
@@ -254,6 +256,7 @@ export const routes: Routes = [
           import('./features/technician/tech-work-order-detail.component').then(
             (m) => m.TechWorkOrderDetailComponent,
           ),
+        resolve: { workOrder: workOrderResolver },
       },
     ],
   },
