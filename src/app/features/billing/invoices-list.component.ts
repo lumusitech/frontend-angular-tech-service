@@ -105,14 +105,14 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             (valueChange)="onDateFieldChange($event)"
           />
 
-          <mat-form-field appearance="outline" class="w-40"
+          <mat-form-field appearance="outline" class="w-44"
             [class.mat-form-field-invalid]="dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="w-40"
+          <mat-form-field appearance="outline" class="w-44"
             [class.mat-form-field-invalid]="dateError()">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />

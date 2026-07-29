@@ -134,13 +134,13 @@ const TYPE_LABELS: Record<string, string> = {
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40">
+          <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dueDateFromPicker" [value]="dueDateFromValue()" (dateChange)="onDueDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dueDateFromPicker></mat-datepicker>
           </mat-form-field>
-            <mat-form-field appearance="outline" class="w-40">
+            <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>

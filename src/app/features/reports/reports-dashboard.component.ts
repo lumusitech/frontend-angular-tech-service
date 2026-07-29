@@ -73,14 +73,14 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40">
+          <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" [max]="dateToValue() || undefined" (dateChange)="onDateFromChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40">
+          <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
             <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" [min]="dateFromValue() || undefined" (dateChange)="onDateToChange($event)" />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>

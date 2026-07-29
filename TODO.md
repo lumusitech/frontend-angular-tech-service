@@ -73,7 +73,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
 2. **Migrar 15 formularios a Signal Forms** — Viola restricción Signals-Only del AGENTS.md.
-3. **BUG-002: Datepicker border cortado** — Afecta 11 componentes de lista con filtros de fecha.
+3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
@@ -102,19 +102,15 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-### BUG-002: Datepicker border cortado en desktop
+### ~~BUG-002: Datepicker border cortado en desktop~~ ✅
 
-**Problema:** El borde derecho del input de calendario (datepicker) se ve cortado en la vista desktop. El `mat-datepicker-toggle` dentro del `mat-form-field` con `appearance="outline"` y `class="w-40"` causa que el outline se corte.
+**Solucionado:** El ancho `w-40` (160px) era insuficiente para `mat-form-field` con `appearance="outline"` + `mat-datepicker-toggle`. El outline SVG del borde derecho se recortaba.
 
-**Intentos fallidos:**
-- `margin-right: -4px` en `.mat-datepicker-toggle`
-- `padding-right: 0` en `.mdc-notched-outline__trailing`
+**Fix:** Cambiar `w-40` → `w-44` (176px, iguala los campos select/search adyacentes) en 20 datepickers de 10 archivos. Eliminar 3 CSS overrides fallidos de `styles.css`.
 
-**Posible causa:** El ancho `w-40` (160px) es insuficiente para el input + el icono del toggle. O el `overflow: hidden` del contenedor padre corta el outline.
-
-**Archivos involucrados:**
-- Todos los componentes de lista con filtros de fecha (11 archivos)
-- `src/styles.css` — overrides de form fields
+**Archivos modificados:**
+- 10 list components (clients, suppliers, service-types, work-orders, payments, expenses, invoices, inquiries, pending-items, reports-dashboard)
+- `src/styles.css` — eliminados overrides de `mat-datepicker-toggle`, `mat-mdc-form-field-icon-suffix`, `mdc-notched-outline__trailing`
 
 ---
 
