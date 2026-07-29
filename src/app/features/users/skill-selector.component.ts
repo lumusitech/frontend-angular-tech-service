@@ -7,7 +7,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -18,7 +17,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatAutocompleteModule,
     MatChipsModule,
     MatIconModule,
-    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -38,8 +36,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           [placeholder]="'users.skillsPlaceholder' | translate"
           [matChipInputFor]="chipGrid"
           [matAutocomplete]="auto"
-          [(ngModel)]="inputValue"
-          (input)="searchInput.set(inputValue())"
+          [value]="inputValue()"
+          (input)="onInputChange($any($event).target.value)"
         />
       </mat-chip-grid>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSkillSelected($event)">
@@ -76,11 +74,16 @@ export class SkillSelectorComponent {
     },
   }));
 
-  readonly filteredSkills = () => {
+  filteredSkills(): Skill[] {
     const all = this.skillsResource.value()?.data || [];
     const selectedIds = new Set(this.selectedSkills().map((s) => s.id));
     return all.filter((s) => !selectedIds.has(s.id));
-  };
+  }
+
+  onInputChange(value: string): void {
+    this.inputValue.set(value);
+    this.searchInput.set(value);
+  }
 
   onSkillSelected(event: any): void {
     const name: string = event.option.value;

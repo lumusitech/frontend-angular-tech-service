@@ -9,7 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { ExpensesService } from '../../core/services/expenses.service';
 import {
   Expense,
@@ -26,6 +26,14 @@ interface DialogData {
   expense?: Expense;
 }
 
+interface ExpenseFormModel {
+  description: string;
+  amount: string;
+  category: ExpenseCategory;
+  notes: string;
+  isRecurring: boolean;
+}
+
 @Component({
   selector: 'app-expense-form',
   imports: [
@@ -38,7 +46,7 @@ interface DialogData {
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -52,17 +60,14 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
+      <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.description' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="description"
-            name="description"
-            #descriptionRef="ngModel"
-            required
+            [formField]="expenseForm.description"
           />
-          @if (descriptionRef.invalid && descriptionRef.touched) {
+          @if (expenseForm.description().invalid() && expenseForm.description().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -73,14 +78,10 @@ interface DialogData {
             <input
               matInput
               type="number"
-              [(ngModel)]="amount"
-              name="amount"
-              #amountRef="ngModel"
-              min="0.01"
+              [formField]="expenseForm.amount"
               step="0.01"
-              required
             />
-            @if (amountRef.invalid && amountRef.touched) {
+            @if (expenseForm.amount().invalid() && expenseForm.amount().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
@@ -90,43 +91,26 @@ interface DialogData {
             <input
               matInput
               [matDatepicker]="datePicker"
-              [(ngModel)]="dateValue"
-              name="date"
-              #dateRef="ngModel"
+              [value]="dateValue()"
+              (dateChange)="dateValue.set($any($event).value)"
               (click)="datePicker.open()"
-              required
             />
             <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
             <mat-datepicker #datePicker></mat-datepicker>
-            @if (dateRef.invalid && dateRef.touched) {
-              <mat-error>{{ t('validation.required') }}</mat-error>
-            }
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
-          <mat-select [(ngModel)]="category" name="category" required>
+          <mat-select [formField]="expenseForm.category">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
-            <mat-option value="utilities">{{
-              'expenses.categories.utilities' | translate
-            }}</mat-option>
-            <mat-option value="salaries">{{
-              'expenses.categories.salaries' | translate
-            }}</mat-option>
+            <mat-option value="utilities">{{ 'expenses.categories.utilities' | translate }}</mat-option>
+            <mat-option value="salaries">{{ 'expenses.categories.salaries' | translate }}</mat-option>
             <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
-            <mat-option value="transport">{{
-              'expenses.categories.transport' | translate
-            }}</mat-option>
-            <mat-option value="advertising">{{
-              'expenses.categories.advertising' | translate
-            }}</mat-option>
-            <mat-option value="supplies">{{
-              'expenses.categories.supplies' | translate
-            }}</mat-option>
-            <mat-option value="maintenance">{{
-              'expenses.categories.maintenance' | translate
-            }}</mat-option>
+            <mat-option value="transport">{{ 'expenses.categories.transport' | translate }}</mat-option>
+            <mat-option value="advertising">{{ 'expenses.categories.advertising' | translate }}</mat-option>
+            <mat-option value="supplies">{{ 'expenses.categories.supplies' | translate }}</mat-option>
+            <mat-option value="maintenance">{{ 'expenses.categories.maintenance' | translate }}</mat-option>
             <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
             <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
           </mat-select>
@@ -136,21 +120,20 @@ interface DialogData {
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="notes"
-            name="notes"
+            [formField]="expenseForm.notes"
             rows="3"
           ></textarea>
         </mat-form-field>
 
-        <mat-checkbox [(ngModel)]="isRecurring" name="isRecurring">
+        <mat-checkbox [formField]="expenseForm.isRecurring">
           {{ 'expenses.recurringExpense' | translate }}
         </mat-checkbox>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || expenseForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -163,36 +146,43 @@ export class ExpenseFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  description = this.data.expense?.description || '';
-  amount = this.data.expense?.amount?.toString() || '';
-  dateValue: Date | null = this.data.expense?.date ? new Date(this.data.expense.date) : new Date();
-  category: ExpenseCategory = this.data.expense?.category || 'other';
-  notes = this.data.expense?.notes || '';
-  isRecurring = this.data.expense?.isRecurring ?? false;
+  readonly dateValue = signal<Date | null>(
+    this.data.expense?.date ? new Date(this.data.expense.date) : new Date()
+  );
+
+  readonly model = signal<ExpenseFormModel>({
+    description: this.data.expense?.description || '',
+    amount: this.data.expense?.amount?.toString() || '',
+    category: this.data.expense?.category || 'other',
+    notes: this.data.expense?.notes || '',
+    isRecurring: this.data.expense?.isRecurring ?? false,
+  });
+  readonly expenseForm = form(this.model, (p) => {
+    required(p.description, { message: 'validation.required' });
+    required(p.amount, { message: 'validation.invalidAmount' });
+    required(p.category, { message: 'validation.required' });
+  });
   readonly saving = signal(false);
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.expenseForm().invalid()) return;
 
     this.saving.set(true);
-
-    const dateStr = this.dateValue ? toLocalDateString(this.dateValue) : '';
+    const m = this.model();
+    const dateStr = this.dateValue() ? toLocalDateString(this.dateValue()!) : '';
 
     if (this.data.mode === 'create') {
       const dto: CreateExpenseDto = {
-        description: this.description,
-        amount: parseFloat(this.amount),
+        description: m.description,
+        amount: parseFloat(m.amount),
         date: dateStr,
-        category: this.category,
-        isRecurring: this.isRecurring,
-        notes: this.notes || undefined,
+        category: m.category,
+        isRecurring: m.isRecurring,
+        notes: m.notes || undefined,
       };
 
       this.expensesService.create(dto).subscribe({
@@ -209,12 +199,12 @@ export class ExpenseFormComponent {
       });
     } else {
       const dto: UpdateExpenseDto = {
-        description: this.description,
-        amount: parseFloat(this.amount),
+        description: m.description,
+        amount: parseFloat(m.amount),
         date: dateStr,
-        category: this.category,
-        isRecurring: this.isRecurring,
-        notes: this.notes || undefined,
+        category: m.category,
+        isRecurring: m.isRecurring,
+        notes: m.notes || undefined,
       };
 
       this.expensesService.update(this.data.expense!.id, dto).subscribe({
