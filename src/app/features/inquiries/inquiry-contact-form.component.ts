@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ContactInquiryDto, InquiryRecommendation } from '../../core/models/inquiry.interfaces';
 import { ToastService } from '../../core/services/toast.service';
@@ -14,6 +14,14 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   inquiryId: string;
+}
+
+interface ContactFormModel {
+  technicianNotes: string;
+  estimatedCost: string;
+  estimatedDuration: string;
+  materialsNeeded: string;
+  recommendation: string;
 }
 
 @Component({
@@ -25,7 +33,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -35,19 +43,16 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
+      <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.technicianNotes' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="technicianNotes"
-            name="technicianNotes"
-            #technicianNotesRef="ngModel"
+            [formField]="contactForm.technicianNotes"
             rows="4"
             [placeholder]="'inquiries.technicianNotesPlaceholder' | translate"
-            required
           ></textarea>
-          @if (technicianNotesRef.invalid && technicianNotesRef.touched) {
+          @if (contactForm.technicianNotes().invalid() && contactForm.technicianNotes().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -58,14 +63,8 @@ interface DialogData {
             <input
               matInput
               type="number"
-              [(ngModel)]="estimatedCost"
-              name="estimatedCost"
-              #estimatedCostRef="ngModel"
-              min="0"
+              [formField]="contactForm.estimatedCost"
             />
-            @if (estimatedCostRef.invalid && estimatedCostRef.touched) {
-              <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
-            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
@@ -73,8 +72,7 @@ interface DialogData {
             <input
               matInput
               type="number"
-              [(ngModel)]="estimatedDuration"
-              name="estimatedDuration"
+              [formField]="contactForm.estimatedDuration"
             />
           </mat-form-field>
         </div>
@@ -83,8 +81,7 @@ interface DialogData {
           <mat-label>{{ 'inquiries.materialsNeeded' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="materialsNeeded"
-            name="materialsNeeded"
+            [formField]="contactForm.materialsNeeded"
             rows="2"
             [placeholder]="'inquiries.materialsPlaceholder' | translate"
           ></textarea>
@@ -92,23 +89,23 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
-          <mat-select [(ngModel)]="recommendation" name="recommendation" #recommendationRef="ngModel" required>
+          <mat-select [formField]="contactForm.recommendation">
             <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
             <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
             <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>
             <mat-option value="inspection">{{ 'statusLabels.inspection' | translate }}</mat-option>
             <mat-option value="no_action">{{ 'statusLabels.no_action' | translate }}</mat-option>
           </mat-select>
-          @if (recommendationRef.invalid && recommendationRef.touched) {
+          @if (contactForm.recommendation().invalid() && contactForm.recommendation().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || contactForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('inquiries.saveContact' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -121,31 +118,35 @@ export class InquiryContactFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  technicianNotes = '';
-  estimatedCost = '';
-  estimatedDuration = '';
-  materialsNeeded = '';
-  recommendation = '';
+  readonly model = signal<ContactFormModel>({
+    technicianNotes: '',
+    estimatedCost: '',
+    estimatedDuration: '',
+    materialsNeeded: '',
+    recommendation: '',
+  });
+  readonly contactForm = form(this.model, (p) => {
+    required(p.technicianNotes, { message: 'validation.required' });
+    required(p.recommendation, { message: 'validation.required' });
+  });
   readonly saving = signal(false);
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.contactForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     const dto: ContactInquiryDto = {
-      technicianNotes: this.technicianNotes,
-      estimatedCost: this.estimatedCost ? parseFloat(this.estimatedCost) : undefined,
-      estimatedDuration: this.estimatedDuration ? parseInt(this.estimatedDuration, 10) : undefined,
-      materialsNeeded: this.materialsNeeded || undefined,
-      recommendation: this.recommendation as InquiryRecommendation || undefined,
+      technicianNotes: m.technicianNotes,
+      estimatedCost: m.estimatedCost ? parseFloat(m.estimatedCost) : undefined,
+      estimatedDuration: m.estimatedDuration ? parseInt(m.estimatedDuration, 10) : undefined,
+      materialsNeeded: m.materialsNeeded || undefined,
+      recommendation: m.recommendation as InquiryRecommendation || undefined,
     };
 
     this.inquiriesService.contact(this.data.inquiryId, dto).subscribe({

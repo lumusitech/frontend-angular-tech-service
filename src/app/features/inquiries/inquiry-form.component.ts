@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required, email } from '@angular/forms/signals';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import {
   Inquiry,
@@ -22,6 +22,16 @@ interface DialogData {
   inquiry?: Inquiry;
 }
 
+interface InquiryFormModel {
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
+  clientAddress: string;
+  description: string;
+  source: string;
+  priority: string;
+}
+
 @Component({
   selector: 'app-inquiry-form',
   imports: [
@@ -31,7 +41,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -41,17 +51,14 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
+      <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="clientName"
-            name="clientName"
-            #clientNameRef="ngModel"
-            required
+            [formField]="inquiryForm.clientName"
           />
-          @if (clientNameRef.invalid && clientNameRef.touched) {
+          @if (inquiryForm.clientName().invalid() && inquiryForm.clientName().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -61,8 +68,7 @@ interface DialogData {
             <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
             <input
               matInput
-              [(ngModel)]="clientPhone"
-              name="clientPhone"
+              [formField]="inquiryForm.clientPhone"
             />
           </mat-form-field>
 
@@ -71,13 +77,10 @@ interface DialogData {
             <input
               matInput
               type="email"
-              [(ngModel)]="clientEmail"
-              name="clientEmail"
-              #clientEmailRef="ngModel"
-              email
+              [formField]="inquiryForm.clientEmail"
             />
-            @if (clientEmailRef.invalid && clientEmailRef.touched) {
-              <mat-error>{{ clientEmailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            @if (inquiryForm.clientEmail().invalid() && inquiryForm.clientEmail().touched()) {
+              <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
             }
           </mat-form-field>
         </div>
@@ -86,8 +89,7 @@ interface DialogData {
           <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="clientAddress"
-            name="clientAddress"
+            [formField]="inquiryForm.clientAddress"
           />
         </mat-form-field>
 
@@ -95,13 +97,10 @@ interface DialogData {
           <mat-label>{{ 'inquiries.description' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="description"
-            name="description"
-            #descriptionRef="ngModel"
+            [formField]="inquiryForm.description"
             rows="3"
-            required
           ></textarea>
-          @if (descriptionRef.invalid && descriptionRef.touched) {
+          @if (inquiryForm.description().invalid() && inquiryForm.description().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -109,7 +108,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-            <mat-select [(ngModel)]="source" name="source" #sourceRef="ngModel" required>
+            <mat-select [formField]="inquiryForm.source">
               <mat-option value="phone">{{ 'statusLabels.phone' | translate }}</mat-option>
               <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
               <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
@@ -117,14 +116,14 @@ interface DialogData {
               <mat-option value="social_media">{{ 'statusLabels.social_media' | translate }}</mat-option>
               <mat-option value="referral">{{ 'statusLabels.referral' | translate }}</mat-option>
             </mat-select>
-            @if (sourceRef.invalid && sourceRef.touched) {
+            @if (inquiryForm.source().invalid() && inquiryForm.source().touched()) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.priority' | translate }}</mat-label>
-            <mat-select [(ngModel)]="priority" name="priority">
+            <mat-select [formField]="inquiryForm.priority">
               <mat-option value="low">{{ 'statusLabels.low' | translate }}</mat-option>
               <mat-option value="medium">{{ 'statusLabels.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'statusLabels.high' | translate }}</mat-option>
@@ -132,12 +131,12 @@ interface DialogData {
             </mat-select>
           </mat-form-field>
         </div>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || inquiryForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -150,36 +149,42 @@ export class InquiryFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  clientName = this.data.inquiry?.clientName || '';
-  clientPhone = this.data.inquiry?.clientPhone || '';
-  clientEmail = this.data.inquiry?.clientEmail || '';
-  clientAddress = this.data.inquiry?.clientAddress || '';
-  description = this.data.inquiry?.description || '';
-  source: string = this.data.inquiry?.source || InquirySource.PHONE;
-  priority = this.data.inquiry?.priority || 'medium';
+  readonly model = signal<InquiryFormModel>({
+    clientName: this.data.inquiry?.clientName || '',
+    clientPhone: this.data.inquiry?.clientPhone || '',
+    clientEmail: this.data.inquiry?.clientEmail || '',
+    clientAddress: this.data.inquiry?.clientAddress || '',
+    description: this.data.inquiry?.description || '',
+    source: this.data.inquiry?.source || InquirySource.PHONE,
+    priority: this.data.inquiry?.priority || 'medium',
+  });
+  readonly inquiryForm = form(this.model, (p) => {
+    required(p.clientName, { message: 'validation.required' });
+    required(p.description, { message: 'validation.required' });
+    required(p.source, { message: 'validation.required' });
+    email(p.clientEmail, { message: 'validation.invalidEmail' });
+  });
   readonly saving = signal(false);
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.inquiryForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     if (this.data.mode === 'create') {
       const dto: CreateInquiryDto = {
-        clientName: this.clientName,
-        description: this.description,
-        source: this.source as InquirySource,
-        clientPhone: this.clientPhone || undefined,
-        clientEmail: this.clientEmail || undefined,
-        clientAddress: this.clientAddress || undefined,
-        priority: this.priority || undefined,
+        clientName: m.clientName,
+        description: m.description,
+        source: m.source as InquirySource,
+        clientPhone: m.clientPhone || undefined,
+        clientEmail: m.clientEmail || undefined,
+        clientAddress: m.clientAddress || undefined,
+        priority: m.priority || undefined,
       };
 
       this.inquiriesService.create(dto).subscribe({
@@ -196,13 +201,13 @@ export class InquiryFormComponent {
       });
     } else {
       const dto: UpdateInquiryDto = {
-        clientName: this.clientName,
-        description: this.description,
-        source: this.source as InquirySource,
-        clientPhone: this.clientPhone || undefined,
-        clientEmail: this.clientEmail || undefined,
-        clientAddress: this.clientAddress || undefined,
-        priority: this.priority || undefined,
+        clientName: m.clientName,
+        description: m.description,
+        source: m.source as InquirySource,
+        clientPhone: m.clientPhone || undefined,
+        clientEmail: m.clientEmail || undefined,
+        clientAddress: m.clientAddress || undefined,
+        priority: m.priority || undefined,
       };
 
       this.inquiriesService.update(this.data.inquiry!.id, dto).subscribe({

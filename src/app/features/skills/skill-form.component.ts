@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { SkillsService } from '../../core/services/skills.service';
 import { Skill } from '../../core/models/skill.interfaces';
 import { ToastService } from '../../core/services/toast.service';
@@ -17,6 +17,13 @@ interface DialogData {
   skill?: Skill;
 }
 
+interface SkillFormModel {
+  name: string;
+  category: string;
+  description: string;
+  isActive: boolean;
+}
+
 @Component({
   selector: 'app-skill-form',
   imports: [
@@ -26,7 +33,7 @@ interface DialogData {
     MatFormFieldModule,
     MatInputModule,
     MatSlideToggleModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -42,28 +49,28 @@ interface DialogData {
         </div>
       </div>
 
-      <form #skillForm="ngForm" class="space-y-4">
+      <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.name' | translate }}</mat-label>
-          <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
-          @if (nameRef.invalid && nameRef.touched) {
+          <input matInput [formField]="skillForm.name" />
+          @if (skillForm.name().invalid() && skillForm.name().touched()) {
             <mat-error>{{ 'validation.required' | translate }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.category' | translate }}</mat-label>
-          <input matInput [(ngModel)]="category" name="category" [placeholder]="'skills.categoryPlaceholder' | translate" />
+          <input matInput [formField]="skillForm.category" [placeholder]="'skills.categoryPlaceholder' | translate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.description' | translate }}</mat-label>
-          <textarea matInput [(ngModel)]="description" name="description" rows="3"></textarea>
+          <textarea matInput [formField]="skillForm.description" rows="3"></textarea>
         </mat-form-field>
-      </form>
+      </div>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [formField]="skillForm.isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -71,7 +78,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit(skillForm)" [disabled]="loading() || skillForm.invalid">
+          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || skillForm().invalid()">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -86,26 +93,31 @@ export class SkillFormComponent {
   protected readonly dialogRef = inject(MatDialogRef<SkillFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly name = signal(this.data.skill?.name || '');
-  readonly category = signal(this.data.skill?.category || '');
-  readonly description = signal(this.data.skill?.description || '');
-  readonly isActive = signal(this.data.skill?.isActive ?? true);
+  readonly model = signal<SkillFormModel>({
+    name: this.data.skill?.name || '',
+    category: this.data.skill?.category || '',
+    description: this.data.skill?.description || '',
+    isActive: this.data.skill?.isActive ?? true,
+  });
+  readonly skillForm = form(this.model, (p) => {
+    required(p.name, { message: 'validation.required' });
+  });
   readonly loading = signal(false);
 
   private t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(form: any): void {
-    form.control.markAllAsTouched();
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.skillForm().invalid()) return;
 
     this.loading.set(true);
+    const m = this.model();
     const dto = {
-      name: this.name(),
-      category: this.category() || undefined,
-      description: this.description() || undefined,
-      isActive: this.isActive(),
+      name: m.name,
+      category: m.category || undefined,
+      description: m.description || undefined,
+      isActive: m.isActive,
     };
 
     if (this.data.mode === 'create') {

@@ -72,7 +72,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
 
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
-2. **Migrar 15 formularios a Signal Forms** — Viola restricción Signals-Only del AGENTS.md.
+2. **Migrar 15 formularios a Signal Forms** — PR1: 7/15 completado ✅ (PR2: 5 pendiente).
 3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
@@ -246,29 +246,40 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-### 12. Migración a Signal Forms — Eliminar template-driven forms legacy
+### 12. Migración a Signal Forms — Eliminar template-driven forms legacy (PR1: 7/15 ✅)
 
 **Valor:** Consistencia con la arquitectura Signals-Only. Eliminar deuda técnica.
 
 **15 componentes** usan `FormsModule`/`NgForm`/`[(ngModel)]` y deben migrarse a `form()` + `FormField`:
 
+**Completados (PR1 — simples):**
+| Componente | Archivo | Estado |
+|---|---|---|
+| PortalSearchComponent | `src/app/features/portal/portal-search.component.ts` | ✅ signal manual |
+| SkillFormComponent | `src/app/features/skills/skill-form.component.ts` | ✅ Signal Forms |
+| InquiryContactFormComponent | `src/app/features/inquiries/inquiry-contact-form.component.ts` | ✅ Signal Forms |
+| ServiceTypeFormComponent | `src/app/features/service-types/service-type-form.component.ts` | ✅ Signal Forms |
+| SupplierFormComponent | `src/app/features/suppliers/supplier-form.component.ts` | ✅ Signal Forms |
+| InquiryFormComponent | `src/app/features/inquiries/inquiry-form.component.ts` | ✅ Signal Forms |
+| TechnicianAssignmentDialogComponent | `src/app/features/work-orders/technician-assignment-dialog.component.ts` | ✅ signal manual |
+
+**Pendientes (PR2 — medios):**
 | Componente | Archivo |
 |---|---|
 | ClientFormComponent | `src/app/features/clients/client-form.component.ts` |
-| WorkOrderFormComponent | `src/app/features/work-orders/work-order-form.component.ts` |
-| PaymentFormComponent | `src/app/features/payments/payment-form.component.ts` |
 | ExpenseFormComponent | `src/app/features/expenses/expense-form.component.ts` |
-| InvoiceFormComponent | `src/app/features/billing/invoice-form.component.ts` |
-| SupplierFormComponent | `src/app/features/suppliers/supplier-form.component.ts` |
-| SkillFormComponent | `src/app/features/skills/skill-form.component.ts` |
-| ServiceTypeFormComponent | `src/app/features/service-types/service-type-form.component.ts` |
-| UserFormComponent | `src/app/features/users/user-form.component.ts` |
-| InquiryFormComponent | `src/app/features/inquiries/inquiry-form.component.ts` |
-| InquiryContactFormComponent | `src/app/features/inquiries/inquiry-contact-form.component.ts` |
+| PaymentFormComponent | `src/app/features/payments/payment-form.component.ts` |
 | PendingItemFormComponent | `src/app/features/pending-items/pending-item-form.component.ts` |
 | SkillSelectorComponent | `src/app/features/users/skill-selector.component.ts` |
-| TechnicianAssignmentDialogComponent | `src/app/features/work-orders/technician-assignment-dialog.component.ts` |
-| PortalSearchComponent | `src/app/features/portal/portal-search.component.ts` |
+
+**Pendientes (PR3 — complejos):**
+| Componente | Archivo |
+|---|---|
+| WorkOrderFormComponent | `src/app/features/work-orders/work-order-form.component.ts` |
+| InvoiceFormComponent | `src/app/features/billing/invoice-form.component.ts` |
+| UserFormComponent | `src/app/features/users/user-form.component.ts` |
+
+**Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
 
 **Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
 
