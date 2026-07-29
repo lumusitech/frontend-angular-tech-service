@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { GlobalSearchComponent } from '../global-search/global-search.component';
 
 interface LanguageOption {
   code: string;
@@ -18,7 +19,7 @@ interface LanguageOption {
 
 @Component({
   selector: 'app-header',
-  imports: [TranslatePipe, UpperCasePipe, MatMenuModule, MatButtonModule, MatIconModule],
+  imports: [TranslatePipe, UpperCasePipe, MatMenuModule, MatButtonModule, MatIconModule, GlobalSearchComponent],
   template: `
     <header
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
@@ -42,6 +43,10 @@ interface LanguageOption {
             />
           </svg>
         </button>
+
+        <div class="hidden md:block">
+          <app-global-search />
+        </div>
 
       </div>
 

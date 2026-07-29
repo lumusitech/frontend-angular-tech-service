@@ -35,6 +35,12 @@
     "copied": "Copiado al portapapeles",
     "copyToClipboard": "Copiar",
     "copyError": "Error al copiar",
+    "globalSearch": "Buscar clientes, órdenes, proveedores...",
+    "entityType": {
+      "client": "Cliente",
+      "work-order": "Orden",
+      "supplier": "Proveedor"
+    },
     "toast": {
       "created": "Creado exitosamente",
       "updated": "Actualizado exitosamente",
