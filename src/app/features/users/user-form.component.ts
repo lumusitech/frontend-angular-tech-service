@@ -6,8 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSliderModule } from '@angular/material/slider';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required, email, minLength } from '@angular/forms/signals';
 import { UsersService } from '../../core/services/users.service';
 import { User } from '../../core/models/user.interfaces';
 import { Skill } from '../../core/models/skill.interfaces';
@@ -21,6 +20,14 @@ interface DialogData {
   user?: User;
 }
 
+interface UserFormModel {
+  name: string;
+  email: string;
+  role: 'admin' | 'technician' | 'seller';
+  phone: string;
+  isActive: boolean;
+}
+
 @Component({
   selector: 'app-user-form',
   imports: [
@@ -31,8 +38,7 @@ interface DialogData {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatSliderModule,
-    FormsModule,
+    FormField,
     SkillSelectorComponent,
     TranslatePipe,
   ],
@@ -49,21 +55,21 @@ interface DialogData {
         </div>
       </div>
 
-      <form #userForm="ngForm" class="space-y-4">
+      <div class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
-            @if (nameRef.invalid && nameRef.touched) {
+            <input matInput [formField]="userForm.name" />
+            @if (userForm.name().invalid() && userForm.name().touched()) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.email' | translate }}</mat-label>
-            <input matInput [(ngModel)]="email" name="email" #emailRef="ngModel" type="email" required email />
-            @if (emailRef.invalid && emailRef.touched) {
-              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            <input matInput [formField]="userForm.email" type="email" />
+            @if (userForm.email().invalid() && userForm.email().touched()) {
+              <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
             }
           </mat-form-field>
         </div>
@@ -71,33 +77,30 @@ interface DialogData {
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.password' | translate }}</mat-label>
-            <input matInput [(ngModel)]="password" name="password" #passwordRef="ngModel" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
-            @if (passwordRef.invalid && passwordRef.touched) {
-              <mat-error>{{ passwordRef.hasError('required') ? ('validation.required' | translate) : ('validation.minLength' | translate:{min:'6'}) }}</mat-error>
-            }
+            <input matInput [value]="password()" (input)="password.set($any($event.target).value)" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" name="phone" placeholder="+5491122334455" />
+            <input matInput [formField]="userForm.phone" placeholder="+5491122334455" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'users.role' | translate }}</mat-label>
-          <mat-select [(ngModel)]="role" name="role" (selectionChange)="onRoleChange()">
+          <mat-select [formField]="userForm.role" (selectionChange)="onRoleChange()">
             <mat-option value="admin">{{ 'users.roles.admin' | translate }}</mat-option>
             <mat-option value="technician">{{ 'users.roles.technician' | translate }}</mat-option>
             <mat-option value="seller">{{ 'users.roles.seller' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        @if (role() === 'technician') {
+        @if (model().role === 'technician') {
           <app-skill-selector [(selectedSkills)]="selectedSkills" />
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.experience' | translate }}</mat-label>
-            <textarea matInput [(ngModel)]="experience" name="experience" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
+            <textarea matInput [value]="experience()" (input)="experience.set($any($event.target).value)" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
           </mat-form-field>
 
           <div class="flex items-center gap-4">
@@ -117,16 +120,16 @@ interface DialogData {
           </div>
         }
 
-        @if (role() === 'seller') {
+        @if (model().role === 'seller') {
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.commission' | translate }} (%)</mat-label>
-            <input matInput [(ngModel)]="commission" name="commission" type="number" min="0" max="100" />
+            <input matInput [value]="commission()" (input)="onCommissionChange($any($event.target).value)" type="number" min="0" max="100" />
           </mat-form-field>
         }
-      </form>
+      </div>
 
       <div class="flex items-center justify-between mt-6">
-        <mat-slide-toggle [(ngModel)]="isActive" name="isActive" [disabled]="data.mode === 'create'">
+        <mat-slide-toggle [formField]="userForm.isActive" [disabled]="data.mode === 'create'">
           {{ 'common.active' | translate }}
         </mat-slide-toggle>
 
@@ -134,7 +137,7 @@ interface DialogData {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit(userForm)" [disabled]="loading() || userForm.invalid">
+          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || userForm().invalid()">
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -150,50 +153,63 @@ export class UserFormComponent {
   protected readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly name = signal(this.data.user?.name || '');
-  readonly email = signal(this.data.user?.email || '');
   readonly password = signal('');
-  readonly phone = signal(this.data.user?.phone || '');
-  readonly role = signal<'admin' | 'technician' | 'seller'>(this.data.user?.role || 'technician');
   readonly commission = signal(this.data.user?.commission ?? 5);
   readonly experience = signal(this.data.user?.experience || '');
   readonly trustRating = signal(this.data.user?.trustRating ?? 3);
-  readonly isActive = signal(this.data.user?.isActive ?? true);
   readonly selectedSkills = signal<Skill[]>(
     (this.data.user?.skills ?? []) as Skill[],
   );
   readonly loading = signal(false);
 
-  private t(key: string): string {
+  readonly model = signal<UserFormModel>({
+    name: this.data.user?.name || '',
+    email: this.data.user?.email || '',
+    role: this.data.user?.role || 'technician',
+    phone: this.data.user?.phone || '',
+    isActive: this.data.user?.isActive ?? true,
+  });
+  readonly userForm = form(this.model, (p) => {
+    required(p.name, { message: 'validation.required' });
+    required(p.email, { message: 'validation.required' });
+    email(p.email, { message: 'validation.invalidEmail' });
+  });
+
+  t(key: string): string {
     return this.translationService.instant(key);
   }
 
   onRoleChange(): void {
-    if (this.role() !== 'technician') {
+    const currentRole = this.model().role;
+    if (currentRole !== 'technician') {
       this.selectedSkills.set([]);
     }
-    if (this.role() !== 'seller') {
+    if (currentRole !== 'seller') {
       this.commission.set(5);
     }
   }
 
-  onSubmit(form: any): void {
-    form.control.markAllAsTouched();
-    if (form.invalid) return;
+  onCommissionChange(value: string): void {
+    this.commission.set(parseInt(value) || 0);
+  }
+
+  onSubmit(): void {
+    if (this.userForm().invalid()) return;
 
     this.loading.set(true);
+    const m = this.model();
 
     if (this.data.mode === 'create') {
       this.usersService.create({
-        name: this.name(),
-        email: this.email(),
+        name: m.name,
+        email: m.email,
         password: this.password(),
-        role: this.role(),
-        phone: this.phone() || undefined,
-        commission: this.role() === 'seller' ? this.commission() : undefined,
-        experience: this.role() === 'technician' ? this.experience() || undefined : undefined,
-        trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
-        skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
+        role: m.role,
+        phone: m.phone || undefined,
+        commission: m.role === 'seller' ? this.commission() : undefined,
+        experience: m.role === 'technician' ? this.experience() || undefined : undefined,
+        trustRating: m.role === 'technician' ? this.trustRating() : undefined,
+        skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
       }).subscribe({
         next: () => {
           this.toastService.show(this.t('common.toast.created'), 'success');
@@ -208,16 +224,16 @@ export class UserFormComponent {
       });
     } else if (this.data.user) {
       this.usersService.update(this.data.user.id, {
-        name: this.name(),
-        email: this.email(),
+        name: m.name,
+        email: m.email,
         password: this.password() || undefined,
-        role: this.role(),
-        isActive: this.isActive(),
-        phone: this.phone() || undefined,
-        commission: this.role() === 'seller' ? this.commission() : undefined,
-        experience: this.role() === 'technician' ? this.experience() || undefined : undefined,
-        trustRating: this.role() === 'technician' ? this.trustRating() : undefined,
-        skillIds: this.role() === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
+        role: m.role,
+        isActive: m.isActive,
+        phone: m.phone || undefined,
+        commission: m.role === 'seller' ? this.commission() : undefined,
+        experience: m.role === 'technician' ? this.experience() || undefined : undefined,
+        trustRating: m.role === 'technician' ? this.trustRating() : undefined,
+        skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
       }).subscribe({
         next: () => {
           this.toastService.show(this.t('common.toast.updated'), 'success');
