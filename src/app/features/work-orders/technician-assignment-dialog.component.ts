@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormsModule } from '@angular/forms';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { User } from '../../core/models/user.interfaces';
@@ -24,7 +23,6 @@ interface DialogData {
     MatIconModule,
     MatListModule,
     MatProgressSpinnerModule,
-    FormsModule,
     TranslatePipe,
   ],
   template: `
@@ -39,9 +37,9 @@ interface DialogData {
           <mat-spinner diameter="36" />
         </div>
       } @else if (techniciansResource.hasValue()) {
-        <mat-selection-list [(ngModel)]="selectedIds" [ngModelOptions]="{standalone: true}">
+        <mat-selection-list (selectionChange)="onSelectionChange($event)">
           @for (tech of techniciansResource.value().data; track tech.id) {
-            <mat-list-option [value]="tech.id">
+            <mat-list-option [value]="tech.id" [selected]="selectedIds().includes(tech.id)">
               <div class="flex items-center gap-3">
                 <div
                   class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center"
@@ -78,16 +76,20 @@ export class TechnicianAssignmentDialogComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly selectedIds: string[] = [...this.data.currentTechnicianIds];
+  readonly selectedIds = signal<string[]>([...this.data.currentTechnicianIds]);
   readonly saving = signal(false);
 
   readonly techniciansResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users?role=technician&limit=100',
   }));
 
+  onSelectionChange(event: any): void {
+    this.selectedIds.set(event.options._selected.map((o: any) => o.value));
+  }
+
   onSave(): void {
     this.saving.set(true);
-    this.workOrdersService.replaceTechnicians(this.data.workOrderId, this.selectedIds).subscribe({
+    this.workOrdersService.replaceTechnicians(this.data.workOrderId, this.selectedIds()).subscribe({
       next: () => {
         this.saving.set(false);
         this.dialogRef.close(true);

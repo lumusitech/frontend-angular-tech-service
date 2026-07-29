@@ -1,5 +1,4 @@
-import { Component, output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, signal, output } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +7,6 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-portal-search',
   imports: [
-    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -36,7 +34,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           <mat-icon matPrefix class="!mr-2 !text-gray-400 dark:!text-gray-500">search</mat-icon>
           <input
             matInput
-            [(ngModel)]="trackingCode"
+            [value]="trackingCode()"
+            (input)="trackingCode.set($any($event.target).value)"
             (keyup.enter)="onTrack()"
             placeholder="TS-A1B2C3"
           />
@@ -50,10 +49,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 })
 export class PortalSearchComponent {
   readonly track = output<string>();
-  trackingCode = '';
+  readonly trackingCode = signal('');
 
   onTrack(): void {
-    const code = this.trackingCode.trim();
+    const code = this.trackingCode().trim();
     if (code) {
       this.track.emit(code);
     }

@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required, email } from '@angular/forms/signals';
 import { SuppliersService } from '../../core/services/suppliers.service';
 import {
   Supplier,
@@ -21,6 +21,16 @@ interface DialogData {
   supplier?: Supplier;
 }
 
+interface SupplierFormModel {
+  name: string;
+  contact: string;
+  phone: string;
+  email: string;
+  address: string;
+  notes: string;
+  isActive: boolean;
+}
+
 @Component({
   selector: 'app-supplier-form',
   imports: [
@@ -30,7 +40,7 @@ interface DialogData {
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -44,99 +54,81 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="name"
-              name="name"
-              #nameRef="ngModel"
-              required
-            />
-            @if (nameRef.invalid && nameRef.touched) {
-              <mat-error>{{ t('validation.required') }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>{{ 'suppliers.contact' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="contact"
-              name="contact"
-              #contactRef="ngModel"
-              required
-            />
-            @if (contactRef.invalid && contactRef.touched) {
-              <mat-error>{{ t('validation.required') }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="phone"
-              name="phone"
-              #phoneRef="ngModel"
-              required
-            />
-            @if (phoneRef.invalid && phoneRef.touched) {
-              <mat-error>{{ t('validation.required') }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>{{ 'suppliers.email' | translate }}</mat-label>
-            <input
-              matInput
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              #emailRef="ngModel"
-              email
-            />
-            @if (emailRef.invalid && emailRef.touched) {
-              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'suppliers.address' | translate }}</mat-label>
+          <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="address"
-            name="address"
-            #addressRef="ngModel"
-            required
+            [formField]="supplierForm.name"
           />
-          @if (addressRef.invalid && addressRef.touched) {
+          @if (supplierForm.name().invalid() && supplierForm.name().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
-          <textarea
+          <mat-label>{{ 'suppliers.contact' | translate }}</mat-label>
+          <input
             matInput
-            [(ngModel)]="notes"
-            name="notes"
-            rows="3"
-          ></textarea>
+            [formField]="supplierForm.contact"
+          />
+          @if (supplierForm.contact().invalid() && supplierForm.contact().touched()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
-        <mat-checkbox [(ngModel)]="isActive" name="isActive">
-          {{ 'suppliers.activeSupplier' | translate }}
-        </mat-checkbox>
-      </form>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
+          <input
+            matInput
+            [formField]="supplierForm.phone"
+          />
+          @if (supplierForm.phone().invalid() && supplierForm.phone().touched()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'suppliers.email' | translate }}</mat-label>
+          <input
+            matInput
+            type="email"
+            [formField]="supplierForm.email"
+          />
+          @if (supplierForm.email().invalid() && supplierForm.email().touched()) {
+            <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>{{ 'suppliers.address' | translate }}</mat-label>
+        <input
+          matInput
+          [formField]="supplierForm.address"
+        />
+        @if (supplierForm.address().invalid() && supplierForm.address().touched()) {
+          <mat-error>{{ t('validation.required') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
+        <textarea
+          matInput
+          [formField]="supplierForm.notes"
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-checkbox [formField]="supplierForm.isActive">
+        {{ 'suppliers.activeSupplier' | translate }}
+      </mat-checkbox>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || supplierForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -149,36 +141,43 @@ export class SupplierFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  name = this.data.supplier?.name || '';
-  contact = this.data.supplier?.contact || '';
-  phone = this.data.supplier?.phone || '';
-  email = this.data.supplier?.email || '';
-  address = this.data.supplier?.address || '';
-  notes = this.data.supplier?.notes || '';
-  isActive = this.data.supplier?.isActive ?? true;
+  readonly model = signal<SupplierFormModel>({
+    name: this.data.supplier?.name || '',
+    contact: this.data.supplier?.contact || '',
+    phone: this.data.supplier?.phone || '',
+    email: this.data.supplier?.email || '',
+    address: this.data.supplier?.address || '',
+    notes: this.data.supplier?.notes || '',
+    isActive: this.data.supplier?.isActive ?? true,
+  });
+  readonly supplierForm = form(this.model, (p) => {
+    required(p.name, { message: 'validation.required' });
+    required(p.contact, { message: 'validation.required' });
+    required(p.phone, { message: 'validation.required' });
+    required(p.address, { message: 'validation.required' });
+    email(p.email, { message: 'validation.invalidEmail' });
+  });
   readonly saving = signal(false);
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.supplierForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     if (this.data.mode === 'create') {
       const dto: CreateSupplierDto = {
-        name: this.name,
-        contact: this.contact,
-        phone: this.phone,
-        email: this.email || undefined,
-        address: this.address,
-        notes: this.notes || undefined,
-        isActive: this.isActive,
+        name: m.name,
+        contact: m.contact,
+        phone: m.phone,
+        email: m.email || undefined,
+        address: m.address,
+        notes: m.notes || undefined,
+        isActive: m.isActive,
       };
 
       this.suppliersService.create(dto).subscribe({
@@ -195,13 +194,13 @@ export class SupplierFormComponent {
       });
     } else {
       const dto: UpdateSupplierDto = {
-        name: this.name,
-        contact: this.contact,
-        phone: this.phone,
-        email: this.email || undefined,
-        address: this.address,
-        notes: this.notes || undefined,
-        isActive: this.isActive,
+        name: m.name,
+        contact: m.contact,
+        phone: m.phone,
+        email: m.email || undefined,
+        address: m.address,
+        notes: m.notes || undefined,
+        isActive: m.isActive,
       };
 
       this.suppliersService.update(this.data.supplier!.id, dto).subscribe({
