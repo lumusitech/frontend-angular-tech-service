@@ -7,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { PaymentsService } from '../../core/services/payments.service';
 import {
   Payment,
@@ -25,6 +25,15 @@ interface DialogData {
   workOrderId?: string;
 }
 
+interface PaymentFormModel {
+  amount: string;
+  method: PaymentMethod;
+  provider: string;
+  description: string;
+  installmentNumber: string;
+  totalInstallments: string;
+}
+
 @Component({
   selector: 'app-payment-form',
   imports: [
@@ -36,7 +45,7 @@ interface DialogData {
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -50,28 +59,24 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
+      <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'payments.amount' | translate }}</mat-label>
             <input
               matInput
               type="number"
-              [(ngModel)]="amount"
-              name="amount"
-              #amountRef="ngModel"
-              min="0.01"
+              [formField]="paymentForm.amount"
               step="0.01"
-              required
             />
-            @if (amountRef.invalid && amountRef.touched) {
+            @if (paymentForm.amount().invalid() && paymentForm.amount().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'payments.method' | translate }}</mat-label>
-            <mat-select [(ngModel)]="method" name="method" required>
+            <mat-select [formField]="paymentForm.method">
               <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
               <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
               <mat-option value="credit_card">{{ 'payments.methods.creditCard' | translate }}</mat-option>
@@ -84,12 +89,9 @@ interface DialogData {
           <mat-label>{{ 'payments.provider' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="provider"
-            name="provider"
-            #providerRef="ngModel"
-            required
+            [formField]="paymentForm.provider"
           />
-          @if (providerRef.invalid && providerRef.touched) {
+          @if (paymentForm.provider().invalid() && paymentForm.provider().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
         </mat-form-field>
@@ -98,8 +100,7 @@ interface DialogData {
           <mat-label>{{ 'payments.description' | translate }}</mat-label>
           <textarea
             matInput
-            [(ngModel)]="description"
-            name="description"
+            [formField]="paymentForm.description"
             rows="2"
           ></textarea>
         </mat-form-field>
@@ -110,9 +111,7 @@ interface DialogData {
             <input
               matInput
               type="number"
-              [(ngModel)]="installmentNumber"
-              name="installmentNumber"
-              min="1"
+              [formField]="paymentForm.installmentNumber"
             />
           </mat-form-field>
 
@@ -121,9 +120,7 @@ interface DialogData {
             <input
               matInput
               type="number"
-              [(ngModel)]="totalInstallments"
-              name="totalInstallments"
-              min="1"
+              [formField]="paymentForm.totalInstallments"
             />
           </mat-form-field>
         </div>
@@ -133,19 +130,19 @@ interface DialogData {
           <input
             matInput
             [matDatepicker]="dueDatePicker"
-            [(ngModel)]="dueDateValue"
-            name="dueDate"
+            [value]="dueDateValue()"
+            (dateChange)="dueDateValue.set($any($event).value)"
             (click)="dueDatePicker.open()"
           />
           <mat-datepicker-toggle matIconSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
           <mat-datepicker #dueDatePicker></mat-datepicker>
         </mat-form-field>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, formRef)" [disabled]="saving() || formRef.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || paymentForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -158,36 +155,44 @@ export class PaymentFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  amount = this.data.payment?.amount?.toString() || '';
-  method: PaymentMethod = this.data.payment?.method || 'cash';
-  provider = this.data.payment?.provider || '';
-  description = this.data.payment?.description || '';
-  installmentNumber = this.data.payment?.installmentNumber?.toString() || '';
-  totalInstallments = this.data.payment?.totalInstallments?.toString() || '';
-  dueDateValue: Date | null = this.data.payment?.dueDate ? new Date(this.data.payment.dueDate) : null;
+  readonly dueDateValue = signal<Date | null>(
+    this.data.payment?.dueDate ? new Date(this.data.payment.dueDate) : null
+  );
+
+  readonly model = signal<PaymentFormModel>({
+    amount: this.data.payment?.amount?.toString() || '',
+    method: this.data.payment?.method || 'cash',
+    provider: this.data.payment?.provider || '',
+    description: this.data.payment?.description || '',
+    installmentNumber: this.data.payment?.installmentNumber?.toString() || '',
+    totalInstallments: this.data.payment?.totalInstallments?.toString() || '',
+  });
+  readonly paymentForm = form(this.model, (p) => {
+    required(p.amount, { message: 'validation.invalidAmount' });
+    required(p.method, { message: 'validation.required' });
+    required(p.provider, { message: 'validation.required' });
+  });
   readonly saving = signal(false);
 
   t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.paymentForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     if (this.data.mode === 'create') {
       const dto: CreatePaymentDto = {
-        amount: parseFloat(this.amount),
-        method: this.method,
-        provider: this.provider,
-        description: this.description || undefined,
-        installmentNumber: this.installmentNumber ? parseInt(this.installmentNumber) : undefined,
-        totalInstallments: this.totalInstallments ? parseInt(this.totalInstallments) : undefined,
-        dueDate: this.dueDateValue ? this.dueDateValue.toISOString().split('T')[0] : undefined,
+        amount: parseFloat(m.amount),
+        method: m.method,
+        provider: m.provider,
+        description: m.description || undefined,
+        installmentNumber: m.installmentNumber ? parseInt(m.installmentNumber) : undefined,
+        totalInstallments: m.totalInstallments ? parseInt(m.totalInstallments) : undefined,
+        dueDate: this.dueDateValue() ? this.dueDateValue()!.toISOString().split('T')[0] : undefined,
       };
 
       const workOrderId = this.data.workOrderId || this.data.payment?.workOrder?.id;
@@ -211,13 +216,13 @@ export class PaymentFormComponent {
       });
     } else {
       const dto: UpdatePaymentDto = {
-        amount: parseFloat(this.amount),
-        method: this.method,
-        provider: this.provider,
-        description: this.description || undefined,
-        installmentNumber: this.installmentNumber ? parseInt(this.installmentNumber) : undefined,
-        totalInstallments: this.totalInstallments ? parseInt(this.totalInstallments) : undefined,
-        dueDate: this.dueDateValue ? this.dueDateValue.toISOString().split('T')[0] : undefined,
+        amount: parseFloat(m.amount),
+        method: m.method,
+        provider: m.provider,
+        description: m.description || undefined,
+        installmentNumber: m.installmentNumber ? parseInt(m.installmentNumber) : undefined,
+        totalInstallments: m.totalInstallments ? parseInt(m.totalInstallments) : undefined,
+        dueDate: this.dueDateValue() ? this.dueDateValue()!.toISOString().split('T')[0] : undefined,
       };
 
       this.paymentsService.update(this.data.payment!.id, dto).subscribe({

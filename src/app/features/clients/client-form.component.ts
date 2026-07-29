@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required, email } from '@angular/forms/signals';
 import { ClientsService } from '../../core/services/clients.service';
 import { Client, CreateClientDto, UpdateClientDto } from '../../core/models/client.interfaces';
 import { ToastService } from '../../core/services/toast.service';
@@ -16,6 +16,18 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 interface DialogData {
   mode: 'create' | 'edit';
   client?: Client;
+}
+
+interface ClientFormModel {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  cuit: string;
+  internetProvider: string;
+  internetPlan: string;
+  ivaCondition: string;
+  isActive: boolean;
 }
 
 @Component({
@@ -28,7 +40,7 @@ interface DialogData {
     MatSelectModule,
     MatCheckboxModule,
     MatIconModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -42,42 +54,42 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #clientForm="ngForm" (submit)="onSubmit($event, clientForm)" class="space-y-4">
+      <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.name' | translate }}</mat-label>
-            <input matInput [(ngModel)]="name" name="name" #nameRef="ngModel" required />
-            @if (nameRef.invalid && nameRef.touched) {
+            <input matInput [formField]="clientForm.name" />
+            @if (clientForm.name().invalid() && clientForm.name().touched()) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.email' | translate }}</mat-label>
-            <input matInput type="email" [(ngModel)]="email" name="email" #emailRef="ngModel" required email />
-            @if (emailRef.invalid && emailRef.touched) {
-              <mat-error>{{ emailRef.hasError('required') ? ('validation.required' | translate) : ('validation.invalidEmail' | translate) }}</mat-error>
+            <input matInput type="email" [formField]="clientForm.email" />
+            @if (clientForm.email().invalid() && clientForm.email().touched()) {
+              <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.phone' | translate }}</mat-label>
-            <input matInput [(ngModel)]="phone" name="phone" #phoneRef="ngModel" required />
-            @if (phoneRef.invalid && phoneRef.touched) {
+            <input matInput [formField]="clientForm.phone" />
+            @if (clientForm.phone().invalid() && clientForm.phone().touched()) {
               <mat-error>{{ 'validation.required' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.cuit' | translate }}</mat-label>
-            <input matInput [(ngModel)]="cuit" name="cuit" />
+            <input matInput [formField]="clientForm.cuit" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.address' | translate }}</mat-label>
-          <input matInput [(ngModel)]="address" name="address" #addressRef="ngModel" required />
-          @if (addressRef.invalid && addressRef.touched) {
+          <input matInput [formField]="clientForm.address" />
+          @if (clientForm.address().invalid() && clientForm.address().touched()) {
             <mat-error>{{ 'validation.required' | translate }}</mat-error>
           }
         </mat-form-field>
@@ -85,18 +97,18 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetProvider' | translate }}</mat-label>
-            <input matInput [(ngModel)]="internetProvider" name="internetProvider" />
+            <input matInput [formField]="clientForm.internetProvider" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'clients.internetPlan' | translate }}</mat-label>
-            <input matInput [(ngModel)]="internetPlan" name="internetPlan" />
+            <input matInput [formField]="clientForm.internetPlan" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'clients.ivaCondition' | translate }}</mat-label>
-          <mat-select [(ngModel)]="ivaCondition" name="ivaCondition">
+          <mat-select [formField]="clientForm.ivaCondition">
             <mat-option value="responsable_inscripto">{{
               'clients.ivaConditions.responsableInscripto' | translate
             }}</mat-option>
@@ -110,15 +122,15 @@ interface DialogData {
           </mat-select>
         </mat-form-field>
 
-        <mat-checkbox [(ngModel)]="isActive" name="isActive">
+        <mat-checkbox [formField]="clientForm.isActive">
           {{ 'clients.activeClient' | translate }}
         </mat-checkbox>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event, clientForm)" [disabled]="saving() || clientForm.invalid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || clientForm().invalid()">
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -131,39 +143,47 @@ export class ClientFormComponent {
   private readonly translationService = inject(TranslationService);
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly name = signal(this.data.client?.name || '');
-  readonly email = signal(this.data.client?.email || '');
-  readonly phone = signal(this.data.client?.phone || '');
-  readonly address = signal(this.data.client?.address || '');
-  readonly cuit = signal(this.data.client?.cuit || '');
-  readonly internetProvider = signal(this.data.client?.internetProvider || '');
-  readonly internetPlan = signal(this.data.client?.internetPlan || '');
-  readonly ivaCondition = signal(this.data.client?.ivaCondition || '');
-  readonly isActive = signal(this.data.client?.isActive ?? true);
+  readonly model = signal<ClientFormModel>({
+    name: this.data.client?.name || '',
+    email: this.data.client?.email || '',
+    phone: this.data.client?.phone || '',
+    address: this.data.client?.address || '',
+    cuit: this.data.client?.cuit || '',
+    internetProvider: this.data.client?.internetProvider || '',
+    internetPlan: this.data.client?.internetPlan || '',
+    ivaCondition: this.data.client?.ivaCondition || '',
+    isActive: this.data.client?.isActive ?? true,
+  });
+  readonly clientForm = form(this.model, (p) => {
+    required(p.name, { message: 'validation.required' });
+    required(p.email, { message: 'validation.required' });
+    email(p.email, { message: 'validation.invalidEmail' });
+    required(p.phone, { message: 'validation.required' });
+    required(p.address, { message: 'validation.required' });
+  });
   readonly saving = signal(false);
 
-  private t(key: string): string {
+  t(key: string): string {
     return this.translationService.instant(key);
   }
 
-  onSubmit(event: Event, form: any): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.clientForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     if (this.data.mode === 'create') {
       const dto: CreateClientDto = {
-        name: this.name(),
-        email: this.email(),
-        phone: this.phone(),
-        address: this.address(),
-        cuit: this.cuit() || undefined,
-        internetProvider: this.internetProvider() || undefined,
-        internetPlan: this.internetPlan() || undefined,
-        ivaCondition: (this.ivaCondition() as any) || undefined,
-        isActive: this.isActive(),
+        name: m.name,
+        email: m.email,
+        phone: m.phone,
+        address: m.address,
+        cuit: m.cuit || undefined,
+        internetProvider: m.internetProvider || undefined,
+        internetPlan: m.internetPlan || undefined,
+        ivaCondition: (m.ivaCondition as any) || undefined,
+        isActive: m.isActive,
       };
 
       this.clientsService.create(dto).subscribe({
@@ -180,15 +200,15 @@ export class ClientFormComponent {
       });
     } else {
       const dto: UpdateClientDto = {
-        name: this.name(),
-        email: this.email(),
-        phone: this.phone(),
-        address: this.address(),
-        cuit: this.cuit() || undefined,
-        internetProvider: this.internetProvider() || undefined,
-        internetPlan: this.internetPlan() || undefined,
-        ivaCondition: (this.ivaCondition() as any) || undefined,
-        isActive: this.isActive(),
+        name: m.name,
+        email: m.email,
+        phone: m.phone,
+        address: m.address,
+        cuit: m.cuit || undefined,
+        internetProvider: m.internetProvider || undefined,
+        internetPlan: m.internetPlan || undefined,
+        ivaCondition: (m.ivaCondition as any) || undefined,
+        isActive: m.isActive,
       };
 
       this.clientsService.update(this.data.client!.id, dto).subscribe({

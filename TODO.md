@@ -72,7 +72,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
 
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
-2. **Migrar 15 formularios a Signal Forms** — PR1: 7/15 completado ✅ (PR2: 5 pendiente).
+2. **Migrar 15 formularios a Signal Forms** — PR1: 7/15 ✅, PR2: 5/5 ✅ (PR3: 3 pendiente).
 3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
@@ -263,14 +263,14 @@ if (isPlatformBrowser(this.platformId)) { ... }
 | InquiryFormComponent | `src/app/features/inquiries/inquiry-form.component.ts` | ✅ Signal Forms |
 | TechnicianAssignmentDialogComponent | `src/app/features/work-orders/technician-assignment-dialog.component.ts` | ✅ signal manual |
 
-**Pendientes (PR2 — medios):**
-| Componente | Archivo |
-|---|---|
-| ClientFormComponent | `src/app/features/clients/client-form.component.ts` |
-| ExpenseFormComponent | `src/app/features/expenses/expense-form.component.ts` |
-| PaymentFormComponent | `src/app/features/payments/payment-form.component.ts` |
-| PendingItemFormComponent | `src/app/features/pending-items/pending-item-form.component.ts` |
-| SkillSelectorComponent | `src/app/features/users/skill-selector.component.ts` |
+**Completados (PR2 — medios):**
+| Componente | Archivo | Estado |
+|---|---|---|
+| ClientFormComponent | `src/app/features/clients/client-form.component.ts` | ✅ Signal Forms |
+| ExpenseFormComponent | `src/app/features/expenses/expense-form.component.ts` | ✅ Signal Forms |
+| PaymentFormComponent | `src/app/features/payments/payment-form.component.ts` | ✅ Signal Forms |
+| PendingItemFormComponent | `src/app/features/pending-items/pending-item-form.component.ts` | ✅ Signal Forms |
+| SkillSelectorComponent | `src/app/features/users/skill-selector.component.ts` | ✅ signal manual |
 
 **Pendientes (PR3 — complejos):**
 | Componente | Archivo |
