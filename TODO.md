@@ -71,7 +71,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
 
-1. **BUG-003: Flicker en detalle de órdenes** — 8 intentos fallidos. Afecta confianza del usuario.
+1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
 2. **Migrar 15 formularios a Signal Forms** — Viola restricción Signals-Only del AGENTS.md.
 3. **BUG-002: Datepicker border cortado** — Afecta 11 componentes de lista con filtros de fecha.
 
@@ -118,49 +118,21 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-### BUG-003: 🔴 Flicker en detail de órdenes (NO RESUELTO)
+### ~~BUG-003: 🔴 Flicker en detail de órdenes~~ ✅
 
-**Problema:** Al navegar al detalle de una orden (admin o técnico), la UI se ve
-completa por un instante y luego "pestañea" — los datos desaparecen y reaparecen
-en menos de un segundo.
+**Solucionado:** El flicker era causado por el overlay global del `LoadingSpinnerComponent` (full-screen con `bg-black/30 backdrop-blur-sm`) que se activaba cuando requests de child components (TimelineTabComponent → status-logs, InfoTabComponent → service-types) tardaban >300ms. El "punto azul" era el `<mat-spinner diameter="48">` del overlay.
 
-**Comportamiento:** Funciona bien la primera vez después de un hard refresh.
-Falla en la segunda navegación a cualquier orden. No ocurre en detalle de
-facturación ni otros componentes.
+**Fix implementado:**
+1. Agregado header `X-Skip-Loading` al `loadingInterceptor` — requests con este header no activan el overlay global
+2. `workOrderResolver` usa `X-Skip-Loading` para no mostrar overlay durante navegación
+3. `TimelineTabComponent` refactorizado: `httpResource` → `HttpClient` + `signal()` manual + `X-Skip-Loading`
+4. `InfoTabComponent` refactorizado: `httpResource` → `HttpClient` + `signal()` manual + `X-Skip-Loading` para service-types
 
-**Intentos fallidos (orden cronológico):**
-
-| # | Intento | Resultado |
-|---|---------|-----------|
-| 1 | Remover `workOrderRefreshKey` de `httpResource` | ❌ No fix |
-| 2 | Remover `<mat-spinner>` de loading state en template | ❌ No fix |
-| 3 | Reemplazar `httpResource` por señales manuales + `HttpClient.get()` | ❌ No fix |
-| 4 | Timeline en componente hijo (`TimelineTabComponent`) | ❌ No fix |
-| 5 | Lazy load timeline solo al clickear la pestaña | ❌ No fix |
-| 6 | `afterNextRender` para diferir carga de timeline | ❌ No fix |
-| 7 | Route Resolver (`workOrderResolver`) — precarga datos antes de crear el componente | ❌ No fix |
-| 8 | Eliminar `<mat-spinner>` y `MatProgressSpinnerModule` de detail components | ❌ No fix |
-
-**Pista clave:** El usuario observa un "punto azul casi en el centro" que aparece
-junto con el pestañeo. El punto azul podría ser:
-- `<mat-spinner>` del TimelineTabComponent (eliminado en PR #173, no mergeado)
-- `<mat-spinner>` del autocomplete de cliente en info-tab (solo en edit mode)
-- Algún otro elemento azul circular de Material que se renderice durante la transición
-
-**Archivos involucrados:**
-- `src/app/features/work-orders/work-order-detail.component.ts`
-- `src/app/features/technician/tech-work-order-detail.component.ts`
-- `src/app/shared/components/timeline-tab/timeline-tab.component.ts`
-- `src/app/features/work-orders/tabs/info-tab.component.ts`
-- `src/app/features/work-orders/work-order.resolver.ts`
-- `src/app/app.routes.ts`
-
-**Próximos pasos a investigar:**
-1. Verificar si el `<mat-spinner>` en `info-tab.component.ts` (autocomplete de cliente) o el `loading-spinner` global se activan incorrectamente
-2. Probar con `ChangeDetectionStrategy.OnPush` explícito en los detail components (Angular 22 lo usa por defecto, pero podría forzarse)
-3. Aislar el componente mínimo que reproduce el flicker (commentar secciones hasta que desaparezca)
-4. Verificar si el `apiResponseInterceptor` o el `authInterceptor` causan un ciclo extra de CD
-5. Grabar un video en cámara lenta para identificar exactamente qué elemento aparece/desaparece
+**Archivos modificados:**
+- `src/app/core/interceptors/loading.interceptor.ts` — soporte `X-Skip-Loading`
+- `src/app/features/work-orders/work-order.resolver.ts` — usa `X-Skip-Loading`
+- `src/app/shared/components/timeline-tab/timeline-tab.component.ts` — `HttpClient` + `X-Skip-Loading`
+- `src/app/features/work-orders/tabs/info-tab.component.ts` — `HttpClient` + `X-Skip-Loading`
 
 ---
 
