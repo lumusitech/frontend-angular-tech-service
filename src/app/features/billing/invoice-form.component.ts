@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule, NgForm } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { BillingService } from '../../core/services/billing.service';
 import { CreateInvoiceDto } from '../../core/models/api.interfaces';
 import { Client, PaginatedResponse } from '../../core/models/client.interfaces';
@@ -14,6 +14,19 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+
+interface InvoiceFormModel {
+  invoiceType: string;
+  concept: string;
+  clientName: string;
+  clientCuit: string;
+  clientAddress: string;
+  clientIvaCondition: string;
+  subtotal: string;
+  ivaAmount: string;
+  total: string;
+  workOrderDisplay: string;
+}
 
 @Component({
   selector: 'app-invoice-form',
@@ -24,7 +37,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -34,11 +47,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form #formRef="ngForm" (submit)="onSubmit($event, formRef)" class="space-y-4">
+      <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
-            <mat-select [(ngModel)]="invoiceType" name="invoiceType">
+            <mat-select [formField]="invoiceForm.invoiceType">
               <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
               <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
               <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
@@ -47,7 +60,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.concept' | translate }}</mat-label>
-            <mat-select [(ngModel)]="concept" name="concept">
+            <mat-select [formField]="invoiceForm.concept">
               <mat-option value="services">{{ 'billing.concepts.services' | translate }}</mat-option>
               <mat-option value="products">{{ 'billing.concepts.products' | translate }}</mat-option>
               <mat-option value="both">{{ 'billing.concepts.both' | translate }}</mat-option>
@@ -60,15 +73,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
             <input
               matInput
-              [(ngModel)]="clientName"
-              name="clientName"
-              #clientNameRef="ngModel"
-              (input)="onClientSearch(clientName)"
+              [formField]="invoiceForm.clientName"
+              (input)="onClientSearch($any($event.target).value)"
               (focus)="showClientDropdown.set(true)"
               (blur)="hideClientDropdown()"
-              required
             />
-            @if (clientNameRef.invalid && clientNameRef.touched) {
+            @if (invoiceForm.clientName().invalid() && invoiceForm.clientName().touched()) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
@@ -93,14 +103,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.clientCuit' | translate }}</mat-label>
             <input
               matInput
-              [(ngModel)]="clientCuit"
-              name="clientCuit"
+              [formField]="invoiceForm.clientCuit"
             />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.clientIvaCondition' | translate }}</mat-label>
-            <mat-select [(ngModel)]="clientIvaCondition" name="clientIvaCondition">
+            <mat-select [formField]="invoiceForm.clientIvaCondition">
               <mat-option value="consumidor_final">{{ 'billing.ivaConditions.consumidorFinal' | translate }}</mat-option>
               <mat-option value="responsable_inscripto">{{ 'billing.ivaConditions.responsableInscripto' | translate }}</mat-option>
               <mat-option value="monotributo">{{ 'billing.ivaConditions.monotributo' | translate }}</mat-option>
@@ -113,10 +122,11 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
           <mat-label>{{ 'billing.clientAddress' | translate }}</mat-label>
           <input
             matInput
-            [(ngModel)]="clientAddress"
-            name="clientAddress"
-            required
+            [formField]="invoiceForm.clientAddress"
           />
+          @if (invoiceForm.clientAddress().invalid() && invoiceForm.clientAddress().touched()) {
+            <mat-error>{{ t('validation.required') }}</mat-error>
+          }
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -125,14 +135,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [(ngModel)]="subtotal"
-              name="subtotal"
-              #subtotalRef="ngModel"
-              min="0.01"
+              [formField]="invoiceForm.subtotal"
               step="0.01"
-              required
             />
-            @if (subtotalRef.invalid && subtotalRef.touched) {
+            @if (invoiceForm.subtotal().invalid() && invoiceForm.subtotal().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
@@ -142,9 +148,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [(ngModel)]="ivaAmount"
-              name="ivaAmount"
-              min="0"
+              [formField]="invoiceForm.ivaAmount"
               step="0.01"
             />
           </mat-form-field>
@@ -154,14 +158,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <input
               matInput
               type="number"
-              [(ngModel)]="total"
-              name="total"
-              #totalRef="ngModel"
-              min="0.01"
+              [formField]="invoiceForm.total"
               step="0.01"
-              required
             />
-            @if (totalRef.invalid && totalRef.touched) {
+            @if (invoiceForm.total().invalid() && invoiceForm.total().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
           </mat-form-field>
@@ -172,15 +172,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             <mat-label>{{ 'billing.workOrder' | translate }}</mat-label>
             <input
               matInput
-              [(ngModel)]="workOrderDisplay"
-              name="workOrderDisplay"
-              #workOrderDisplayRef="ngModel"
-              (input)="onWorkOrderSearch(workOrderDisplay)"
+              [formField]="invoiceForm.workOrderDisplay"
+              (input)="onWorkOrderSearch($any($event.target).value)"
               (focus)="showWorkOrderDropdown.set(true)"
               (blur)="hideWorkOrderDropdown()"
-              required
             />
-            @if (selectedWorkOrderId.length === 0 && workOrderDisplayRef.touched) {
+            @if (selectedWorkOrderId.length === 0 && invoiceForm.workOrderDisplay().touched()) {
               <mat-error>{{ t('validation.required') }}</mat-error>
             }
           </mat-form-field>
@@ -202,7 +199,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
             </div>
           }
         </div>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
@@ -210,8 +207,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       <button
         mat-flat-button
         color="primary"
-        (click)="onSubmit($event, formRef)"
-        [disabled]="saving() || formRef.invalid"
+        (click)="onSubmit()"
+        [disabled]="saving() || invoiceForm().invalid()"
       >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
@@ -225,21 +222,31 @@ export class InvoiceFormComponent {
   private readonly translationService = inject(TranslationService);
   private readonly data = inject<Record<string, never>>(MAT_DIALOG_DATA);
 
-  invoiceType = 'B';
-  concept = 'services';
-  clientName = '';
-  clientCuit = '';
-  clientAddress = '';
-  clientIvaCondition: 'consumidor_final' | 'responsable_inscripto' | 'monotributo' | 'exento' = 'consumidor_final';
-  subtotal = '';
-  ivaAmount = '';
-  total = '';
-  selectedClientId = '';
-  selectedWorkOrderId = '';
-  workOrderDisplay = '';
+  readonly selectedClientId = signal('');
+  readonly selectedWorkOrderId = signal('');
   readonly saving = signal(false);
   readonly showClientDropdown = signal(false);
   readonly showWorkOrderDropdown = signal(false);
+
+  readonly model = signal<InvoiceFormModel>({
+    invoiceType: 'B',
+    concept: 'services',
+    clientName: '',
+    clientCuit: '',
+    clientAddress: '',
+    clientIvaCondition: 'consumidor_final',
+    subtotal: '',
+    ivaAmount: '',
+    total: '',
+    workOrderDisplay: '',
+  });
+  readonly invoiceForm = form(this.model, (p) => {
+    required(p.clientName, { message: 'validation.required' });
+    required(p.clientAddress, { message: 'validation.required' });
+    required(p.subtotal, { message: 'validation.invalidAmount' });
+    required(p.total, { message: 'validation.invalidAmount' });
+    required(p.workOrderDisplay, { message: 'validation.required' });
+  });
 
   t(key: string): string {
     return this.translationService.instant(key);
@@ -294,13 +301,14 @@ export class InvoiceFormComponent {
   }
 
   selectClient(client: Client): void {
-    this.selectedClientId = client.id;
-    this.clientName = client.name;
-    this.clientCuit = client.cuit ?? '';
-    this.clientAddress = client.address ?? '';
-    if (client.ivaCondition) {
-      this.clientIvaCondition = client.ivaCondition;
-    }
+    this.selectedClientId.set(client.id);
+    this.model.update(m => ({
+      ...m,
+      clientName: client.name,
+      clientCuit: client.cuit ?? '',
+      clientAddress: client.address ?? '',
+      clientIvaCondition: client.ivaCondition || 'consumidor_final',
+    }));
     this.showClientDropdown.set(false);
   }
 
@@ -317,30 +325,28 @@ export class InvoiceFormComponent {
   }
 
   selectWorkOrder(wo: WorkOrder): void {
-    this.selectedWorkOrderId = wo.id;
-    this.workOrderDisplay = wo.trackingCode;
+    this.selectedWorkOrderId.set(wo.id);
+    this.model.update(m => ({ ...m, workOrderDisplay: wo.trackingCode }));
     this.showWorkOrderDropdown.set(false);
   }
 
-  onSubmit(event: Event, form: NgForm): void {
-    event.preventDefault();
-    form.control.markAllAsTouched();
-
-    if (form.invalid) return;
+  onSubmit(): void {
+    if (this.invoiceForm().invalid()) return;
 
     this.saving.set(true);
+    const m = this.model();
 
     const dto: CreateInvoiceDto = {
-      invoiceType: this.invoiceType as 'A' | 'B' | 'C',
-      concept: this.concept as 'products' | 'services' | 'both',
-      clientName: this.clientName,
-      clientCuit: this.clientCuit || undefined,
-      clientAddress: this.clientAddress,
-      clientIvaCondition: this.clientIvaCondition,
-      subtotal: parseFloat(this.subtotal) || 0,
-      ivaAmount: parseFloat(this.ivaAmount) || 0,
-      total: parseFloat(this.total) || 0,
-      workOrderId: this.selectedWorkOrderId,
+      invoiceType: m.invoiceType as 'A' | 'B' | 'C',
+      concept: m.concept as 'products' | 'services' | 'both',
+      clientName: m.clientName,
+      clientCuit: m.clientCuit || undefined,
+      clientAddress: m.clientAddress,
+      clientIvaCondition: m.clientIvaCondition as any,
+      subtotal: parseFloat(m.subtotal) || 0,
+      ivaAmount: parseFloat(m.ivaAmount) || 0,
+      total: parseFloat(m.total) || 0,
+      workOrderId: this.selectedWorkOrderId(),
     };
 
     this.billingService.create(dto).subscribe({

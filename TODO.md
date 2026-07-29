@@ -72,7 +72,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
 
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
-2. **Migrar 15 formularios a Signal Forms** — PR1: 7/15 ✅, PR2: 5/5 ✅ (PR3: 3 pendiente).
+2. ~~**Migrar 15 formularios a Signal Forms**~~ ✅ — 15/15 completado en 3 PRs.
 3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
@@ -272,12 +272,12 @@ if (isPlatformBrowser(this.platformId)) { ... }
 | PendingItemFormComponent | `src/app/features/pending-items/pending-item-form.component.ts` | ✅ Signal Forms |
 | SkillSelectorComponent | `src/app/features/users/skill-selector.component.ts` | ✅ signal manual |
 
-**Pendientes (PR3 — complejos):**
-| Componente | Archivo |
-|---|---|
-| WorkOrderFormComponent | `src/app/features/work-orders/work-order-form.component.ts` |
-| InvoiceFormComponent | `src/app/features/billing/invoice-form.component.ts` |
-| UserFormComponent | `src/app/features/users/user-form.component.ts` |
+**Completados (PR3 — complejos):**
+| Componente | Archivo | Estado |
+|---|---|---|
+| WorkOrderFormComponent | `src/app/features/work-orders/work-order-form.component.ts` | ✅ Signal Forms |
+| InvoiceFormComponent | `src/app/features/billing/invoice-form.component.ts` | ✅ Signal Forms |
+| UserFormComponent | `src/app/features/users/user-form.component.ts` | ✅ Signal Forms |
 
 **Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
 

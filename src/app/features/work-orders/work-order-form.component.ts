@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ClientsService } from '../../core/services/clients.service';
 import { ServiceTypesService } from '../../core/services/service-types.service';
@@ -26,6 +26,15 @@ interface DialogData {
   mode: 'create';
 }
 
+interface WorkOrderFormModel {
+  clientId: string;
+  serviceTypeId: string;
+  priority: WorkOrderPriority;
+  location: WorkOrderLocation;
+  diagnosis: string;
+  workAddress: string;
+}
+
 @Component({
   selector: 'app-work-order-form',
   imports: [
@@ -38,7 +47,7 @@ interface DialogData {
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormsModule,
+    FormField,
     TranslatePipe,
   ],
   template: `
@@ -48,10 +57,10 @@ interface DialogData {
     </h2>
 
     <mat-dialog-content class="!p-6">
-      <form (submit)="onSubmit($event)" class="space-y-4">
+      <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [(ngModel)]="clientId" [ngModelOptions]="{standalone: true}">
+          <mat-select [formField]="workOrderForm.clientId">
             @for (client of clients(); track client.id) {
               <mat-option [value]="client.id">
                 {{ client.name }}
@@ -62,7 +71,7 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
-          <mat-select [(ngModel)]="serviceTypeId" [ngModelOptions]="{standalone: true}">
+          <mat-select [formField]="workOrderForm.serviceTypeId">
             @for (serviceType of serviceTypes(); track serviceType.id) {
               <mat-option [value]="serviceType.id">
                 {{ serviceType.name }}
@@ -74,7 +83,7 @@ interface DialogData {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
-            <mat-select [(ngModel)]="priority" [ngModelOptions]="{standalone: true}">
+            <mat-select [formField]="workOrderForm.priority">
               <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
               <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
               <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
@@ -84,7 +93,7 @@ interface DialogData {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
-            <mat-select [(ngModel)]="location" [ngModelOptions]="{standalone: true}">
+            <mat-select [formField]="workOrderForm.location">
               <mat-option value="workshop">{{ 'workOrders.locations.workshop' | translate }}</mat-option>
               <mat-option value="on_site">{{ 'workOrders.locations.onSite' | translate }}</mat-option>
             </mat-select>
@@ -107,19 +116,19 @@ interface DialogData {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.initialDiagnosis' | translate }}</mat-label>
-          <textarea matInput [(ngModel)]="diagnosis" [ngModelOptions]="{standalone: true}" rows="3"></textarea>
+          <textarea matInput [formField]="workOrderForm.diagnosis" rows="3"></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.workAddress' | translate }}</mat-label>
-          <input matInput [(ngModel)]="workAddress" [ngModelOptions]="{standalone: true}" [placeholder]="'workOrders.workAddressPlaceholder' | translate" />
+          <input matInput [formField]="workOrderForm.workAddress" [placeholder]="'workOrders.workAddressPlaceholder' | translate" />
         </mat-form-field>
-      </form>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit($event)" [disabled]="saving()">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving()">
         {{ saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -134,15 +143,19 @@ export class WorkOrderFormComponent implements OnInit {
   readonly clients = signal<Client[]>([]);
   readonly serviceTypes = signal<ServiceType[]>([]);
 
-  readonly clientId = signal('');
-  readonly serviceTypeId = signal('');
-  readonly priority = signal<WorkOrderPriority>('medium');
-  readonly location = signal<WorkOrderLocation>('workshop');
   readonly scheduledDate = signal('');
   readonly warrantyUntil = signal('');
-  readonly diagnosis = signal('');
-  readonly workAddress = signal('');
   readonly saving = signal(false);
+
+  readonly model = signal<WorkOrderFormModel>({
+    clientId: '',
+    serviceTypeId: '',
+    priority: 'medium',
+    location: 'workshop',
+    diagnosis: '',
+    workAddress: '',
+  });
+  readonly workOrderForm = form(this.model);
 
   ngOnInit(): void {
     this.clientsService.getAll({ limit: 100 }).subscribe({
@@ -172,23 +185,19 @@ export class WorkOrderFormComponent implements OnInit {
     this.warrantyUntil.set(event.value ? toLocalDateString(event.value) : '');
   }
 
-  getInputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
-  }
-
-  onSubmit(event: Event): void {
-    event.preventDefault();
+  onSubmit(): void {
     this.saving.set(true);
+    const m = this.model();
 
     const dto: CreateWorkOrderDto = {
-      clientId: this.clientId(),
-      serviceTypeId: this.serviceTypeId(),
-      priority: this.priority(),
-      location: this.location(),
+      clientId: m.clientId,
+      serviceTypeId: m.serviceTypeId,
+      priority: m.priority,
+      location: m.location,
       scheduledDate: this.scheduledDate() || undefined,
       warrantyUntil: this.warrantyUntil() || undefined,
-      diagnosis: this.diagnosis() || undefined,
-      workAddress: this.workAddress() || undefined,
+      diagnosis: m.diagnosis || undefined,
+      workAddress: m.workAddress || undefined,
     };
 
     this.workOrdersService.create(dto).subscribe({
