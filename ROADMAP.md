@@ -647,3 +647,32 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
   - Auto-deploy via GitHub
   - Adapter via AnalogJS (community, no official)
   - Restriccion: non-commercial en plan gratuito
+
+---
+
+## Próximos pasos priorizados
+
+### 🔴 Alta prioridad (bloqueantes / UX rota)
+
+| # | Item | Descripción | Esfuerzo |
+|---|------|-------------|----------|
+| 1 | **BUG-003: Flicker en detalle de órdenes** | Al navegar al detalle, datos desaparecen y reaparecen. 8 intentos fallidos documentados en TODO.md. Afecta confianza del usuario. Punto azul visible durante el pestañeo. | Alto |
+| 2 | **Migrar 15 formularios a Signal Forms** | Viola la restricción Signals-Only del AGENTS.md. Lista completa en TODO.md. Migrar incrementalmente (3-4 por PR). | Medio |
+| 3 | **BUG-002: Datepicker border cortado** | Borde derecho del input de calendario se ve cortado en desktop. Afecta 11 componentes de lista con filtros de fecha. | Bajo |
+
+### 🟡 Media prioridad (valor de negocio / calidad)
+
+| # | Item | Descripción | Esfuerzo |
+|---|------|-------------|----------|
+| 4 | **Search global desde header** | Buscar en todas las entidades desde el header. Backend ya soporta búsqueda con unaccent. UX significativamente mejorada. | Medio |
+| 5 | **Tests de componentes frontend** | 147 tests de servicios, 0 de componentes feature. Coverage gap importante. Stack: Vitest. | Medio |
+| 6 | **E2E tests (Playwright)** | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy. | Medio |
+
+### 🟢 Baja prioridad (mejoras incrementales / polish)
+
+| # | Item | Descripción | Esfuerzo |
+|---|------|-------------|----------|
+| 7 | **Offline mode — cola de mutaciones** | PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar. Complejidad alta. | Alto |
+| 8 | **i18n: Portugués** | Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`. | Bajo |
+| 9 | **Bulk actions (selección múltiple)** | Exportar, cambiar estado masivamente. UX para gestión masiva. | Medio |
+| 10 | **Kanban board para work orders** | Vista visual alternativa a tabla (columnas por estado, drag & drop). | Alto |
