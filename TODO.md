@@ -65,6 +65,31 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Nuevos tipos de notificación: iconos, colores, filtros en lista
 - Eliminado NotificationToastComponent (vive en WebsocketService)
 
+---
+
+## Resumen de prioridades pendientes
+
+### 🔴 Alta prioridad (bloqueantes / UX rota)
+
+1. **BUG-003: Flicker en detalle de órdenes** — 8 intentos fallidos. Afecta confianza del usuario.
+2. **Migrar 15 formularios a Signal Forms** — Viola restricción Signals-Only del AGENTS.md.
+3. **BUG-002: Datepicker border cortado** — Afecta 11 componentes de lista con filtros de fecha.
+
+### 🟡 Media prioridad (valor de negocio / calidad)
+
+4. **Search global desde header** — Backend listo, solo frontend.
+5. **Tests de componentes** — 147 tests de servicios, 0 de componentes feature.
+6. **E2E tests (Playwright)** — 8 test files configurados, pendientes de backend.
+
+### 🟢 Baja prioridad (mejoras incrementales / polish)
+
+7. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
+8. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
+9. **Bulk actions** — Selección múltiple, exportar masivo.
+10. **Kanban board** — Vista visual alternativa a tabla.
+
+---
+
 ## Bugs conocidos
 
 ### ~~BUG-001: Material Button Colors — Color por defecto persiste~~ ✅
