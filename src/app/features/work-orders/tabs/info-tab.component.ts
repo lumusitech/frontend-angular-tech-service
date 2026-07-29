@@ -1,6 +1,6 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +16,6 @@ import { ServiceType } from '../../../core/models/service-type.interfaces';
 import { PaginatedResponse } from '../../../core/models/dashboard.interfaces';
 import {
   WorkOrder,
-  WorkOrderPriority,
   WorkOrderLocation,
   UpdateWorkOrderDto,
 } from '../../../core/models/work-order.interfaces';
@@ -164,7 +163,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
     </div>
   `,
 })
-export class InfoTabComponent {
+export class InfoTabComponent implements OnInit {
+  private readonly http = inject(HttpClient);
   private readonly clientsService = inject(ClientsService);
 
   workOrder = input.required<WorkOrder>();
@@ -175,11 +175,7 @@ export class InfoTabComponent {
 
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
-    url: '/api/service-types',
-    params: { limit: '100' },
-  }));
-  readonly serviceTypes = computed(() => this.serviceTypesResource.value()?.data ?? []);
+  readonly serviceTypes = signal<ServiceType[]>([]);
 
   readonly editMode = signal(false);
 
@@ -194,6 +190,17 @@ export class InfoTabComponent {
   readonly filteredClients = signal<Client[]>([]);
   readonly selectedClientName = signal('');
   readonly clientSearching = signal(false);
+
+  ngOnInit(): void {
+    this.http
+      .get<PaginatedResponse<ServiceType>>('/api/service-types', {
+        params: { limit: '100' },
+        headers: new HttpHeaders({ 'X-Skip-Loading': 'true' }),
+      })
+      .subscribe({
+        next: (response) => this.serviceTypes.set(response.data ?? []),
+      });
+  }
 
   startEdit(): void {
     const wo = this.workOrder();
