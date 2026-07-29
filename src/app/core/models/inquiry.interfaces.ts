@@ -103,6 +103,7 @@ export interface ContactInquiryDto {
 }
 
 export interface InquiryFilters {
+  search?: string;
   status?: InquiryStatus;
   priority?: string;
   source?: InquirySource;

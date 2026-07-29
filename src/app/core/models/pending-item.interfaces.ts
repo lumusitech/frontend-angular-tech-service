@@ -70,6 +70,7 @@ export interface UpdatePendingItemDto {
 }
 
 export interface PendingItemFilters {
+  search?: string;
   status?: PendingItemStatus;
   priority?: PendingItemPriority;
   type?: PendingItemType;
