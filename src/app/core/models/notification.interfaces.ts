@@ -35,6 +35,7 @@ export interface AppNotification {
 }
 
 export interface NotificationFilters {
+  search?: string;
   page?: number;
   limit?: number;
   sortBy?: string;

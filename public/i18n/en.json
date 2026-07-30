@@ -39,7 +39,13 @@
     "entityType": {
       "client": "Client",
       "work-order": "Work Order",
-      "supplier": "Supplier"
+      "supplier": "Supplier",
+      "service-type": "Service Type",
+      "skill": "Skill",
+      "inquiry": "Inquiry",
+      "expense": "Expense",
+      "pending-item": "Pending",
+      "notification": "Notification"
     },
     "toast": {
       "created": "Created successfully",

@@ -24,10 +24,10 @@ interface LanguageOption {
     <header
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
     >
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4 min-w-0">
         <button
           (click)="toggleSidebar.emit()"
-          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden cursor-pointer"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden cursor-pointer shrink-0"
         >
           <svg
             class="w-5 h-5 text-gray-600 dark:text-gray-400"
@@ -44,7 +44,7 @@ interface LanguageOption {
           </svg>
         </button>
 
-        <div class="hidden md:block">
+        <div class="hidden md:block ml-2">
           <app-global-search />
         </div>
 

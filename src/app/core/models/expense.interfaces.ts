@@ -41,6 +41,7 @@ export interface UpdateExpenseDto {
 }
 
 export interface ExpenseFilters {
+  search?: string;
   category?: ExpenseCategory;
   isRecurring?: boolean;
   startDate?: string;
