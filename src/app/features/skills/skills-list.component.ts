@@ -1,5 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { SkillsService } from '../../core/services/skills.service';
 import { Skill } from '../../core/models/skill.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
@@ -174,7 +175,7 @@ import { TranslationService } from '../../core/services/translation.service';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" [class.highlight-pulse]="highlightedId() === row.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
           </table>
 
           <mat-paginator
@@ -189,8 +190,9 @@ import { TranslationService } from '../../core/services/translation.service';
     </div>
   `,
 })
-export class SkillsListComponent {
+export class SkillsListComponent implements OnInit {
   private readonly skillsService = inject(SkillsService);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   private readonly translationService = inject(TranslationService);
   private readonly toastService = inject(ToastService);
@@ -201,6 +203,7 @@ export class SkillsListComponent {
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly searchFilter = signal('');
   readonly categoryFilter = signal('');
+  readonly highlightedId = signal<string | null>(null);
 
   readonly skillsResource = httpResource<PaginatedResponse<Skill>>(() => ({
     url: '/api/skills',
@@ -231,6 +234,15 @@ export class SkillsListComponent {
   clearFilters(): void {
     this.searchFilter.set('');
     this.categoryFilter.set('');
+    this.highlightedId.set(null);
+  }
+
+  ngOnInit(): void {
+    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+    if (highlightId) {
+      this.highlightedId.set(highlightId);
+      setTimeout(() => this.highlightedId.set(null), 3000);
+    }
   }
 
   getInputValue(event: Event): string {

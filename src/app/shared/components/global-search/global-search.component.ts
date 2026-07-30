@@ -17,6 +17,14 @@ const ENTITY_ORDER: Record<string, number> = {
   notification: 8,
 };
 
+const LIST_RESULT_TYPES: SearchResult['type'][] = [
+  'supplier',
+  'service-type',
+  'skill',
+  'expense',
+  'pending-item',
+];
+
 @Component({
   selector: 'app-global-search',
   imports: [
@@ -44,19 +52,23 @@ const ENTITY_ORDER: Record<string, number> = {
         }
       </div>
 
-      @if (isOpen() && (searchService.results().length > 0 || searchService.loading() || query().length >= 2)) {
+      @if (isOpen() && query().length >= 2) {
         <div
           class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-96 max-w-[calc(100vw-2rem)]"
         >
-          @if (searchService.loading()) {
-            <div class="flex items-center justify-center p-4">
-              <mat-spinner diameter="24" />
-            </div>
-          } @else if (searchService.results().length === 0 && query().length >= 2) {
-            <div class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-              {{ 'common.noResults' | translate }}
-            </div>
-          } @else {
+          <div
+            [class.hidden]="!(searchService.loading() && searchService.results().length === 0)"
+            class="flex items-center justify-center p-4"
+          >
+            <mat-spinner diameter="24" />
+          </div>
+          <div
+            [class.hidden]="searchService.results().length > 0 || searchService.loading()"
+            class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm"
+          >
+            {{ 'common.noResults' | translate }}
+          </div>
+          <div [class.hidden]="searchService.results().length === 0">
             @for (group of groupedResults(); track group.type) {
               <div
                 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700/50"
@@ -84,7 +96,7 @@ const ENTITY_ORDER: Record<string, number> = {
                 </button>
               }
             }
-          }
+          </div>
         </div>
       }
     </div>
@@ -137,6 +149,11 @@ export class GlobalSearchComponent {
   navigateTo(result: SearchResult): void {
     this.isOpen.set(false);
     this.clear();
-    this.router.navigate([result.route]);
+
+    if (LIST_RESULT_TYPES.includes(result.type)) {
+      this.router.navigate([result.route], { queryParams: { highlight: result.id } });
+    } else {
+      this.router.navigate([result.route]);
+    }
   }
 }
