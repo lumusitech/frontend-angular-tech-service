@@ -14,15 +14,15 @@ export class TranslationService {
   }
 
   async loadLocale(locale: string): Promise<void> {
-    if (typeof window === 'undefined') return;
-
     const cached = this.cache.get(locale);
     if (cached) {
       this.translations.set(cached);
       this.locale.set(locale);
-      try {
-        localStorage.setItem('locale', locale);
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('locale', locale);
+        } catch {}
+      }
       return;
     }
 
@@ -31,21 +31,47 @@ export class TranslationService {
 
   private async doLoad(locale: string): Promise<void> {
     try {
-      const response = await fetch(`/i18n/${locale}.json`);
-      if (!response.ok) {
-        console.warn(`Translation file not found: ${locale}`);
-        return;
+      let data: Record<string, unknown> | null = null;
+
+      if (typeof window === 'undefined') {
+        const loadModule = new Function('specifier', 'return import(specifier)');
+        const fs = await loadModule('fs');
+        const path = await loadModule('path');
+        const root = process.cwd();
+        const candidates = [
+          path.join(root, 'public', 'i18n', `${locale}.json`),
+          path.join(root, 'dist', 'browser', 'i18n', `${locale}.json`),
+        ];
+        for (const filePath of candidates) {
+          if (fs.existsSync(filePath)) {
+            data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            break;
+          }
+        }
+      } else {
+        const response = await fetch(`/i18n/${locale}.json`);
+        if (!response.ok) {
+          console.warn(`Translation file not found: ${locale}`);
+          return;
+        }
+        data = (await response.json()) as Record<string, unknown>;
       }
-      const data = (await response.json()) as Record<string, unknown>;
+
+      if (!data) return;
+
       this.cache.set(locale, data);
       this.translations.set(data);
       this.locale.set(locale);
 
-      try {
-        localStorage.setItem('locale', locale);
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('locale', locale);
+        } catch {}
+      }
     } catch (err) {
-      console.warn(`Failed to load translations for ${locale}`, err);
+      if (typeof window !== 'undefined') {
+        console.warn(`Failed to load translations for ${locale}`, err);
+      }
     }
   }
 
