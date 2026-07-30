@@ -1,6 +1,7 @@
 import { Service, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { UsersService } from './users.service';
 import { ClientsService } from './clients.service';
 import { WorkOrdersService } from './work-orders.service';
 import { SuppliersService } from './suppliers.service';
@@ -10,6 +11,7 @@ import { InquiriesService } from './inquiries.service';
 import { ExpensesService } from './expenses.service';
 import { PendingItemsService } from './pending-items.service';
 import { NotificationsService } from './notifications.service';
+import { User } from '../models/user.interfaces';
 import { Client } from '../models/client.interfaces';
 import { WorkOrder } from '../models/work-order.interfaces';
 import { Supplier } from '../models/supplier.interfaces';
@@ -22,7 +24,7 @@ import { AppNotification } from '../models/notification.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 
 export interface SearchResult {
-  type: 'client' | 'work-order' | 'supplier' | 'service-type' | 'skill' | 'inquiry' | 'expense' | 'pending-item' | 'notification';
+  type: 'user' | 'client' | 'work-order' | 'supplier' | 'service-type' | 'skill' | 'inquiry' | 'expense' | 'pending-item' | 'notification';
   id: string;
   title: string;
   subtitle: string;
@@ -32,6 +34,7 @@ export interface SearchResult {
 
 @Service()
 export class GlobalSearchService {
+  private readonly usersService = inject(UsersService);
   private readonly clientsService = inject(ClientsService);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly suppliersService = inject(SuppliersService);
@@ -55,6 +58,9 @@ export class GlobalSearchService {
     this.loading.set(true);
 
     forkJoin({
+      users: this.usersService.getAll({ search: query, limit: 3 }).pipe(
+        catchError(() => of({ data: [], total: 0, page: 1, limit: 3, totalPages: 0 })),
+      ),
       clients: this.clientsService.getAll({ search: query, limit: 3 }).pipe(
         catchError(() => of({ data: [], total: 0, page: 1, limit: 3, totalPages: 0 })),
       ),
@@ -82,8 +88,16 @@ export class GlobalSearchService {
       notifications: this.notificationsService.getAll({ search: query, limit: 3 }).pipe(
         catchError(() => of({ data: [], total: 0, page: 1, limit: 3, totalPages: 0 })),
       ),
-    }).subscribe(({ clients, workOrders, suppliers, serviceTypes, skills, inquiries, expenses, pendingItems, notifications }) => {
+    }).subscribe(({ users, clients, workOrders, suppliers, serviceTypes, skills, inquiries, expenses, pendingItems, notifications }) => {
       const results: SearchResult[] = [
+        ...users.data.map((u: User) => ({
+          type: 'user' as const,
+          id: u.id,
+          title: u.name,
+          subtitle: `${u.email} — ${u.role}`,
+          icon: u.role === 'technician' ? 'engineering' : u.role === 'seller' ? 'badge' : 'person',
+          route: `/admin/users/${u.id}`,
+        })),
         ...clients.data.map((c: Client) => ({
           type: 'client' as const,
           id: c.id,

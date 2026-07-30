@@ -12,6 +12,7 @@ export class UsersService {
   getAll(filters?: UserFilters): Observable<PaginatedResponse<User>> {
     let params = new HttpParams();
 
+    if (filters?.search) params = params.set('search', filters.search);
     if (filters?.role) params = params.set('role', filters.role);
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());

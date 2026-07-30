@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { EMPTY, of, throwError } from 'rxjs';
 import { GlobalSearchService } from './global-search.service';
+import { UsersService } from './users.service';
 import { ClientsService } from './clients.service';
 import { WorkOrdersService } from './work-orders.service';
 import { SuppliersService } from './suppliers.service';
@@ -12,6 +13,7 @@ import { PendingItemsService } from './pending-items.service';
 import { NotificationsService } from './notifications.service';
 
 interface Mocks {
+  usersGetAll: ReturnType<typeof vi.fn>;
   clientsGetAll: ReturnType<typeof vi.fn>;
   workOrdersGetAll: ReturnType<typeof vi.fn>;
   suppliersGetAll: ReturnType<typeof vi.fn>;
@@ -32,6 +34,7 @@ describe('GlobalSearchService', () => {
   const mocks: Mocks = {} as Mocks;
 
   beforeEach(() => {
+    mocks.usersGetAll = vi.fn();
     mocks.clientsGetAll = vi.fn();
     mocks.workOrdersGetAll = vi.fn();
     mocks.suppliersGetAll = vi.fn();
@@ -45,6 +48,7 @@ describe('GlobalSearchService', () => {
     TestBed.configureTestingModule({
       providers: [
         GlobalSearchService,
+        { provide: UsersService, useValue: { getAll: mocks.usersGetAll } },
         { provide: ClientsService, useValue: { getAll: mocks.clientsGetAll } },
         { provide: WorkOrdersService, useValue: { getAll: mocks.workOrdersGetAll } },
         { provide: SuppliersService, useValue: { getAll: mocks.suppliersGetAll } },
@@ -78,6 +82,7 @@ describe('GlobalSearchService', () => {
     });
 
     it('should set loading to true during search', () => {
+      mocks.usersGetAll.mockReturnValue(EMPTY);
       mocks.clientsGetAll.mockReturnValue(EMPTY);
       mocks.workOrdersGetAll.mockReturnValue(EMPTY);
       mocks.suppliersGetAll.mockReturnValue(EMPTY);
@@ -94,6 +99,7 @@ describe('GlobalSearchService', () => {
 
     it('should map a client result correctly', () => {
       const mockClient = { id: 'c1', name: 'Juan Pérez', email: 'juan@test.com', phone: null };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([mockClient]));
       mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
@@ -123,6 +129,7 @@ describe('GlobalSearchService', () => {
         client: { name: 'Juan' },
         serviceType: { name: 'Reparación' },
       };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([]));
       mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([mockWO]));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
@@ -146,6 +153,7 @@ describe('GlobalSearchService', () => {
 
     it('should map a supplier result correctly', () => {
       const mockSupplier = { id: 's1', name: 'Proveedor SA', contact: 'Miguel', email: null };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([]));
       mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([mockSupplier]));
@@ -167,6 +175,7 @@ describe('GlobalSearchService', () => {
 
     it('should map an expense result with formatted amount', () => {
       const mockExpense = { id: 'e1', description: 'Compra de herramientas', amount: 150.5 };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([]));
       mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
@@ -187,6 +196,7 @@ describe('GlobalSearchService', () => {
 
     it('should handle error on one entity without breaking others', () => {
       const mockClient = { id: 'c1', name: 'Juan', email: null, phone: null };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([mockClient]));
       mocks.workOrdersGetAll.mockReturnValue(throwError(() => new Error('Server error')));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
@@ -206,6 +216,7 @@ describe('GlobalSearchService', () => {
     });
 
     it('should handle all entities erroring', () => {
+      mocks.usersGetAll.mockReturnValue(throwError(() => new Error('fail')));
       mocks.clientsGetAll.mockReturnValue(throwError(() => new Error('fail')));
       mocks.workOrdersGetAll.mockReturnValue(throwError(() => new Error('fail')));
       mocks.suppliersGetAll.mockReturnValue(throwError(() => new Error('fail')));
@@ -226,6 +237,7 @@ describe('GlobalSearchService', () => {
   describe('clear()', () => {
     it('should clear results and loading', () => {
       const mockClient = { id: 'c1', name: 'A', email: null, phone: null };
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.clientsGetAll.mockReturnValue(paginatedResponse([mockClient]));
       mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
       mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));

@@ -48,6 +48,7 @@ export interface UpdateUserDto {
 
 export interface UserFilters {
   role?: User['role'];
+  search?: string;
   page?: number;
   limit?: number;
 }
