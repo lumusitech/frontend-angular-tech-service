@@ -1,5 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs/operators';
 import { httpResource } from '@angular/common/http';
 import { UsersService } from '../../core/services/users.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -105,6 +107,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         <mat-accordion class="block md:hidden">
           @for (user of usersResource.value().data; track user.id) {
             <app-mobile-card
+              [class.highlight-pulse]="user.id === highlightedId()"
               [title]="user.name"
               [status]="user.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
               [statusType]="$any('activeInactive')"
@@ -202,7 +205,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" [class.highlight-pulse]="highlightedId() === row.id"></tr>
           </table>
 
           <mat-paginator
@@ -223,13 +226,18 @@ export class UsersListComponent {
   private readonly toastService = inject(ToastService);
   readonly translationService = inject(TranslationService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
   readonly sortBy = signal('createdAt');
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
-  readonly searchFilter = signal('');
+  readonly searchFilter = signal<string>(this.route.snapshot.queryParamMap.get('search') ?? '');
   readonly roleFilter = signal('');
+  readonly clearHighlight = signal(!this.route.snapshot.queryParamMap.has('highlight'));
+  readonly currentPath = signal(this.router.url);
+  readonly routeHighlight = signal<string | null>(this.route.snapshot.queryParamMap.get('highlight'));
 
   readonly usersResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users',
@@ -238,9 +246,45 @@ export class UsersListComponent {
       limit: this.pageSize(),
       sortBy: this.sortBy(),
       order: this.sortOrder().toUpperCase(),
+      ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
       ...(this.roleFilter() ? { role: this.roleFilter() } : {}),
     },
   }));
+
+  readonly highlightedId = computed(() => {
+    const target = this.routeHighlight();
+    if (!target || this.clearHighlight()) return null;
+    const data = this.usersResource.value();
+    if (!data || this.usersResource.isLoading()) return null;
+    return data.data.find((row) => row.id === target)?.id ?? null;
+  });
+
+  constructor() {
+    if (this.routeHighlight()) {
+      this.clearHighlight.set(false);
+      setTimeout(() => this.clearHighlight.set(true), 3000);
+    }
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        const previousPath = this.currentPath().split('?')[0];
+        const newPath = this.router.url.split('?')[0];
+        const cameFromOutside = previousPath !== newPath;
+        this.currentPath.set(this.router.url);
+        this.searchFilter.set(this.route.snapshot.queryParamMap.get('search') ?? '');
+        const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+        this.routeHighlight.set(highlightId);
+        if (highlightId && cameFromOutside) {
+          this.clearHighlight.set(false);
+          setTimeout(() => this.clearHighlight.set(true), 3000);
+        } else if (highlightId) {
+          this.clearHighlight.set(true);
+        }
+      });
+  }
 
   displayedColumns = ['name', 'email', 'phone', 'role', 'isActive', 'createdAt', 'actions'];
 
@@ -251,6 +295,8 @@ export class UsersListComponent {
   clearFilters(): void {
     this.searchFilter.set('');
     this.roleFilter.set('');
+    this.clearHighlight.set(true);
+    this.router.navigate(['/admin/users']);
   }
 
   getInputValue(event: Event): string {

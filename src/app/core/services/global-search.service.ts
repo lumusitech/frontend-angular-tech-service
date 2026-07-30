@@ -96,7 +96,7 @@ export class GlobalSearchService {
           title: u.name,
           subtitle: `${u.email} — ${u.role}`,
           icon: u.role === 'technician' ? 'engineering' : u.role === 'seller' ? 'badge' : 'person',
-          route: `/admin/users/${u.id}`,
+          route: `/admin/users`,
         })),
         ...clients.data.map((c: Client) => ({
           type: 'client' as const,
