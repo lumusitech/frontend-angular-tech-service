@@ -19,7 +19,14 @@ interface LanguageOption {
 
 @Component({
   selector: 'app-header',
-  imports: [TranslatePipe, UpperCasePipe, MatMenuModule, MatButtonModule, MatIconModule, GlobalSearchComponent],
+  imports: [
+    TranslatePipe,
+    UpperCasePipe,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule,
+    GlobalSearchComponent,
+  ],
   template: `
     <header
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 h-16 flex items-center justify-between"
@@ -44,10 +51,7 @@ interface LanguageOption {
           </svg>
         </button>
 
-        <div class="hidden md:block ml-2">
-          <app-global-search />
-        </div>
-
+        <app-global-search />
       </div>
 
       <div class="flex items-center gap-3">
@@ -107,15 +111,25 @@ interface LanguageOption {
         >
           <mat-icon>notifications</mat-icon>
           @if (notificationsService.unreadCount() > 0) {
-            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              {{ notificationsService.unreadCount() > 99 ? '99+' : notificationsService.unreadCount() }}
+            <span
+              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+            >
+              {{
+                notificationsService.unreadCount() > 99 ? '99+' : notificationsService.unreadCount()
+              }}
             </span>
           }
         </button>
 
-        <div class="flex items-center gap-2 pl-3 border-l-2" [style.border-left-color]="'var(--color-secondary)'">
+        <div
+          class="flex items-center gap-2 pl-3 border-l-2"
+          [style.border-left-color]="'var(--color-secondary)'"
+        >
           @if (authService.user()?.avatar) {
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden" [style.background-color]="'var(--color-secondary)'">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden"
+              [style.background-color]="'var(--color-secondary)'"
+            >
               @if (authService.user()!.avatar!.startsWith('data:')) {
                 <img [src]="authService.user()!.avatar" class="w-full h-full object-cover" />
               } @else {
@@ -123,7 +137,10 @@ interface LanguageOption {
               }
             </div>
           } @else {
-            <div class="w-8 h-8 rounded-full flex items-center justify-center" [style.background-color]="'var(--color-secondary)'">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center"
+              [style.background-color]="'var(--color-secondary)'"
+            >
               <span class="text-white text-sm font-medium">
                 {{ authService.user()?.name?.charAt(0) || 'U' }}
               </span>
