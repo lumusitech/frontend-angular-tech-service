@@ -1,4 +1,5 @@
 import { test as base, Page } from '@playwright/test';
+import { seed } from './seed.fixture';
 
 export const TEST_CREDENTIALS = {
   admin: { email: 'admin@test.com', password: 'admin123' },
@@ -26,7 +27,15 @@ export const test = base.extend<{
   adminPage: Page;
   techPage: Page;
   sellerPage: Page;
+  seed: void;
 }>({
+  seed: [
+    async ({}, use) => {
+      await seed();
+      await use();
+    },
+    { auto: true, scope: 'worker' },
+  ],
   adminPage: async ({ page }, use) => {
     await loginAs(page, 'admin');
     await use(page);
