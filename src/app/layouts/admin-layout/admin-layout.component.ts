@@ -35,7 +35,11 @@ import { AdminBottomNavComponent } from '../../shared/components/admin-bottom-na
           (click)="mobileSidebarOpen.set(false)"
         ></div>
         <div class="fixed inset-y-0 left-0 z-50 lg:hidden">
-          <app-sidebar [collapsed]="false" (toggleCollapse)="mobileSidebarOpen.set(false)" />
+          <app-sidebar
+            [collapsed]="false"
+            (toggleCollapse)="mobileSidebarOpen.set(false)"
+            (navigated)="mobileSidebarOpen.set(false)"
+          />
         </div>
       }
     </div>

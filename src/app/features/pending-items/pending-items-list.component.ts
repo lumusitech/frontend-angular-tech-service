@@ -35,6 +35,7 @@ import { MobileCardComponent, MobileCardField } from '../../shared/components/mo
 import { PendingItemFormComponent } from './pending-item-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 const PRIORITY_LABELS: Record<string, string> = {
   low: 'Baja',
@@ -93,6 +94,7 @@ const TYPE_LABELS: Record<string, string> = {
     ErrorStateComponent,
     PageHeaderComponent,
     MobileCardComponent,
+    MobileFilterBarComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -108,52 +110,47 @@ const TYPE_LABELS: Record<string, string> = {
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option value="">{{ 'pendingItems.filters.all' | translate }}</mat-option>
-              <mat-option value="pending">{{ 'pendingItems.statuses.pending' | translate }}</mat-option>
-              <mat-option value="in_progress">{{ 'pendingItems.statuses.inProgress' | translate }}</mat-option>
-              <mat-option value="completed">{{ 'pendingItems.statuses.completed' | translate }}</mat-option>
-              <mat-option value="cancelled">{{ 'pendingItems.statuses.cancelled' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-            <mat-select [value]="priorityFilter()" (selectionChange)="priorityFilter.set($event.value)">
-              <mat-option value="">{{ 'pendingItems.filters.allPriorities' | translate }}</mat-option>
-              <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{ 'pendingItems.priorities.medium' | translate }}</mat-option>
-              <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dueDateFromPicker" [value]="dueDateFromValue()" (dateChange)="onDueDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dueDateFromPicker></mat-datepicker>
-          </mat-form-field>
+          <app-mobile-filter-bar>
             <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dueDateToPicker></mat-datepicker>
-          </mat-form-field>
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+                <mat-option value="">{{ 'pendingItems.filters.all' | translate }}</mat-option>
+                <mat-option value="pending">{{ 'pendingItems.statuses.pending' | translate }}</mat-option>
+                <mat-option value="in_progress">{{ 'pendingItems.statuses.inProgress' | translate }}</mat-option>
+                <mat-option value="completed">{{ 'pendingItems.statuses.completed' | translate }}</mat-option>
+                <mat-option value="cancelled">{{ 'pendingItems.statuses.cancelled' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
+              <mat-select [value]="priorityFilter()" (selectionChange)="priorityFilter.set($event.value)">
+                <mat-option value="">{{ 'pendingItems.filters.allPriorities' | translate }}</mat-option>
+                <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
+                <mat-option value="medium">{{ 'pendingItems.priorities.medium' | translate }}</mat-option>
+                <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
+                <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dueDateFromPicker" [value]="dueDateFromValue()" (dateChange)="onDueDateFromChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dueDateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dueDateToPicker></mat-datepicker>
+            </mat-form-field>
+          </app-mobile-filter-bar>
 
           @if (fromNotification()) {
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
@@ -545,6 +542,10 @@ export class PendingItemsListComponent implements OnInit {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '' || this.fromNotification();
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.statusFilter(), this.priorityFilter(), this.dueDateFrom(), this.dueDateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');

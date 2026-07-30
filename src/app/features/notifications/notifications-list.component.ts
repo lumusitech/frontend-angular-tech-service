@@ -19,6 +19,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 const TYPE_ICONS: Record<string, string> = {
   'work_order.created': 'assignment',
@@ -80,6 +81,7 @@ const TYPE_COLORS: Record<string, string> = {
     PageHeaderComponent,
     TranslatePipe,
     RelativeDatePipe,
+    MobileFilterBarComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -98,6 +100,7 @@ const TYPE_COLORS: Record<string, string> = {
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
           <mat-button-toggle-group
             [value]="readFilter()"
             (change)="onFilterChange($event.value)"
@@ -137,13 +140,7 @@ const TYPE_COLORS: Record<string, string> = {
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
           </mat-form-field>
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+          </app-mobile-filter-bar>
         </div>
       </div>
 
@@ -255,6 +252,10 @@ export class NotificationsListComponent {
   readonly hasActiveFilters = computed(() => {
     return this.readFilter() !== 'all' || this.typeFilter() !== '' || this.searchFilter() !== '';
   });
+
+  readonly filterVersion = computed(() =>
+    [this.readFilter(), this.typeFilter(), this.searchFilter()].join('|'),
+  );
 
   clearFilters(): void {
     this.readFilter.set('all');

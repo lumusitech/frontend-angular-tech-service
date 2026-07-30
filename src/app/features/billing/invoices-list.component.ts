@@ -29,6 +29,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { InvoiceFormComponent } from './invoice-form.component';
 import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 @Component({
   selector: 'app-invoices-list',
@@ -53,6 +54,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
     StatusBadgeComponent,
     CurrencyArsPipe,
     MobileCardComponent,
+    MobileFilterBarComponent,
     DateFieldSelectorComponent,
     TranslatePipe,
     RelativeDatePipe,
@@ -69,66 +71,61 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option value="">{{ 'billing.filters.allStatuses' | translate }}</mat-option>
-              <mat-option value="draft">{{ 'billing.statuses.draft' | translate }}</mat-option>
-              <mat-option value="issued">{{ 'billing.statuses.issued' | translate }}</mat-option>
-              <mat-option value="cancelled">{{ 'billing.statuses.cancelled' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <app-mobile-filter-bar>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+                <mat-option value="">{{ 'billing.filters.allStatuses' | translate }}</mat-option>
+                <mat-option value="draft">{{ 'billing.statuses.draft' | translate }}</mat-option>
+                <mat-option value="issued">{{ 'billing.statuses.issued' | translate }}</mat-option>
+                <mat-option value="cancelled">{{ 'billing.statuses.cancelled' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
-            <mat-select [value]="typeFilter()" (selectionChange)="typeFilter.set($event.value)">
-              <mat-option value="">{{ 'billing.filters.allTypes' | translate }}</mat-option>
-              <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
-              <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
-              <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'billing.invoiceType' | translate }}</mat-label>
+              <mat-select [value]="typeFilter()" (selectionChange)="typeFilter.set($event.value)">
+                <mat-option value="">{{ 'billing.filters.allTypes' | translate }}</mat-option>
+                <mat-option value="A">{{ 'billing.types.A' | translate }}</mat-option>
+                <mat-option value="B">{{ 'billing.types.B' | translate }}</mat-option>
+                <mat-option value="C">{{ 'billing.types.C' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="clientNameFilter()"
-              (input)="clientNameFilter.set(getInputValue($event))"
-              [placeholder]="'common.search' | translate"
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'billing.clientName' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="clientNameFilter()"
+                (input)="clientNameFilter.set(getInputValue($event))"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
+
+            <app-date-field-selector
+              [fields]="dateFieldOptions"
+              [value]="dateField()"
+              (valueChange)="onDateFieldChange($event)"
             />
-          </mat-form-field>
 
-          <app-date-field-selector
-            [fields]="dateFieldOptions"
-            [value]="dateField()"
-            (valueChange)="onDateFieldChange($event)"
-          />
-
-          <mat-form-field appearance="outline" class="w-44"
-            [class.mat-form-field-invalid]="dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-44"
-            [class.mat-form-field-invalid]="dateError()">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-            @if (dateError()) {
-              <mat-error>{{ dateError() | translate }}</mat-error>
-            }
-          </mat-form-field>
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+            <mat-form-field appearance="outline" class="w-44"
+              [class.mat-form-field-invalid]="dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44"
+              [class.mat-form-field-invalid]="dateError()">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+              @if (dateError()) {
+                <mat-error>{{ dateError() | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </app-mobile-filter-bar>
         </div>
       </div>
 
@@ -289,6 +286,10 @@ export class InvoicesListComponent {
   readonly hasActiveFilters = computed(() => {
     return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
+
+  readonly filterVersion = computed(() =>
+    [this.statusFilter(), this.typeFilter(), this.clientNameFilter(), this.dateFrom(), this.dateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.statusFilter.set('');

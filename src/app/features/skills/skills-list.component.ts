@@ -25,6 +25,7 @@ import { MobileCardComponent, MobileCardField } from '../../shared/components/mo
 import { SkillFormComponent } from './skill-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 
@@ -47,6 +48,7 @@ import { TranslationService } from '../../core/services/translation.service';
     ErrorStateComponent,
     PageHeaderComponent,
     MobileCardComponent,
+    MobileFilterBarComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -62,6 +64,7 @@ import { TranslationService } from '../../core/services/translation.service';
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
@@ -76,13 +79,7 @@ import { TranslationService } from '../../core/services/translation.service';
               }
             </mat-select>
           </mat-form-field>
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+          </app-mobile-filter-bar>
         </div>
       </div>
 
@@ -234,6 +231,10 @@ export class SkillsListComponent implements OnInit {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.categoryFilter() !== '';
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.categoryFilter()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');

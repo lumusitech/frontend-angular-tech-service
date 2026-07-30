@@ -33,6 +33,7 @@ import { MobileCardComponent, MobileCardField } from '../../shared/components/mo
 import { InquiryFormComponent } from './inquiry-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'text-blue-400 bg-blue-500/15',
@@ -63,6 +64,7 @@ const STATUS_COLORS: Record<string, string> = {
     ErrorStateComponent,
     PageHeaderComponent,
     MobileCardComponent,
+    MobileFilterBarComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -78,6 +80,7 @@ const STATUS_COLORS: Record<string, string> = {
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
@@ -122,12 +125,7 @@ const STATUS_COLORS: Record<string, string> = {
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
 
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+          </app-mobile-filter-bar>
 
           @if (fromNotification()) {
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
@@ -474,6 +472,10 @@ export class InquiriesListComponent implements OnInit {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.statusFilter() !== '' || this.sourceFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.statusFilter(), this.sourceFilter(), this.dateFrom(), this.dateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');
