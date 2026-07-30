@@ -1,9 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkOrdersListComponent } from './work-orders-list.component';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { of } from 'rxjs';
+
+function createActivatedRouteMock(queryParams: Record<string, string | null> = {}) {
+  return {
+    snapshot: {
+      queryParamMap: convertToParamMap(queryParams),
+    },
+    queryParamMap: of(convertToParamMap(queryParams)),
+  };
+}
 
 describe('WorkOrdersListComponent - Date Filtering', () => {
   let component: WorkOrdersListComponent;
@@ -15,7 +25,7 @@ describe('WorkOrdersListComponent - Date Filtering', () => {
       providers: [
         { provide: WorkOrdersService, useValue: {} },
         { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((k: string) => k) } },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: vi.fn().mockReturnValue(null) } } } },
+        { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
         { provide: MatDialog, useValue: { open: vi.fn() } },
       ],
     });

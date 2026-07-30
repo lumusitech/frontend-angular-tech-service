@@ -1,10 +1,22 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
+import { BusinessSettingsService } from './core/services/business-settings.service';
 
 describe('App', () => {
+  const businessSettingsMock = {
+    settings: signal({ primaryColor: '#1E40AF', secondaryColor: '#059669' }),
+  };
+
   beforeEach(async () => {
+    TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        provideRouter([]),
+        { provide: BusinessSettingsService, useValue: businessSettingsMock },
+      ],
     }).compileComponents();
   });
 
@@ -14,10 +26,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render router-outlet', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frontend-angular-tech-service');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

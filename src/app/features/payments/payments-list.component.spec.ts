@@ -1,11 +1,21 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentsListComponent } from './payments-list.component';
 import { PaymentsService } from '../../core/services/payments.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { of } from 'rxjs';
+
+function createActivatedRouteMock(queryParams: Record<string, string | null> = {}) {
+  return {
+    snapshot: {
+      queryParamMap: convertToParamMap(queryParams),
+    },
+    queryParamMap: of(convertToParamMap(queryParams)),
+  };
+}
 
 describe('PaymentsListComponent - Date Filtering', () => {
   let component: PaymentsListComponent;
@@ -18,7 +28,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
         { provide: PaymentsService, useValue: {} },
         { provide: ToastService, useValue: { show: vi.fn() } },
         { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((k: string) => k) } },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: vi.fn().mockReturnValue(null) } } } },
+        { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
         { provide: MatDialog, useValue: { open: vi.fn() } },
       ],
     });
