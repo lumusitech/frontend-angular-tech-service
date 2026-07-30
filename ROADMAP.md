@@ -656,16 +656,16 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 
 | # | Item | Descripción | Esfuerzo |
 |---|------|-------------|----------|
-| 1 | **BUG-003: Flicker en detalle de órdenes** | Al navegar al detalle, datos desaparecen y reaparecen. 8 intentos fallidos documentados en TODO.md. Afecta confianza del usuario. Punto azul visible durante el pestañeo. | Alto |
-| 2 | **Migrar 15 formularios a Signal Forms** | Viola la restricción Signals-Only del AGENTS.md. Lista completa en TODO.md. Migrar incrementalmente (3-4 por PR). | Medio |
-| 3 | **BUG-002: Datepicker border cortado** | Borde derecho del input de calendario se ve cortado en desktop. Afecta 11 componentes de lista con filtros de fecha. | Bajo |
+| 1 | ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ | ~~Al navegar al detalle, datos desaparecen y reaparecen.~~ Resuelto con `X-Skip-Loading` header | Alto |
+| 2 | ~~**Migrar 15 formularios a Signal Forms**~~ ✅ | ~~Viola la restricción Signals-Only del AGENTS.md.~~ 15/15 completado en 3 PRs | Medio |
+| 3 | ~~**BUG-002: Datepicker border cortado**~~ ✅ | ~~Borde derecho del input de calendario se ve cortado en desktop.~~ Resuelto: `w-40` → `w-44` | Bajo |
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
 | # | Item | Descripción | Esfuerzo |
 |---|------|-------------|----------|
-| 4 | **Search global desde header** | Buscar en todas las entidades desde el header. Backend ya soporta búsqueda con unaccent. UX significativamente mejorada. | Medio |
-| 5 | **Tests de componentes frontend** | 147 tests de servicios, 0 de componentes feature. Coverage gap importante. Stack: Vitest. | Medio |
+| 4 | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 9 entidades, debounce 300ms, highlight en lista. PRs #182–#186 | Medio |
+| 5 | **Tests de componentes frontend** | 470 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest. | Medio |
 | 6 | **E2E tests (Playwright)** | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy. | Medio |
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)

@@ -5,6 +5,16 @@ Frontend Angular 22 con SSR hibrido, PWA, Tailwind CSS y Angular Material.
 
 Consume la API del backend NestJS. Documentacion interactiva: `http://localhost:3000/api/docs`
 
+## Features principales
+
+- **Search global en el header** — Buscar en 9 entidades (clientes, órdenes, proveedores, skills, consultas, gastos, pendientes, notificaciones) con un solo input. Navega al resultado con highlight automático.
+- **Dashboard y reportes** — KPIs, gráficos, drill-down por cliente y técnico, exportación a PDF.
+- **CRUD completo** — Clientes, proveedores, tipos de servicio, órdenes de trabajo, pagos, gastos, facturación.
+- **Tracking público** — Portal SSR para que clientes consulten el estado de su orden sin login.
+- **PWA** — Instalable en mobile, service worker, push notifications.
+- **Multi-tenant** — Logo, nombre y colores configurables por el admin.
+- **i18n** — Español (default) + Inglés, custom JSON + TranslatePipe.
+
 ## Stack
 
 | Capa          | Tecnologia             | Detalle                                                |
@@ -15,7 +25,7 @@ Consume la API del backend NestJS. Documentacion interactiva: `http://localhost:
 | Styling       | Tailwind CSS 4         | Utility-first, mobile-first (primario)                 |
 | UI Components | Angular Material 22    | Dialog, Table, Autocomplete, Sidenav (sin tema custom) |
 | Charts        | Chart.js + ng2-charts  | Line, bar, donut, pie                                  |
-| Testing       | Vitest                 | Unit tests                                             |
+| Testing       | Vitest                 | 470 tests pasando (25 archivos, 100% pass rate)        |
 | i18n          | Custom JSON + TranslatePipe | ES (default) + EN, archivos en public/i18n/       |
 | Fonts         | Inter + JetBrains Mono | Google Fonts                                           |
 
@@ -213,6 +223,36 @@ pnpm sync:types
 ```
 
 Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del backend desde el spec OpenAPI.
+
+## Search global
+
+El header tiene un buscador con debounce de 300ms que consulta en paralelo 9 entidades del backend
+(clients, work-orders, suppliers, service-types, skills, inquiries, expenses, pending-items, notifications)
+usando `forkJoin`. Los resultados se agrupan por tipo con iconos y un dropdown que:
+
+- **Sin flicker ni blur global:** el `loadingInterceptor` salta el overlay global cuando detecta
+  el patrón único del search (`?search=*&limit=3`).
+- **Resalta la fila destino:** al hacer click en un resultado de tipo lista (supplier, service-type, skill,
+  expense, pending-item), navega con `?highlight=ID&search=title` y la fila se anima con `highlight-pulse`.
+- **Reactivo a cambios de query params:** los list components usan `toSignal(route.queryParamMap) + effect()`
+  para detectar la navegación, no solo `ngOnInit`.
+
+Componentes y servicios principales:
+
+- `src/app/core/services/global-search.service.ts` — orquesta los 9 requests, mapea resultados
+- `src/app/shared/components/global-search/global-search.component.ts` — UI del buscador
+- `src/app/core/interceptors/loading.interceptor.ts` — skip loading para search
+
+## Testing
+
+```bash
+pnpm test                # Vitest, 470 tests pasando
+```
+
+- **470 tests** en 25 archivos, 100% pass rate
+- Patrón: `TestBed.configureTestingModule()` con `useValue` providers (sin `vi.mock()`)
+- Signals se mockean con `signal()` reales compartidos
+- `ActivatedRoute` se mockea con `convertToParamMap()` + `of(...)` para compatibilidad con `toSignal`
 
 ## Viewport units (mobile-first)
 

@@ -53,9 +53,20 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-## Últimas features implementadas (22/07/2026)
+## Últimas features implementadas (30/07/2026)
 
-- Notificaciones en tiempo real: toast directo desde WebsocketService (sin effect)
+### Search global desde header (PRs #182–#186, #188)
+- Buscador global en el header con debounce de 300ms
+- Busca en 9 entidades: clients, work-orders, suppliers, service-types, skills, inquiries, expenses, pending-items, notifications
+- Resultados agrupados por tipo de entidad con iconos
+- Dropdown con animación suave (sin flicker, sin blur global)
+- Navegación directa: detail page o lista con `?highlight=ID&search=title` para resaltar fila
+- Filtros `search` agregados a 4 servicios (inquiries, expenses, pending-items, notifications) que no lo tenían
+- 9 list components migrados de `route.snapshot` a `toSignal(route.queryParamMap) + effect()` para reaccionar a cambios de query params
+- `loadingInterceptor` salta el overlay global cuando la request tiene `search` + `limit=3`
+- 23 tests nuevos (service + component)
+
+### Notificaciones en tiempo real (22/07/2026)
 - Conexión WebSocket en layouts via afterNextRender (solo browser)
 - Proxy /socket.io para conexión LAN desde celular
 - Auto-refresh de lista de notificaciones al recibir nuevas vía WebSocket (refreshCounter)
@@ -77,8 +88,8 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
-4. **Search global desde header** — Backend listo, solo frontend.
-5. **Tests de componentes** — 147 tests de servicios, 0 de componentes feature.
+4. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188.
+5. **Tests de componentes** — 470 tests pasando (147 services + 323 components/pipes/directors/guards/interceptors). Siguiente: cubrir más componentes feature.
 6. **E2E tests (Playwright)** — 8 test files configurados, pendientes de backend.
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
@@ -215,26 +226,56 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 **Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo.
 
-**Estado actual:** 147 tests pasando en 6 servicios prioritarios (cobertura ~60% de services).
+**Estado actual:** 470 tests pasando (25 archivos de test, 100% passing).
 
 **Stack:** Vitest (configurado), Playwright (E2E)
-**Orden:** ~~Service tests~~ ✅ → Component tests (pendiente) → E2E tests (pendiente)
+**Orden:** ~~Service tests~~ ✅ → ~~Component tests (parcial)~~ ✅ → E2E tests (pendiente)
 
-**Servicios testeados:**
-- ~~auth.service.spec.ts~~ ✅ (39 tests — login, logout, token, roles, localStorage, edge cases)
-- ~~clients.service.spec.ts~~ ✅ (18 tests — CRUD, filtros, edge cases)
-- ~~work-orders.service.spec.ts~~ ✅ (27 tests — CRUD, notes, materials, tasks, technicians)
-- ~~billing.service.spec.ts~~ ✅ (18 tests — CRUD, issue, cancel, PDF, edge cases)
-- ~~reports.service.spec.ts~~ ✅ (23 tests — summary, income, expenses, profit, services, technicians, clients)
-- ~~notifications.service.spec.ts~~ ✅ (21 tests — CRUD, unreadCount signal, markAsRead, markAllAsRead)
+**Servicios testeados (147 tests, 6 archivos):**
+- ~~auth.service.spec.ts~~ ✅ (39 tests)
+- ~~clients.service.spec.ts~~ ✅ (18 tests)
+- ~~work-orders.service.spec.ts~~ ✅ (27 tests)
+- ~~billing.service.spec.ts~~ ✅ (18 tests)
+- ~~reports.service.spec.ts~~ ✅ (23 tests)
+- ~~notifications.service.spec.ts~~ ✅ (21 tests)
+- ~~global-search.service.spec.ts~~ ✅ (11 tests, nuevo)
+
+**Componentes / pipes / directives / guards / interceptors (323 tests, 19 archivos):**
+- App, status-badge, copy-to-clipboard directive, role directive
+- Pipes: currency-ars, relative-date, status-class, status-label
+- Guards: auth.guard
+- Interceptors: auth.interceptor
+- List components: clients, payments, work-orders (date filtering), invoices, dashboard
+- Nuevos: global-search.component (12 tests)
+
+**Pendiente:**
+- Cubrir más list components con tests de integración (no solo unit)
+- Tests de formulario (Signal Forms validation, submit handlers)
+- Tests de WebSocket service
+- Tests de httpResource components con `provideHttpClientTesting`
 
 ---
 
-### 10. Search global
+### ~~10. Search global desde header~~ ✅
 
-**Valor:** Buscar en todas las entidades desde el header. UX significantly improved.
+**Valor:** Buscar en todas las entidades desde el header. UX significativamente mejorada.
 
-**Estado:** Pendiente
+**Implementación (PRs #182–#186, #188):**
+
+| PR | Qué agregó |
+|----|------------|
+| #182 | Componente base: 3 entidades (clients, work-orders, suppliers), dropdown con resultados |
+| #183 | 9 entidades + UI compacta + grouped results + help tooltip con entidades |
+| #184 | UI fixes: ancho + placeholder + búsqueda en 4 servicios que no la pasaban |
+| #185 | Highlight en tabla al navegar + `toSignal+effect` reactivo en 9 list components |
+| #186 | Skip loading global para search + removido spinner del dropdown + merge |
+| #188 | Fix mocks de `ActivatedRoute` en tests rotos (clients, payments, work-orders) |
+
+**Entidades buscables (9):**
+- `client`, `work-order` (detail page) + `supplier`, `service-type`, `skill`, `expense`, `pending-item` (list page con `?highlight=ID&search=title`)
+- `inquiry` (detail page) + `notification` (list page sin highlight, no aplica)
+
+**Patrón clave:** el `GlobalSearchService` hace `forkJoin` de 9 requests en paralelo con `catchError` por cada una. El `loadingInterceptor` salta el loading global cuando la URL tiene `?search=*&limit=3` (combinación única del global search).
 
 ---
 
@@ -336,6 +377,8 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - [x] Mobile UI (cards expandibles, swipe gestures, copy-to-clipboard, accordion, tel:/mailto:/maps:)
 - [x] Sidebar mobile overlay (w-60, fixed positioning, backdrop)
 - [x] Dialog transparency fix (backgrounds sólidos en dark mode)
+- [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
+- [x] Tests de componentes (470 tests pasando, 100% pass rate) — incluye global-search (23 tests)
 
 ## Archivos de referencia útiles
 
