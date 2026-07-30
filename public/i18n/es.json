@@ -35,7 +35,7 @@
     "copied": "Copiado al portapapeles",
     "copyToClipboard": "Copiar",
     "copyError": "Error al copiar",
-    "globalSearch": "Buscar clientes, órdenes, proveedores...",
+    "globalSearch": "Buscar clientes, órdenes, proveedores, tipos de servicio, skills, consultas, gastos, pendientes, notificaciones...",
     "entityType": {
       "client": "Cliente",
       "work-order": "Orden",

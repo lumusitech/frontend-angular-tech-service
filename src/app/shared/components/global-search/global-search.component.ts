@@ -25,11 +25,11 @@ const ENTITY_ORDER: Record<string, number> = {
     TranslatePipe,
   ],
   template: `
-    <div class="relative w-80">
+    <div class="relative w-[42rem] max-w-full">
       <div
         class="flex items-center gap-2 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all"
       >
-        <mat-icon class="!text-gray-400 !text-[20px] shrink-0">search</mat-icon>
+        <mat-icon class="!text-gray-400 !text-[20px] shrink-0 self-center !mt-0.5">search</mat-icon>
         <input
           class="flex-1 bg-transparent text-sm text-gray-900 dark:text-gray-100 outline-none placeholder:text-gray-400"
           [value]="query()"
@@ -42,21 +42,11 @@ const ENTITY_ORDER: Record<string, number> = {
             <mat-icon class="!text-gray-400 !text-[18px]">close</mat-icon>
           </button>
         }
-        <div class="relative group shrink-0">
-          <mat-icon class="!text-gray-400 !text-[18px] cursor-help">info_outline</mat-icon>
-          <div
-            class="absolute bottom-full right-0 mb-2 hidden group-hover:block bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2 shadow-lg z-50 whitespace-nowrap leading-relaxed"
-          >
-            Clientes · Órdenes · Proveedores<br>
-            Tipos Servicio · Skills · Consultas<br>
-            Gastos · Pendientes · Notificaciones
-          </div>
-        </div>
       </div>
 
       @if (isOpen() && (searchService.results().length > 0 || searchService.loading() || query().length >= 2)) {
         <div
-          class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 min-w-[480px]"
+          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-[42rem] max-w-[calc(100vw-2rem)]"
         >
           @if (searchService.loading()) {
             <div class="flex items-center justify-center p-4">
