@@ -17,7 +17,7 @@ Documentacion de la API: `http://localhost:3000/api/docs`
 | UI Components | Angular Material                                 | 22+ (componentes accesibles, sin tema custom) |
 | Estilos       | Tailwind CSS                                     | 4 (primario, utility-first)                   |
 | Graficas      | Chart.js + ng2-charts                            | latest                                        |
-| i18n          | Custom JSON (TranslatePipe + TranslationService) | ES (default) + EN, archivos en public/i18n/    |
+| i18n          | Custom JSON (TranslatePipe + TranslationService) | ES (default) + EN, archivos en public/i18n/   |
 | PWA           | `@angular/pwa`                                   | built-in                                      |
 | HTTP          | Angular HttpClient + interceptors                | built-in                                      |
 | Estado        | Angular Signals                                  | built-in                                      |
@@ -37,7 +37,7 @@ Documentacion de la API: `http://localhost:3000/api/docs`
 | Hosting        | Firebase App Hosting (1ro) / Vercel (2do)            | Gratuito para trafico bajo (~8 usuarios/dia). Auto-deploy via GitHub. SSR soportado nativamente                             |
 | Tecnico UX     | Lista con urgencia                                   | Sin calendario. Indicadores claros: dias restantes, color coding                                                            |
 | Viewport units | `dvh` layouts, `svh` above-the-fold, `rem` espaciado | Evita bug de `vh` en mobile                                                                                                 |
-| i18n           | Espanol (default), Ingles (futuro)                   | Custom JSON + TranslatePipe (no @angular/localize)                                                          |
+| i18n           | Espanol (default), Ingles (futuro)                   | Custom JSON + TranslatePipe (no @angular/localize)                                                                          |
 | Codegen        | `swagger-typescript-api`                             | Genera interfaces TypeScript desde OpenAPI spec                                                                             |
 
 ## Paleta de Colores (default, configurable por tenant)
@@ -119,6 +119,7 @@ src/
 │   │   │   ├── header/
 │   │   │   ├── sidebar/
 │   │   │   ├── bottom-nav/
+│   │   │   ├── admin-bottom-nav/
 │   │   │   ├── card/
 │   │   │   ├── data-table/
 │   │   │   ├── status-badge/
@@ -212,6 +213,7 @@ server.ts                          # Express server (SSR entry point)
 - [x] HeaderComponent (topbar with search, dark mode toggle, language switcher, user avatar)
 - [x] SidebarComponent (collapsible, icon-only on mobile, text on desktop)
 - [x] BottomNavComponent (5 tabs max for technician view)
+- [x] AdminBottomNavComponent (5 tabs for admin mobile: Dashboard, Órdenes, Clientes, Notificaciones, Configuración)
 - [x] CardComponent — Se usan cards inline con Tailwind (decisión intencional)
 - [x] DataTableComponent — Se usa MatTable directamente (decisión intencional)
 - [x] StatusBadgeComponent (colored badge: pending, in_progress, completed, cancelled)
@@ -240,10 +242,12 @@ server.ts                          # Express server (SSR entry point)
   - [x] Topbar (search, dark mode toggle, language switcher, user menu)
   - [x] Content area with breadcrumbs
   - [x] Responsive: sidebar collapses to icon-only on tablet, hidden on mobile
+  - [x] Mobile bottom nav (5 tabs: Dashboard, Órdenes, Clientes, Notificaciones, Configuración)
+  - [x] Search global responsive: icono lupa → panel en mobile, input visible en desktop
 - [x] TechLayoutComponent
-      - [x] Bottom tab bar (5 tabs max: Órdenes, Notificaciones, Perfil)
-      - [x] Header with business name + avatar
-      - [x] Content area
+  - [x] Bottom tab bar (5 tabs max: Órdenes, Notificaciones, Perfil)
+  - [x] Header with business name + avatar
+  - [x] Content area
 
 - [x] PortalLayoutComponent
   - [x] Minimal header with business logo + name (from API settings)
@@ -537,7 +541,7 @@ server.ts                          # Express server (SSR entry point)
   - [x] Dark/light mode (ThemeService)
   - [x] SEO meta tags (title, description, og:title, og:description, og:type)
   - [x] SSR: contenido visible sin JavaScript (RenderMode.Prerender)
-  - [x] i18n (es.json + en.json, ~40 keys landing.*)
+  - [x] i18n (es.json + en.json, ~40 keys landing.\*)
 
 ### 22. `features/pending-items/` — Trabajo Pendiente
 
@@ -654,25 +658,25 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
 
-| # | Item | Descripción | Esfuerzo |
-|---|------|-------------|----------|
-| 1 | ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ | ~~Al navegar al detalle, datos desaparecen y reaparecen.~~ Resuelto con `X-Skip-Loading` header | Alto |
-| 2 | ~~**Migrar 15 formularios a Signal Forms**~~ ✅ | ~~Viola la restricción Signals-Only del AGENTS.md.~~ 15/15 completado en 3 PRs | Medio |
-| 3 | ~~**BUG-002: Datepicker border cortado**~~ ✅ | ~~Borde derecho del input de calendario se ve cortado en desktop.~~ Resuelto: `w-40` → `w-44` | Bajo |
+| #   | Item                                              | Descripción                                                                                     | Esfuerzo |
+| --- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------- |
+| 1   | ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ | ~~Al navegar al detalle, datos desaparecen y reaparecen.~~ Resuelto con `X-Skip-Loading` header | Alto     |
+| 2   | ~~**Migrar 15 formularios a Signal Forms**~~ ✅   | ~~Viola la restricción Signals-Only del AGENTS.md.~~ 15/15 completado en 3 PRs                  | Medio    |
+| 3   | ~~**BUG-002: Datepicker border cortado**~~ ✅     | ~~Borde derecho del input de calendario se ve cortado en desktop.~~ Resuelto: `w-40` → `w-44`   | Bajo     |
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
-| # | Item | Descripción | Esfuerzo |
-|---|------|-------------|----------|
-| 4 | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 10 entidades (incluye users), debounce 300ms, highlight pulse con Router.events sin effect(). PRs #182–#186, #188, #191, #198 | Medio |
-| 5 | **Tests de componentes frontend** | 470 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest. | Medio |
-| 6 | **E2E tests (Playwright)** | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy. | Medio |
+| #   | Item                                  | Descripción                                                                                                                                                                      | Esfuerzo |
+| --- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 4   | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 10 entidades (incluye users), debounce 300ms, highlight pulse con Router.events sin effect(). PRs #182–#186, #188, #191, #198 | Medio    |
+| 5   | **Tests de componentes frontend**     | 470 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest.                                                  | Medio    |
+| 6   | **E2E tests (Playwright)**            | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy.                                                                                              | Medio    |
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
 
-| # | Item | Descripción | Esfuerzo |
-|---|------|-------------|----------|
-| 7 | **Offline mode — cola de mutaciones** | PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar. Complejidad alta. | Alto |
-| 8 | **i18n: Portugués** | Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`. | Bajo |
-| 9 | **Bulk actions (selección múltiple)** | Exportar, cambiar estado masivamente. UX para gestión masiva. | Medio |
-| 10 | **Kanban board para work orders** | Vista visual alternativa a tabla (columnas por estado, drag & drop). | Alto |
+| #   | Item                                  | Descripción                                                                                      | Esfuerzo |
+| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------ | -------- |
+| 7   | **Offline mode — cola de mutaciones** | PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar. Complejidad alta. | Alto     |
+| 8   | **i18n: Portugués**                   | Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`.                          | Bajo     |
+| 9   | **Bulk actions (selección múltiple)** | Exportar, cambiar estado masivamente. UX para gestión masiva.                                    | Medio    |
+| 10  | **Kanban board para work orders**     | Vista visual alternativa a tabla (columnas por estado, drag & drop).                             | Alto     |
