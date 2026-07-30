@@ -151,7 +151,7 @@ export class GlobalSearchComponent {
     this.clear();
 
     if (LIST_RESULT_TYPES.includes(result.type)) {
-      this.router.navigate([result.route], { queryParams: { highlight: result.id } });
+      this.router.navigate([result.route], { queryParams: { highlight: result.id, search: result.title } });
     } else {
       this.router.navigate([result.route]);
     }

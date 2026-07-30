@@ -1,6 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -384,10 +385,13 @@ export class PendingItemsListComponent implements OnInit {
   private readonly pendingItemsService = inject(PendingItemsService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
   private readonly _routeHighlight = signal<string | null>(null);
   private readonly _clearHighlight = signal(false);
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly fromNotification = signal(false);
   readonly pageSize = signal(10);
@@ -456,25 +460,33 @@ export class PendingItemsListComponent implements OnInit {
     'actions',
   ];
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
-    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
 
-    this.fromNotification.set(fromNotification);
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
+      }
 
-    if (fromNotification && !searchQuery) {
-      this.pageSize.set(100);
-    } else if (highlightId && !fromNotification) {
-      this._routeHighlight.set(highlightId);
-      this.pageSize.set(50);
-      setTimeout(() => this._clearHighlight.set(true), 3000);
-    }
+      const fromNotification = params.get('fromNotification') === 'true';
+      const highlightId = params.get('highlight');
 
-    if (searchQuery) {
-      this.searchFilter.set(searchQuery);
-    }
+      this.fromNotification.set(fromNotification);
+
+      if (fromNotification && !search) {
+        this.pageSize.set(100);
+      } else if (highlightId && !fromNotification) {
+        this._routeHighlight.set(highlightId);
+        this.pageSize.set(50);
+        const timeout = setTimeout(() => this._clearHighlight.set(true), 3000);
+        this.destroyRef.onDestroy(() => clearTimeout(timeout));
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   getPriorityLabel(priority: string): string {
     return PRIORITY_LABELS[priority] || priority;
