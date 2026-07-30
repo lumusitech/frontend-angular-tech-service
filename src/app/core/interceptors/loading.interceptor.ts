@@ -10,6 +10,10 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req.clone({ headers: req.headers.delete('X-Skip-Loading') }));
   }
 
+  if (req.params.has('search') && req.params.get('limit') === '3') {
+    return next(req);
+  }
+
   loadingService.show();
 
   return next(req).pipe(finalize(() => loadingService.hide()));
