@@ -66,6 +66,14 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - `loadingInterceptor` salta el overlay global cuando la request tiene `search` + `limit=3`
 - 23 tests nuevos (service + component)
 
+### E2E Tests con Playwright (PRs #190–#193)
+- 15 spec files con ~530 líneas de tests E2E
+- 16 page objects para todas las entidades
+- Fixture de auth con 3 roles (admin, tech, seller) + seed automático vía API
+- Seed de datos de prueba: crea usuarios y data via `POST /api/auth/login` + `POST /api/users` + CRUD endpoints
+- Waits deterministas en todos los specs (sin `waitForTimeout`)
+- Pendiente: ejecutar contra backend real (requiere backend NestJS corriendo con seed)
+
 ### Notificaciones en tiempo real (22/07/2026)
 - Conexión WebSocket en layouts via afterNextRender (solo browser)
 - Proxy /socket.io para conexión LAN desde celular
@@ -88,9 +96,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
-4. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188.
-5. **Tests de componentes** — 470 tests pasando (147 services + 323 components/pipes/directors/guards/interceptors). Siguiente: cubrir más componentes feature.
-6. **E2E tests (Playwright)** — 8 test files configurados, pendientes de backend.
+4. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
+5. ~~**Tests de componentes**~~ ✅ — 470 tests pasando (25 archivos, 100% pass rate). Incluye global-search (23 tests), app, pipes, directives, guards, interceptors, list components.
+6. **E2E tests (Playwright)** — 🔄 Avanzado: 15 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
 
@@ -248,11 +256,8 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - List components: clients, payments, work-orders (date filtering), invoices, dashboard
 - Nuevos: global-search.component (12 tests)
 
-**Pendiente:**
-- Cubrir más list components con tests de integración (no solo unit)
-- Tests de formulario (Signal Forms validation, submit handlers)
-- Tests de WebSocket service
-- Tests de httpResource components con `provideHttpClientTesting`
+**Completado:** Service tests, global-search, pipes, directives, guards, interceptors, list components date-filtering.
+**Pendiente:** E2E tests contra backend real (ver sección "Próxima sesión").
 
 ---
 
@@ -276,6 +281,51 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - `inquiry` (detail page) + `notification` (list page sin highlight, no aplica)
 
 **Patrón clave:** el `GlobalSearchService` hace `forkJoin` de 9 requests en paralelo con `catchError` por cada una. El `loadingInterceptor` salta el loading global cuando la URL tiene `?search=*&limit=3` (combinación única del global search).
+
+---
+
+## Próxima sesión — prioridades en orden
+
+### 1. Ejecutar E2E tests contra backend real
+
+Los tests están listos pero necesitan el backend corriendo con seed de datos:
+```bash
+# Levantar backend NestJS (puerto 3000)
+# Luego ejecutar E2E:
+pnpm test:e2e
+```
+
+Si fallan, depurar selectores de los POs contra la UI real. El seed automático
+crea los usuarios y datos de prueba vía API. Ver `e2e/fixtures/seed.fixture.ts`.
+
+**Archivos involucrados:** `e2e/tests/*.spec.ts`, `e2e/pages/*.page.ts`, `e2e/fixtures/seed.fixture.ts`
+
+### 2. i18n: Portugués (esfuerzo bajo, impacto medio)
+
+Copiar `public/i18n/es.json` → `public/i18n/pt.json` y traducir los textos.
+Agregar `pt` al `TranslationService` y al selector de idioma en el header.
+
+**Archivos a modificar:**
+- `public/i18n/pt.json` (nuevo)
+- `src/app/core/services/translation.service.ts` — agregar locale
+- `src/app/shared/components/header/header.component.ts` — agregar opción al menú
+- `public/i18n/es.json` + `public/i18n/en.json` — sincronizar keys faltantes
+
+### 3. Bulk actions — selección múltiple en listas (esfuerzo medio)
+
+Agregar checkbox en cada fila de tabla, botones de acción masiva (exportar, cambiar estado).
+Reutilizar `ExportButtonsComponent` existente.
+
+**Archivos involucrados:** 9 list components (clients, suppliers, work-orders, payments, expenses, billing, pending-items, inquiries, notifications)
+
+### 4. Offline mode — PWA real (esfuerzo alto)
+
+Cola de mutaciones para crear/editar offline, sync al reconectar.
+Requiere investigación de IndexedDB o similar.
+
+### 5. Kanban board — drag & drop de work orders (esfuerzo alto)
+
+Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 
 ---
 
@@ -379,6 +429,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - [x] Dialog transparency fix (backgrounds sólidos en dark mode)
 - [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
 - [x] Tests de componentes (470 tests pasando, 100% pass rate) — incluye global-search (23 tests)
+- [x] E2E tests: 15 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
 
 ## Archivos de referencia útiles
 
