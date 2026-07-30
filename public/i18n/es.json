@@ -42,6 +42,7 @@
       "supplier": "Proveedor",
       "service-type": "Tipo Servicio",
       "skill": "Skill",
+      "user": "Usuario",
       "inquiry": "Consulta",
       "expense": "Gasto",
       "pending-item": "Pendiente",

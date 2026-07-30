@@ -42,6 +42,7 @@
       "supplier": "Supplier",
       "service-type": "Service Type",
       "skill": "Skill",
+      "user": "User",
       "inquiry": "Inquiry",
       "expense": "Expense",
       "pending-item": "Pending",

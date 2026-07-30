@@ -10,16 +10,18 @@ const ENTITY_ORDER: Record<string, number> = {
   supplier: 2,
   'service-type': 3,
   skill: 4,
-  inquiry: 5,
-  expense: 6,
-  'pending-item': 7,
-  notification: 8,
+  user: 5,
+  inquiry: 6,
+  expense: 7,
+  'pending-item': 8,
+  notification: 9,
 };
 
 const LIST_RESULT_TYPES: SearchResult['type'][] = [
   'supplier',
   'service-type',
   'skill',
+  'user',
   'expense',
   'pending-item',
 ];
