@@ -664,7 +664,7 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 
 | # | Item | Descripción | Esfuerzo |
 |---|------|-------------|----------|
-| 4 | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 9 entidades, debounce 300ms, highlight en lista. PRs #182–#186 | Medio |
+| 4 | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 10 entidades (incluye users), debounce 300ms, highlight pulse con Router.events sin effect(). PRs #182–#186, #188, #191, #198 | Medio |
 | 5 | **Tests de componentes frontend** | 470 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest. | Medio |
 | 6 | **E2E tests (Playwright)** | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy. | Medio |
 

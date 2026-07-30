@@ -55,9 +55,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Últimas features implementadas (30/07/2026)
 
-### Search global desde header (PRs #182–#186, #188)
+### Search global desde header (PRs #182–#186, #188, #191, #198)
 - Buscador global en el header con debounce de 300ms
-- Busca en 9 entidades: clients, work-orders, suppliers, service-types, skills, inquiries, expenses, pending-items, notifications
+- Busca en **10 entidades**: clients, work-orders, suppliers, service-types, skills, **users**, inquiries, expenses, pending-items, notifications
 - Resultados agrupados por tipo de entidad con iconos
 - Dropdown con animación suave (sin flicker, sin blur global)
 - Navegación directa: detail page o lista con `?highlight=ID&search=title` para resaltar fila
@@ -65,6 +65,17 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - 9 list components migrados de `route.snapshot` a `toSignal(route.queryParamMap) + effect()` para reaccionar a cambios de query params
 - `loadingInterceptor` salta el overlay global cuando la request tiene `search` + `limit=3`
 - 23 tests nuevos (service + component)
+
+### Highlight pulse en listas (PR #198)
+- Replicado patrón de `InquiriesListComponent` en `UsersListComponent`
+- `highlightedId`: `computed` que depende de `resource.value()` — retorna ID solo cuando data está cargada
+- `highlightApplied`: `signal` que gatea la clase `.highlight-pulse` en el template
+- **Sin `effect()`** — usa subscripción RxJS a `Router.events` + `NavigationStart`/`NavigationEnd`
+- `NavigationStart` captura `event.url` como URL anterior → `NavigationEnd` compara con la nueva
+- Animación SOLO cuando la navegación viene de otra sección (ej: `/admin/dashboard` → `/admin/users`)
+- Sin animación cuando ya estás en la misma sección (solo filtra la lista)
+- Clase CSS global `.highlight-pulse` en `styles.css` (`@keyframes highlight-pulse`, 2s)
+- `clearFilters` resetea `highlightApplied` + `routeHighlight` y navega a `/admin/users` sin params
 
 ### E2E Tests con Playwright (PRs #190–#193)
 - 15 spec files con ~530 líneas de tests E2E
@@ -276,8 +287,8 @@ if (isPlatformBrowser(this.platformId)) { ... }
 | #186 | Skip loading global para search + removido spinner del dropdown + merge |
 | #188 | Fix mocks de `ActivatedRoute` en tests rotos (clients, payments, work-orders) |
 
-**Entidades buscables (9):**
-- `client`, `work-order` (detail page) + `supplier`, `service-type`, `skill`, `expense`, `pending-item` (list page con `?highlight=ID&search=title`)
+**Entidades buscables (10):**
+- `client`, `work-order` (detail page) + `supplier`, `service-type`, `skill`, **`user`**, `expense`, `pending-item` (list page con `?highlight=ID&search=title`)
 - `inquiry` (detail page) + `notification` (list page sin highlight, no aplica)
 
 **Patrón clave:** el `GlobalSearchService` hace `forkJoin` de 9 requests en paralelo con `catchError` por cada una. El `loadingInterceptor` salta el loading global cuando la URL tiene `?search=*&limit=3` (combinación única del global search).

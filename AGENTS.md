@@ -331,7 +331,47 @@ npx ng build
 
 ---
 
-## Comandos Útiles
+## Construcción de documentación
+
+- **ROADMAP.md**: Archivo de planificación a largo plazo con tabla de próximos pasos priorizados. Ver ROADMAP.md para la estructura.
+- **TODO.md**: Archivo de contexto rápido con últimas features, bugs conocidos y próxima sesión. Ver TODO.md para el estado actual.
+- **ROADMAP.md** y **TODO.md** se actualizan al finalizar cada tarea (al recibir OK del usuario).
+
+---
+
+## Highlight pulse en listas (global search)
+
+Para listas que reciben navegación con `?highlight=ID&search=text` desde el buscador global:
+
+```typescript
+// Signals internos
+private readonly _routeHighlight = signal<string | null>(null);
+private readonly _clearHighlight = signal(false);
+
+// highlightedId es un computed que depende del resource data
+readonly highlightedId = computed(() => {
+  const data = this.resource.value();
+  const loading = this.resource.isLoading();
+  const cleared = this._clearHighlight();
+  const routeHighlight = this._routeHighlight();
+  if (!data || cleared || loading) return null;
+  const match = data.data.find((row) => row.id === routeHighlight);
+  return match?.id ?? null;
+});
+
+// Template
+[class.highlight-pulse]="highlightedId() === row.id && !_clearHighlight()"
+```
+
+**Reglas:**
+- `highlightedId` es **computed** (no signal) — depende del resource data para evitar animación antes de que lleguen los datos
+- Efecto de animación solo cuando la navegación **cambia de sección** (comparar path anterior con nuevo)
+- **Sin `effect()`** — usar `NavigationStart` + `NavigationEnd` con `takeUntilDestroyed`
+- CSS global: clase `.highlight-pulse` + `@keyframes highlight-pulse` en `styles.css` (2s pulse)
+- `clearFilters` debe resetear `_routeHighlight` y `_clearHighlight`
+
+**Patrón completo en:** `src/app/features/users/users-list.component.ts`, `src/app/features/inquiries/inquiries-list.component.ts`
+
 
 ```bash
 pnpm start                 # Dev server con SSR + proxy
