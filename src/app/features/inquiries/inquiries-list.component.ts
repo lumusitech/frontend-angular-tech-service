@@ -1,6 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -343,10 +344,13 @@ export class InquiriesListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
   private readonly _routeHighlight = signal<string | null>(null);
   private readonly _clearHighlight = signal(false);
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly fromNotification = signal(false);
   readonly pageSize = signal(10);
@@ -403,25 +407,33 @@ export class InquiriesListComponent implements OnInit {
 
   displayedColumns = ['clientName', 'clientAddress', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
-    const searchQuery = this.route.snapshot.queryParamMap.get('search');
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
 
-    this.fromNotification.set(fromNotification);
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
+      }
 
-    if (fromNotification && !searchQuery) {
-      this.pageSize.set(100);
-    } else if (highlightId && !fromNotification) {
-      this._routeHighlight.set(highlightId);
-      this.pageSize.set(50);
-      setTimeout(() => this._clearHighlight.set(true), 3000);
-    }
+      const fromNotification = params.get('fromNotification') === 'true';
+      const highlightId = params.get('highlight');
 
-    if (searchQuery) {
-      this.searchFilter.set(searchQuery);
-    }
+      this.fromNotification.set(fromNotification);
+
+      if (fromNotification && !search) {
+        this.pageSize.set(100);
+      } else if (highlightId && !fromNotification) {
+        this._routeHighlight.set(highlightId);
+        this.pageSize.set(50);
+        const timeout = setTimeout(() => this._clearHighlight.set(true), 3000);
+        this.destroyRef.onDestroy(() => clearTimeout(timeout));
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'text-gray-400 bg-gray-500/15';

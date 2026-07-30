@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, HostListener } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { GlobalSearchService, SearchResult } from '../../../core/services/global-search.service';
@@ -29,7 +28,6 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
   selector: 'app-global-search',
   imports: [
     MatIconModule,
-    MatProgressSpinnerModule,
     TranslatePipe,
   ],
   template: `
@@ -54,13 +52,13 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
 
       @if (isOpen() && query().length >= 2) {
         <div
-          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-96 max-w-[calc(100vw-2rem)]"
+          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-96 max-w-[calc(100vw-2rem)] will-change-transform"
         >
           <div
             [class.hidden]="!(searchService.loading() && searchService.results().length === 0)"
             class="flex items-center justify-center p-4"
           >
-            <mat-spinner diameter="24" />
+            <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
           <div
             [class.hidden]="searchService.results().length > 0 || searchService.loading()"
@@ -151,7 +149,7 @@ export class GlobalSearchComponent {
     this.clear();
 
     if (LIST_RESULT_TYPES.includes(result.type)) {
-      this.router.navigate([result.route], { queryParams: { highlight: result.id } });
+      this.router.navigate([result.route], { queryParams: { highlight: result.id, search: result.title } });
     } else {
       this.router.navigate([result.route]);
     }

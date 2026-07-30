@@ -1,5 +1,6 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, OnInit } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SkillsService } from '../../core/services/skills.service';
 import { Skill } from '../../core/models/skill.interfaces';
@@ -193,9 +194,12 @@ import { TranslationService } from '../../core/services/translation.service';
 export class SkillsListComponent implements OnInit {
   private readonly skillsService = inject(SkillsService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly translationService = inject(TranslationService);
   private readonly toastService = inject(ToastService);
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -237,13 +241,26 @@ export class SkillsListComponent implements OnInit {
     this.highlightedId.set(null);
   }
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      setTimeout(() => this.highlightedId.set(null), 3000);
-    }
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
+
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
+      }
+
+      const highlight = params.get('highlight');
+      if (highlight) {
+        this.highlightedId.set(highlight);
+        const timeout = setTimeout(() => this.highlightedId.set(null), 3000);
+        this.destroyRef.onDestroy(() => clearTimeout(timeout));
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;

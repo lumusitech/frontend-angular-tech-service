@@ -1,6 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { ServiceTypesService } from '../../core/services/service-types.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -289,8 +290,11 @@ export class ServiceTypesListComponent implements OnInit {
   private readonly serviceTypesService = inject(ServiceTypesService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly toastService = inject(ToastService);
   readonly translationService = inject(TranslationService);
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly highlightedId = signal<string | null>(null);
   readonly pageSize = signal(10);
@@ -327,13 +331,26 @@ export class ServiceTypesListComponent implements OnInit {
     'actions',
   ];
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      setTimeout(() => this.highlightedId.set(null), 3000);
-    }
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
+
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
+      }
+
+      const highlight = params.get('highlight');
+      if (highlight) {
+        this.highlightedId.set(highlight);
+        const timeout = setTimeout(() => this.highlightedId.set(null), 3000);
+        this.destroyRef.onDestroy(() => clearTimeout(timeout));
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
