@@ -1,6 +1,7 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, OnInit } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -373,10 +374,13 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
 export class WorkOrdersListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   readonly translationService = inject(TranslationService);
   readonly parseLocalDate = parseLocalDate;
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
@@ -399,24 +403,32 @@ export class WorkOrdersListComponent implements OnInit {
     { value: 'scheduledDate', labelKey: 'workOrders.scheduledDate' },
   ];
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
 
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      this.fromNotification.set(fromNotification);
-      if (!fromNotification) {
-        this.pageSize.set(50);
-        setTimeout(() => this.highlightedId.set(null), 3000);
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
       }
-    }
 
-    const searchQuery = this.route.snapshot.queryParamMap.get('search');
-    if (searchQuery) {
-      this.searchFilter.set(searchQuery);
-    }
+      const fromNotification = params.get('fromNotification') === 'true';
+      const highlight = params.get('highlight');
+
+      if (highlight) {
+        this.highlightedId.set(highlight);
+        this.fromNotification.set(fromNotification);
+        if (!fromNotification) {
+          this.pageSize.set(50);
+          const timeout = setTimeout(() => this.highlightedId.set(null), 3000);
+          this.destroyRef.onDestroy(() => clearTimeout(timeout));
+        }
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
     url: '/api/work-orders',

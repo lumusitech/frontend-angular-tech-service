@@ -1,6 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '../../core/services/payments.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -356,10 +357,13 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
 export class PaymentsListComponent implements OnInit {
   private readonly paymentsService = inject(PaymentsService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
   readonly parseLocalDate = parseLocalDate;
+
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
   readonly highlightedId = signal<string | null>(null);
   readonly fromNotification = signal(false);
@@ -408,24 +412,32 @@ export class PaymentsListComponent implements OnInit {
     'actions',
   ];
 
-  ngOnInit(): void {
-    const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-    const fromNotification = this.route.snapshot.queryParamMap.get('fromNotification') === 'true';
+  constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      if (!params) return;
 
-    if (highlightId) {
-      this.highlightedId.set(highlightId);
-      this.fromNotification.set(fromNotification);
-      if (!fromNotification) {
-        this.pageSize.set(50);
-        setTimeout(() => this.highlightedId.set(null), 3000);
+      const search = params.get('search');
+      if (search) {
+        this.searchFilter.set(search);
       }
-    }
 
-    const searchQuery = this.route.snapshot.queryParamMap.get('search');
-    if (searchQuery) {
-      this.searchFilter.set(searchQuery);
-    }
+      const fromNotification = params.get('fromNotification') === 'true';
+      const highlight = params.get('highlight');
+
+      if (highlight) {
+        this.highlightedId.set(highlight);
+        this.fromNotification.set(fromNotification);
+        if (!fromNotification) {
+          this.pageSize.set(50);
+          const timeout = setTimeout(() => this.highlightedId.set(null), 3000);
+          this.destroyRef.onDestroy(() => clearTimeout(timeout));
+        }
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   onDateFieldChange(field: string): void {
     this.dateField.set(field);
