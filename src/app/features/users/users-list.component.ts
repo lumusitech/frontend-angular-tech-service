@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { httpResource } from '@angular/common/http';
@@ -107,7 +107,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         <mat-accordion class="block md:hidden">
           @for (user of usersResource.value().data; track user.id) {
             <app-mobile-card
-              [class.highlight-pulse]="user.id === highlightedId()"
+              [class.highlight-pulse]="user.id === highlightedId() && highlightApplied()"
               [title]="user.name"
               [status]="user.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
               [statusType]="$any('activeInactive')"
@@ -205,7 +205,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" [class.highlight-pulse]="highlightedId() === row.id"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" [class.highlight-pulse]="highlightedId() === row.id && highlightApplied()"></tr>
           </table>
 
           <mat-paginator
@@ -235,9 +235,9 @@ export class UsersListComponent {
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal<string>(this.route.snapshot.queryParamMap.get('search') ?? '');
   readonly roleFilter = signal('');
-  readonly clearHighlight = signal(!this.route.snapshot.queryParamMap.has('highlight'));
-  readonly currentPath = signal(this.router.url);
   readonly routeHighlight = signal<string | null>(this.route.snapshot.queryParamMap.get('highlight'));
+  readonly highlightApplied = signal(false);
+  readonly previousPath = signal('');
 
   readonly usersResource = httpResource<PaginatedResponse<User>>(() => ({
     url: '/api/users',
@@ -253,7 +253,7 @@ export class UsersListComponent {
 
   readonly highlightedId = computed(() => {
     const target = this.routeHighlight();
-    if (!target || this.clearHighlight()) return null;
+    if (!target) return null;
     const data = this.usersResource.value();
     if (!data || this.usersResource.isLoading()) return null;
     return data.data.find((row) => row.id === target)?.id ?? null;
@@ -261,27 +261,25 @@ export class UsersListComponent {
 
   constructor() {
     if (this.routeHighlight()) {
-      this.clearHighlight.set(false);
-      setTimeout(() => this.clearHighlight.set(true), 3000);
+      this.highlightApplied.set(true);
     }
     this.router.events
       .pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationStart || event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => {
-        const previousPath = this.currentPath().split('?')[0];
-        const newPath = this.router.url.split('?')[0];
-        const cameFromOutside = previousPath !== newPath;
-        this.currentPath.set(this.router.url);
-        this.searchFilter.set(this.route.snapshot.queryParamMap.get('search') ?? '');
-        const highlightId = this.route.snapshot.queryParamMap.get('highlight');
-        this.routeHighlight.set(highlightId);
-        if (highlightId && cameFromOutside) {
-          this.clearHighlight.set(false);
-          setTimeout(() => this.clearHighlight.set(true), 3000);
-        } else if (highlightId) {
-          this.clearHighlight.set(true);
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.previousPath.set(event.url.split('?')[0]);
+          return;
+        }
+        if (event instanceof NavigationEnd) {
+          const newPath = this.router.url.split('?')[0];
+          const sameSection = this.previousPath() === newPath;
+          const highlightId = this.route.snapshot.queryParamMap.get('highlight');
+          this.searchFilter.set(this.route.snapshot.queryParamMap.get('search') ?? '');
+          this.routeHighlight.set(highlightId);
+          this.highlightApplied.set(!!(highlightId && !sameSection));
         }
       });
   }
@@ -295,7 +293,8 @@ export class UsersListComponent {
   clearFilters(): void {
     this.searchFilter.set('');
     this.roleFilter.set('');
-    this.clearHighlight.set(true);
+    this.highlightApplied.set(false);
+    this.routeHighlight.set(null);
     this.router.navigate(['/admin/users']);
   }
 
