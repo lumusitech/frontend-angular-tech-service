@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { ClientsListComponent } from './clients-list.component';
 import { ClientsService } from '../../core/services/clients.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -8,6 +8,15 @@ import { TranslationService } from '../../core/services/translation.service';
 import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { of } from 'rxjs';
+
+function createActivatedRouteMock(queryParams: Record<string, string | null> = {}) {
+  return {
+    snapshot: {
+      queryParamMap: convertToParamMap(queryParams),
+    },
+    queryParamMap: of(convertToParamMap(queryParams)),
+  };
+}
 
 describe('ClientsListComponent', () => {
   let component: ClientsListComponent;
@@ -24,20 +33,8 @@ describe('ClientsListComponent', () => {
       providers: [
         { provide: ClientsService, useValue: { delete: deleteSpy } },
         { provide: Router, useValue: { navigate: navigateSpy } },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              queryParamMap: {
-                get: vi.fn().mockReturnValue(null),
-              },
-            },
-          },
-        },
-        {
-          provide: ToastService,
-          useValue: { show: vi.fn() },
-        },
+        { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
+        { provide: ToastService, useValue: { show: vi.fn() } },
         {
           provide: TranslationService,
           useValue: { instant: vi.fn().mockImplementation((key: string) => key) },
@@ -234,20 +231,7 @@ describe('ClientsListComponent', () => {
         providers: [
           { provide: ClientsService, useValue: { delete: deleteSpy } },
           { provide: Router, useValue: { navigate: navigateSpy } },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: vi.fn().mockImplementation((key: string) => {
-                    if (key === 'highlight') return 'c-1';
-                    if (key === 'search') return 'test';
-                    return null;
-                  }),
-                },
-              },
-            },
-          },
+          { provide: ActivatedRoute, useValue: createActivatedRouteMock({ highlight: 'c-1', search: 'test' }) },
           { provide: ToastService, useValue: { show: vi.fn() } },
           { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((key: string) => key) } },
         ],
