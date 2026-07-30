@@ -4,10 +4,11 @@ import { AuthService } from '../../core/services/auth.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
+import { AdminBottomNavComponent } from '../../shared/components/admin-bottom-nav/admin-bottom-nav.component';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, HeaderComponent, SidebarComponent],
+  imports: [RouterOutlet, HeaderComponent, SidebarComponent, AdminBottomNavComponent],
   template: `
     <div class="h-dvh flex overflow-hidden bg-gray-50 dark:bg-gray-900">
       <!-- Desktop sidebar -->
@@ -21,10 +22,12 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <app-header (toggleSidebar)="mobileSidebarOpen.set(!mobileSidebarOpen())" />
 
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6 pb-20 lg:pb-6">
           <router-outlet />
         </main>
       </div>
+
+      <app-admin-bottom-nav />
 
       @if (mobileSidebarOpen()) {
         <div
