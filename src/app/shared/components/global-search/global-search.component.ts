@@ -55,13 +55,7 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
           class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-96 max-w-[calc(100vw-2rem)] will-change-transform"
         >
           <div
-            [class.hidden]="!(searchService.loading() && searchService.results().length === 0)"
-            class="flex items-center justify-center p-4"
-          >
-            <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <div
-            [class.hidden]="searchService.results().length > 0 || searchService.loading()"
+            [class.hidden]="searchService.results().length > 0"
             class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm"
           >
             {{ 'common.noResults' | translate }}
