@@ -50,12 +50,24 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Materiales usados: MatTable, MatDialog, MatAutocomplete, MatPaginator, MatSort, MatButtonToggle, MatIconModule, MatChipsModule, MatExpansionPanel, MatAccordion
 - Forms: Signal Forms exclusivamente (`form()`, `FormField`). Prohibido `FormsModule`, `NgForm`, `[(ngModel)]`. El código legacy que usa template-driven está pendiente de migración.
 - Sidebar: `src/app/layouts/admin-layout/admin-layout.component.ts` — agregar items ahí
+- Bottom nav (mobile): `src/app/shared/components/admin-bottom-nav/` — agregar/editar tabs ahí
+- Bottom nav pattern: mismo patrón en `bottom-nav.component.ts` (técnico), `admin-bottom-nav.component.ts` (admin mobile), `seller-bottom-nav.component.ts` (vendedor)
 
 ---
 
 ## Últimas features implementadas (30/07/2026)
 
+### Mobile bottom nav + Search global responsive (PR #200)
+
+- Nuevo `AdminBottomNavComponent` con 5 atajos: Dashboard, Órdenes, Clientes, Notificaciones (con badge), Configuración
+- Solo visible en mobile (`lg:hidden`), desktop sin cambios
+- Mismo patrón que `BottomNavComponent` de técnico: `signal` + `NavigationEnd`, color activo `var(--color-secondary)`, badge con `NotificationsService`
+- `GlobalSearchComponent` ahora maneja modo responsive: icono lupa + panel desplegable en mobile; input visible en desktop
+- Header renderiza `app-global-search` siempre sin wrapper responsive
+- Padding `pb-20 lg:pb-6` en `<main>` para evitar contenido oculto detrás del bottom nav
+
 ### Search global desde header (PRs #182–#186, #188, #191, #198)
+
 - Buscador global en el header con debounce de 300ms
 - Busca en **10 entidades**: clients, work-orders, suppliers, service-types, skills, **users**, inquiries, expenses, pending-items, notifications
 - Resultados agrupados por tipo de entidad con iconos
@@ -67,6 +79,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - 23 tests nuevos (service + component)
 
 ### Highlight pulse en listas (PR #198)
+
 - Replicado patrón de `InquiriesListComponent` en `UsersListComponent`
 - `highlightedId`: `computed` que depende de `resource.value()` — retorna ID solo cuando data está cargada
 - `highlightApplied`: `signal` que gatea la clase `.highlight-pulse` en el template
@@ -78,6 +91,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - `clearFilters` resetea `highlightApplied` + `routeHighlight` y navega a `/admin/users` sin params
 
 ### E2E Tests con Playwright (PRs #190–#193)
+
 - 15 spec files con ~530 líneas de tests E2E
 - 16 page objects para todas las entidades
 - Fixture de auth con 3 roles (admin, tech, seller) + seed automático vía API
@@ -86,6 +100,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Pendiente: ejecutar contra backend real (requiere backend NestJS corriendo con seed)
 
 ### Notificaciones en tiempo real (22/07/2026)
+
 - Conexión WebSocket en layouts via afterNextRender (solo browser)
 - Proxy /socket.io para conexión LAN desde celular
 - Auto-refresh de lista de notificaciones al recibir nuevas vía WebSocket (refreshCounter)
@@ -127,6 +142,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Solucionado:** Cambiar hardcoded `#1E40AF` a `var(--color-primary, #1E40AF)` en `material-theme.scss`. El `App` component effect() setea `--color-primary` dinámicamente desde `BusinessSettingsService.settings()`.
 
 **Archivos modificados:**
+
 - `src/material-theme.scss` — botones usan `var(--color-primary, #1E40AF)` en vez de hardcoded
 - `src/app/app.ts` — effect() setea `--color-primary` y `--color-secondary` en `document.documentElement`
 
@@ -139,6 +155,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Fix:** Cambiar `w-40` → `w-44` (176px, iguala los campos select/search adyacentes) en 20 datepickers de 10 archivos. Eliminar 3 CSS overrides fallidos de `styles.css`.
 
 **Archivos modificados:**
+
 - 10 list components (clients, suppliers, service-types, work-orders, payments, expenses, invoices, inquiries, pending-items, reports-dashboard)
 - `src/styles.css` — eliminados overrides de `mat-datepicker-toggle`, `mat-mdc-form-field-icon-suffix`, `mdc-notched-outline__trailing`
 
@@ -149,12 +166,14 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Solucionado:** El flicker era causado por el overlay global del `LoadingSpinnerComponent` (full-screen con `bg-black/30 backdrop-blur-sm`) que se activaba cuando requests de child components (TimelineTabComponent → status-logs, InfoTabComponent → service-types) tardaban >300ms. El "punto azul" era el `<mat-spinner diameter="48">` del overlay.
 
 **Fix implementado:**
+
 1. Agregado header `X-Skip-Loading` al `loadingInterceptor` — requests con este header no activan el overlay global
 2. `workOrderResolver` usa `X-Skip-Loading` para no mostrar overlay durante navegación
 3. `TimelineTabComponent` refactorizado: `httpResource` → `HttpClient` + `signal()` manual + `X-Skip-Loading`
 4. `InfoTabComponent` refactorizado: `httpResource` → `HttpClient` + `signal()` manual + `X-Skip-Loading` para service-types
 
 **Archivos modificados:**
+
 - `src/app/core/interceptors/loading.interceptor.ts` — soporte `X-Skip-Loading`
 - `src/app/features/work-orders/work-order.resolver.ts` — usa `X-Skip-Loading`
 - `src/app/shared/components/timeline-tab/timeline-tab.component.ts` — `HttpClient` + `X-Skip-Loading`
@@ -187,13 +206,13 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### ~~4. Reportes avanzados — Business intelligence~~ ✅
 
-| Componente | Estado |
-|-----------|--------|
-| ~~ProfitChartComponent~~ | ✅ Línea de ganancia en dashboard |
-| ~~TechnicianDetailComponent~~ | ✅ KPIs + tabla + ExportButtons |
-| ~~ClientReportComponent~~ | ✅ KPIs + tabs + ExportButtons |
-| ~~ExportButtons~~ | ✅ Botones PDF en reportes |
-| ~~Client drill-down~~ | ✅ Top clients → client report |
+| Componente                    | Estado                            |
+| ----------------------------- | --------------------------------- |
+| ~~ProfitChartComponent~~      | ✅ Línea de ganancia en dashboard |
+| ~~TechnicianDetailComponent~~ | ✅ KPIs + tabla + ExportButtons   |
+| ~~ClientReportComponent~~     | ✅ KPIs + tabs + ExportButtons    |
+| ~~ExportButtons~~             | ✅ Botones PDF en reportes        |
+| ~~Client drill-down~~         | ✅ Top clients → client report    |
 
 ---
 
@@ -226,6 +245,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Valor:** Mejora UX mobile. Tablas → cards expandibles + copiar teléfonos/emails + acciones nativas.
 
 **Componentes creados:**
+
 - `CopyToClipboardDirective` — copiar al portapapeles con toast feedback
 - `CopyFieldComponent` — campo con valor + acción nativa (tel:, mailto:, maps:) + copia
 - `MobileCardComponent` — expansion panel con swipe gestures (izq=borrar, der=editar)
@@ -233,6 +253,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Integrado en:** 11 listas (clients, suppliers, work-orders, payments, expenses, invoices, pending-items, inquiries, users, service-types, skills)
 
 **Features mobile:**
+
 - Swipe gestures en cards contraídas (derecha=editar, izquierda=borrar)
 - Accordion behavior (una card expandida a la vez)
 - Edit/Delete buttons en footer de card expandida
@@ -251,6 +272,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 **Orden:** ~~Service tests~~ ✅ → ~~Component tests (parcial)~~ ✅ → E2E tests (pendiente)
 
 **Servicios testeados (147 tests, 6 archivos):**
+
 - ~~auth.service.spec.ts~~ ✅ (39 tests)
 - ~~clients.service.spec.ts~~ ✅ (18 tests)
 - ~~work-orders.service.spec.ts~~ ✅ (27 tests)
@@ -260,6 +282,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - ~~global-search.service.spec.ts~~ ✅ (11 tests, nuevo)
 
 **Componentes / pipes / directives / guards / interceptors (323 tests, 19 archivos):**
+
 - App, status-badge, copy-to-clipboard directive, role directive
 - Pipes: currency-ars, relative-date, status-class, status-label
 - Guards: auth.guard
@@ -278,16 +301,17 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 **Implementación (PRs #182–#186, #188):**
 
-| PR | Qué agregó |
-|----|------------|
+| PR   | Qué agregó                                                                              |
+| ---- | --------------------------------------------------------------------------------------- |
 | #182 | Componente base: 3 entidades (clients, work-orders, suppliers), dropdown con resultados |
-| #183 | 9 entidades + UI compacta + grouped results + help tooltip con entidades |
-| #184 | UI fixes: ancho + placeholder + búsqueda en 4 servicios que no la pasaban |
-| #185 | Highlight en tabla al navegar + `toSignal+effect` reactivo en 9 list components |
-| #186 | Skip loading global para search + removido spinner del dropdown + merge |
-| #188 | Fix mocks de `ActivatedRoute` en tests rotos (clients, payments, work-orders) |
+| #183 | 9 entidades + UI compacta + grouped results + help tooltip con entidades                |
+| #184 | UI fixes: ancho + placeholder + búsqueda en 4 servicios que no la pasaban               |
+| #185 | Highlight en tabla al navegar + `toSignal+effect` reactivo en 9 list components         |
+| #186 | Skip loading global para search + removido spinner del dropdown + merge                 |
+| #188 | Fix mocks de `ActivatedRoute` en tests rotos (clients, payments, work-orders)           |
 
 **Entidades buscables (10):**
+
 - `client`, `work-order` (detail page) + `supplier`, `service-type`, `skill`, **`user`**, `expense`, `pending-item` (list page con `?highlight=ID&search=title`)
 - `inquiry` (detail page) + `notification` (list page sin highlight, no aplica)
 
@@ -300,6 +324,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 1. Ejecutar E2E tests contra backend real
 
 Los tests están listos pero necesitan el backend corriendo con seed de datos:
+
 ```bash
 # Levantar backend NestJS (puerto 3000)
 # Luego ejecutar E2E:
@@ -317,6 +342,7 @@ Copiar `public/i18n/es.json` → `public/i18n/pt.json` y traducir los textos.
 Agregar `pt` al `TranslationService` y al selector de idioma en el header.
 
 **Archivos a modificar:**
+
 - `public/i18n/pt.json` (nuevo)
 - `src/app/core/services/translation.service.ts` — agregar locale
 - `src/app/shared/components/header/header.component.ts` — agregar opción al menú
@@ -391,15 +417,15 @@ Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 
 ## Sugerencias adicionales (futuro)
 
-| Feature | Valor | Nota |
-|---------|-------|------|
-| Biometric auth (huella/face ID) | Medio | WebAuthn API |
-| Drag & drop en work orders (kanban board) | Medio | UX visual |
-| Bulk actions (selección múltiple) | Medio | Exportar, cambiar estado |
-| Dashboard: Widget de actividad reciente | Bajo | Timeline |
-| Email templates (confirmación, factura) | Medio | Requiere backend |
-| Multi-language: Portugués | Bajo | Patrón i18n existente |
-| Dark mode: Coherencia total | Bajo | Ya funciona, polish menor |
+| Feature                                   | Valor | Nota                      |
+| ----------------------------------------- | ----- | ------------------------- |
+| Biometric auth (huella/face ID)           | Medio | WebAuthn API              |
+| Drag & drop en work orders (kanban board) | Medio | UX visual                 |
+| Bulk actions (selección múltiple)         | Medio | Exportar, cambiar estado  |
+| Dashboard: Widget de actividad reciente   | Bajo  | Timeline                  |
+| Email templates (confirmación, factura)   | Medio | Requiere backend          |
+| Multi-language: Portugués                 | Bajo  | Patrón i18n existente     |
+| Dark mode: Coherencia total               | Bajo  | Ya funciona, polish menor |
 
 ---
 
@@ -444,20 +470,21 @@ Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 
 ## Archivos de referencia útiles
 
-| Archivo | Qué muestra |
-|---------|-------------|
-| `src/app/app.routes.ts` | Todas las rutas definidas |
-| `src/app/layouts/admin-layout/admin-layout.component.ts` | Sidebar + header + content |
-| `src/app/layouts/tech-layout/tech-layout.component.ts` | Layout simple con BottomNav |
-| `src/app/features/work-orders/work-order-detail.component.ts` | Detalle con tabs y acciones |
-| `src/app/features/clients/clients-list.component.ts` | CRUD list con mobile cards |
-| `src/app/features/billing/invoice-form.component.ts` | Form con autocomplete signals |
-| `src/app/core/services/notifications.service.ts` | Service con signals + WebSocket |
-| `src/app/shared/components/bottom-nav/bottom-nav.component.ts` | Componente con detección de ruta activa |
-| `src/app/core/services/pwa.service.ts` | Service PWA con isPlatformBrowser |
-| `src/app/core/services/push-notification.service.ts` | Service Push Notifications |
-| `src/app/features/payments/payment-form.component.ts` | Dialog form crear/editar pagos |
-| `src/app/shared/components/mobile-card/mobile-card.component.ts` | Card expandible con swipe |
-| `src/app/shared/components/copy-field/copy-field.component.ts` | Campo con copy + acciones nativas |
-| `src/app/shared/directives/copy-to-clipboard.directive.ts` | Directive copiar al portapapeles |
-| `src/material-theme.scss` | Brand palette para Material |
+| Archivo                                                                    | Qué muestra                                      |
+| -------------------------------------------------------------------------- | ------------------------------------------------ |
+| `src/app/app.routes.ts`                                                    | Todas las rutas definidas                        |
+| `src/app/layouts/admin-layout/admin-layout.component.ts`                   | Sidebar + header + content                       |
+| `src/app/layouts/tech-layout/tech-layout.component.ts`                     | Layout simple con BottomNav                      |
+| `src/app/features/work-orders/work-order-detail.component.ts`              | Detalle con tabs y acciones                      |
+| `src/app/features/clients/clients-list.component.ts`                       | CRUD list con mobile cards                       |
+| `src/app/features/billing/invoice-form.component.ts`                       | Form con autocomplete signals                    |
+| `src/app/core/services/notifications.service.ts`                           | Service con signals + WebSocket                  |
+| `src/app/shared/components/bottom-nav/bottom-nav.component.ts`             | Bottom nav de técnico (detección de ruta activa) |
+| `src/app/shared/components/admin-bottom-nav/admin-bottom-nav.component.ts` | Bottom nav de admin mobile (mismo patrón)        |
+| `src/app/core/services/pwa.service.ts`                                     | Service PWA con isPlatformBrowser                |
+| `src/app/core/services/push-notification.service.ts`                       | Service Push Notifications                       |
+| `src/app/features/payments/payment-form.component.ts`                      | Dialog form crear/editar pagos                   |
+| `src/app/shared/components/mobile-card/mobile-card.component.ts`           | Card expandible con swipe                        |
+| `src/app/shared/components/copy-field/copy-field.component.ts`             | Campo con copy + acciones nativas                |
+| `src/app/shared/directives/copy-to-clipboard.directive.ts`                 | Directive copiar al portapapeles                 |
+| `src/material-theme.scss`                                                  | Brand palette para Material                      |
