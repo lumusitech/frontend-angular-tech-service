@@ -18,6 +18,7 @@ export class InquiriesService {
   getAll(filters?: InquiryFilters): Observable<PaginatedResponse<Inquiry>> {
     let params = new HttpParams();
 
+    if (filters?.search) params = params.set('search', filters.search);
     if (filters?.status) params = params.set('status', filters.status);
     if (filters?.priority) params = params.set('priority', filters.priority);
     if (filters?.source) params = params.set('source', filters.source);

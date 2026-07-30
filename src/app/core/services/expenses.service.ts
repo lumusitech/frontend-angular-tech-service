@@ -17,6 +17,7 @@ export class ExpensesService {
   getAll(filters?: ExpenseFilters): Observable<PaginatedResponse<Expense>> {
     let params = new HttpParams();
 
+    if (filters?.search) params = params.set('search', filters.search);
     if (filters?.category) params = params.set('category', filters.category);
     if (filters?.isRecurring !== undefined)
       params = params.set('isRecurring', filters.isRecurring.toString());

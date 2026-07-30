@@ -35,7 +35,7 @@
     "copied": "Copied to clipboard",
     "copyToClipboard": "Copy",
     "copyError": "Error copying",
-    "globalSearch": "Search clients, orders, suppliers, service types, skills, inquiries, expenses, pending items, notifications...",
+    "globalSearch": "Search globally...",
     "entityType": {
       "client": "Client",
       "work-order": "Work Order",

@@ -25,7 +25,7 @@ const ENTITY_ORDER: Record<string, number> = {
     TranslatePipe,
   ],
   template: `
-    <div class="relative w-[42rem] max-w-full">
+    <div class="relative w-96">
       <div
         class="flex items-center gap-2 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all"
       >
@@ -46,7 +46,7 @@ const ENTITY_ORDER: Record<string, number> = {
 
       @if (isOpen() && (searchService.results().length > 0 || searchService.loading() || query().length >= 2)) {
         <div
-          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-[42rem] max-w-[calc(100vw-2rem)]"
+          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50 w-96 max-w-[calc(100vw-2rem)]"
         >
           @if (searchService.loading()) {
             <div class="flex items-center justify-center p-4">
