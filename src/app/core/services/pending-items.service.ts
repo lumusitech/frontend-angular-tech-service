@@ -17,6 +17,7 @@ export class PendingItemsService {
   getAll(filters?: PendingItemFilters): Observable<PaginatedResponse<PendingItem>> {
     let params = new HttpParams();
 
+    if (filters?.search) params = params.set('search', filters.search);
     if (filters?.status) params = params.set('status', filters.status);
     if (filters?.priority) params = params.set('priority', filters.priority);
     if (filters?.type) params = params.set('type', filters.type);

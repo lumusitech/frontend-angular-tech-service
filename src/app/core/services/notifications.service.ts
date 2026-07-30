@@ -17,6 +17,7 @@ export class NotificationsService {
 
   getAll(filters?: NotificationFilters): Observable<PaginatedNotifications> {
     let params = new HttpParams();
+    if (filters?.search) params = params.set('search', filters.search);
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());
     if (filters?.sortBy) params = params.set('sortBy', filters.sortBy);

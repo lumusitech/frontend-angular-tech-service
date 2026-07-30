@@ -138,7 +138,7 @@ export class GlobalSearchService {
           type: 'expense' as const,
           id: exp.id,
           title: exp.description,
-          subtitle: `$${exp.amount.toFixed(2)}`,
+          subtitle: `$${Number(exp.amount).toFixed(2)}`,
           icon: 'receipt_long',
           route: `/admin/expenses`,
         })),
