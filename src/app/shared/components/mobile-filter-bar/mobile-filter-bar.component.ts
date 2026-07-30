@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -23,7 +23,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
     <div class="md:hidden">
       @if (expanded()) {
-        <div class="flex flex-wrap items-center gap-3">
+        <div
+          class="fixed inset-0 z-40"
+          (click)="expanded.set(false)"
+          (touchstart)="expanded.set(false)"
+        ></div>
+        <div class="relative z-50 flex flex-wrap items-center gap-3">
           <ng-content />
           <button mat-icon-button (click)="expanded.set(false)" class="!w-8 !h-8 !min-w-0">
             <mat-icon>close</mat-icon>
@@ -57,28 +62,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   ],
 })
 export class MobileFilterBarComponent {
-  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly hasActiveFilters = input(false);
   readonly clearFilters = output<void>();
 
   readonly expanded = signal(false);
-
-  constructor() {
-    if (typeof document !== 'undefined') {
-      document.addEventListener('mousedown', this.onDocumentMouseDown);
-      this.destroyRef.onDestroy(() =>
-        document.removeEventListener('mousedown', this.onDocumentMouseDown),
-      );
-    }
-  }
-
-  private onDocumentMouseDown = (event: MouseEvent): void => {
-    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
-      this.expanded.set(false);
-    }
-  };
 
   onIconClick(): void {
     if (this.hasActiveFilters()) {
