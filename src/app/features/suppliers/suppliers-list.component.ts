@@ -422,9 +422,6 @@ export class SuppliersListComponent implements OnInit {
     return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.isActiveFilter(), this.dateFrom(), this.dateTo()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

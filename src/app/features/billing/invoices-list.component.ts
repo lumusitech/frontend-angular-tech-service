@@ -287,9 +287,6 @@ export class InvoicesListComponent {
     return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
 
-  readonly filterVersion = computed(() =>
-    [this.statusFilter(), this.typeFilter(), this.clientNameFilter(), this.dateFrom(), this.dateTo()].join('|'),
-  );
 
   clearFilters(): void {
     this.statusFilter.set('');

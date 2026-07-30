@@ -80,7 +80,7 @@ const STATUS_COLORS: Record<string, string> = {
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
@@ -473,9 +473,6 @@ export class InquiriesListComponent implements OnInit {
     return this.searchFilter() !== '' || this.statusFilter() !== '' || this.sourceFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.statusFilter(), this.sourceFilter(), this.dateFrom(), this.dateTo()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

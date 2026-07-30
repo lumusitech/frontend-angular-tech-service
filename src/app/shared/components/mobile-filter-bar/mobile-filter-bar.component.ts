@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  inject,
-  input,
-  linkedSignal,
-  output,
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -69,13 +61,9 @@ export class MobileFilterBarComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly hasActiveFilters = input(false);
-  readonly filterVersion = input('');
   readonly clearFilters = output<void>();
 
-  readonly expanded = linkedSignal({
-    source: this.filterVersion,
-    computation: () => false,
-  });
+  readonly expanded = signal(false);
 
   constructor() {
     if (typeof document !== 'undefined') {
