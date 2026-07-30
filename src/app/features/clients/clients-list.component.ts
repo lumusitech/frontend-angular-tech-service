@@ -25,7 +25,11 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 import { ClientFormComponent } from './client-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -52,6 +56,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     PageHeaderComponent,
     StatusBadgeComponent,
     MobileCardComponent,
+    MobileFilterBarComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -65,41 +70,60 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            [filterVersion]="filterVersion()"
+            (clearFilters)="clearFilters()"
+          >
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
-              <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select
+                [value]="isActiveFilter()"
+                (selectionChange)="isActiveFilter.set($event.value)"
+              >
+                <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+                <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
+                <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-          </mat-form-field>
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+            </mat-form-field>
+          </app-mobile-filter-bar>
         </div>
       </div>
 
@@ -122,7 +146,11 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
           @for (client of clientsResource.value().data; track client.id) {
             <app-mobile-card
               [title]="client.name"
-              [status]="client.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
+              [status]="
+                client.isActive
+                  ? translationService.instant('common.active')
+                  : translationService.instant('common.inactive')
+              "
               [statusType]="$any('activeInactive')"
               [fields]="getClientFields(client)"
               [canSwipe]="true"
@@ -133,7 +161,9 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -151,11 +181,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
               >
                 {{ 'clients.name' | translate }}
               </th>
-              <td
-                mat-cell
-                *matCellDef="let client"
-                class="px-4 py-3 text-sm"
-              >
+              <td mat-cell *matCellDef="let client" class="px-4 py-3 text-sm">
                 <a
                   [routerLink]="['/admin/clients', client.id]"
                   class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
@@ -279,7 +305,13 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="viewDetail(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              (click)="viewDetail(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -314,8 +346,10 @@ export class ClientsListComponent implements OnInit {
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => ({
     url: '/api/clients',
@@ -405,8 +439,17 @@ export class ClientsListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return (
+      this.searchFilter() !== '' ||
+      this.isActiveFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== ''
+    );
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.isActiveFilter(), this.dateFrom(), this.dateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -430,11 +473,16 @@ export class ClientsListComponent implements OnInit {
       if (confirmed) {
         this.clientsService.delete(client.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.clientsResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -444,10 +492,22 @@ export class ClientsListComponent implements OnInit {
 
   getClientFields(client: Client): MobileCardField[] {
     return [
-      { label: this.translationService.instant('clients.email'), value: client.email, type: 'email' },
-      { label: this.translationService.instant('clients.phone'), value: client.phone || '-', type: 'phone' },
+      {
+        label: this.translationService.instant('clients.email'),
+        value: client.email,
+        type: 'email',
+      },
+      {
+        label: this.translationService.instant('clients.phone'),
+        value: client.phone || '-',
+        type: 'phone',
+      },
       { label: this.translationService.instant('common.address'), value: client.address || '-' },
-      { label: this.translationService.instant('common.created'), value: client.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('common.created'),
+        value: client.createdAt,
+        type: 'date',
+      },
     ];
   }
 

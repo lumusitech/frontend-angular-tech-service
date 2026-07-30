@@ -30,6 +30,7 @@ import { MobileCardComponent, MobileCardField } from '../../shared/components/mo
 import { SupplierFormComponent } from './supplier-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 @Component({
   selector: 'app-suppliers-list',
@@ -52,6 +53,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     PageHeaderComponent,
     StatusBadgeComponent,
     MobileCardComponent,
+    MobileFilterBarComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -67,39 +69,34 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+          <app-mobile-filter-bar>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
-              <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
+                <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+                <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
+                <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-          </mat-form-field>
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
-          }
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+            </mat-form-field>
+          </app-mobile-filter-bar>
         </div>
       </div>
 
@@ -424,6 +421,10 @@ export class SuppliersListComponent implements OnInit {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.isActiveFilter(), this.dateFrom(), this.dateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');

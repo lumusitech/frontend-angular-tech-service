@@ -25,9 +25,15 @@ interface NavItem {
         @if (!collapsed()) {
           <div class="flex items-center gap-2">
             @if (settings()?.logoUrl) {
-              <img [src]="settings()!.logoUrl" [alt]="settings()!.businessName" class="h-8 w-8 rounded-lg object-cover" />
+              <img
+                [src]="settings()!.logoUrl"
+                [alt]="settings()!.businessName"
+                class="h-8 w-8 rounded-lg object-cover"
+              />
             }
-            <span class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ settings()?.businessName ?? 'Tech Service' }}</span>
+            <span class="text-lg font-bold text-gray-900 dark:text-gray-100">{{
+              settings()?.businessName ?? 'Tech Service'
+            }}</span>
           </div>
         }
         <button
@@ -56,6 +62,7 @@ interface NavItem {
           <a
             [routerLink]="item.route"
             routerLinkActive="sidebar-active-link"
+            (click)="navigated.emit()"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             [class.justify-center]="collapsed()"
           >
@@ -69,7 +76,11 @@ interface NavItem {
 
       @if (!collapsed() && settings()?.logoUrl) {
         <div class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
-          <img [src]="settings()!.logoUrl" [alt]="settings()!.businessName" class="h-16 w-16 rounded-xl object-cover opacity-60" />
+          <img
+            [src]="settings()!.logoUrl"
+            [alt]="settings()!.businessName"
+            class="h-16 w-16 rounded-xl object-cover opacity-60"
+          />
         </div>
       }
     </aside>
@@ -82,6 +93,7 @@ export class SidebarComponent {
 
   collapsed = input(false);
   toggleCollapse = output<void>();
+  navigated = output<void>();
 
   navItems: NavItem[] = [
     {

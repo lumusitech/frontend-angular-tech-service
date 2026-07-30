@@ -33,6 +33,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { PaymentFormComponent } from './payment-form.component';
 import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
+import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 @Component({
   selector: 'app-payments-list',
@@ -56,6 +57,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
     TrackingCodeComponent,
     CurrencyArsPipe,
     MobileCardComponent,
+    MobileFilterBarComponent,
     DateFieldSelectorComponent,
     TranslatePipe,
     RelativeDatePipe,
@@ -73,6 +75,7 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
@@ -125,15 +128,10 @@ import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/compon
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
+          </app-mobile-filter-bar>
+
           @if (dateError()) {
             <div class="w-40 text-red-500 dark:text-red-400 text-xs">{{ dateError() | translate }}</div>
-          }
-
-          @if (hasActiveFilters()) {
-            <button mat-stroked-button (click)="clearFilters()" class="!text-gray-500 dark:!text-gray-400">
-              <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
-              {{ 'common.clearFilters' | translate }}
-            </button>
           }
 
           @if (fromNotification()) {
@@ -502,6 +500,10 @@ export class PaymentsListComponent implements OnInit {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.statusFilter() !== '' || this.methodFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
   });
+
+  readonly filterVersion = computed(() =>
+    [this.searchFilter(), this.statusFilter(), this.methodFilter(), this.dateFrom(), this.dateTo()].join('|'),
+  );
 
   clearFilters(): void {
     this.searchFilter.set('');
