@@ -24,6 +24,7 @@ export const NOTIFICATION_TOAST_ICONS: Record<string, string> = {
   [NotificationType.WORK_ORDER_NOTE_UPDATED]: 'edit_note',
   [NotificationType.WORK_ORDER_NOTE_DELETED]: 'delete_outline',
   [NotificationType.WORK_ORDER_MATERIAL_ADDED]: 'inventory_2',
+  [NotificationType.WORK_ORDER_STATUS_DETAIL_CHANGED]: 'edit_note',
 };
 
 interface ToastData {
@@ -40,7 +41,9 @@ interface ToastData {
       <mat-icon class="!text-blue-500 !mt-0.5 shrink-0">{{ data.icon }}</mat-icon>
       <div class="flex-1 min-w-0">
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ data.title }}</p>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2">{{ data.message }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2">
+          {{ data.message }}
+        </p>
       </div>
       <button mat-icon-button (click)="dismiss()" class="!-mt-1 !-mr-1 shrink-0">
         <mat-icon class="!w-4 !h-4">close</mat-icon>

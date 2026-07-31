@@ -41,6 +41,7 @@ const TYPE_ICONS: Record<string, string> = {
   'work_order.note_updated': 'edit_note',
   'work_order.note_deleted': 'delete_outline',
   'work_order.material_added': 'inventory_2',
+  'work_order.status_detail_changed': 'edit_note',
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -63,6 +64,7 @@ const TYPE_COLORS: Record<string, string> = {
   'work_order.note_updated': 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30',
   'work_order.note_deleted': 'text-red-500 bg-red-100 dark:bg-red-900/30',
   'work_order.material_added': 'text-orange-500 bg-orange-100 dark:bg-orange-900/30',
+  'work_order.status_detail_changed': 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30',
 };
 
 @Component({
@@ -98,48 +100,106 @@ const TYPE_COLORS: Record<string, string> = {
         }
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
-          <mat-button-toggle-group
-            [value]="readFilter()"
-            (change)="onFilterChange($event.value)"
-            class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
           >
-            <mat-button-toggle value="all">{{ 'notifications.filters.all' | translate }}</mat-button-toggle>
-            <mat-button-toggle value="unread">{{ 'notifications.filters.unread' | translate }}</mat-button-toggle>
-          </mat-button-toggle-group>
+            <mat-button-toggle-group
+              [value]="readFilter()"
+              (change)="onFilterChange($event.value)"
+              class="!bg-white dark:!bg-gray-800 !border !border-gray-200 dark:!border-gray-700 !rounded-lg"
+            >
+              <mat-button-toggle value="all">{{
+                'notifications.filters.all' | translate
+              }}</mat-button-toggle>
+              <mat-button-toggle value="unread">{{
+                'notifications.filters.unread' | translate
+              }}</mat-button-toggle>
+            </mat-button-toggle-group>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'notifications.type' | translate }}</mat-label>
-            <mat-select [value]="typeFilter()" (selectionChange)="onTypeFilterChange($event.value)">
-              <mat-option value="">{{ 'notifications.filters.allTypes' | translate }}</mat-option>
-              <mat-option value="work_order.created">{{ 'notifications.types.workOrderCreated' | translate }}</mat-option>
-              <mat-option value="work_order.status_changed">{{ 'notifications.types.workOrderStatusChanged' | translate }}</mat-option>
-              <mat-option value="work_order.technician_assigned">{{ 'notifications.types.workOrderTechnicianAssigned' | translate }}</mat-option>
-              <mat-option value="task.created">{{ 'notifications.types.taskCreated' | translate }}</mat-option>
-              <mat-option value="task.completed">{{ 'notifications.types.taskCompleted' | translate }}</mat-option>
-              <mat-option value="payment.created">{{ 'notifications.types.paymentCreated' | translate }}</mat-option>
-              <mat-option value="payment.approved">{{ 'notifications.types.paymentApproved' | translate }}</mat-option>
-              <mat-option value="payment.rejected">{{ 'notifications.types.paymentRejected' | translate }}</mat-option>
-              <mat-option value="pending_item.created">{{ 'notifications.types.pendingItemCreated' | translate }}</mat-option>
-              <mat-option value="pending_item.due_today">{{ 'notifications.types.pendingItemDueToday' | translate }}</mat-option>
-              <mat-option value="pending_item.overdue">{{ 'notifications.types.pendingItemOverdue' | translate }}</mat-option>
-              <mat-option value="inquiry.created">{{ 'notifications.types.inquiryCreated' | translate }}</mat-option>
-              <mat-option value="inquiry.assigned">{{ 'notifications.types.inquiryAssigned' | translate }}</mat-option>
-              <mat-option value="inquiry.contacted">{{ 'notifications.types.inquiryContacted' | translate }}</mat-option>
-              <mat-option value="inquiry.reviewed">{{ 'notifications.types.inquiryReviewed' | translate }}</mat-option>
-              <mat-option value="work_order.note_added">{{ 'notifications.types.noteAdded' | translate }}</mat-option>
-              <mat-option value="work_order.note_updated">{{ 'notifications.types.noteUpdated' | translate }}</mat-option>
-              <mat-option value="work_order.note_deleted">{{ 'notifications.types.noteDeleted' | translate }}</mat-option>
-              <mat-option value="work_order.material_added">{{ 'notifications.types.materialAdded' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'notifications.type' | translate }}</mat-label>
+              <mat-select
+                [value]="typeFilter()"
+                (selectionChange)="onTypeFilterChange($event.value)"
+              >
+                <mat-option value="">{{ 'notifications.filters.allTypes' | translate }}</mat-option>
+                <mat-option value="work_order.created">{{
+                  'notifications.types.workOrderCreated' | translate
+                }}</mat-option>
+                <mat-option value="work_order.status_changed">{{
+                  'notifications.types.workOrderStatusChanged' | translate
+                }}</mat-option>
+                <mat-option value="work_order.technician_assigned">{{
+                  'notifications.types.workOrderTechnicianAssigned' | translate
+                }}</mat-option>
+                <mat-option value="task.created">{{
+                  'notifications.types.taskCreated' | translate
+                }}</mat-option>
+                <mat-option value="task.completed">{{
+                  'notifications.types.taskCompleted' | translate
+                }}</mat-option>
+                <mat-option value="payment.created">{{
+                  'notifications.types.paymentCreated' | translate
+                }}</mat-option>
+                <mat-option value="payment.approved">{{
+                  'notifications.types.paymentApproved' | translate
+                }}</mat-option>
+                <mat-option value="payment.rejected">{{
+                  'notifications.types.paymentRejected' | translate
+                }}</mat-option>
+                <mat-option value="pending_item.created">{{
+                  'notifications.types.pendingItemCreated' | translate
+                }}</mat-option>
+                <mat-option value="pending_item.due_today">{{
+                  'notifications.types.pendingItemDueToday' | translate
+                }}</mat-option>
+                <mat-option value="pending_item.overdue">{{
+                  'notifications.types.pendingItemOverdue' | translate
+                }}</mat-option>
+                <mat-option value="inquiry.created">{{
+                  'notifications.types.inquiryCreated' | translate
+                }}</mat-option>
+                <mat-option value="inquiry.assigned">{{
+                  'notifications.types.inquiryAssigned' | translate
+                }}</mat-option>
+                <mat-option value="inquiry.contacted">{{
+                  'notifications.types.inquiryContacted' | translate
+                }}</mat-option>
+                <mat-option value="inquiry.reviewed">{{
+                  'notifications.types.inquiryReviewed' | translate
+                }}</mat-option>
+                <mat-option value="work_order.note_added">{{
+                  'notifications.types.noteAdded' | translate
+                }}</mat-option>
+                <mat-option value="work_order.note_updated">{{
+                  'notifications.types.noteUpdated' | translate
+                }}</mat-option>
+                <mat-option value="work_order.note_deleted">{{
+                  'notifications.types.noteDeleted' | translate
+                }}</mat-option>
+                <mat-option value="work_order.material_added">{{
+                  'notifications.types.materialAdded' | translate
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
           </app-mobile-filter-bar>
         </div>
       </div>
@@ -160,7 +220,9 @@ const TYPE_COLORS: Record<string, string> = {
           @for (notification of resource.value().data; track notification.id) {
             <div
               class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3"
-              [style.border-left-color]="!notification.isRead ? 'var(--color-primary)' : 'var(--color-secondary)'"
+              [style.border-left-color]="
+                !notification.isRead ? 'var(--color-primary)' : 'var(--color-secondary)'
+              "
               (click)="handleItemClick(notification)"
             >
               <!-- Icon -->
@@ -252,7 +314,6 @@ export class NotificationsListComponent {
   readonly hasActiveFilters = computed(() => {
     return this.readFilter() !== 'all' || this.typeFilter() !== '' || this.searchFilter() !== '';
   });
-
 
   clearFilters(): void {
     this.readFilter.set('all');
