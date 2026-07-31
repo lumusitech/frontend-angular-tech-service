@@ -65,6 +65,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Seeds actualizados: TS-MT0007 y TS-PC0002 con `statusLogDetail` en su último log
 - Timeline real-time: `TimelineTabComponent` + `TechWorkOrderDetailComponent` usan `httpResource` keyed en `websocketService.workOrderRefreshKey()` — un cambio de estado desde el técnico se refleja en el detalle del admin sin recargar
 - Fix: key de traducción de estados snake_case→camelCase (`on_the_way`→`onTheWay`); agregadas keys `onTheWay`/`postponed` a `workOrders.statuses` en es/en
+- **Real-time del detalle (PRs #133/#212):** actualizar/eliminar el detalle de un log emite la notificación `work_order.status_detail_changed` (backend: evento + handler + migración del enum PostgreSQL `1785474367000`) → admins y técnicos asignados ven el cambio sin recargar. Verificado two-tab en Playwright (editar y eliminar)
 
 ### Fix: Swipe colors mobile card (PR #205)
 
@@ -369,9 +370,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Próxima sesión — prioridades en orden
 
-### 0. Commitear y mergear feature "Detalle en status logs" (rama `fix/timeline-realtime-websocket-v2`)
+### 0. Mergear feature "Real-time del detalle del timeline" (ramas `feat/status-detail-realtime`)
 
-Cambios sin commitear en frontend y backend. Backend: entity + migration (ya ejecutada) + DTOs + endpoints PATCH/DELETE + seeds. Frontend: StatusChangeDialogComponent, status-timeline con CRUD de detalle, i18n. Crear PR tras commit.
+✅ Feature completa (commit `b7345c4` backend, `92b3d0d` frontend). PRs abiertos: backend **#133**, frontend **#212**. Pendiente solo review y merge. El detalle del timeline ahora se propaga en vivo a admins y técnicos asignados al editar/eliminar (antes solo el usuario mutador actualizaba su vista).
 
 ### 1. Ejecutar E2E tests contra backend real
 
