@@ -1,42 +1,30 @@
-import { Component, inject, input, signal, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, inject, input } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { WorkOrderStatusLog } from '../../../core/models/work-order.interfaces';
 import { StatusTimelineComponent } from '../status-timeline/status-timeline.component';
+import { WebsocketService } from '../../../core/services/websocket.service';
 
 @Component({
   selector: 'app-timeline-tab',
   imports: [StatusTimelineComponent],
   template: `
-    @if (loading()) {
+    @if (resource.isLoading() && !resource.hasValue()) {
       <div class="p-4 text-center text-sm text-gray-400 dark:text-gray-500">
         Cargando timeline...
       </div>
-    } @else if (logs().length > 0) {
+    } @else if (resource.hasValue() && resource.value().length > 0) {
       <div class="p-4">
-        <app-status-timeline [logs]="logs()" />
+        <app-status-timeline [logs]="resource.value()" />
       </div>
     }
   `,
 })
-export class TimelineTabComponent implements OnInit {
-  private readonly http = inject(HttpClient);
+export class TimelineTabComponent {
+  private readonly websocketService = inject(WebsocketService);
   orderId = input.required<string>();
 
-  readonly logs = signal<WorkOrderStatusLog[]>([]);
-  readonly loading = signal(false);
-
-  ngOnInit(): void {
-    this.loading.set(true);
-    this.http
-      .get<WorkOrderStatusLog[]>(`/api/work-orders/${this.orderId()}/status-logs`, {
-        headers: new HttpHeaders({ 'X-Skip-Loading': 'true' }),
-      })
-      .subscribe({
-        next: (data) => {
-          this.logs.set(data);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-  }
+  readonly resource = httpResource<WorkOrderStatusLog[]>(() => {
+    this.websocketService.workOrderRefreshKey();
+    return `/api/work-orders/${this.orderId()}/status-logs`;
+  });
 }
