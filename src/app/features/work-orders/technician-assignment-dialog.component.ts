@@ -3,7 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
@@ -83,8 +83,9 @@ export class TechnicianAssignmentDialogComponent {
     url: '/api/users?role=technician&limit=100',
   }));
 
-  onSelectionChange(event: any): void {
-    this.selectedIds.set(event.options._selected.map((o: any) => o.value));
+  onSelectionChange(event: MatSelectionListChange): void {
+    const selected = event.options.filter((o) => o.selected).map((o) => o.value);
+    this.selectedIds.set(selected);
   }
 
   onSave(): void {

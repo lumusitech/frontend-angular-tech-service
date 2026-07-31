@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -57,14 +59,8 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   <app-tracking-code [code]="orderData()!.trackingCode" />
                 </h1>
-                <app-status-badge
-                  [value]="orderData()!.status"
-                  type="workOrderStatus"
-                />
-                <app-status-badge
-                  [value]="orderData()!.priority"
-                  type="workOrderPriority"
-                />
+                <app-status-badge [value]="orderData()!.status" type="workOrderStatus" />
+                <app-status-badge [value]="orderData()!.priority" type="workOrderPriority" />
               </div>
               <p class="text-gray-500 dark:text-gray-400 mt-1">
                 {{ orderData()!.serviceType.name }} -
@@ -168,6 +164,8 @@ export class WorkOrderDetailComponent {
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
   readonly orderId = signal(this.route.snapshot.paramMap.get('id') || '');
   readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
@@ -182,9 +180,15 @@ export class WorkOrderDetailComponent {
     this.workOrdersService.update(id, dto).subscribe({
       next: () => {
         this.savingInfo.set(false);
+        this.toastService.show(this.translationService.instant('common.toast.updated'), 'success');
         this.loadOrder();
       },
-      error: () => this.savingInfo.set(false),
+      error: (err) => {
+        this.savingInfo.set(false);
+        const msg =
+          err.error?.message || this.translationService.instant('common.toast.errorUpdated');
+        this.toastService.show(msg, 'error');
+      },
     });
   }
 
@@ -211,9 +215,11 @@ export class WorkOrderDetailComponent {
   onToggleTask(event: { taskId: string; isCompleted: boolean }): void {
     const id = this.orderData()?.id;
     if (id) {
-      this.workOrdersService.updateTask(id, event.taskId, { isCompleted: event.isCompleted }).subscribe({
-        next: () => this.loadOrder(),
-      });
+      this.workOrdersService
+        .updateTask(id, event.taskId, { isCompleted: event.isCompleted })
+        .subscribe({
+          next: () => this.loadOrder(),
+        });
     }
   }
 
