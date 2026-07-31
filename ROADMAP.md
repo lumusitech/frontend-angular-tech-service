@@ -234,6 +234,8 @@ server.ts                          # Express server (SSR entry point)
 - [x] CopyToClipboardDirective (copy to clipboard with toast feedback)
 - [x] CopyFieldComponent (phone → tel:, email → mailto:, address → maps:, date → relative)
 - [x] MobileCardComponent (expansion panel with swipe gestures, accordion behavior)
+- [x] StatusTimelineComponent (timeline de cambios de estado con detalle CRUD: agregar/editar/eliminar con confirmación)
+- [x] StatusChangeDialogComponent (dialog compartido: cambio de estado + detalle opcional, precarga texto existente al editar)
 
 ### 3. `layouts/` — Layouts
 
@@ -346,6 +348,11 @@ server.ts                          # Express server (SSR entry point)
   - [x] Visual flow: pending -> assigned -> in_progress -> completed -> delivered
   - [x] Only valid transitions shown as buttons
   - [x] Confirmation dialog for cancel
+  - [x] Detalle opcional en cada transición (StatusChangeDialogComponent compartido admin/técnico)
+- [x] Timeline con detalle (StatusTimelineComponent)
+  - [x] Mostrar detalle del cambio de estado en caja con editar/eliminar
+  - [x] Botón "Agregar detalle" cuando el log no tiene detalle
+  - [x] Confirmación antes de eliminar el detalle (ConfirmDialogComponent warn)
 - [x] TechnicianAssignmentComponent (dialog multi-select)
 - [x] NoteDialogComponent (add-note-dialog refactorizado con modo edición)
 - [x] NotesTabComponent con botones editar/eliminar (admin only)
