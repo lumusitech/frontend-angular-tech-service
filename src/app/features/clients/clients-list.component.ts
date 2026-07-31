@@ -74,7 +74,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
       >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar #filterBar
+          <app-mobile-filter-bar
             [hasActiveFilters]="hasActiveFilters()"
             (clearFilters)="clearFilters()"
           >
@@ -86,7 +86,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
                 (input)="searchFilter.set(getInputValue($event))"
                 inputmode="search"
                 enterkeyhint="done"
-                (keydown.enter)="$event.target.blur(); filterBar.expanded.set(false)"
+                (keydown.enter)="$event.target.blur()"
                 [placeholder]="'common.search' | translate"
               />
             </mat-form-field>
