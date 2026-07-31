@@ -84,7 +84,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
       >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar
+          <app-mobile-filter-bar #filterBar
             [hasActiveFilters]="hasActiveFilters()"
             (clearFilters)="clearFilters()"
           >
@@ -94,8 +94,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
                 matInput
                 [value]="searchFilter()"
                 (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
                 enterkeyhint="done"
-                (keydown.enter)="$event.target.blur()"
+                (keydown.enter)="$event.target.blur(); filterBar.expanded.set(false)"
                 [placeholder]="'common.search' | translate"
               />
             </mat-form-field>

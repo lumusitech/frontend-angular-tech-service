@@ -75,7 +75,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar #filterBar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-40">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
@@ -107,7 +107,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
 
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
+            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur(); filterBar.expanded.set(false)" [placeholder]="'common.search' | translate" />
           </mat-form-field>
 
           <app-date-field-selector
