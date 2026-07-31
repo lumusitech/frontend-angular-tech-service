@@ -55,7 +55,16 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-## Últimas features implementadas (30/07/2026)
+## Últimas features implementadas (31/07/2026)
+
+### Fix: Swipe colors mobile card (PR #205)
+
+- Los fondos de colores del swipe (azul editar, rojo eliminar) se veían en las esquinas de las mobile cards incluso sin deslizar
+- Causa: `overflow: visible !important` en `.swipe-card` + `margin-bottom: 16px` de Angular Material
+- Solución: `overflow: hidden`, `!mb-0`, `[style.opacity]` controlado por signal `swiping()`
+- Fondos ahora solo aparecen durante el gesto de swipe con transición suave de 0.2s
+- `swiping` convertido de boolean privado a signal público para controlar opacity via binding Angular
+- `swiping.set(false)` retrasado 300ms en swipe completado para mantener fondos visibles durante snap-back
 
 ### Mobile bottom nav + Search global responsive (PR #200)
 
@@ -178,6 +187,34 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - `src/app/features/work-orders/work-order.resolver.ts` — usa `X-Skip-Loading`
 - `src/app/shared/components/timeline-tab/timeline-tab.component.ts` — `HttpClient` + `X-Skip-Loading`
 - `src/app/features/work-orders/tabs/info-tab.component.ts` — `HttpClient` + `X-Skip-Loading`
+
+---
+
+### ~~BUG-004: Fondos de colores del swipe visibles en mobile cards~~ ✅
+
+**Solucionado:** Los fondos de colores del swipe (azul de editar, rojo de eliminar) se veían en las esquinas de las mobile cards incluso sin deslizar. Causa: `overflow: visible !important` en `.swipe-card` permitía que los fondos se filtraran por las esquinas redondeadas del `border-radius`, y `margin-bottom: 16px` del expansion panel de Angular Material creaba un gap inferior donde se veían los colores.
+
+**Fix implementado:**
+
+1. `overflow: visible !important` → `overflow: hidden` en `.swipe-card` — evita filtrado por border-radius
+2. `!mb-0` en clases del `mat-expansion-panel` — elimina gap de 16px
+3. `swiping` convertido de `boolean` privado a `signal(false)` público
+4. `[style.opacity]="swiping() ? 1 : 0"` en `.swipe-actions` — control directo via binding Angular
+5. `swiping.set(false)` retrasado 300ms en swipe completado — mantiene fondos visibles durante snap-back
+
+**Archivos modificados:**
+
+- `src/app/shared/components/mobile-card/mobile-card.component.ts` — overflow, margin, signal, opacity binding
+
+**Behavior:**
+
+| Estado           | Fondos                                |
+| ---------------- | ------------------------------------- |
+| Card colapsada   | Ocultos (opacity 0)                   |
+| Card expandida   | Ocultos (opacity 0)                   |
+| Deslizando       | Visibles con transición (opacity 1)   |
+| Swipe completado | Se mantienen 300ms, luego desaparecen |
+| Tap sin deslizar | Se ocultan inmediato                  |
 
 ---
 
