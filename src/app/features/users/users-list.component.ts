@@ -287,9 +287,6 @@ export class UsersListComponent {
     return this.searchFilter() !== '' || this.roleFilter() !== '';
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.roleFilter()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

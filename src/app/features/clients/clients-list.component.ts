@@ -76,7 +76,6 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
         <div class="flex items-center gap-3 flex-wrap">
           <app-mobile-filter-bar
             [hasActiveFilters]="hasActiveFilters()"
-            [filterVersion]="filterVersion()"
             (clearFilters)="clearFilters()"
           >
             <mat-form-field appearance="outline" class="w-44">
@@ -447,9 +446,6 @@ export class ClientsListComponent implements OnInit {
     );
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.isActiveFilter(), this.dateFrom(), this.dateTo()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

@@ -100,7 +100,7 @@ const TYPE_COLORS: Record<string, string> = {
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
           <mat-button-toggle-group
             [value]="readFilter()"
             (change)="onFilterChange($event.value)"
@@ -253,9 +253,6 @@ export class NotificationsListComponent {
     return this.readFilter() !== 'all' || this.typeFilter() !== '' || this.searchFilter() !== '';
   });
 
-  readonly filterVersion = computed(() =>
-    [this.readFilter(), this.typeFilter(), this.searchFilter()].join('|'),
-  );
 
   clearFilters(): void {
     this.readFilter.set('all');

@@ -64,7 +64,7 @@ import { TranslationService } from '../../core/services/translation.service';
 
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" [filterVersion]="filterVersion()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
             <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
@@ -232,9 +232,6 @@ export class SkillsListComponent implements OnInit {
     return this.searchFilter() !== '' || this.categoryFilter() !== '';
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.categoryFilter()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

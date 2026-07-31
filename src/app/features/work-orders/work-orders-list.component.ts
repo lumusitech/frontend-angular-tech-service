@@ -86,7 +86,6 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         <div class="flex items-center gap-3 flex-wrap">
           <app-mobile-filter-bar
             [hasActiveFilters]="hasActiveFilters()"
-            [filterVersion]="filterVersion()"
             (clearFilters)="clearFilters()"
           >
             <mat-form-field appearance="outline" class="w-44">
@@ -592,15 +591,6 @@ export class WorkOrdersListComponent implements OnInit {
     );
   });
 
-  readonly filterVersion = computed(() =>
-    [
-      this.searchFilter(),
-      this.statusFilter(),
-      this.priorityFilter(),
-      this.dateFrom(),
-      this.dateTo(),
-    ].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');

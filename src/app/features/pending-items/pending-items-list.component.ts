@@ -543,9 +543,6 @@ export class PendingItemsListComponent implements OnInit {
     return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '' || this.fromNotification();
   });
 
-  readonly filterVersion = computed(() =>
-    [this.searchFilter(), this.statusFilter(), this.priorityFilter(), this.dueDateFrom(), this.dueDateTo()].join('|'),
-  );
 
   clearFilters(): void {
     this.searchFilter.set('');
