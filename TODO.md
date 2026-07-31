@@ -128,19 +128,21 @@ if (isPlatformBrowser(this.platformId)) { ... }
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
 2. ~~**Migrar 15 formularios a Signal Forms**~~ ✅ — 15/15 completado en 3 PRs.
 3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
+4. **BUG-005: Mobile work order detail UI/UX** — El detalle de orden en mobile se ve con scroll horizontal, layout roto, opciones de swipe que no funcionan bien. Requiere rediseño del template para mobile-first: stack vertical, sin overflow, acciones accesibles.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
-4. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
-5. ~~**Tests de componentes**~~ ✅ — 470 tests pasando (25 archivos, 100% pass rate). Incluye global-search (23 tests), app, pipes, directives, guards, interceptors, list components.
-6. **E2E tests (Playwright)** — 🔄 Avanzado: 15 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
+5. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
+6. ~~**Tests de componentes**~~ ✅ — 470 tests pasando (25 archivos, 100% pass rate). Incluye global-search (23 tests), app, pipes, directives, guards, interceptors, list components.
+7. **E2E tests (Playwright)** — 🔄 Avanzado: 15 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
+8. ~~**Google Maps + WhatsApp + Tap-to-Call**~~ ✅ — Completado. Iconos de acción en CopyFieldComponent (address → maps, phone → call + WhatsApp), InfoTabComponent, TechWorkOrderDetailComponent (nueva sección contacto), ClientDetailComponent. Fix: agregar `type: 'address'` faltante en clients-list y suppliers-list.
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
 
-7. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
-8. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
-9. **Bulk actions** — Selección múltiple, exportar masivo.
-10. **Kanban board** — Vista visual alternativa a tabla.
+9. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
+10. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
+11. **Bulk actions** — Selección múltiple, exportar masivo.
+12. **Kanban board** — Vista visual alternativa a tabla.
 
 ---
 
@@ -401,6 +403,38 @@ Requiere investigación de IndexedDB o similar.
 
 Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 
+### 6. ~~Google Maps + WhatsApp + Tap-to-Call (esfuerzo bajo-medio) — PRIORIDAD~~ ✅
+
+Completado. CopyFieldComponent: `location_on` → Maps, `phone` → call, `chat` → WhatsApp. InfoTabComponent, TechWorkOrderDetailComponent (sección contacto), ClientDetailComponent. Fix: `type: 'address'` faltante en clients-list y suppliers-list.
+
+### 7. BUG-005: Mobile work order detail UI/UX (esfuerzo medio) — PRIORIDAD
+
+Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, sin scroll horizontal, acciones accesibles. Verificar también `work-order-detail.component.ts` y `tech-layout.component.ts`.
+
+### 7. BUG-005: Mobile work order detail UI/UX (esfuerzo medio)
+
+**Problema:** El detalle de orden en mobile (`tech-work-order-detail`) tiene:
+
+- Scroll horizontal no deseado (grid `grid-cols-2` sin responsive)
+- Layout roto en pantallas pequeñas
+- Acciones de swipe que no funcionan correctamente
+- Contenido largo sin jerarquía clara
+
+**Solución:** Rediseñar el template mobile-first:
+
+- Stack vertical en mobile (`grid-cols-1` → `sm:grid-cols-2`)
+- Acciones de estado como botones full-width o chips compactos
+- Secciones colapsables o con accordion para contenido largo
+- Fix del scroll container en tech-layout
+
+**Archivos a modificar:**
+
+| Archivo                                                           | Cambio                             |
+| ----------------------------------------------------------------- | ---------------------------------- |
+| `src/app/features/technician/tech-work-order-detail.component.ts` | Rediseño mobile-first del template |
+| `src/app/features/work-orders/work-order-detail.component.ts`     | Evaluar si aplica el mismo fix     |
+| `src/app/layouts/tech-layout/tech-layout.component.ts`            | Verificar scroll container         |
+
 ---
 
 ### 11. Offline mode — Cola de mutaciones
@@ -504,6 +538,7 @@ Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 - [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
 - [x] Tests de componentes (470 tests pasando, 100% pass rate) — incluye global-search (23 tests)
 - [x] E2E tests: 15 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
+- [x] Google Maps + WhatsApp + Tap-to-Call (iconos en CopyFieldComponent, InfoTabComponent, TechWorkOrderDetail, ClientDetail)
 
 ## Archivos de referencia útiles
 

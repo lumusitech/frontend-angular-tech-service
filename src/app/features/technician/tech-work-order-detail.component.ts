@@ -3,10 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
-import {
-  WorkOrder,
-  WorkOrderStatus,
-} from '../../core/models/work-order.interfaces';
+import { WorkOrder, WorkOrderStatus } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -30,23 +27,63 @@ interface TechStatusAction {
 
 const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
   assigned: [
-    { labelKey: 'workOrders.actions.onTheWay', icon: 'directions_car', color: 'primary', nextStatus: 'on_the_way' },
-    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+    {
+      labelKey: 'workOrders.actions.onTheWay',
+      icon: 'directions_car',
+      color: 'primary',
+      nextStatus: 'on_the_way',
+    },
+    {
+      labelKey: 'workOrders.actions.cancel',
+      icon: 'cancel',
+      color: 'warn',
+      nextStatus: 'cancelled',
+    },
   ],
   on_the_way: [
-    { labelKey: 'workOrders.actions.startWork', icon: 'play_arrow', color: 'primary', nextStatus: 'in_progress' },
-    { labelKey: 'workOrders.actions.reAssign', icon: 'assignment_return', color: '', nextStatus: 'assigned' },
-    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+    {
+      labelKey: 'workOrders.actions.startWork',
+      icon: 'play_arrow',
+      color: 'primary',
+      nextStatus: 'in_progress',
+    },
+    {
+      labelKey: 'workOrders.actions.reAssign',
+      icon: 'assignment_return',
+      color: '',
+      nextStatus: 'assigned',
+    },
+    {
+      labelKey: 'workOrders.actions.cancel',
+      icon: 'cancel',
+      color: 'warn',
+      nextStatus: 'cancelled',
+    },
   ],
   in_progress: [
-    { labelKey: 'workOrders.actions.complete', icon: 'check_circle', color: 'primary', nextStatus: 'completed' },
-    { labelKey: 'workOrders.actions.cancel', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
+    {
+      labelKey: 'workOrders.actions.complete',
+      icon: 'check_circle',
+      color: 'primary',
+      nextStatus: 'completed',
+    },
+    {
+      labelKey: 'workOrders.actions.cancel',
+      icon: 'cancel',
+      color: 'warn',
+      nextStatus: 'cancelled',
+    },
   ],
   completed: [
     { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: '', nextStatus: 'in_progress' },
   ],
   cancelled: [
-    { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: 'primary', nextStatus: 'pending' },
+    {
+      labelKey: 'workOrders.actions.reopen',
+      icon: 'replay',
+      color: 'primary',
+      nextStatus: 'pending',
+    },
   ],
 };
 
@@ -81,10 +118,7 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
       @let order = orderData()!;
 
       <div class="space-y-4">
-        <app-page-header
-          [title]="order.trackingCode"
-          [subtitle]="order.client?.name || ''"
-        >
+        <app-page-header [title]="order.trackingCode" [subtitle]="order.client?.name || ''">
           <button mat-button (click)="goBack()">
             <mat-icon>arrow_back</mat-icon>
             {{ 'common.back' | translate }}
@@ -167,7 +201,11 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
                   <div class="flex-1 min-w-0">
                     <p
                       class="text-sm"
-                      [class]="task.isCompleted ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-gray-100'"
+                      [class]="
+                        task.isCompleted
+                          ? 'text-gray-400 dark:text-gray-500 line-through'
+                          : 'text-gray-900 dark:text-gray-100'
+                      "
                     >
                       {{ task.title }}
                     </p>
@@ -191,9 +229,13 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
             </h3>
             <div class="space-y-2">
               @for (material of order.materials; track material.id) {
-                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                <div
+                  class="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50"
+                >
                   <div>
-                    <p class="text-sm text-gray-900 dark:text-gray-100">{{ material.description }}</p>
+                    <p class="text-sm text-gray-900 dark:text-gray-100">
+                      {{ material.description }}
+                    </p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">
                       {{ material.quantity }} x {{ material.unitCost | number: '1.2-2' }}
                     </p>
@@ -238,7 +280,9 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
               }
             </div>
           } @else {
-            <p class="text-sm text-gray-400 dark:text-gray-500">{{ 'common.noResults' | translate }}</p>
+            <p class="text-sm text-gray-400 dark:text-gray-500">
+              {{ 'common.noResults' | translate }}
+            </p>
           }
         </mat-card>
 
@@ -249,13 +293,99 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           </h3>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <span class="text-gray-500 dark:text-gray-400 text-xs">{{ 'workOrders.scheduledDate' | translate }}</span>
-              <p class="text-gray-900 dark:text-gray-100">{{ order.scheduledDate ? (order.scheduledDate | date: 'dd/MM/yyyy') : '-' }}</p>
+              <span class="text-gray-500 dark:text-gray-400 text-xs">{{
+                'workOrders.scheduledDate' | translate
+              }}</span>
+              <p class="text-gray-900 dark:text-gray-100">
+                {{ order.scheduledDate ? (order.scheduledDate | date: 'dd/MM/yyyy') : '-' }}
+              </p>
             </div>
             <div>
-              <span class="text-gray-500 dark:text-gray-400 text-xs">{{ 'workOrders.diagnosis' | translate }}</span>
+              <span class="text-gray-500 dark:text-gray-400 text-xs">{{
+                'workOrders.diagnosis' | translate
+              }}</span>
               <p class="text-gray-900 dark:text-gray-100">{{ order.diagnosis || '-' }}</p>
             </div>
+          </div>
+        </mat-card>
+
+        <!-- Client contact -->
+        <mat-card class="p-4">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            {{ 'common.clientContact' | translate }}
+          </h3>
+          <div class="space-y-3">
+            @if (order.client?.phone) {
+              <div class="flex items-center gap-3">
+                <mat-icon class="!text-[18px] !w-[18px] !h-[18px] !text-gray-400">phone</mat-icon>
+                <a
+                  [href]="'tel:' + order.client.phone"
+                  class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ order.client.phone }}
+                </a>
+                <a
+                  [href]="'tel:' + order.client.phone"
+                  mat-icon-button
+                  class="!min-w-0 !p-1"
+                  [title]="'common.call' | translate"
+                >
+                  <mat-icon class="!text-[16px] !w-[16px] !h-[16px] !text-blue-500">phone</mat-icon>
+                </a>
+                <a
+                  [href]="'https://wa.me/' + encodeURIComponent(order.client.phone)"
+                  target="_blank"
+                  rel="noopener"
+                  mat-icon-button
+                  class="!min-w-0 !p-1"
+                  [title]="'common.whatsapp' | translate"
+                >
+                  <mat-icon class="!text-[16px] !w-[16px] !h-[16px] !text-green-500">chat</mat-icon>
+                </a>
+              </div>
+            }
+            @if (order.client?.email) {
+              <div class="flex items-center gap-3">
+                <mat-icon class="!text-[18px] !w-[18px] !h-[18px] !text-gray-400">email</mat-icon>
+                <a
+                  [href]="'mailto:' + order.client.email"
+                  class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ order.client.email }}
+                </a>
+              </div>
+            }
+            @if (order.location === 'on_site' && (order.workAddress || order.client?.address)) {
+              <div class="flex items-center gap-3">
+                <mat-icon class="!text-[18px] !w-[18px] !h-[18px] !text-gray-400"
+                  >location_on</mat-icon
+                >
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' +
+                    encodeURIComponent(order.workAddress || order.client.address!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ order.workAddress || order.client.address }}
+                </a>
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' +
+                    encodeURIComponent(order.workAddress || order.client.address!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  mat-icon-button
+                  class="!min-w-0 !p-1"
+                  [title]="'common.openInMaps' | translate"
+                >
+                  <mat-icon class="!text-[16px] !w-[16px] !h-[16px] !text-green-500">map</mat-icon>
+                </a>
+              </div>
+            }
           </div>
         </mat-card>
 
@@ -378,5 +508,9 @@ export class TechWorkOrderDetailComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.loadOrder();
     });
+  }
+
+  encodeURIComponent(value: string): string {
+    return encodeURIComponent(value);
   }
 }

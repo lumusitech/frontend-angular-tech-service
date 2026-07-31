@@ -26,7 +26,10 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { SupplierFormComponent } from './supplier-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -67,17 +70,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
           <app-mobile-filter-bar>
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.search' | translate }}</mat-label>
-              <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.status' | translate }}</mat-label>
-              <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
+              <mat-select
+                [value]="isActiveFilter()"
+                (selectionChange)="isActiveFilter.set($event.value)"
+              >
                 <mat-option value="">{{ 'common.all' | translate }}</mat-option>
                 <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
                 <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
@@ -86,13 +102,23 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
 
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.from' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
               <mat-datepicker #dateFromPicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.to' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
               <mat-datepicker #dateToPicker></mat-datepicker>
             </mat-form-field>
@@ -119,17 +145,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
           @for (supplier of suppliersResource.value().data; track supplier.id) {
             <app-mobile-card
               [title]="supplier.name"
-              [status]="supplier.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
+              [status]="
+                supplier.isActive
+                  ? translationService.instant('common.active')
+                  : translationService.instant('common.inactive')
+              "
               [statusType]="$any('activeInactive')"
               [fields]="getSupplierFields(supplier)"
               [canSwipe]="true"
               [onEdit]="onEditSwipe(supplier)"
               [onDelete]="onDeleteSwipe(supplier)"
             >
-              <button mat-icon-button (click)="openEditDialog(supplier); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(supplier); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteSupplier(supplier); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteSupplier(supplier); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -298,7 +337,13 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              (click)="openEditDialog(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -332,8 +377,10 @@ export class SuppliersListComponent implements OnInit {
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
     url: '/api/suppliers',
@@ -349,7 +396,16 @@ export class SuppliersListComponent implements OnInit {
     },
   }));
 
-  displayedColumns = ['name', 'contact', 'phone', 'email', 'address', 'isActive', 'createdAt', 'actions'];
+  displayedColumns = [
+    'name',
+    'contact',
+    'phone',
+    'email',
+    'address',
+    'isActive',
+    'createdAt',
+    'actions',
+  ];
 
   constructor() {
     effect(() => {
@@ -419,9 +475,13 @@ export class SuppliersListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return (
+      this.searchFilter() !== '' ||
+      this.isActiveFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== ''
+    );
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -432,11 +492,30 @@ export class SuppliersListComponent implements OnInit {
 
   getSupplierFields(supplier: Supplier): MobileCardField[] {
     return [
-      { label: this.translationService.instant('suppliers.contact'), value: supplier.contact || '-' },
-      { label: this.translationService.instant('suppliers.phone'), value: supplier.phone || '-', type: 'phone' },
-      { label: this.translationService.instant('suppliers.email'), value: supplier.email || '-', type: 'email' },
-      { label: this.translationService.instant('common.address'), value: supplier.address || '-' },
-      { label: this.translationService.instant('common.created'), value: supplier.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('suppliers.contact'),
+        value: supplier.contact || '-',
+      },
+      {
+        label: this.translationService.instant('suppliers.phone'),
+        value: supplier.phone || '-',
+        type: 'phone',
+      },
+      {
+        label: this.translationService.instant('suppliers.email'),
+        value: supplier.email || '-',
+        type: 'email',
+      },
+      {
+        label: this.translationService.instant('common.address'),
+        value: supplier.address || '-',
+        type: 'address',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: supplier.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -455,11 +534,16 @@ export class SuppliersListComponent implements OnInit {
       if (confirmed) {
         this.suppliersService.delete(supplier.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.suppliersResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
