@@ -1,4 +1,13 @@
-import { Component, computed, input, output, signal, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  output,
+  signal,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +30,9 @@ export interface MobileCardField {
     CopyFieldComponent,
   ],
   styles: `
-    :host { display: block; }
+    :host {
+      display: block;
+    }
 
     .swipe-root {
       position: relative;
@@ -31,26 +42,43 @@ export interface MobileCardField {
 
     .swipe-actions {
       position: absolute;
-      top: 0; bottom: 0; left: 0; right: 0;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       z-index: 0;
       pointer-events: none;
+      transition: opacity 0.2s ease-out;
     }
 
     .action-edit {
-      width: 80px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 2px;
-      background: var(--color-primary, #1E40AF); color: white;
-      font-size: 0.7rem; font-weight: 600;
+      width: 80px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2px;
+      background: var(--color-primary, #1e40af);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
     }
 
     .action-delete {
-      margin-left: auto; width: 80px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 2px;
-      background: var(--color-danger, #DC2626); color: white;
-      font-size: 0.7rem; font-weight: 600;
+      margin-left: auto;
+      width: 80px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2px;
+      background: var(--color-danger, #dc2626);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
     }
 
     .swipe-card {
@@ -60,18 +88,23 @@ export interface MobileCardField {
       border-radius: 0.75rem;
       will-change: transform;
       transition: transform 0.2s ease-out;
-      overflow: visible !important;
+      overflow: hidden;
     }
-    :host(.dark) .swipe-card { background: #1f2937; }
-    .swipe-card.dragging { transition: none; }
+    :host(.dark) .swipe-card {
+      background: #1f2937;
+    }
+    .swipe-card.dragging {
+      transition: none;
+    }
   `,
   template: `
-    <div class="swipe-root"
-         (touchstart)="onTouchStart($event)"
-         (touchmove)="onTouchMove($event)"
-         (touchend)="onTouchEnd()">
-
-      <div class="swipe-actions">
+    <div
+      class="swipe-root"
+      (touchstart)="onTouchStart($event)"
+      (touchmove)="onTouchMove($event)"
+      (touchend)="onTouchEnd()"
+    >
+      <div class="swipe-actions" [style.opacity]="swiping() ? 1 : 0">
         <div class="action-edit">
           <mat-icon class="!w-5 !h-5">edit</mat-icon>
           <span>Editar</span>
@@ -82,9 +115,12 @@ export interface MobileCardField {
         </div>
       </div>
 
-      <mat-expansion-panel #panel class="swipe-card !shadow-sm !border !border-gray-200 dark:!border-gray-700 !bg-white dark:!bg-gray-800"
+      <mat-expansion-panel
+        #panel
+        class="swipe-card !shadow-sm !border !border-gray-200 dark:!border-gray-700 !bg-white dark:!bg-gray-800 !mb-0"
         (opened)="panelExpanded.set(true)"
-        (closed)="panelExpanded.set(false)">
+        (closed)="panelExpanded.set(false)"
+      >
         <mat-expansion-panel-header class="!py-3">
           <mat-panel-title class="!flex !items-center !gap-3">
             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate flex-1">
@@ -98,18 +134,31 @@ export interface MobileCardField {
 
         <div class="px-4 pb-4 space-y-0 divide-y divide-gray-100 dark:divide-gray-700">
           @for (field of fields(); track field.label) {
-            <app-copy-field [label]="field.label" [value]="field.value" [type]="field.type || 'text'" />
+            <app-copy-field
+              [label]="field.label"
+              [value]="field.value"
+              [type]="field.type || 'text'"
+            />
           }
 
           @if (onEdit() || onDelete()) {
             <div class="flex items-center justify-end gap-2 pt-3">
               @if (onEdit()) {
-                <button mat-icon-button (click)="onEdit()!($event); $event.stopPropagation()" class="!w-9 !h-9">
+                <button
+                  mat-icon-button
+                  (click)="onEdit()!($event); $event.stopPropagation()"
+                  class="!w-9 !h-9"
+                >
                   <mat-icon class="!text-[18px]">edit</mat-icon>
                 </button>
               }
               @if (onDelete()) {
-                <button mat-icon-button color="warn" (click)="onDelete()!($event); $event.stopPropagation()" class="!w-9 !h-9">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="onDelete()!($event); $event.stopPropagation()"
+                  class="!w-9 !h-9"
+                >
                   <mat-icon class="!text-[18px]">delete</mat-icon>
                 </button>
               }
@@ -138,7 +187,7 @@ export class MobileCardComponent {
   private startX = 0;
   private currentX = 0;
   private startTime = 0;
-  private swiping = false;
+  readonly swiping = signal(false);
   private moved = false;
   private static readonly SWIPE_THRESHOLD = 10;
   private static readonly TAP_MAX_MS = 200;
@@ -153,18 +202,22 @@ export class MobileCardComponent {
     this.startX = event.touches[0].clientX;
     this.currentX = this.startX;
     this.startTime = Date.now();
-    this.swiping = true;
+    this.swiping.set(true);
     this.moved = false;
   }
 
   onTouchMove(event: TouchEvent): void {
-    if (!this.swiping) return;
+    if (!this.swiping()) return;
     this.currentX = event.touches[0].clientX;
     const diff = this.currentX - this.startX;
     const elapsed = Date.now() - this.startTime;
 
     // Tap rápido (< 200ms) o movimiento mínimo → no es swipe
-    if (elapsed < MobileCardComponent.TAP_MAX_MS && Math.abs(diff) < MobileCardComponent.SWIPE_THRESHOLD) return;
+    if (
+      elapsed < MobileCardComponent.TAP_MAX_MS &&
+      Math.abs(diff) < MobileCardComponent.SWIPE_THRESHOLD
+    )
+      return;
     if (!this.moved && Math.abs(diff) < MobileCardComponent.SWIPE_THRESHOLD) return;
     this.moved = true;
 
@@ -177,13 +230,18 @@ export class MobileCardComponent {
   }
 
   onTouchEnd(): void {
-    if (!this.swiping) return;
-    this.swiping = false;
+    if (!this.swiping()) return;
 
-    if (!this.moved) return;
+    if (!this.moved) {
+      this.swiping.set(false);
+      return;
+    }
 
     const card = this.getCard();
-    if (!card) return;
+    if (!card) {
+      this.swiping.set(false);
+      return;
+    }
 
     const diff = this.currentX - this.startX;
     card.classList.remove('dragging');
@@ -192,16 +250,19 @@ export class MobileCardComponent {
       card.style.transform = 'translateX(-80px)';
       setTimeout(() => {
         card.style.transform = 'translateX(0)';
+        this.swiping.set(false);
         this.onDelete()?.(new Event('swipe'));
       }, 300);
     } else if (diff >= 80) {
       card.style.transform = 'translateX(80px)';
       setTimeout(() => {
         card.style.transform = 'translateX(0)';
+        this.swiping.set(false);
         this.onEdit()?.(new Event('swipe'));
       }, 300);
     } else {
       card.style.transform = 'translateX(0)';
+      this.swiping.set(false);
     }
 
     this.startX = 0;
