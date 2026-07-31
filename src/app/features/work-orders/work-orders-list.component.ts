@@ -94,6 +94,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
                 matInput
                 [value]="searchFilter()"
                 (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
                 [placeholder]="'common.search' | translate"
               />
             </mat-form-field>

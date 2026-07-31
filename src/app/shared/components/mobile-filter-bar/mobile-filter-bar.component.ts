@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -62,10 +62,31 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   ],
 })
 export class MobileFilterBarComponent {
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly hasActiveFilters = input(false);
   readonly clearFilters = output<void>();
 
   readonly expanded = signal(false);
+
+  constructor() {
+    if (typeof document !== 'undefined') {
+      this.elementRef.nativeElement.addEventListener('focusout', this.onFocusOut);
+      this.destroyRef.onDestroy(() =>
+        this.elementRef.nativeElement.removeEventListener('focusout', this.onFocusOut),
+      );
+    }
+  }
+
+  private onFocusOut = (event: FocusEvent): void => {
+    if (
+      event.relatedTarget === null ||
+      !this.elementRef.nativeElement.contains(event.relatedTarget as Node)
+    ) {
+      this.expanded.set(false);
+    }
+  };
 
   onIconClick(): void {
     if (this.hasActiveFilters()) {
