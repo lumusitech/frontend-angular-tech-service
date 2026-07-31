@@ -449,7 +449,6 @@ export class ClientsListComponent implements OnInit {
     );
   });
 
-
   clearFilters(): void {
     this.searchFilter.set('');
     this.isActiveFilter.set('');
@@ -501,7 +500,11 @@ export class ClientsListComponent implements OnInit {
         value: client.phone || '-',
         type: 'phone',
       },
-      { label: this.translationService.instant('common.address'), value: client.address || '-' },
+      {
+        label: this.translationService.instant('common.address'),
+        value: client.address || '-',
+        type: 'address',
+      },
       {
         label: this.translationService.instant('common.created'),
         value: client.createdAt,

@@ -35,6 +35,10 @@
     "copied": "Copiado al portapapeles",
     "copyToClipboard": "Copiar",
     "copyError": "Error al copiar",
+    "openInMaps": "Abrir en Google Maps",
+    "call": "Llamar",
+    "whatsapp": "WhatsApp",
+    "clientContact": "Contacto del cliente",
     "globalSearch": "Buscar globalmente...",
     "entityType": {
       "client": "Cliente",

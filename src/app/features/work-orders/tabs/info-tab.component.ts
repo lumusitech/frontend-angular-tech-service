@@ -52,12 +52,17 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           @if (clientSearching()) {
             <mat-spinner matSuffix diameter="16" />
           }
-          <mat-autocomplete #clientAuto="matAutocomplete" (optionSelected)="onClientSelected($event.option.value)">
+          <mat-autocomplete
+            #clientAuto="matAutocomplete"
+            (optionSelected)="onClientSelected($event.option.value)"
+          >
             @for (c of filteredClients(); track c.id) {
               <mat-option [value]="c.id">
                 <div class="flex flex-col leading-tight">
                   <span class="font-medium">{{ c.name }}</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ c.email }} · {{ c.phone }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400"
+                    >{{ c.email }} · {{ c.phone }}</span
+                  >
                 </div>
               </mat-option>
             }
@@ -66,7 +71,10 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.serviceType' | translate }}</mat-label>
-          <mat-select [value]="editServiceTypeId()" (selectionChange)="editServiceTypeId.set($event.value)">
+          <mat-select
+            [value]="editServiceTypeId()"
+            (selectionChange)="editServiceTypeId.set($event.value)"
+          >
             @for (st of serviceTypes(); track st.id) {
               <mat-option [value]="st.id">{{ st.name }}</mat-option>
             }
@@ -77,30 +85,53 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.detail.location' | translate }}</mat-label>
             <mat-select [value]="editLocation()" (selectionChange)="editLocation.set($event.value)">
-              <mat-option value="workshop">{{ 'workOrders.locations.workshop' | translate }}</mat-option>
-              <mat-option value="on_site">{{ 'workOrders.locations.onSite' | translate }}</mat-option>
+              <mat-option value="workshop">{{
+                'workOrders.locations.workshop' | translate
+              }}</mat-option>
+              <mat-option value="on_site">{{
+                'workOrders.locations.onSite' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.workAddress' | translate }}</mat-label>
-            <input matInput [value]="editWorkAddress()" (input)="editWorkAddress.set(getValue($event))" />
+            <input
+              matInput
+              [value]="editWorkAddress()"
+              (input)="editWorkAddress.set(getValue($event))"
+            />
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.detail.scheduledDate' | translate }}</mat-label>
-            <input matInput [matDatepicker]="scheduledPicker" [value]="editScheduledDate()" (dateChange)="editScheduledDate.set($any($event).value)" />
+            <input
+              matInput
+              [matDatepicker]="scheduledPicker"
+              [value]="editScheduledDate()"
+              (dateChange)="editScheduledDate.set($any($event).value)"
+            />
             <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
             <mat-datepicker #scheduledPicker></mat-datepicker>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.detail.warrantyUntil' | translate }}</mat-label>
-            <input matInput [matDatepicker]="warrantyPicker" [value]="editWarrantyUntil()" (dateChange)="editWarrantyUntil.set($any($event).value)" />
+            <input
+              matInput
+              [matDatepicker]="warrantyPicker"
+              [value]="editWarrantyUntil()"
+              (dateChange)="editWarrantyUntil.set($any($event).value)"
+            />
             <mat-datepicker-toggle matIconSuffix [for]="warrantyPicker"></mat-datepicker-toggle>
             <mat-datepicker #warrantyPicker></mat-datepicker>
           </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.detail.diagnosis' | translate }}</mat-label>
-          <textarea matInput rows="3" [value]="editDiagnosis()" (input)="editDiagnosis.set(getValue($event))"></textarea>
+          <textarea
+            matInput
+            rows="3"
+            [value]="editDiagnosis()"
+            (input)="editDiagnosis.set(getValue($event))"
+          ></textarea>
         </mat-form-field>
         <div class="flex gap-2 justify-end">
           <button mat-button (click)="cancelEdit()">{{ 'common.cancel' | translate }}</button>
@@ -123,40 +154,153 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.client' | translate }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.detail.client' | translate }}
+            </p>
             <p class="font-medium">{{ workOrder().client.name }}</p>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ workOrder().client.email }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ workOrder().client.phone }}</p>
+            <div class="flex items-center gap-1">
+              <a
+                [href]="'tel:' + workOrder().client.phone"
+                class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {{ workOrder().client.phone }}
+              </a>
+              @if (workOrder().client.phone) {
+                <a
+                  [href]="'tel:' + workOrder().client.phone"
+                  mat-icon-button
+                  class="!min-w-0 !p-0.5"
+                  [title]="'common.call' | translate"
+                >
+                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-blue-500">phone</mat-icon>
+                </a>
+                <a
+                  [href]="'https://wa.me/' + encodeURIComponent(workOrder().client.phone)"
+                  target="_blank"
+                  rel="noopener"
+                  mat-icon-button
+                  class="!min-w-0 !p-0.5"
+                  [title]="'common.whatsapp' | translate"
+                >
+                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500">chat</mat-icon>
+                </a>
+              }
+            </div>
           </div>
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.location' | translate }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.detail.location' | translate }}
+            </p>
             <p class="font-medium">
-              {{ workOrder().location === 'workshop' ? ('workOrders.locations.workshop' | translate) : ('workOrders.locations.onSite' | translate) }}
+              {{
+                workOrder().location === 'workshop'
+                  ? ('workOrders.locations.workshop' | translate)
+                  : ('workOrders.locations.onSite' | translate)
+              }}
             </p>
           </div>
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.workAddress' | translate }}</p>
-            <p class="font-medium">{{ workOrder().workAddress || '-' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.workAddress' | translate }}
+            </p>
+            <div class="flex items-center gap-1">
+              @if (workOrder().workAddress) {
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' + encodeURIComponent(workOrder().workAddress!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ workOrder().workAddress }}
+                </a>
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' + encodeURIComponent(workOrder().workAddress!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  mat-icon-button
+                  class="!min-w-0 !p-0.5"
+                  [title]="'common.openInMaps' | translate"
+                >
+                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500"
+                    >location_on</mat-icon
+                  >
+                </a>
+              } @else {
+                <p class="font-medium">-</p>
+              }
+            </div>
           </div>
-          @if (workOrder().client.address && workOrder().workAddress && workOrder().client.address !== workOrder().workAddress) {
+          @if (
+            workOrder().client.address &&
+            workOrder().workAddress &&
+            workOrder().client.address !== workOrder().workAddress
+          ) {
             <div>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'common.address' | translate }} {{ 'workOrders.detail.client' | translate }}</p>
-              <p class="font-medium">{{ workOrder().client.address }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ 'common.address' | translate }} {{ 'workOrders.detail.client' | translate }}
+              </p>
+              <div class="flex items-center gap-1">
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' + encodeURIComponent(workOrder().client.address!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ workOrder().client.address }}
+                </a>
+                <a
+                  [href]="
+                    'https://maps.google.com/?q=' + encodeURIComponent(workOrder().client.address!)
+                  "
+                  target="_blank"
+                  rel="noopener"
+                  mat-icon-button
+                  class="!min-w-0 !p-0.5"
+                  [title]="'common.openInMaps' | translate"
+                >
+                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500"
+                    >location_on</mat-icon
+                  >
+                </a>
+              </div>
             </div>
           }
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.scheduledDate' | translate }}</p>
-            <p class="font-medium">{{ workOrder().scheduledDate ? (workOrder().scheduledDate | date: 'dd/MM/yyyy') : '-' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.detail.scheduledDate' | translate }}
+            </p>
+            <p class="font-medium">
+              {{
+                workOrder().scheduledDate ? (workOrder().scheduledDate | date: 'dd/MM/yyyy') : '-'
+              }}
+            </p>
           </div>
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.warrantyUntil' | translate }}</p>
-            <p class="font-medium">{{ workOrder().warrantyUntil ? (workOrder().warrantyUntil | date: 'dd/MM/yyyy') : '-' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.detail.warrantyUntil' | translate }}
+            </p>
+            <p class="font-medium">
+              {{
+                workOrder().warrantyUntil ? (workOrder().warrantyUntil | date: 'dd/MM/yyyy') : '-'
+              }}
+            </p>
           </div>
         </div>
         @if (workOrder().diagnosis) {
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.detail.diagnosis' | translate }}</p>
-            <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">{{ workOrder().diagnosis }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ 'workOrders.detail.diagnosis' | translate }}
+            </p>
+            <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              {{ workOrder().diagnosis }}
+            </p>
           </div>
         }
       }
@@ -263,7 +407,8 @@ export class InfoTabComponent implements OnInit {
     if (clientId !== (wo.client?.id || wo.clientId)) dto.clientId = clientId;
 
     const serviceTypeId = this.editServiceTypeId();
-    if (serviceTypeId !== (wo.serviceType?.id || wo.serviceTypeId)) dto.serviceTypeId = serviceTypeId;
+    if (serviceTypeId !== (wo.serviceType?.id || wo.serviceTypeId))
+      dto.serviceTypeId = serviceTypeId;
 
     const diagnosis = this.editDiagnosis().trim();
     if (diagnosis !== (wo.diagnosis || '')) dto.diagnosis = diagnosis || undefined;
@@ -292,5 +437,9 @@ export class InfoTabComponent implements OnInit {
 
   getValue(event: Event): string {
     return (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+  }
+
+  encodeURIComponent(value: string): string {
+    return encodeURIComponent(value);
   }
 }
