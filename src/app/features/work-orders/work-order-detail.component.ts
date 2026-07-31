@@ -49,27 +49,29 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
   template: `
     @if (orderData() !== null) {
       <div class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <button mat-icon-button (click)="goBack()">
-              <mat-icon>arrow_back</mat-icon>
-            </button>
-            <div>
-              <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  <app-tracking-code [code]="orderData()!.trackingCode" />
-                </h1>
-                <app-status-badge [value]="orderData()!.status" type="workOrderStatus" />
-                <app-status-badge [value]="orderData()!.priority" type="workOrderPriority" />
+        <div class="space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-4 min-w-0">
+              <button mat-icon-button (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+              <div class="min-w-0">
+                <div class="flex items-center gap-3 flex-wrap">
+                  <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    <app-tracking-code [code]="orderData()!.trackingCode" />
+                  </h1>
+                  <app-status-badge [value]="orderData()!.status" type="workOrderStatus" />
+                  <app-status-badge [value]="orderData()!.priority" type="workOrderPriority" />
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">
+                  {{ orderData()!.serviceType.name }} -
+                  {{ orderData()!.client.name }}
+                </p>
               </div>
-              <p class="text-gray-500 dark:text-gray-400 mt-1">
-                {{ orderData()!.serviceType.name }} -
-                {{ orderData()!.client.name }}
-              </p>
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-end">
             <app-export-buttons [workOrderId]="orderData()!.id" />
             <app-status-transition
               [status]="orderData()!.status"
@@ -81,7 +83,12 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 space-y-6">
+          <div
+            class="lg:col-span-2 space-y-6"
+            [style.touch-action]="'pan-y'"
+            (touchstart)="onTouchStart($event)"
+            (touchend)="onTouchEnd($event)"
+          >
             <mat-tab-group [(selectedIndex)]="selectedTabIndex">
               <mat-tab>
                 <ng-template mat-tab-label>
@@ -171,6 +178,22 @@ export class WorkOrderDetailComponent {
   readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
+
+  private touchStartX = 0;
+  private touchStartY = 0;
+
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+    const deltaY = event.changedTouches[0].clientY - this.touchStartY;
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+    const next = this.selectedTabIndex() + (deltaX < 0 ? 1 : -1);
+    if (next >= 0 && next <= 4) this.selectedTabIndex.set(next);
+  }
 
   onInfoSaved(dto: UpdateWorkOrderDto): void {
     const id = this.orderData()?.id;

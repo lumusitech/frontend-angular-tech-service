@@ -61,7 +61,7 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
   selector: 'app-status-transition',
   imports: [MatButtonModule, MatIconModule, TranslatePipe],
   template: `
-    <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center gap-2">
       @for (action of actions(); track action.nextStatus) {
         <button mat-flat-button [color]="action.color" (click)="onAction(action)" class="gap-1">
           <mat-icon>{{ action.icon }}</mat-icon>
