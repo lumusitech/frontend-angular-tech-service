@@ -64,7 +64,11 @@ export class WorkOrdersService {
     return this.http.patch<void>(`${this.apiUrl}/${workOrderId}/tasks/${taskId}`, dto);
   }
 
-  updateNote(workOrderId: string, noteId: string, dto: UpdateWorkOrderNoteDto): Observable<WorkOrderNote> {
+  updateNote(
+    workOrderId: string,
+    noteId: string,
+    dto: UpdateWorkOrderNoteDto,
+  ): Observable<WorkOrderNote> {
     return this.http.patch<WorkOrderNote>(`${this.apiUrl}/${workOrderId}/notes/${noteId}`, dto);
   }
 
@@ -78,5 +82,22 @@ export class WorkOrdersService {
 
   getStatusLogs(workOrderId: string): Observable<WorkOrderStatusLog[]> {
     return this.http.get<WorkOrderStatusLog[]>(`${this.apiUrl}/${workOrderId}/status-logs`);
+  }
+
+  updateStatusLogDetail(
+    workOrderId: string,
+    logId: string,
+    detail: string,
+  ): Observable<WorkOrderStatusLog> {
+    return this.http.patch<WorkOrderStatusLog>(
+      `${this.apiUrl}/${workOrderId}/status-logs/${logId}/detail`,
+      { detail },
+    );
+  }
+
+  removeStatusLogDetail(workOrderId: string, logId: string): Observable<WorkOrderStatusLog> {
+    return this.http.delete<WorkOrderStatusLog>(
+      `${this.apiUrl}/${workOrderId}/status-logs/${logId}/detail`,
+    );
   }
 }

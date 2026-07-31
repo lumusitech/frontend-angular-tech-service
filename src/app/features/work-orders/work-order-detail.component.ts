@@ -227,6 +227,7 @@ export class WorkOrderDetailComponent {
     status: WorkOrderStatus;
     startedAt?: string;
     completedAt?: string;
+    statusDetail?: string;
   }): void {
     const id = this.orderData()?.id;
     if (!id) return;
@@ -234,6 +235,7 @@ export class WorkOrderDetailComponent {
     const dto: UpdateWorkOrderDto = { status: event.status };
     if (event.startedAt) dto.startedAt = event.startedAt;
     if (event.completedAt) dto.completedAt = event.completedAt;
+    if (event.statusDetail) dto.statusDetail = event.statusDetail;
 
     this.workOrdersService.update(id, dto).subscribe({
       next: () => this.loadOrder(),

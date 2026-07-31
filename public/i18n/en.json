@@ -22,6 +22,7 @@
     "active": "Active",
     "inactive": "Inactive",
     "details": "Details",
+    "optional": "optional",
     "back": "Back",
     "view": "View",
     "address": "Address",
@@ -297,10 +298,12 @@
     "statuses": {
       "pending": "Pending",
       "assigned": "Assigned",
+      "onTheWay": "On The Way",
       "inProgress": "In Progress",
       "completed": "Completed",
       "delivered": "Delivered",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "postponed": "Postponed"
     },
     "priorities": {
       "low": "Low",
@@ -1028,6 +1031,10 @@
     "notSupported": "Notifications are not supported in this browser"
   },
   "statusTimeline": {
-    "duration": "Duration"
+    "duration": "Duration",
+    "detail": "Detail",
+    "detailPlaceholder": "E.g: The client had to leave early, coordinate a day to finish",
+    "addDetail": "Add detail",
+    "editDetail": "Edit detail"
   }
 }

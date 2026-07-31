@@ -3,7 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkOrderStatus } from '../../core/models/work-order.interfaces';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  StatusChangeDialogComponent,
+  StatusChangeDialogResult,
+} from '../../shared/components/status-change-dialog/status-change-dialog.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface StatusAction {
@@ -30,9 +33,7 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
       setStartedAt: true,
     },
   ],
-  on_the_way: [
-    { label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' },
-  ],
+  on_the_way: [{ label: 'Cancelar', icon: 'cancel', color: 'warn', nextStatus: 'cancelled' }],
   in_progress: [
     {
       label: 'Completar',
@@ -53,9 +54,7 @@ const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
     { label: 'Entregar', icon: 'done_all', color: 'primary', nextStatus: 'delivered' },
   ],
   delivered: [],
-  cancelled: [
-    { label: 'Reabrir', icon: 'replay', color: 'primary', nextStatus: 'pending' },
-  ],
+  cancelled: [{ label: 'Reabrir', icon: 'replay', color: 'primary', nextStatus: 'pending' }],
 };
 
 @Component({
@@ -77,7 +76,12 @@ export class StatusTransitionComponent {
 
   status = input.required<WorkOrderStatus>();
   requiresDelivery = input(false);
-  transition = output<{ status: WorkOrderStatus; startedAt?: string; completedAt?: string }>();
+  transition = output<{
+    status: WorkOrderStatus;
+    startedAt?: string;
+    completedAt?: string;
+    statusDetail?: string;
+  }>();
   openTechnicianAssignment = output<void>();
 
   actions(): StatusAction[] {
@@ -116,31 +120,38 @@ export class StatusTransitionComponent {
   }
 
   onAction(action: StatusAction): void {
-    if (action.nextStatus === 'cancelled') {
-      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: {
-          title: 'Cancelar orden',
-          message: '¿Estás seguro de cancelar esta orden? Esta acción no se puede deshacer.',
-          confirmLabel: 'Cancelar Orden',
-          color: 'warn',
-        },
-      });
-
-      dialogRef.afterClosed().subscribe((confirmed) => {
-        if (confirmed) {
-          this.emitTransition(action);
-        }
-      });
-    } else if (action.label === 'Asignar Técnicos') {
+    if (action.label === 'Asignar Técnicos') {
       this.openTechnicianAssignment.emit();
-    } else {
-      this.emitTransition(action);
+      return;
     }
+
+    const isCancellation = action.nextStatus === 'cancelled';
+    const dialogRef = this.dialog.open(StatusChangeDialogComponent, {
+      width: '420px',
+      data: {
+        titleKey: 'workOrders.changeStatus',
+        message: isCancellation
+          ? '¿Estás seguro de cancelar esta orden? Esta acción no se puede deshacer.'
+          : `¿Cambiar estado a "${action.label}"?`,
+        confirmLabel: isCancellation ? 'workOrders.actions.cancel' : action.label,
+        color: isCancellation ? 'warn' : 'primary',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: StatusChangeDialogResult | undefined) => {
+      if (result?.confirmed) {
+        this.emitTransition(action, result.detail);
+      }
+    });
   }
 
-  private emitTransition(action: StatusAction): void {
-    const payload: { status: WorkOrderStatus; startedAt?: string; completedAt?: string } = {
+  private emitTransition(action: StatusAction, statusDetail?: string): void {
+    const payload: {
+      status: WorkOrderStatus;
+      startedAt?: string;
+      completedAt?: string;
+      statusDetail?: string;
+    } = {
       status: action.nextStatus,
     };
 
@@ -149,6 +160,9 @@ export class StatusTransitionComponent {
     }
     if (action.setCompletedAt) {
       payload.completedAt = new Date().toISOString();
+    }
+    if (statusDetail) {
+      payload.statusDetail = statusDetail;
     }
 
     this.transition.emit(payload);

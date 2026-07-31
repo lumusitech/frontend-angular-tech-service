@@ -4,14 +4,21 @@ import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
-import { WorkOrder, WorkOrderStatus } from '../../core/models/work-order.interfaces';
+import {
+  WorkOrder,
+  WorkOrderStatus,
+  UpdateWorkOrderDto,
+} from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { UrgencyIndicatorComponent } from '../../shared/components/urgency-indicator/urgency-indicator.component';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  StatusChangeDialogComponent,
+  StatusChangeDialogResult,
+} from '../../shared/components/status-change-dialog/status-change-dialog.component';
 import { NoteDialogComponent } from '../work-orders/add-note-dialog.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -484,12 +491,11 @@ export class TechWorkOrderDetailComponent {
   }
 
   changeStatus(order: WorkOrder, action: TechStatusAction): void {
-    const label = this.translationService.instant(
-      `workOrders.statuses.${action.nextStatus === 'in_progress' ? 'inProgress' : action.nextStatus}`,
-    );
+    const key = action.nextStatus.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+    const label = this.translationService.instant(`workOrders.statuses.${key}`);
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+    const dialogRef = this.dialog.open(StatusChangeDialogComponent, {
+      width: '420px',
       data: {
         titleKey: 'workOrders.changeStatus',
         message: `¿Cambiar estado a "${label}"?`,
@@ -498,13 +504,16 @@ export class TechWorkOrderDetailComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.workOrdersService
-          .update(order.id, { status: action.nextStatus as WorkOrderStatus })
-          .subscribe({
-            next: () => this.loadOrder(),
-          });
+    dialogRef.afterClosed().subscribe((result: StatusChangeDialogResult | undefined) => {
+      if (result?.confirmed) {
+        const dto: UpdateWorkOrderDto = {
+          status: action.nextStatus as WorkOrderStatus,
+        };
+        if (result.detail) dto.statusDetail = result.detail;
+
+        this.workOrdersService.update(order.id, dto).subscribe({
+          next: () => this.loadOrder(),
+        });
       }
     });
   }
