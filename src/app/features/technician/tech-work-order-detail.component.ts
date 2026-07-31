@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
@@ -114,8 +115,8 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           {{ 'common.back' | translate }}
         </button>
       </div>
-    } @else if (orderData() !== null) {
-      @let order = orderData()!;
+    } @else if (currentOrder() !== null) {
+      @let order = currentOrder()!;
 
       <div class="space-y-4">
         <app-page-header [title]="order.trackingCode" [subtitle]="order.client?.name || ''">
@@ -410,11 +411,20 @@ export class TechWorkOrderDetailComponent {
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
   readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
 
+  private readonly _refreshKey = signal(0);
+
+  readonly resource = httpResource<WorkOrder>(() => {
+    this._refreshKey();
+    this.websocketService.workOrderRefreshKey();
+    return `/api/work-orders/${this.orderId}`;
+  });
+
+  readonly currentOrder = computed(() => {
+    return this.resource.hasValue() ? this.resource.value() : this.orderData();
+  });
+
   loadOrder(): void {
-    if (!this.orderId) return;
-    this.workOrdersService.getById(this.orderId).subscribe({
-      next: (data) => this.orderData.set(data),
-    });
+    this._refreshKey.update((k) => k + 1);
   }
 
   readonly unassigned = computed(() => {
