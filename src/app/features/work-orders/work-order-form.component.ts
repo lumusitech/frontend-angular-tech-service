@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { form, FormField, required } from '@angular/forms/signals';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ClientsService } from '../../core/services/clients.service';
@@ -47,6 +48,7 @@ interface WorkOrderFormModel {
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatProgressSpinnerModule,
     FormField,
     TranslatePipe,
   ],
@@ -60,13 +62,30 @@ interface WorkOrderFormModel {
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.client' | translate }}</mat-label>
-          <mat-select [formField]="workOrderForm.clientId">
-            @for (client of clients(); track client.id) {
+          <input
+            matInput
+            [value]="selectedClientName()"
+            (input)="onClientSearch($event)"
+            [matAutocomplete]="clientAuto"
+          />
+          @if (clientSearching()) {
+            <mat-spinner matSuffix diameter="16" />
+          }
+          <mat-autocomplete
+            #clientAuto="matAutocomplete"
+            (optionSelected)="onClientSelected($event.option.value)"
+          >
+            @for (client of filteredClients(); track client.id) {
               <mat-option [value]="client.id">
-                {{ client.name }}
+                <div class="flex flex-col leading-tight">
+                  <span class="font-medium">{{ client.name }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ client.email }} · {{ client.phone }}
+                  </span>
+                </div>
               </mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -85,31 +104,51 @@ interface WorkOrderFormModel {
             <mat-label>{{ 'workOrders.priority' | translate }}</mat-label>
             <mat-select [formField]="workOrderForm.priority">
               <mat-option value="low">{{ 'workOrders.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{ 'workOrders.priorities.medium' | translate }}</mat-option>
+              <mat-option value="medium">{{
+                'workOrders.priorities.medium' | translate
+              }}</mat-option>
               <mat-option value="high">{{ 'workOrders.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{ 'workOrders.priorities.urgent' | translate }}</mat-option>
+              <mat-option value="urgent">{{
+                'workOrders.priorities.urgent' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'workOrders.location' | translate }}</mat-label>
             <mat-select [formField]="workOrderForm.location">
-              <mat-option value="workshop">{{ 'workOrders.locations.workshop' | translate }}</mat-option>
-              <mat-option value="on_site">{{ 'workOrders.locations.onSite' | translate }}</mat-option>
+              <mat-option value="workshop">{{
+                'workOrders.locations.workshop' | translate
+              }}</mat-option>
+              <mat-option value="on_site">{{
+                'workOrders.locations.onSite' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.scheduledDate' | translate }}</mat-label>
-          <input matInput [matDatepicker]="scheduledPicker" [value]="scheduledDateValue()" (dateChange)="onScheduledDateChange($event)" (click)="scheduledPicker.open()" />
+          <input
+            matInput
+            [matDatepicker]="scheduledPicker"
+            [value]="scheduledDateValue()"
+            (dateChange)="onScheduledDateChange($event)"
+            (click)="scheduledPicker.open()"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
           <mat-datepicker #scheduledPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.warrantyUntil' | translate }}</mat-label>
-          <input matInput [matDatepicker]="warrantyPicker" [value]="warrantyUntilValue()" (dateChange)="onWarrantyUntilChange($event)" (click)="warrantyPicker.open()" />
+          <input
+            matInput
+            [matDatepicker]="warrantyPicker"
+            [value]="warrantyUntilValue()"
+            (dateChange)="onWarrantyUntilChange($event)"
+            (click)="warrantyPicker.open()"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="warrantyPicker"></mat-datepicker-toggle>
           <mat-datepicker #warrantyPicker></mat-datepicker>
         </mat-form-field>
@@ -121,7 +160,12 @@ interface WorkOrderFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.workAddress' | translate }}</mat-label>
-          <input matInput [formField]="workOrderForm.workAddress" [placeholder]="'workOrders.workAddressPlaceholder' | translate" />
+          <input
+            matInput
+            #workAddressInput
+            [formField]="workOrderForm.workAddress"
+            [placeholder]="'workOrders.workAddressPlaceholder' | translate"
+          />
         </mat-form-field>
       </div>
     </mat-dialog-content>
@@ -129,7 +173,9 @@ interface WorkOrderFormModel {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving()">
-        {{ saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate) }}
+        {{
+          saving() ? ('workOrders.creating' | translate) : ('workOrders.createOrder' | translate)
+        }}
       </button>
     </mat-dialog-actions>
   `,
@@ -142,10 +188,15 @@ export class WorkOrderFormComponent implements OnInit {
 
   readonly clients = signal<Client[]>([]);
   readonly serviceTypes = signal<ServiceType[]>([]);
+  readonly filteredClients = signal<Client[]>([]);
+  readonly selectedClientName = signal('');
+  readonly clientSearching = signal(false);
 
   readonly scheduledDate = signal('');
   readonly warrantyUntil = signal('');
   readonly saving = signal(false);
+
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly model = signal<WorkOrderFormModel>({
     clientId: '',
@@ -155,16 +206,51 @@ export class WorkOrderFormComponent implements OnInit {
     diagnosis: '',
     workAddress: '',
   });
-  readonly workOrderForm = form(this.model);
+  readonly workOrderForm = form(this.model, (p) => {
+    required(p.clientId);
+    required(p.serviceTypeId);
+  });
 
   ngOnInit(): void {
-    this.clientsService.getAll({ limit: 100 }).subscribe({
-      next: (data) => this.clients.set(data.data),
+    this.clientsService.getAll({ limit: 20 }).subscribe({
+      next: (data) => {
+        this.clients.set(data.data);
+        this.filteredClients.set(data.data);
+      },
     });
 
     this.serviceTypesService.getAll({ limit: 100 }).subscribe({
       next: (data) => this.serviceTypes.set(data.data),
     });
+  }
+
+  onClientSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.selectedClientName.set(value);
+    this.model.update((m) => ({ ...m, clientId: '' }));
+
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      this.clientSearching.set(true);
+      this.clientsService.getAll({ search: value, limit: 20 }).subscribe({
+        next: (data) => {
+          this.filteredClients.set(data.data);
+          this.clientSearching.set(false);
+        },
+        error: () => this.clientSearching.set(false),
+      });
+    }, 300);
+  }
+
+  onClientSelected(clientId: string): void {
+    this.model.update((m) => ({ ...m, clientId }));
+    const client = this.filteredClients().find((c) => c.id === clientId);
+    if (client) {
+      this.selectedClientName.set(client.name);
+      if (client.address && !this.model().workAddress) {
+        this.model.update((m) => ({ ...m, workAddress: client.address }));
+      }
+    }
   }
 
   scheduledDateValue(): Date | null {
@@ -186,6 +272,8 @@ export class WorkOrderFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (!this.model().clientId || !this.model().serviceTypeId) return;
+
     this.saving.set(true);
     const m = this.model();
 
