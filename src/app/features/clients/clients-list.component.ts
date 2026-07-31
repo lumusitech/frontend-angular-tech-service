@@ -84,6 +84,8 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
                 matInput
                 [value]="searchFilter()"
                 (input)="searchFilter.set(getInputValue($event))"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
                 [placeholder]="'common.search' | translate"
               />
             </mat-form-field>

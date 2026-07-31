@@ -138,7 +138,7 @@ const TYPE_COLORS: Record<string, string> = {
 
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" [placeholder]="'common.search' | translate" />
+            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
           </mat-form-field>
           </app-mobile-filter-bar>
         </div>
