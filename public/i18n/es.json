@@ -1037,6 +1037,8 @@
     "detail": "Detalle",
     "detailPlaceholder": "Ej: El cliente se tuvo que ir temprano, coordinar día para terminar",
     "addDetail": "Agregar detalle",
-    "editDetail": "Editar detalle"
+    "editDetail": "Editar detalle",
+    "deleteDetailTitle": "Eliminar detalle",
+    "deleteDetailMessage": "¿Estás seguro de eliminar el detalle? Esta acción no se puede deshacer."
   }
 }

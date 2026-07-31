@@ -13,6 +13,7 @@ export interface StatusChangeDialogData {
   confirmLabel?: string;
   color?: 'primary' | 'warn';
   detailLabel?: string;
+  initialDetail?: string;
 }
 
 export interface StatusChangeDialogResult {
@@ -68,7 +69,7 @@ export class StatusChangeDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<StatusChangeDialogComponent>);
   readonly data = inject<StatusChangeDialogData>(MAT_DIALOG_DATA);
 
-  readonly detail = signal('');
+  readonly detail = signal(this.data.initialDetail ?? '');
 
   getInputValue(event: Event): string {
     return (event.target as HTMLTextAreaElement).value;

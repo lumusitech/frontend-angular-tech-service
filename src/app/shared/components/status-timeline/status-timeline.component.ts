@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { WorkOrderStatusLog } from '../../../core/models/work-order.interfaces';
 import { WorkOrdersService } from '../../../core/services/work-orders.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { StatusLabelPipe } from '../../pipes/status-label.pipe';
 import { StatusClassPipe } from '../../pipes/status-class.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -12,6 +13,7 @@ import {
   StatusChangeDialogComponent,
   StatusChangeDialogResult,
 } from '../status-change-dialog/status-change-dialog.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
@@ -109,6 +111,7 @@ function formatDuration(seconds: number): string {
 export class StatusTimelineComponent {
   private readonly dialog = inject(MatDialog);
   private readonly workOrdersService = inject(WorkOrdersService);
+  private readonly translationService = inject(TranslationService);
 
   logs = input.required<WorkOrderStatusLog[]>();
   changed = output<void>();
@@ -121,6 +124,7 @@ export class StatusTimelineComponent {
       data: {
         titleKey: 'statusTimeline.editDetail',
         detailLabel: 'statusTimeline.detail',
+        initialDetail: log.detail ?? undefined,
       },
     });
 
@@ -142,8 +146,21 @@ export class StatusTimelineComponent {
   }
 
   removeDetail(log: WorkOrderStatusLog): void {
-    this.workOrdersService
-      .removeStatusLogDetail(log.workOrderId, log.id)
-      .subscribe({ next: () => this.changed.emit() });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '380px',
+      data: {
+        titleKey: 'statusTimeline.deleteDetailTitle',
+        messageKey: 'statusTimeline.deleteDetailMessage',
+        color: 'warn',
+        confirmLabel: this.translationService.instant('common.delete'),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean | undefined) => {
+      if (!confirmed) return;
+      this.workOrdersService
+        .removeStatusLogDetail(log.workOrderId, log.id)
+        .subscribe({ next: () => this.changed.emit() });
+    });
   }
 }

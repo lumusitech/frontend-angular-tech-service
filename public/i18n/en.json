@@ -1035,6 +1035,8 @@
     "detail": "Detail",
     "detailPlaceholder": "E.g: The client had to leave early, coordinate a day to finish",
     "addDetail": "Add detail",
-    "editDetail": "Edit detail"
+    "editDetail": "Edit detail",
+    "deleteDetailTitle": "Delete detail",
+    "deleteDetailMessage": "Are you sure you want to delete the detail? This action cannot be undone."
   }
 }
