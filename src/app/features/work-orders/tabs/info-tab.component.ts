@@ -404,10 +404,10 @@ export class InfoTabComponent implements OnInit {
     const wo = this.workOrder();
 
     const clientId = this.editClientId();
-    if (clientId !== (wo.client?.id || wo.clientId)) dto.clientId = clientId;
+    if (clientId && clientId !== (wo.client?.id || wo.clientId)) dto.clientId = clientId;
 
     const serviceTypeId = this.editServiceTypeId();
-    if (serviceTypeId !== (wo.serviceType?.id || wo.serviceTypeId))
+    if (serviceTypeId && serviceTypeId !== (wo.serviceType?.id || wo.serviceTypeId))
       dto.serviceTypeId = serviceTypeId;
 
     const diagnosis = this.editDiagnosis().trim();
@@ -433,6 +433,7 @@ export class InfoTabComponent implements OnInit {
     }
 
     this.saved.emit(dto);
+    this.editMode.set(false);
   }
 
   getValue(event: Event): string {
