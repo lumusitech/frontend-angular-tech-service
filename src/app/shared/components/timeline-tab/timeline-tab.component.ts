@@ -14,7 +14,7 @@ import { WebsocketService } from '../../../core/services/websocket.service';
       </div>
     } @else if (resource.hasValue() && resource.value().length > 0) {
       <div class="p-4">
-        <app-status-timeline [logs]="resource.value()" />
+        <app-status-timeline [logs]="resource.value()" (changed)="resource.reload()" />
       </div>
     }
   `,

@@ -106,6 +106,7 @@ export interface UpdateWorkOrderDto {
   clientId?: string;
   serviceTypeId?: string;
   status?: WorkOrderStatus;
+  statusDetail?: string;
   diagnosis?: string;
   workAddress?: string;
   scheduledDate?: string;
@@ -152,6 +153,7 @@ export interface WorkOrderStatusLog {
   changedByRole: string;
   timestamp: string;
   duration: number | null;
+  detail?: string | null;
 }
 
 export interface WorkOrderFilters {

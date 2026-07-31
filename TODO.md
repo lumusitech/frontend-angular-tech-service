@@ -57,6 +57,15 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Últimas features implementadas (31/07/2026)
 
+### Feature: Detalle opcional en cambios de estado (timeline)
+
+- Nuevo campo `detail` opcional en `WorkOrderStatusLog` (backend: columna varchar, migration `1785600000000-AddDetailToWorkOrderStatusLogs`)
+- Al cambiar un estado, el usuario puede incluir un detalle (ej: motivo de cancelación) — diálogo `StatusChangeDialogComponent` compartido (admin + técnico)
+- El detalle se muestra en la línea de tiempo con botones de editar/eliminar (PATCH/DELETE `/api/work-orders/:id/status-logs/:logId/detail`)
+- Seeds actualizados: TS-MT0007 y TS-PC0002 con `statusLogDetail` en su último log
+- Timeline real-time: `TimelineTabComponent` + `TechWorkOrderDetailComponent` usan `httpResource` keyed en `websocketService.workOrderRefreshKey()` — un cambio de estado desde el técnico se refleja en el detalle del admin sin recargar
+- Fix: key de traducción de estados snake_case→camelCase (`on_the_way`→`onTheWay`); agregadas keys `onTheWay`/`postponed` a `workOrders.statuses` en es/en
+
 ### Fix: Swipe colors mobile card (PR #205)
 
 - Los fondos de colores del swipe (azul editar, rojo eliminar) se veían en las esquinas de las mobile cards incluso sin deslizar
@@ -359,6 +368,10 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ---
 
 ## Próxima sesión — prioridades en orden
+
+### 0. Commitear y mergear feature "Detalle en status logs" (rama `fix/timeline-realtime-websocket-v2`)
+
+Cambios sin commitear en frontend y backend. Backend: entity + migration (ya ejecutada) + DTOs + endpoints PATCH/DELETE + seeds. Frontend: StatusChangeDialogComponent, status-timeline con CRUD de detalle, i18n. Crear PR tras commit.
 
 ### 1. Ejecutar E2E tests contra backend real
 
