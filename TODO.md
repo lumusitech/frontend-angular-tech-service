@@ -57,12 +57,30 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Últimas features implementadas (01/08/2026)
 
-### Fix: Estilos del ícono de filtro en modo mobile (`MobileFilterBarComponent`)
+### Fix: Visibilidad y estilos del ícono de filtro en modo mobile y desktop (`MobileFilterBarComponent`, PR #216 + Fix)
 
-- En modo mobile, el botón de filtros usaba un color azul estático `#2563eb` y no aplicaba el estilo filled.
+- En modo mobile, el botón de filtros usaba un color azul estático `#2563eb` y no aplicaba el estilo filled. Además, en desktop `display: contents` causaba que algunos `mat-form-field` no se renderizaran.
 - Solución:
+  - Reescrito con `display: flex` para correcta visualización en desktop y mobile.
   - Sin filtros activos: Estilo **outlined** en el color primario de marca (`var(--color-primary)` para borde, texto e ícono).
   - Con filtros activos: Estilo **filled** con fondo en color primario (`var(--color-primary)`), y texto e ícono en color blanco (`#ffffff`).
+
+### Fix: Adaptador `LocalDateAdapter` para evitar desfasaje de fechas por husos horarios GMT (PR #214)
+
+- Solucionado problema donde fechas como `2026-08-01` se parseaban como UTC medianoche y al convertirse a hora local (GMT-3) mostraban el día anterior (`2026-07-31`).
+- `LocalDateAdapter` extiende `NativeDateAdapter` parseando cadenas `YYYY-MM-DD` y `DD/MM/YYYY` como hora local estricta.
+- Registrado globalmente como `DateAdapter` en `app.config.ts`.
+- `toLocalDateString()` helper implementado en `payment-form.component.ts` e `info-tab.component.ts`.
+- 4 tests unitarios dedicados en `local-date.adapter.spec.ts`.
+
+### Feat: Focus primario dinámico en buscador global (`GlobalSearchComponent`, PR #215)
+
+- El borde/anillo del input de búsqueda en el header aplica la variable CSS `--color-primary` de la marca durante el estado focus.
+
+### Feat: Swipe entre tabs y reordenamiento de acciones en detalle de orden mobile (PR #213)
+
+- Soporte de gestos táctiles (swipe) para cambiar entre pestañas (Info, Tareas, Materiales, Notas) en la vista de detalle de orden de trabajo en dispositivos móviles.
+- Reordenamiento de botones de acción de cambio de estado para mejor accesibilidad táctil.
 
 ### Feature: Detalle opcional en cambios de estado (timeline)
 
@@ -150,7 +168,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
 5. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
-6. ~~**Tests de componentes**~~ ✅ — 470 tests pasando (25 archivos, 100% pass rate). Incluye global-search (23 tests), app, pipes, directives, guards, interceptors, list components.
+6. ~~**Tests de componentes**~~ ✅ — 474 tests pasando (26 archivos, 100% pass rate). Incluye global-search (23 tests), local-date.adapter (4 tests), app, pipes, directives, guards, interceptors, list components.
 7. **E2E tests (Playwright)** — 🔄 Avanzado: 15 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
 8. ~~**Google Maps + WhatsApp + Tap-to-Call**~~ ✅ — Completado. Iconos de acción en CopyFieldComponent (address → maps, phone → call + WhatsApp), InfoTabComponent, TechWorkOrderDetailComponent (nueva sección contacto), ClientDetailComponent. Fix: agregar `type: 'address'` faltante en clients-list y suppliers-list.
 
@@ -322,7 +340,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 **Valor:** Permite deploy con confianza. Sin tests, cada cambio es un riesgo.
 
-**Estado actual:** 470 tests pasando (25 archivos de test, 100% passing).
+**Estado actual:** 474 tests pasando (26 archivos de test, 100% passing).
 
 **Stack:** Vitest (configurado), Playwright (E2E)
 **Orden:** ~~Service tests~~ ✅ → ~~Component tests (parcial)~~ ✅ → E2E tests (pendiente)
@@ -337,12 +355,13 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - ~~notifications.service.spec.ts~~ ✅ (21 tests)
 - ~~global-search.service.spec.ts~~ ✅ (11 tests, nuevo)
 
-**Componentes / pipes / directives / guards / interceptors (323 tests, 19 archivos):**
+**Componentes / pipes / directives / guards / interceptors / utils (327 tests, 20 archivos):**
 
 - App, status-badge, copy-to-clipboard directive, role directive
 - Pipes: currency-ars, relative-date, status-class, status-label
 - Guards: auth.guard
 - Interceptors: auth.interceptor
+- Utils: local-date.adapter (4 tests), date.utils (12 tests)
 - List components: clients, payments, work-orders (date filtering), invoices, dashboard
 - Nuevos: global-search.component (12 tests)
 
@@ -557,9 +576,12 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 - [x] Sidebar mobile overlay (w-60, fixed positioning, backdrop)
 - [x] Dialog transparency fix (backgrounds sólidos en dark mode)
 - [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
-- [x] Tests de componentes (470 tests pasando, 100% pass rate) — incluye global-search (23 tests)
+- [x] Tests de componentes y utils (474 tests pasando, 100% pass rate) — incluye global-search (23 tests) y local-date.adapter (4 tests)
 - [x] E2E tests: 15 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
 - [x] Google Maps + WhatsApp + Tap-to-Call (iconos en CopyFieldComponent, InfoTabComponent, TechWorkOrderDetail, ClientDetail)
+- [x] LocalDateAdapter (adaptador de fecha local para prevención de desfasajes GMT) — PR #214
+- [x] Swipe entre tabs y reordenamiento de acciones en detalle de orden mobile — PR #213
+- [x] Estilos e ícono de MobileFilterBarComponent con color primario dinámico — PR #216
 
 ## Archivos de referencia útiles
 

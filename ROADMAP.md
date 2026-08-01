@@ -234,6 +234,8 @@ server.ts                          # Express server (SSR entry point)
 - [x] CopyToClipboardDirective (copy to clipboard with toast feedback)
 - [x] CopyFieldComponent (phone → tel:, email → mailto:, address → maps:, date → relative)
 - [x] MobileCardComponent (expansion panel with swipe gestures, accordion behavior)
+- [x] MobileFilterBarComponent (barra de filtros responsive en mobile con toggle button primario)
+- [x] LocalDateAdapter (adaptador de fecha local NativeDateAdapter para prevención de desfasajes GMT)
 - [x] StatusTimelineComponent (timeline de cambios de estado con detalle CRUD: agregar/editar/eliminar con confirmación)
 - [x] StatusChangeDialogComponent (dialog compartido: cambio de estado + detalle opcional, precarga texto existente al editar)
 
@@ -523,10 +525,11 @@ server.ts                          # Express server (SSR entry point)
 - [x] Service unit tests (6 services, 147 tests) — auth, clients, work-orders, billing, reports, notifications
 - [x] Pipe unit tests (4 pipes, 125 tests) — status-class, status-label, currency-ars, relative-date
 - [x] Guard + Interceptor tests (2 files, 26 tests) — auth.guard, auth.interceptor
+- [x] Utils unit tests (2 files, 16 tests) — local-date.adapter, date.utils
 - [x] Directive + Component tests (3 files, 44 tests) — role.directive, copy-to-clipboard, status-badge
 - [x] Feature component tests (3 files, 58 tests) — login, clients-list, dashboard
 - [x] Date filtering tests (3 files, 58 tests) — payments, work-orders, invoices
-- [ ] E2E tests (Playwright configurado, 8 test files — pendiente de servidor backend)
+- [ ] E2E tests (Playwright configurado, 15 spec files — pendiente de servidor backend)
 - [ ] Mutation testing (Stryker configurado — pendiente compatibilidad con Angular builder)
 - [ ] Accessibility tests (axe-core)
 
@@ -676,7 +679,7 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 | #   | Item                                  | Descripción                                                                                                                                                                      | Esfuerzo |
 | --- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | 4   | ~~**Search global desde header**~~ ✅ | ~~Buscar en todas las entidades desde el header.~~ 10 entidades (incluye users), debounce 300ms, highlight pulse con Router.events sin effect(). PRs #182–#186, #188, #191, #198 | Medio    |
-| 5   | **Tests de componentes frontend**     | 470 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest.                                                  | Medio    |
+| 5   | **Tests de componentes frontend**     | 474 tests pasando (100% pass rate). Siguiente: cubrir más componentes feature con `httpResource` y Signal Forms. Stack: Vitest.                                                  | Medio    |
 | 6   | **E2E tests (Playwright)**            | 8 test files configurados pero pendientes de backend. Red de seguridad para deploy.                                                                                              | Medio    |
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
