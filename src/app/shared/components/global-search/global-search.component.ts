@@ -68,7 +68,7 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
           class="flex items-center gap-2 h-14 px-4 border-b border-gray-200 dark:border-gray-700"
         >
           <div
-            class="flex items-center gap-2 flex-1 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all"
+            class="flex items-center gap-2 flex-1 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all"
           >
             <mat-icon class="!text-gray-400 !text-[20px] shrink-0">search</mat-icon>
             <input
@@ -145,7 +145,7 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
     <!-- Desktop: always visible -->
     <div class="relative w-96 ml-2 hidden md:block">
       <div
-        class="flex items-center gap-2 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all"
+        class="flex items-center gap-2 h-9 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all"
       >
         <mat-icon class="!text-gray-400 !text-[20px] shrink-0 self-center !mt-0.5">search</mat-icon>
         <input
