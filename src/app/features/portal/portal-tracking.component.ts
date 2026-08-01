@@ -5,29 +5,30 @@ import { ThemeService } from '../../core/services/theme.service';
 import { PortalSearchComponent } from './portal-search.component';
 import { PortalResultComponent } from './portal-result.component';
 
+import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
+
 @Component({
   selector: 'app-portal-tracking',
   imports: [
     MatIconModule,
     PortalSearchComponent,
     PortalResultComponent,
+    BrandLogoComponent,
   ],
   template: `
     <div class="min-h-svh bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
-        <div class="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-xl mx-auto px-4 h-18 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
-            <svg class="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-            </svg>
+            <app-brand-logo variant="full" size="w-7 h-7" />
             <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tech Service</span>
           </div>
           <button
             (click)="themeService.toggle()"
-            class="p-2 rounded-full cursor-pointer transition-colors text-gray-500 dark:text-gray-400"
+            class="w-10 h-10 rounded-full cursor-pointer transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
             [title]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
           >
-            <mat-icon>
+            <mat-icon class="!w-6 !h-6 !text-2xl leading-none flex items-center justify-center">
               {{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}
             </mat-icon>
           </button>

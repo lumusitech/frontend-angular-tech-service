@@ -905,12 +905,39 @@
     "header": {
       "features": "Features",
       "howItWorks": "How it works",
-      "login": "Sign In"
+      "stats": "Impact",
+      "login": "Sign In",
+      "track": "Track Order"
     },
     "hero": {
+      "badge": "Real-time Management & Tracking Platform",
       "title": "Technical service management made simple",
       "subtitle": "Work orders, public tracking, payments and reports in one place. Centralize and optimize your installation, maintenance and repair operations.",
-      "cta": "Get Started"
+      "cta": "Get Started",
+      "secondaryCta": "Track Order",
+      "previewTitle": "100% Real-time Traceability"
+    },
+    "stats": {
+      "title": "Impact in numbers",
+      "subtitle": "Proven results in daily technical service operations.",
+      "items": {
+        "orders": {
+          "value": "+50,000",
+          "label": "Work orders processed"
+        },
+        "uptime": {
+          "value": "99.9%",
+          "label": "System availability"
+        },
+        "tracking": {
+          "value": "< 2 sec",
+          "label": "Tracking response time"
+        },
+        "satisfaction": {
+          "value": "4.9 / 5",
+          "label": "Client satisfaction rating"
+        }
+      }
     },
     "features": {
       "title": "Everything you need",

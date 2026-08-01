@@ -396,7 +396,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Próxima sesión — prioridades en orden
 
-### 🔷 BRANDING: Logo B — check + hexágono + workflow line (NUEVO, alta prioridad de polish)
+### ~~🔷 BRANDING: Logo B — check + hexágono + workflow line~~ ✅
+
+**Completado (01/08/2026):** Creado `BrandLogoComponent` (`src/app/shared/components/brand-logo/brand-logo.component.ts`) e integrado en Landing Header, Landing Footer, Portal Tracking y Sidebar. Test unitario creado (`brand-logo.component.spec.ts`, 3 tests verdes).
 
 **Decisión tomada (01/08/2026):** Se eligió la dirección **B** del logo — check dentro de hexágono con línea de workflow. Descartados: A (monograma TS + QR) y C (llave+engranaje).
 

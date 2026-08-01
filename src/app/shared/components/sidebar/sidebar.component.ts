@@ -4,6 +4,8 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { BusinessSettingsService } from '../../../core/services/business-settings.service';
 
+import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
+
 interface NavItem {
   labelKey: string;
   icon: string;
@@ -12,7 +14,7 @@ interface NavItem {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, SafeHtmlPipe, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, SafeHtmlPipe, TranslatePipe, BrandLogoComponent],
   template: `
     <aside
       class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full transition-all duration-300 flex flex-col"
@@ -30,10 +32,24 @@ interface NavItem {
                 [alt]="settings()!.businessName"
                 class="h-8 w-8 rounded-lg object-cover"
               />
+            } @else {
+              <app-brand-logo variant="mark" size="w-7 h-7" />
             }
             <span class="text-lg font-bold text-gray-900 dark:text-gray-100">{{
               settings()?.businessName ?? 'Tech Service'
             }}</span>
+          </div>
+        } @else {
+          <div class="w-full flex justify-center">
+            @if (settings()?.logoUrl) {
+              <img
+                [src]="settings()!.logoUrl"
+                [alt]="settings()!.businessName"
+                class="h-7 w-7 rounded-lg object-cover"
+              />
+            } @else {
+              <app-brand-logo variant="mark" size="w-6 h-6" />
+            }
           </div>
         }
         <button
