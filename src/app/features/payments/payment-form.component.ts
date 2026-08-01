@@ -18,6 +18,7 @@ import {
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { toLocalDateString } from '../../core/utils/date.utils';
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -192,7 +193,7 @@ export class PaymentFormComponent {
         description: m.description || undefined,
         installmentNumber: m.installmentNumber ? parseInt(m.installmentNumber) : undefined,
         totalInstallments: m.totalInstallments ? parseInt(m.totalInstallments) : undefined,
-        dueDate: this.dueDateValue() ? this.dueDateValue()!.toISOString().split('T')[0] : undefined,
+        dueDate: this.dueDateValue() ? toLocalDateString(this.dueDateValue()!) : undefined,
       };
 
       const workOrderId = this.data.workOrderId || this.data.payment?.workOrder?.id;
@@ -222,7 +223,7 @@ export class PaymentFormComponent {
         description: m.description || undefined,
         installmentNumber: m.installmentNumber ? parseInt(m.installmentNumber) : undefined,
         totalInstallments: m.totalInstallments ? parseInt(m.totalInstallments) : undefined,
-        dueDate: this.dueDateValue() ? this.dueDateValue()!.toISOString().split('T')[0] : undefined,
+        dueDate: this.dueDateValue() ? toLocalDateString(this.dueDateValue()!) : undefined,
       };
 
       this.paymentsService.update(this.data.payment!.id, dto).subscribe({

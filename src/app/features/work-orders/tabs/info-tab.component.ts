@@ -20,6 +20,7 @@ import {
   UpdateWorkOrderDto,
 } from '../../../core/models/work-order.interfaces';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { toLocalDateString } from '../../../core/utils/date.utils';
 
 @Component({
   selector: 'app-info-tab',
@@ -417,11 +418,11 @@ export class InfoTabComponent implements OnInit {
     if (workAddress !== (wo.workAddress || '')) dto.workAddress = workAddress || undefined;
 
     const scheduledDate = this.editScheduledDate();
-    const scheduledStr = scheduledDate ? scheduledDate.toISOString().split('T')[0] : null;
+    const scheduledStr = scheduledDate ? toLocalDateString(scheduledDate) : null;
     if (scheduledStr !== (wo.scheduledDate || null)) dto.scheduledDate = scheduledStr || undefined;
 
     const warrantyUntil = this.editWarrantyUntil();
-    const warrantyStr = warrantyUntil ? warrantyUntil.toISOString().split('T')[0] : null;
+    const warrantyStr = warrantyUntil ? toLocalDateString(warrantyUntil) : null;
     if (warrantyStr !== (wo.warrantyUntil || null)) dto.warrantyUntil = warrantyStr || undefined;
 
     const location = this.editLocation();
