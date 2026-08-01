@@ -396,6 +396,92 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Próxima sesión — prioridades en orden
 
+### 🔷 BRANDING: Logo B — check + hexágono + workflow line (NUEVO, alta prioridad de polish)
+
+**Decisión tomada (01/08/2026):** Se eligió la dirección **B** del logo — check dentro de hexágono con línea de workflow. Descartados: A (monograma TS + QR) y C (llave+engranaje).
+
+**Concepto:** "Servicio completado, seguimiento activo". El check comunica garantía de trabajo terminado; el hexágono aporta solidez/ingeniería; la línea punteada con nodos evoca el timeline de tracking (la feature estrella del producto, código `TS-XXXXX` + QR).
+
+#### Anatomía del SVG (viewBox 0 0 24 24, stroke = currentColor)
+
+| Elemento          | Spec                                                                                          |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| **Hexágono**      | Pointy-top, r≈9.2, path: `M12 2.8 L20 7.4 L20 16.6 L12 21.2 L4 16.6 L4 7.4 Z`, stroke-width 2 |
+| **Check**         | `polyline` `7.5,12.8 → 10.7,16 → 16.6,9.4`, stroke-width 2.5, round caps/joins                |
+| **Workflow line** | `line` `x1=6.5 y1=19 x2=17.5 y2=19`, stroke-width 1.5, `stroke-dasharray="2.5 2.5"`           |
+| **Nodos**         | 2 círculos rellenos (currentColor): `cx=6.5 cy=19 r=1.3` y `cx=17.5 cy=19 r=1.3`              |
+
+**SVG de referencia (variante full):**
+
+```html
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d="M12 2.8 L20 7.4 L20 16.6 L12 21.2 L4 16.6 L4 7.4 Z" />
+  <polyline points="7.5,12.8 10.7,16 16.6,9.4" stroke-width="2.5" />
+  <line x1="6.5" y1="19" x2="17.5" y2="19" stroke-width="1.5" stroke-dasharray="2.5 2.5" />
+  <circle cx="6.5" cy="19" r="1.3" fill="currentColor" stroke="none" />
+  <circle cx="17.5" cy="19" r="1.3" fill="currentColor" stroke="none" />
+</svg>
+```
+
+#### Variantes
+
+| Variante | Uso                            | Detalle                                            |
+| -------- | ------------------------------ | -------------------------------------------------- |
+| **full** | Header/footer/sidebar/login    | Hexágono + check + línea workflow + nodos (arriba) |
+| **mark** | Favicon 16px, badges, chips    | Solo hexágono + check (sin línea ni nodos)         |
+| **mono** | PWA icons, usos monocromáticos | full en color único (blanco o primary sólido)      |
+
+#### Aplicaciones (reemplazar el wrench duplicado)
+
+| Archivo                                                    | Línea actual        | Cambio                                                            |
+| ---------------------------------------------------------- | ------------------- | ----------------------------------------------------------------- |
+| `src/app/features/landing/landing-header.component.ts`     | ~15-17 (SVG wrench) | Usar `<app-brand-logo variant="full" />` + wordmark (sin cambios) |
+| `src/app/features/landing/landing-footer.component.ts`     | ~13-15 (SVG wrench) | Ídem, tamaño `w-5 h-5`                                            |
+| `src/app/layouts/admin-layout/admin-layout.component.ts`   | Verificar           | Reemplazar logo existente por el componente                       |
+| `src/app/features/auth/login.component.ts` (o equivalente) | Verificar           | Ídem                                                              |
+| `public/favicon.ico`                                       | —                   | Exportar variante **mark** a 16px                                 |
+| `public/icons/icon-{72,96,128,144,152,192,384,512}.png`    | —                   | Re-exportar variante **mono** desde el SVG                        |
+| `src/index.html` / `manifest.webmanifest`                  | —                   | Verificar que referencien los nuevos assets                       |
+
+#### Arquitectura (DRY — hoy el SVG está copiado en 2+ archivos)
+
+1. Crear `src/app/shared/components/brand-logo/brand-logo.component.ts`:
+   - `@Component` standalone, `imports: []` (SVG inline, sin dependencias)
+   - Inputs: `variant = input<'full' | 'mark'>('full')`, `size = input<string>('w-7 h-7')`
+   - Clases: `text-[var(--color-primary)]` light / `dark:text-blue-400` dark (usa `currentColor`; hereda el branding multi-tenant dinámico que setea `--color-primary` desde BusinessSettings)
+   - `aria-hidden="true"` (el wordmark "Tech Service" es texto accesible; el logo es decorativo)
+2. **Integración multi-tenant:** verificar cómo el sidebar maneja el logo configurado del tenant (BusinessSettings). Si existe override por imagen, el componente debe aceptar input `imageUrl?: string` y priorizarla sobre el SVG.
+3. Generar favicon + PWA icons: exportar desde el SVG (script o herramienta; en `public/icons/` ya existen los 8 tamaños).
+4. Test unitario smoke: `brand-logo.component.spec.ts` — renderiza SVG en ambas variantes.
+
+#### Pautas de uso (brand guidelines mínimas)
+
+- **Clear space:** 25% del alto del hexágono alrededor del mark.
+- **Tamaño mínimo:** 16px (mark) / 24px (full con wordmark).
+- ❌ No rotar, no deformar (preservar aspect ratio 1:1), no cambiar colores fuera de la paleta.
+- ❌ No usar `mark` con sombras ni strokes externos en favicon.
+- ✅ El check nunca se usa solo sin hexágono (reserva el mark completo).
+
+#### Verificación obligatoria
+
+1. `npx ng build` → 0 errores (el error de prerender en `/` por timeout del backend es pre-existente, ignorar).
+2. `pnpm test` → tests verdes (incluye el nuevo spec).
+3. `pnpm lint` → sin warnings.
+4. Revisión visual: landing light/dark, sidebar, login, favicon en pestaña del browser.
+5. Prerender check: el logo SVG inline funciona en SSR sin `window`/`document` (no tocar `ThemeService` para esto).
+
+**Nota para retomar:** tarea de implementación → agente `build`. La dirección creativa está cerrada; solo falta ejecución. Si el resultado visual del hexágono+check+timeline no convence en la revisión, la micro-variante B2 (workflow line saliendo del vértice inferior derecho, asimétrica) es el plan B autorizado sin re-discutir concepto.
+
+---
+
 ### 0. Mergear feature "Real-time del detalle del timeline" (ramas `feat/status-detail-realtime`)
 
 ✅ Feature completa (commit `b7345c4` backend, `92b3d0d` frontend). PRs abiertos: backend **#133**, frontend **#212**. Pendiente solo review y merge. El detalle del timeline ahora se propaga en vivo a admins y técnicos asignados al editar/eliminar (antes solo el usuario mutador actualizaba su vista).
@@ -555,7 +641,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 - [x] Notifications (list, mark read, WebSocket, unreadCount, bell badge in header)
 - [x] Pending Items (list, form, dashboard widget)
 - [x] Inquiries (list, detail, contact, review, convert)
-- [x] Landing Page (SSG/prerender, 6 sub-components)
+- [x] Landing Page (SSG/prerender, 6 sub-components) — 🔄 rediseño profesional + Logo B pendiente (ver "Próxima sesión")
 - [x] Portal Tracking (search, result, timeline, tasks, notes, payments)
 - [x] PWA (service worker, manifest, install prompt)
 - [x] Push Notifications (VAPID keys, web-push, PushSubscription entity, PushNotificationService)
