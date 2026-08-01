@@ -33,6 +33,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       <button
         mat-stroked-button
         (click)="expanded.set(true)"
+        class="filter-toggle-btn"
         [class.active-filters]="hasActiveFilters()"
         type="button"
       >
@@ -128,8 +129,19 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         background: rgb(0 0 0 / 0.4);
       }
 
-      .active-filters {
-        color: #2563eb;
+      .filter-toggle-btn {
+        color: var(--color-primary) !important;
+        border-color: var(--color-primary) !important;
+      }
+
+      .filter-toggle-btn mat-icon {
+        color: inherit !important;
+      }
+
+      .filter-toggle-btn.active-filters {
+        background-color: var(--color-primary) !important;
+        color: #ffffff !important;
+        border-color: var(--color-primary) !important;
       }
 
       .clear-icon-btn {

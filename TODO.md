@@ -55,7 +55,14 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-## Últimas features implementadas (31/07/2026)
+## Últimas features implementadas (01/08/2026)
+
+### Fix: Estilos del ícono de filtro en modo mobile (`MobileFilterBarComponent`)
+
+- En modo mobile, el botón de filtros usaba un color azul estático `#2563eb` y no aplicaba el estilo filled.
+- Solución:
+  - Sin filtros activos: Estilo **outlined** en el color primario de marca (`var(--color-primary)` para borde, texto e ícono).
+  - Con filtros activos: Estilo **filled** con fondo en color primario (`var(--color-primary)`), y texto e ícono en color blanco (`#ffffff`).
 
 ### Feature: Detalle opcional en cambios de estado (timeline)
 
