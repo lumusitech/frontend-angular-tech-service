@@ -2,13 +2,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
-  --color-danger: var(--color-danger);
-  --color-warning: var(--color-warning);
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 4rem;
@@ -65,11 +58,14 @@ body {
    Applied globally to Material components
    ============================================ */
 
-:root {
+@theme {
   --color-primary: #1E40AF;
   --color-secondary: #059669;
   --color-danger: #DC2626;
   --color-warning: #D97706;
+}
+
+:root {
   --mat-sys-primary: var(--color-primary, #1E40AF);
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: #dbeafe;

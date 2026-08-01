@@ -7,7 +7,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   selector: 'app-mobile-filter-bar',
   imports: [MatIconModule, MatButtonModule, TranslatePipe],
   template: `
-    <div class="hidden md:contents">
+    <div class="hidden md:flex md:items-center md:gap-3 md:flex-wrap flex-1">
       <ng-content />
       @if (hasActiveFilters()) {
         <button
