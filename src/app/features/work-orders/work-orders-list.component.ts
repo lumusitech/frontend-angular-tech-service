@@ -219,6 +219,8 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               [fields]="getOrderFields(order)"
               [canSwipe]="true"
               [onEdit]="onEditSwipe(order)"
+              editIcon="visibility"
+              editLabel="Detalle"
             />
           }
         </mat-accordion>
