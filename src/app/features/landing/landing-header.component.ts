@@ -78,7 +78,7 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
           <a
             mat-flat-button
             routerLink="/login"
-            class="!bg-blue-600 dark:!bg-blue-600 hover:!bg-blue-700 !text-white !px-4 sm:!px-5 !py-2.5 !text-xs sm:!text-sm !rounded-xl !font-medium !shadow-xs"
+            class="!bg-blue-600 dark:!bg-blue-600 hover:!bg-blue-700 !text-white !px-3 sm:!px-5 !py-2 sm:!py-2.5 !text-xs sm:!text-sm !rounded-xl !font-semibold !shadow-xs !whitespace-nowrap shrink-0 inline-flex items-center justify-center"
           >
             {{ 'landing.header.login' | translate }}
           </a>
