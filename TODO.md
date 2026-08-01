@@ -163,7 +163,8 @@ if (isPlatformBrowser(this.platformId)) { ... }
 1. ~~**BUG-003: Flicker en detalle de órdenes**~~ ✅ — Resuelto con `X-Skip-Loading` header.
 2. ~~**Migrar 15 formularios a Signal Forms**~~ ✅ — 15/15 completado en 3 PRs.
 3. ~~**BUG-002: Datepicker border cortado**~~ ✅ — Resuelto: `w-40` → `w-44`.
-4. **BUG-005: Mobile work order detail UI/UX** — El detalle de orden en mobile se ve con scroll horizontal, layout roto, opciones de swipe que no funcionan bien. Requiere rediseño del template para mobile-first: stack vertical, sin overflow, acciones accesibles.
+4. ~~**BUG-005: Mobile work order detail UI/UX**~~ ✅ — Rediseño mobile-first completado: hero header hardware card, eliminación de gestos swipe erróneos, dock de acciones flotante/sticky en mobile, vista de tarjetas de materiales en mobile.
+5. ~~**FEAT-007: Hardware Status Deck & Circular Swipe**~~ ✅ — Rediseñado el dock de acciones de cambio de estado y asignación de técnicos con jerarquía visual héroe, botones hápticos (`active:scale-95`), iconografía profesional con Material Icons (sin emojis), tooltiping y swipe circular continuo.
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 

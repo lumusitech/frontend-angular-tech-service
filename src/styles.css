@@ -291,3 +291,18 @@ app-mobile-filter-bar .mat-mdc-form-field-subscript-wrapper {
 :root.dark .mat-mdc-select-panel {
   background-color: #1f2937 !important;
 }
+
+/* Utility to hide scrollbars while preserving touch/swipe scroll.
+   IMPORTANT: Do NOT use `display: none` — iOS Safari/WebKit treats it
+   as "no scrollbar = no scroll gesture handler", which disables touch
+   scrolling on physical devices (works fine in Chrome DevTools emulation). */
+.no-scrollbar::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent;
+  -webkit-appearance: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

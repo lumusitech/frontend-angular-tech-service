@@ -48,52 +48,66 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
   ],
   template: `
     @if (orderData() !== null) {
-      <div class="space-y-6">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between flex-wrap gap-3">
-            <div class="flex items-center gap-4 min-w-0">
-              <button mat-icon-button (click)="goBack()">
+      <div class="space-y-6 pb-48 lg:pb-0">
+        <!-- Hero Header Card -->
+        <div class="p-4 sm:p-6 bg-white dark:bg-gray-800/90 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs backdrop-blur-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-3 min-w-0">
+              <button mat-icon-button (click)="goBack()" class="shrink-0 -ml-1">
                 <mat-icon>arrow_back</mat-icon>
               </button>
-              <div class="min-w-0">
-                <div class="flex items-center gap-3 flex-wrap">
-                  <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
                     <app-tracking-code [code]="orderData()!.trackingCode" />
                   </h1>
                   <app-status-badge [value]="orderData()!.status" type="workOrderStatus" />
                   <app-status-badge [value]="orderData()!.priority" type="workOrderPriority" />
                 </div>
-                <p class="text-gray-500 dark:text-gray-400 mt-1">
-                  {{ orderData()!.serviceType.name }} -
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <span class="font-medium text-gray-700 dark:text-gray-300">{{ orderData()!.serviceType.name }}</span>
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                   {{ orderData()!.client.name }}
                 </p>
               </div>
+              <!-- Export icon button (all viewports) -->
+              <app-export-buttons [workOrderId]="orderData()!.id" [iconOnly]="true" class="shrink-0" />
             </div>
-          </div>
 
-          <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-end">
-            <app-export-buttons [workOrderId]="orderData()!.id" />
-            <app-status-transition
-              [status]="orderData()!.status"
-              [requiresDelivery]="orderData()!.serviceType?.requiresDelivery ?? false"
-              (transition)="onStatusTransition($event)"
-              (openTechnicianAssignment)="openTechnicianDialog()"
-            />
+            <!-- Desktop Action Bar -->
+            <div class="hidden lg:flex flex-wrap items-center gap-2">
+              <app-status-transition
+                [status]="orderData()!.status"
+                [requiresDelivery]="orderData()!.serviceType?.requiresDelivery ?? false"
+                (transition)="onStatusTransition($event)"
+              />
+            </div>
           </div>
         </div>
 
+        <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div
-            class="lg:col-span-2 space-y-6"
-            [style.touch-action]="'pan-y'"
+            class="lg:col-span-2 space-y-6 min-w-0 touch-manipulation"
             (touchstart)="onTouchStart($event)"
             (touchend)="onTouchEnd($event)"
+            (touchcancel)="onTouchEnd($event)"
           >
-            <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+            <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs overflow-hidden">
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <mat-icon class="mr-2">info</mat-icon>
-                  {{ 'workOrders.detail.generalInfo' | translate }}
+                  <div
+                    class="flex items-center gap-1.5 transition-all duration-200"
+                    [class]="
+                      selectedTabIndex() === 0
+                        ? 'text-blue-600 dark:text-blue-400 font-bold opacity-100 scale-[1.02]'
+                        : 'text-gray-400 dark:text-gray-500 font-medium opacity-50 hover:opacity-85'
+                    "
+                  >
+                    <mat-icon class="text-base">info</mat-icon>
+                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.generalInfo' | translate }}</span>
+                  </div>
                 </ng-template>
                 <app-info-tab
                   [workOrder]="orderData()!"
@@ -105,10 +119,21 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <mat-icon class="mr-2">checklist</mat-icon>
-                  {{ 'workOrders.detail.tasks' | translate }} ({{ getCompletedTasks() }}/{{
-                    orderData()!.tasks?.length || 0
-                  }})
+                  <div
+                    class="flex items-center gap-1.5 transition-all duration-200"
+                    [class]="
+                      selectedTabIndex() === 1
+                        ? 'text-blue-600 dark:text-blue-400 font-bold opacity-100 scale-[1.02]'
+                        : 'text-gray-400 dark:text-gray-500 font-medium opacity-50 hover:opacity-85'
+                    "
+                  >
+                    <mat-icon class="text-base">checklist</mat-icon>
+                    <span class="text-xs sm:text-sm"
+                      >{{ 'workOrders.detail.tasks' | translate }} ({{ getCompletedTasks() }}/{{
+                        orderData()!.tasks?.length || 0
+                      }})</span
+                    >
+                  </div>
                 </ng-template>
                 <app-tasks-tab
                   [tasks]="orderData()!.tasks || []"
@@ -120,8 +145,17 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <mat-icon class="mr-2">build</mat-icon>
-                  {{ 'workOrders.detail.materials' | translate }}
+                  <div
+                    class="flex items-center gap-1.5 transition-all duration-200"
+                    [class]="
+                      selectedTabIndex() === 2
+                        ? 'text-blue-600 dark:text-blue-400 font-bold opacity-100 scale-[1.02]'
+                        : 'text-gray-400 dark:text-gray-500 font-medium opacity-50 hover:opacity-85'
+                    "
+                  >
+                    <mat-icon class="text-base">build</mat-icon>
+                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.materials' | translate }}</span>
+                  </div>
                 </ng-template>
                 <app-materials-tab
                   [materials]="orderData()!.materials || []"
@@ -132,8 +166,17 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <mat-icon class="mr-2">notes</mat-icon>
-                  {{ 'workOrders.detail.notes' | translate }}
+                  <div
+                    class="flex items-center gap-1.5 transition-all duration-200"
+                    [class]="
+                      selectedTabIndex() === 3
+                        ? 'text-blue-600 dark:text-blue-400 font-bold opacity-100 scale-[1.02]'
+                        : 'text-gray-400 dark:text-gray-500 font-medium opacity-50 hover:opacity-85'
+                    "
+                  >
+                    <mat-icon class="text-base">notes</mat-icon>
+                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.notes' | translate }}</span>
+                  </div>
                 </ng-template>
                 <app-notes-tab
                   [notes]="orderData()!.notes || []"
@@ -145,8 +188,17 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
 
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <mat-icon class="mr-2">timeline</mat-icon>
-                  {{ 'workOrders.detail.statusTimeline' | translate }}
+                  <div
+                    class="flex items-center gap-1.5 transition-all duration-200"
+                    [class]="
+                      selectedTabIndex() === 4
+                        ? 'text-blue-600 dark:text-blue-400 font-bold opacity-100 scale-[1.02]'
+                        : 'text-gray-400 dark:text-gray-500 font-medium opacity-50 hover:opacity-85'
+                    "
+                  >
+                    <mat-icon class="text-base">timeline</mat-icon>
+                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.statusTimeline' | translate }}</span>
+                  </div>
                 </ng-template>
                 <app-timeline-tab [orderId]="orderId()" />
               </mat-tab>
@@ -161,6 +213,24 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
             [createdAt]="orderData()!.createdAt"
             (editTechnicians)="openTechnicianDialog()"
           />
+        </div>
+
+        <!-- Mobile Floating Bottom Action Dock (Floating Island at bottom-20 above AdminBottomNavComponent) -->
+        <div class="fixed bottom-20 left-3 right-3 z-30 p-2.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl border border-gray-200/80 dark:border-gray-700/70 shadow-2xl lg:hidden">
+          <div
+            #dockScroll
+            class="flex items-center gap-2.5 overflow-x-scroll no-scrollbar"
+            (touchstart)="onDockTouchStart($event)"
+            (touchmove)="onDockTouchMove($event, dockScroll)"
+            (touchend)="onDockTouchEnd()"
+          >
+            <app-status-transition
+              [status]="orderData()!.status"
+              [requiresDelivery]="orderData()!.serviceType?.requiresDelivery ?? false"
+              (transition)="onStatusTransition($event)"
+              class="shrink-0 contents"
+            />
+          </div>
         </div>
       </div>
     }
@@ -179,20 +249,68 @@ export class WorkOrderDetailComponent {
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
 
+  // --- Tab swipe gesture state ---
   private touchStartX = 0;
   private touchStartY = 0;
+  private touchStartTime = 0;
+
+  // --- Dock horizontal drag-scroll state ---
+  private dockTouchStartX = 0;
+  private dockInitialScrollLeft = 0;
+  private isDockDragging = false;
 
   onTouchStart(event: TouchEvent): void {
-    this.touchStartX = event.touches[0].clientX;
-    this.touchStartY = event.touches[0].clientY;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('button, a, input, textarea, select, mat-select, [contenteditable="true"], [role="button"], [role="menuitem"], app-export-buttons, app-status-transition')) {
+      this.touchStartTime = 0;
+      return;
+    }
+    if (event.touches.length === 1) {
+      this.touchStartX = event.touches[0].clientX;
+      this.touchStartY = event.touches[0].clientY;
+      this.touchStartTime = Date.now();
+    }
   }
 
   onTouchEnd(event: TouchEvent): void {
+    if (!this.touchStartTime) return;
+    const duration = Date.now() - this.touchStartTime;
+    this.touchStartTime = 0;
+
+    if (duration > 800 || event.changedTouches.length === 0) return;
+
     const deltaX = event.changedTouches[0].clientX - this.touchStartX;
     const deltaY = event.changedTouches[0].clientY - this.touchStartY;
-    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
-    const next = this.selectedTabIndex() + (deltaX < 0 ? 1 : -1);
-    if (next >= 0 && next <= 4) this.selectedTabIndex.set(next);
+
+    if (Math.abs(deltaX) >= 35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      const direction = deltaX < 0 ? 1 : -1;
+      const totalTabs = 5;
+      const nextIndex = (this.selectedTabIndex() + direction + totalTabs) % totalTabs;
+      this.selectedTabIndex.set(nextIndex);
+    }
+  }
+
+  onDockTouchStart(event: TouchEvent): void {
+    if (event.touches.length === 1) {
+      this.dockTouchStartX = event.touches[0].clientX;
+      const container = (event.currentTarget as HTMLElement);
+      this.dockInitialScrollLeft = container.scrollLeft;
+      this.isDockDragging = false;
+    }
+  }
+
+  onDockTouchMove(event: TouchEvent, container: HTMLElement): void {
+    if (event.touches.length !== 1) return;
+    const deltaX = this.dockTouchStartX - event.touches[0].clientX;
+    if (Math.abs(deltaX) > 5) {
+      this.isDockDragging = true;
+      container.scrollLeft = this.dockInitialScrollLeft + deltaX;
+      event.preventDefault();
+    }
+  }
+
+  onDockTouchEnd(): void {
+    this.isDockDragging = false;
   }
 
   onInfoSaved(dto: UpdateWorkOrderDto): void {

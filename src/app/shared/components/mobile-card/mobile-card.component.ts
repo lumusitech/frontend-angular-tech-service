@@ -106,8 +106,8 @@ export interface MobileCardField {
     >
       <div class="swipe-actions" [style.opacity]="swiping() ? 1 : 0">
         <div class="action-edit">
-          <mat-icon class="!w-5 !h-5">edit</mat-icon>
-          <span>Editar</span>
+          <mat-icon class="!w-5 !h-5">{{ editIcon() }}</mat-icon>
+          <span>{{ editLabel() }}</span>
         </div>
         <div class="action-delete">
           <mat-icon class="!w-5 !h-5">delete</mat-icon>
@@ -145,21 +145,24 @@ export interface MobileCardField {
             <div class="flex items-center justify-end gap-2 pt-3">
               @if (onEdit()) {
                 <button
-                  mat-icon-button
+                  mat-button
+                  color="primary"
                   (click)="onEdit()!($event); $event.stopPropagation()"
-                  class="!w-9 !h-9"
+                  class="!rounded-xl"
                 >
-                  <mat-icon class="!text-[18px]">edit</mat-icon>
+                  <mat-icon class="!w-4 !h-4 !text-base mr-1">{{ editIcon() }}</mat-icon>
+                  <span>{{ editLabel() }}</span>
                 </button>
               }
               @if (onDelete()) {
                 <button
-                  mat-icon-button
+                  mat-button
                   color="warn"
                   (click)="onDelete()!($event); $event.stopPropagation()"
-                  class="!w-9 !h-9"
+                  class="!rounded-xl"
                 >
-                  <mat-icon class="!text-[18px]">delete</mat-icon>
+                  <mat-icon class="!w-4 !h-4 !text-base mr-1">delete</mat-icon>
+                  <span>Borrar</span>
                 </button>
               }
             </div>
@@ -178,6 +181,8 @@ export class MobileCardComponent {
   readonly statusType = input<string>('workOrderStatus');
   readonly fields = input.required<MobileCardField[]>();
   readonly canSwipe = input(false);
+  readonly editIcon = input<string>('edit');
+  readonly editLabel = input<string>('Editar');
   readonly onEdit = input<((event: Event) => void) | null>(null);
   readonly onDelete = input<((event: Event) => void) | null>(null);
 

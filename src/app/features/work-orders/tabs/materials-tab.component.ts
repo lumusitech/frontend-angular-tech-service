@@ -9,19 +9,40 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   selector: 'app-materials-tab',
   imports: [MatIconModule, MatButtonModule, CurrencyArsPipe, TranslatePipe],
   template: `
-    <div class="p-4">
-      <div class="flex justify-end mb-4">
-        <button mat-stroked-button color="primary" (click)="addMaterial.emit()">
-          <mat-icon>add</mat-icon>
+    <div class="p-4 space-y-4">
+      <div class="flex justify-end">
+        <button mat-stroked-button color="primary" (click)="addMaterial.emit()" class="px-3! min-h-10! rounded-xl!">
+          <mat-icon class="w-4! h-4! text-base!">add</mat-icon>
           {{ 'workOrders.materials.addMaterial' | translate }}
         </button>
       </div>
       @if (!materials() || materials().length === 0) {
-        <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+        <p class="text-gray-500 dark:text-gray-400 text-center py-8 text-sm">
           {{ 'workOrders.materials.noMaterials' | translate }}
         </p>
       } @else {
-        <div class="overflow-x-auto">
+        <!-- Mobile Card View (<640px) -->
+        <div class="space-y-3 block sm:hidden">
+          @for (material of materials(); track material.id) {
+            <div class="p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ material.description }}</span>
+                <span class="font-semibold text-sm text-gray-900 dark:text-gray-100 shrink-0">{{ material.totalCost | currencyArs }}</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pt-1 border-t border-gray-200/60 dark:border-gray-600/50">
+                <span>{{ material.supplier?.name || '-' }}</span>
+                <span>{{ material.quantity }} x {{ material.unitCost | currencyArs }}</span>
+              </div>
+            </div>
+          }
+          <div class="flex justify-between items-center p-3 bg-blue-50/60 dark:bg-blue-950/40 rounded-xl border border-blue-100 dark:border-blue-900/50 font-medium text-sm text-blue-900 dark:text-blue-200">
+            <span>{{ 'workOrders.materials.totalMaterials' | translate }}:</span>
+            <span class="font-bold text-base">{{ total() | currencyArs }}</span>
+          </div>
+        </div>
+
+        <!-- Desktop Table View (>=640px) -->
+        <div class="hidden sm:block overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-gray-200 dark:border-gray-700">
@@ -60,7 +81,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                 <td colspan="4" class="py-2 px-3 text-right">
                   {{ 'workOrders.materials.totalMaterials' | translate }}:
                 </td>
-                <td class="py-2 px-3 text-right">{{ total() | currencyArs }}</td>
+                <td class="py-2 px-3 text-right font-bold">{{ total() | currencyArs }}</td>
               </tr>
             </tfoot>
           </table>

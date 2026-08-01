@@ -155,14 +155,15 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
         <!-- Action buttons -->
         @if (getActions(order.status); as actions) {
           @if (actions.length > 0) {
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex gap-2 flex-wrap max-w-full overflow-x-auto no-scrollbar py-1">
               @for (action of actions; track action.nextStatus) {
                 <button
                   mat-flat-button
                   [color]="action.color"
                   (click)="changeStatus(order, action)"
+                  class="gap-1.5! min-h-11! px-4! rounded-xl! text-sm font-medium shrink-0 shadow-2xs"
                 >
-                  <mat-icon>{{ action.icon }}</mat-icon>
+                  <mat-icon class="w-4! h-4! text-base!">{{ action.icon }}</mat-icon>
                   {{ action.labelKey | translate }}
                 </button>
               }

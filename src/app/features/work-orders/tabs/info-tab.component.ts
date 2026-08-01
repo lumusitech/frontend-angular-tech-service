@@ -160,31 +160,31 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
             </p>
             <p class="font-medium">{{ workOrder().client.name }}</p>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ workOrder().client.email }}</p>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
               <a
                 [href]="'tel:' + workOrder().client.phone"
-                class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
               >
                 {{ workOrder().client.phone }}
               </a>
               @if (workOrder().client.phone) {
                 <a
                   [href]="'tel:' + workOrder().client.phone"
-                  mat-icon-button
-                  class="!min-w-0 !p-0.5"
+                  class="inline-flex items-center justify-center p-1 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
                   [title]="'common.call' | translate"
                 >
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-blue-500">phone</mat-icon>
+                  <mat-icon class="w-3.5! h-3.5! text-xs!">call</mat-icon>
                 </a>
                 <a
                   [href]="'https://wa.me/' + encodeURIComponent(workOrder().client.phone)"
                   target="_blank"
                   rel="noopener"
-                  mat-icon-button
-                  class="!min-w-0 !p-0.5"
+                  class="inline-flex items-center justify-center p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors"
                   [title]="'common.whatsapp' | translate"
                 >
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500">chat</mat-icon>
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c0-5.445 4.43-9.874 9.875-9.874 2.637 0 5.115 1.028 6.978 2.894A9.827 9.827 0 0121.996 12c0 5.447-4.429 9.875-9.875 9.875m0-18c-6.52 0-11.82 5.3-11.82 11.82 0 2.09.544 4.13 1.579 5.92L0 24l6.452-1.69a11.78 11.78 0 005.597 1.41h.005c6.519 0 11.82-5.3 11.82-11.82 0-3.16-1.23-6.13-3.463-8.363A11.754 11.754 0 0012.05 1z"/>
+                  </svg>
                 </a>
               }
             </div>
@@ -205,7 +205,7 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
             <p class="text-sm text-gray-500 dark:text-gray-400">
               {{ 'workOrders.workAddress' | translate }}
             </p>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
               @if (workOrder().workAddress) {
                 <a
                   [href]="
@@ -223,13 +223,10 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  mat-icon-button
-                  class="!min-w-0 !p-0.5"
+                  class="inline-flex items-center justify-center p-1 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
                   [title]="'common.openInMaps' | translate"
                 >
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500"
-                    >location_on</mat-icon
-                  >
+                  <mat-icon class="w-3.5! h-3.5! text-xs!">pin_drop</mat-icon>
                 </a>
               } @else {
                 <p class="font-medium">-</p>
@@ -245,7 +242,7 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
               <p class="text-sm text-gray-500 dark:text-gray-400">
                 {{ 'common.address' | translate }} {{ 'workOrders.detail.client' | translate }}
               </p>
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
                 <a
                   [href]="
                     'https://maps.google.com/?q=' + encodeURIComponent(workOrder().client.address!)
@@ -262,13 +259,10 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  mat-icon-button
-                  class="!min-w-0 !p-0.5"
+                  class="inline-flex items-center justify-center p-1 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
                   [title]="'common.openInMaps' | translate"
                 >
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] !text-green-500"
-                    >location_on</mat-icon
-                  >
+                  <mat-icon class="w-3.5! h-3.5! text-xs!">pin_drop</mat-icon>
                 </a>
               </div>
             </div>
