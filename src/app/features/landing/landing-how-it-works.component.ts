@@ -4,42 +4,56 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-landing-how-it-works',
+  standalone: true,
   imports: [MatIconModule, TranslatePipe],
   template: `
-    <section id="how-it-works" class="py-16 md:py-24">
+    <section id="how-it-works" class="py-14 sm:py-20 md:py-28 bg-white dark:bg-gray-950">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+        <!-- Encabezado de sección -->
+        <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+            Flujo de trabajo simple
+          </span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             {{ 'landing.howItWorks.title' | translate }}
           </h2>
-          <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
             {{ 'landing.howItWorks.subtitle' | translate }}
           </p>
         </div>
+
+        <!-- Contenedor del proceso -->
         <div class="relative isolate">
+          <!-- Líneas de conexión horizontal (visibles en pantallas medianas/grandes) -->
           <div
-            class="hidden md:block absolute top-10 left-[calc(12.5%+40px)] w-[calc(25%-80px)] h-0.5 bg-gray-200 dark:bg-gray-700 z-0"
+            class="hidden md:block absolute top-10 left-[calc(12.5%+32px)] w-[calc(25%-64px)] h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 z-0 opacity-40"
           ></div>
           <div
-            class="hidden md:block absolute top-10 left-[calc(37.5%+40px)] w-[calc(25%-80px)] h-0.5 bg-gray-200 dark:bg-gray-700 z-0"
+            class="hidden md:block absolute top-10 left-[calc(37.5%+32px)] w-[calc(25%-64px)] h-0.5 bg-gradient-to-r from-indigo-500 to-blue-500 z-0 opacity-40"
           ></div>
           <div
-            class="hidden md:block absolute top-10 left-[calc(62.5%+40px)] w-[calc(25%-80px)] h-0.5 bg-gray-200 dark:bg-gray-700 z-0"
+            class="hidden md:block absolute top-10 left-[calc(62.5%+32px)] w-[calc(25%-64px)] h-0.5 bg-gradient-to-r from-blue-500 to-emerald-500 z-0 opacity-40"
           ></div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
+
+          <!-- Pasos (Mobile: apilados verticalmente con línea conectora vertical, Desktop: 4 columnas) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 relative z-10">
             @for (step of steps; track step.number) {
-              <div class="flex flex-col items-center text-center relative">
+              <div class="group flex flex-col items-center text-center relative bg-gray-50/70 dark:bg-gray-900/50 p-6 sm:p-5 rounded-2xl border border-gray-200/60 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300">
+                <!-- Badge con número e icono -->
                 <div
-                  class="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/30 border-4 border-white dark:border-gray-950 flex items-center justify-center mb-4"
+                  class="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 shadow-md flex flex-col items-center justify-center mb-4 group-hover:scale-110 transition-transform"
                 >
-                  <span class="text-xl font-bold text-blue-600 dark:text-blue-400">{{
-                    step.number
-                  }}</span>
+                  <span class="text-xs font-bold text-gray-400 dark:text-gray-500 leading-none">0{{ step.number }}</span>
+                  <mat-icon class="!w-5 !h-5 !text-xl text-blue-600 dark:text-blue-400 mt-0.5">{{ step.icon }}</mat-icon>
                 </div>
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">
+
+                <!-- Título del paso -->
+                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
                   {{ 'landing.howItWorks.steps.' + step.number + '.title' | translate }}
                 </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-50">
+
+                <!-- Descripción -->
+                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   {{ 'landing.howItWorks.steps.' + step.number + '.description' | translate }}
                 </p>
               </div>

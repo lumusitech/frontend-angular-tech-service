@@ -907,12 +907,39 @@
     "header": {
       "features": "Funcionalidades",
       "howItWorks": "Cómo funciona",
-      "login": "Iniciar Sesión"
+      "stats": "Impacto",
+      "login": "Iniciar Sesión",
+      "track": "Rastrear Orden"
     },
     "hero": {
+      "badge": "Plataforma de Gestión & Tracking Real-time",
       "title": "Gestión de servicios técnicos simplificada",
       "subtitle": "Órdenes de trabajo, tracking público, pagos y reportes en un solo lugar. Centralizá y optimizá tus operaciones de instalación, mantenimiento y reparación.",
-      "cta": "Comenzar"
+      "cta": "Comenzar Ahora",
+      "secondaryCta": "Rastrear Orden",
+      "previewTitle": "Trazabilidad 100% en tiempo real"
+    },
+    "stats": {
+      "title": "Impacto en números",
+      "subtitle": "Resultados comprobados en la operación diaria de servicios técnicos.",
+      "items": {
+        "orders": {
+          "value": "+50.000",
+          "label": "Órdenes procesadas"
+        },
+        "uptime": {
+          "value": "99.9%",
+          "label": "Disponibilidad del sistema"
+        },
+        "tracking": {
+          "value": "< 2 seg",
+          "label": "Consulta de tracking"
+        },
+        "satisfaction": {
+          "value": "4.9 / 5",
+          "label": "Calificación de clientes"
+        }
+      }
     },
     "features": {
       "title": "Todo lo que necesitás",
