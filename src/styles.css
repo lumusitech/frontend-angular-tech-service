@@ -2,13 +2,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
-  --color-danger: var(--color-danger);
-  --color-warning: var(--color-warning);
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 4rem;
@@ -131,6 +124,16 @@ div:has(> table.mat-mdc-table) {
 
 .mat-mdc-form-field:focus-within .mat-mdc-form-field-focus-overlay {
   background-color: color-mix(in srgb, var(--color-secondary) 5%, transparent);
+}
+
+/* --- Mat Form Field with datepicker: space for calendar icon --- */
+.mat-mdc-form-field mat-datepicker-toggle {
+  margin-right: 0.25rem;
+}
+
+/* --- Filter bar: remove subscript space to center fields vertically --- */
+app-mobile-filter-bar .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 /* --- Mat Sort Arrow --- */
