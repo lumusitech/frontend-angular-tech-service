@@ -109,9 +109,10 @@ describe('GlobalSearchComponent', () => {
     component.query.set('juan');
     fixture.detectChanges();
 
-    const xButton = fixture.nativeElement.querySelector('button[type="button"]');
+    const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+    const xButton = buttons.find((b) => b.textContent?.includes('close'));
     expect(xButton).toBeTruthy();
-    xButton.click();
+    xButton!.click();
 
     expect(component.query()).toBe('');
     expect(clearSpy).toHaveBeenCalled();

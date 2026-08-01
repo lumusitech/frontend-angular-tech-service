@@ -11,7 +11,7 @@ import { provideRouter, withPreloading, PreloadAllModules } from '@angular/route
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, DateAdapter } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeEsAR from '@angular/common/locales/es-AR';
 import { routes } from './app.routes';
@@ -21,6 +21,7 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 import { TranslationService } from './core/services/translation.service';
 import { ThemeService } from './core/services/theme.service';
+import { LocalDateAdapter } from './core/utils/local-date.adapter';
 
 registerLocaleData(localeEsAR);
 
@@ -32,6 +33,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([apiResponseInterceptor, authInterceptor, loadingInterceptor])),
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(MatNativeDateModule),
+    { provide: DateAdapter, useClass: LocalDateAdapter },
     { provide: LOCALE_ID, useValue: 'es-AR' },
     provideAppInitializer(() => {
       const themeService = inject(ThemeService);
