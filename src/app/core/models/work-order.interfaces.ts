@@ -60,6 +60,7 @@ export interface WorkOrderTask {
   description?: string;
   isCompleted: boolean;
   completedAt?: string;
+  assignedToId?: string;
   assignedTo?: {
     id: string;
     name: string;
@@ -139,6 +140,9 @@ export interface CreateTaskDto {
 }
 
 export interface UpdateTaskDto {
+  title?: string;
+  description?: string;
+  assignedToId?: string;
   isCompleted?: boolean;
   completedAt?: string;
 }

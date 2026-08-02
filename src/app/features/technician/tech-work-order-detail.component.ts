@@ -4,9 +4,11 @@ import { httpResource } from '@angular/common/http';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { ToastService } from '../../core/services/toast.service';
 import {
   WorkOrder,
   WorkOrderStatus,
+  WorkOrderTask,
   UpdateWorkOrderDto,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +22,8 @@ import {
   StatusChangeDialogResult,
 } from '../../shared/components/status-change-dialog/status-change-dialog.component';
 import { NoteDialogComponent } from '../work-orders/add-note-dialog.component';
+import { AddTaskDialogComponent } from '../work-orders/add-task-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -172,63 +176,114 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
         }
 
         <!-- Tasks checklist -->
-        @if (order.tasks && order.tasks.length > 0) {
-          <mat-card class="p-4">
-            <div class="flex items-center justify-between mb-3">
+        <mat-card class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
               <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 {{ 'technician.tasks' | translate }}
               </h3>
               <span class="text-xs text-gray-500 dark:text-gray-400">
-                {{ getCompletedTasks(order) }}/{{ order.tasks.length }}
+                ({{ getCompletedTasks(order) }}/{{ order.tasks?.length || 0 }})
               </span>
             </div>
+            <button mat-flat-button color="primary" (click)="addTask(order)" class="!rounded-lg">
+              <mat-icon class="!w-4 !h-4 !text-[18px] !leading-none">add</mat-icon>
+              {{ 'workOrders.tasks.addTask' | translate }}
+            </button>
+          </div>
+
+          @if (order.tasks && order.tasks.length > 0) {
             <!-- Progress bar -->
-            <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-3 overflow-hidden">
+            <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-4 overflow-hidden">
               <div
-                class="h-full bg-green-500 rounded-full transition-all"
+                class="h-full bg-emerald-500 rounded-full transition-all duration-300"
                 [style.width.%]="getTaskProgress(order)"
               ></div>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-3">
               @for (task of order.tasks; track task.id) {
                 <div
-                  class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
-                  (click)="toggleTask(order.id, task)"
+                  class="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-gray-50/70 dark:bg-gray-700/40 border border-gray-200/70 dark:border-gray-600/50 rounded-xl shadow-2xs hover:shadow-xs transition-all duration-200"
+                  [class.opacity-75]="task.isCompleted"
                 >
-                  <div
-                    class="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0"
-                    [class]="
-                      task.isCompleted
-                        ? 'bg-green-500 border-green-500'
-                        : 'border-gray-300 dark:border-gray-600'
-                    "
-                  >
-                    @if (task.isCompleted) {
-                      <mat-icon class="text-white !w-3.5 !h-3.5">check</mat-icon>
-                    }
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p
-                      class="text-sm"
+                  <!-- Left: Checkbox + Content -->
+                  <div class="flex items-start gap-3 min-w-0 flex-1">
+                    <!-- Circular/Custom Checkbox Button -->
+                    <button
+                      type="button"
+                      (click)="toggleTask(order.id, task)"
+                      class="mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-full border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       [class]="
                         task.isCompleted
-                          ? 'text-gray-400 dark:text-gray-500 line-through'
-                          : 'text-gray-900 dark:text-gray-100'
+                          ? 'bg-emerald-500 border-emerald-500 text-white'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-emerald-500 dark:hover:border-emerald-400 bg-white dark:bg-gray-700/50'
                       "
+                      [title]="task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'"
                     >
-                      {{ task.title }}
-                    </p>
-                    @if (task.description) {
-                      <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
-                        {{ task.description }}
-                      </p>
-                    }
+                      @if (task.isCompleted) {
+                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold">check</mat-icon>
+                      }
+                    </button>
+
+                    <!-- Text info -->
+                    <div class="flex-1 min-w-0">
+                      <h4
+                        class="text-sm font-semibold text-gray-900 dark:text-gray-100 break-words leading-tight"
+                        [class.line-through]="task.isCompleted"
+                        [class.text-gray-400]="task.isCompleted"
+                        [class.dark:text-gray-500]="task.isCompleted"
+                      >
+                        {{ task.title }}
+                      </h4>
+
+                      @if (task.description) {
+                        <p
+                          class="text-xs text-gray-500 dark:text-gray-400 mt-1 break-words leading-relaxed"
+                          [class.line-through]="task.isCompleted"
+                        >
+                          {{ task.description }}
+                        </p>
+                      }
+
+                      @if (task.assignedTo) {
+                        <div class="mt-2 flex items-center">
+                          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50">
+                            <mat-icon class="!w-3.5 !h-3.5 !text-[13px] !leading-none text-blue-500">person</mat-icon>
+                            <span class="truncate max-w-[160px] sm:max-w-[220px]">{{ task.assignedTo.name }}</span>
+                          </span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Right: Actions (Edit / Delete) -->
+                  <div class="flex items-center justify-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/50 dark:border-gray-600/40">
+                    <button
+                      mat-icon-button
+                      (click)="onEditTask(order, task)"
+                      [title]="'workOrders.tasks.editTask' | translate"
+                      class="!w-8 !h-8 !leading-none text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors"
+                    >
+                      <mat-icon class="!w-4.5 !h-4.5 !text-[18px] !leading-none">edit</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      (click)="onDeleteTask(order.id, task)"
+                      [title]="'workOrders.tasks.deleteTask' | translate"
+                      class="!w-8 !h-8 !leading-none text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                    >
+                      <mat-icon class="!w-4.5 !h-4.5 !text-[18px] !leading-none">delete</mat-icon>
+                    </button>
                   </div>
                 </div>
               }
             </div>
-          </mat-card>
-        }
+          } @else {
+            <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-6">
+              {{ 'workOrders.tasks.noTasks' | translate }}
+            </p>
+          }
+        </mat-card>
 
         <!-- Materials -->
         @if (order.materials && order.materials.length > 0) {
@@ -417,6 +472,7 @@ export class TechWorkOrderDetailComponent {
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
   private readonly translationService = inject(TranslationService);
+  private readonly toastService = inject(ToastService);
   readonly orderId = this.route.snapshot.paramMap.get('id') || '';
   readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
 
@@ -482,6 +538,66 @@ export class TechWorkOrderDetailComponent {
 
   goBack(): void {
     this.router.navigate(['/tech']);
+  }
+
+  addTask(order: WorkOrder): void {
+    const dialogRef = this.dialog.open(AddTaskDialogComponent, {
+      width: '500px',
+      data: {
+        workOrderId: order.id,
+        orderTechnicians: order.technicians,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.loadOrder();
+    });
+  }
+
+  onEditTask(order: WorkOrder, task: WorkOrderTask): void {
+    const dialogRef = this.dialog.open(AddTaskDialogComponent, {
+      width: '500px',
+      data: {
+        workOrderId: order.id,
+        orderTechnicians: order.technicians,
+        task,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.loadOrder();
+    });
+  }
+
+  onDeleteTask(workOrderId: string, task: WorkOrderTask): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('workOrders.tasks.deleteTask'),
+        message: this.translationService.instant('workOrders.tasks.deleteTaskConfirm'),
+        confirmLabel: this.translationService.instant('common.delete'),
+        cancelLabel: this.translationService.instant('common.cancel'),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.workOrdersService.deleteTask(workOrderId, task.id).subscribe({
+        next: () => {
+          this.toastService.show(
+            this.translationService.instant('workOrders.tasks.taskDeletedSuccess'),
+            'success',
+          );
+          this.loadOrder();
+        },
+        error: (err) => {
+          const msg =
+            err.error?.message ||
+            this.translationService.instant('workOrders.tasks.taskDeletedError');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
   }
 
   toggleTask(workOrderId: string, task: { id: string; isCompleted: boolean }): void {

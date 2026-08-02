@@ -55,6 +55,28 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (02/08/2026)
+
+### Feature: CRUD completo de tareas (Edición, Eliminación) y filtrado de técnicos
+
+- **Edición y Eliminación de Tareas:**
+  - `TasksTabComponent` y `TechWorkOrderDetailComponent` ahora permiten editar y eliminar **cualquier tarea** (tanto pendientes como hechas/completadas).
+  - Al hacer clic en editar (icono `edit`), se abre `AddTaskDialogComponent` pre-completando título, descripción y técnico asignado.
+  - Al hacer clic en eliminar (icono `delete`), se abre `ConfirmDialogComponent` para solicitar confirmación y llama a `DELETE /api/work-orders/:id/tasks/:taskId` emitiendo toasts de notificación.
+- **Filtrado de Técnicos en Selector:**
+  - El diálogo de tareas muestra preferentemente solo los técnicos previamente asignados a la orden de trabajo. Si la orden no tiene técnicos asignados, muestra la lista completa de técnicos disponibles.
+- **Permisos en Backend:**
+  - Endpoint `DELETE :id/tasks/:taskId` actualizado para dar acceso a administradores y técnicos asignados a la orden.
+
+### Fix: Asignación de tareas a órdenes de trabajo, feedback de errores y sincronización en tiempo real
+
+- **Causa raíz arreglada en Backend (NestJS):** La consulta `findOne()` en `WorkOrdersService` no incluía la relación `tasks: { assignedTo: true }`. Al crear o recargar una orden, las tareas retornaban `undefined` y no se mostraban en pantalla.
+- **Feedback al usuario en `AddTaskDialogComponent`:** Inyectados `ToastService` y `TranslationService` para emitir toasts de éxito ("Tarea agregada con éxito") o error con el mensaje retornado por el backend.
+- **Sincronización en tiempo real vía WebSockets:**
+  - Actualizado `WebsocketService` para incrementar `workOrderRefreshKey` ante notificaciones de tipo `task` (`task.created`, `task.completed`).
+  - Agregado `effect()` en `WorkOrderDetailComponent` que escucha `workOrderRefreshKey()` y recarga la orden automáticamente en pantalla para todos los usuarios conectados sin recargar la página.
+  - Mejorado el badge del técnico asignado a cada tarea en `TasksTabComponent` con icono de usuario y píldora estilizada.
+
 ## Últimas features implementadas (01/08/2026)
 
 ### Fix: Visibilidad y estilos del ícono de filtro en modo mobile y desktop (`MobileFilterBarComponent`, PR #216 + Fix)

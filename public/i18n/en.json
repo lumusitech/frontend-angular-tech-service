@@ -344,7 +344,18 @@
       "assignTechnician": "Assign technician",
       "unassigned": "Unassigned",
       "creating": "Creating...",
-      "createTask": "Create task"
+      "createTask": "Create task",
+      "taskCreatedSuccess": "Task created successfully",
+      "taskCreatedError": "Error creating task",
+      "editTask": "Edit task",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "taskUpdatedSuccess": "Task updated successfully",
+      "taskUpdatedError": "Error updating task",
+      "deleteTask": "Delete task",
+      "deleteTaskConfirm": "Are you sure you want to delete this task?",
+      "taskDeletedSuccess": "Task deleted successfully",
+      "taskDeletedError": "Error deleting task"
     },
     "materials": {
       "addMaterial": "Add material",

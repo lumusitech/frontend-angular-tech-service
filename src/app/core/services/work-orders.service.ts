@@ -64,6 +64,10 @@ export class WorkOrdersService {
     return this.http.patch<void>(`${this.apiUrl}/${workOrderId}/tasks/${taskId}`, dto);
   }
 
+  deleteTask(workOrderId: string, taskId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${workOrderId}/tasks/${taskId}`);
+  }
+
   updateNote(
     workOrderId: string,
     noteId: string,

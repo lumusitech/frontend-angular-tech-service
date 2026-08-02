@@ -63,7 +63,11 @@ export class WebsocketService implements OnDestroy {
         this.lastNotification.set(data);
         this.notificationsService.incrementUnread();
         this.showNotificationToast(data);
-        if (data.referenceType === 'work_order') {
+        if (
+          data.referenceType === 'work_order' ||
+          data.referenceType === 'task' ||
+          (data.metadata && data.metadata['workOrderId'])
+        ) {
           this.workOrderRefreshKey.update((n) => n + 1);
         }
         if (
