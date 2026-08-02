@@ -5,6 +5,7 @@
 Frontend Angular 22 para sistema de gestión de servicios técnicos.
 **Stack:** Angular 22, Signals, httpResource, Tailwind CSS 4, Angular Material 22
 **Backend asociado:** NestJS 11 (Tech Service API) en `localhost:3000`
+**Credenciales de Dev/Test:** `admin@techservice.local` / `admin123`
 
 ---
 

@@ -163,27 +163,27 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
             <div class="flex items-center gap-1.5 flex-wrap">
               <a
                 [href]="'tel:' + workOrder().client.phone"
-                class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center h-5 leading-none"
               >
                 {{ workOrder().client.phone }}
               </a>
               @if (workOrder().client.phone) {
                 <a
                   [href]="'tel:' + workOrder().client.phone"
-                  class="inline-flex items-center justify-center p-1 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
+                  class="inline-flex items-center justify-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors h-5 w-5"
                   [title]="'common.call' | translate"
                 >
-                  <mat-icon class="w-3.5! h-3.5! text-xs!">call</mat-icon>
+                  <mat-icon class="w-4.5! h-4.5! text-[18px]! leading-none! flex! items-center! justify-center!">call</mat-icon>
                 </a>
                 <a
                   [href]="'https://wa.me/' + encodeURIComponent(workOrder().client.phone)"
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex items-center justify-center p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors"
+                  class="inline-flex items-center justify-center text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors h-5 w-5"
                   [title]="'common.whatsapp' | translate"
                 >
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c0-5.445 4.43-9.874 9.875-9.874 2.637 0 5.115 1.028 6.978 2.894A9.827 9.827 0 0121.996 12c0 5.447-4.429 9.875-9.875 9.875m0-18c-6.52 0-11.82 5.3-11.82 11.82 0 2.09.544 4.13 1.579 5.92L0 24l6.452-1.69a11.78 11.78 0 005.597 1.41h.005c6.519 0 11.82-5.3 11.82-11.82 0-3.16-1.23-6.13-3.463-8.363A11.754 11.754 0 0012.05 1z"/>
+                  <svg class="w-4.5 h-4.5 shrink-0 fill-current" viewBox="0 0 24 24">
+                    <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zm-7.01 15.24h-.004c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.198 8.198 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.188 8.188 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.21 8.24zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.15.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.76 2.69 4.26 3.77.6.26 1.06.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.11-.23-.17-.48-.29z"/>
                   </svg>
                 </a>
               }
@@ -213,7 +213,7 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center h-5 leading-none"
                 >
                   {{ workOrder().workAddress }}
                 </a>
@@ -223,10 +223,10 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex items-center justify-center p-1 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
+                  class="inline-flex items-center justify-center text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors h-5 w-5"
                   [title]="'common.openInMaps' | translate"
                 >
-                  <mat-icon class="w-3.5! h-3.5! text-xs!">pin_drop</mat-icon>
+                  <mat-icon class="w-4.5! h-4.5! text-[18px]! leading-none! flex! items-center! justify-center!">location_on</mat-icon>
                 </a>
               } @else {
                 <p class="font-medium">-</p>
@@ -249,7 +249,7 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center h-5 leading-none"
                 >
                   {{ workOrder().client.address }}
                 </a>
@@ -259,10 +259,10 @@ import { toLocalDateString } from '../../../core/utils/date.utils';
                   "
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex items-center justify-center p-1 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
+                  class="inline-flex items-center justify-center text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors h-5 w-5"
                   [title]="'common.openInMaps' | translate"
                 >
-                  <mat-icon class="w-3.5! h-3.5! text-xs!">pin_drop</mat-icon>
+                  <mat-icon class="w-4.5! h-4.5! text-[18px]! leading-none! flex! items-center! justify-center!">location_on</mat-icon>
                 </a>
               </div>
             </div>
