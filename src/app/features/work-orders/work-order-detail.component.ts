@@ -8,6 +8,7 @@ import {
   WorkOrder,
   WorkOrderStatus,
   UpdateWorkOrderDto,
+  WorkOrderMaterial,
 } from '../../core/models/work-order.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +29,7 @@ import { MaterialsTabComponent } from './tabs/materials-tab.component';
 import { NotesTabComponent } from './tabs/notes-tab.component';
 import { WorkOrderSidebarComponent } from './tabs/work-order-sidebar.component';
 import { ExportButtonsComponent } from '../../shared/components/export-buttons/export-buttons.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-work-order-detail',
@@ -165,6 +167,8 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                   [materials]="orderData()!.materials || []"
                   [total]="getMaterialsTotal()"
                   (addMaterial)="openAddMaterialDialog()"
+                  (editMaterial)="openEditMaterialDialog($event)"
+                  (deleteMaterial)="onDeleteMaterial($event)"
                 />
               </mat-tab>
 
@@ -360,7 +364,12 @@ export class WorkOrderDetailComponent {
   }
 
   getMaterialsTotal(): number {
-    return this.orderData()?.materials?.reduce((sum, m) => sum + m.totalCost, 0) || 0;
+    return (
+      this.orderData()?.materials?.reduce((sum, m) => {
+        const itemTotal = m.totalCost ?? (Number(m.quantity || 0) * Number(m.unitCost || 0));
+        return sum + itemTotal;
+      }, 0) || 0
+    );
   }
 
   goBack(): void {
@@ -438,7 +447,69 @@ export class WorkOrderDetailComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadOrder();
+      if (result) {
+        this.toastService.show(
+          this.translationService.instant('workOrders.materials.materialCreatedSuccess'),
+          'success',
+        );
+        this.loadOrder();
+      }
+    });
+  }
+
+  openEditMaterialDialog(material: WorkOrderMaterial): void {
+    const workOrder = this.orderData();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(AddMaterialDialogComponent, {
+      width: '500px',
+      data: { workOrderId: workOrder.id, material },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.toastService.show(
+          this.translationService.instant('workOrders.materials.materialUpdatedSuccess'),
+          'success',
+        );
+        this.loadOrder();
+      }
+    });
+  }
+
+  onDeleteMaterial(material: WorkOrderMaterial): void {
+    const workOrder = this.orderData();
+    if (!workOrder) return;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('workOrders.materials.deleteMaterial'),
+        message: this.translationService.instant('workOrders.materials.deleteMaterialConfirm'),
+        confirmLabel: this.translationService.instant('common.delete'),
+        cancelLabel: this.translationService.instant('common.cancel'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      this.workOrdersService.deleteMaterial(workOrder.id, material.id).subscribe({
+        next: () => {
+          this.toastService.show(
+            this.translationService.instant('workOrders.materials.materialDeletedSuccess'),
+            'success',
+          );
+          this.loadOrder();
+        },
+        error: (err) => {
+          const msg =
+            err.error?.message ||
+            this.translationService.instant('workOrders.materials.materialError');
+          this.toastService.show(msg, 'error');
+        },
+      });
     });
   }
 

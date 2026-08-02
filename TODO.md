@@ -57,6 +57,11 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Últimas features implementadas (02/08/2026)
 
+### Feature: CRUD completo de materiales, rediseño UI/UX y corrección de totales
+- **Backend:** DTO `UpdateWorkOrderMaterialDto`, hook `@AfterLoad()` en `WorkOrderMaterial` para cálculo de `totalCost` y parseo de tipos decimales, método `updateMaterial` en `WorkOrdersService`, y endpoint `@Patch(':id/materials/:materialId')` en `WorkOrdersController` con tests unitarios.
+- **Frontend:** Diálogo unificado `AddMaterialDialogComponent` para alta y edición de materiales, rediseño de `MaterialsTabComponent` con botones de editar y eliminar, mejor tamaño y proporcionado de iconos de Material Icons sin clipping, y función `getMaterialsTotal` / `getItemTotal` defensiva en la vista de detalle.
+- **i18n:** Traducciones completas en `es.json` y `en.json`.
+
 ### Feature: CRUD completo de tareas (Edición, Eliminación) y filtrado de técnicos
 
 - **Edición y Eliminación de Tareas:**

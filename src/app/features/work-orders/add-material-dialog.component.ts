@@ -7,12 +7,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
+import { WorkOrderMaterial } from '../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { Supplier } from '../../core/models/supplier.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface DialogData {
   workOrderId: string;
+  material?: WorkOrderMaterial;
 }
 
 @Component({
@@ -28,11 +30,16 @@ interface DialogData {
   ],
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
-      <mat-icon>build</mat-icon>
-      {{ 'workOrders.materials.addMaterial' | translate }}
+      <mat-icon>{{ isEditing() ? 'edit' : 'build' }}</mat-icon>
+      {{
+        (isEditing()
+          ? 'workOrders.materials.editMaterial'
+          : 'workOrders.materials.addMaterial'
+        ) | translate
+      }}
     </h2>
 
-    <mat-dialog-content class="!p-6">
+    <mat-dialog-content class="p-6!">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.materials.description' | translate }}</mat-label>
@@ -72,7 +79,7 @@ interface DialogData {
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.materials.supplierOptional' | translate }}</mat-label>
           <mat-select [value]="supplierId()" (selectionChange)="supplierId.set($event.value)">
-            <mat-option>{{ 'workOrders.materials.noSupplier' | translate }}</mat-option>
+            <mat-option [value]="''">{{ 'workOrders.materials.noSupplier' | translate }}</mat-option>
             @if (suppliersResource.hasValue()) {
               @for (supplier of suppliersResource.value().data; track supplier.id) {
                 <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
@@ -94,7 +101,9 @@ interface DialogData {
         {{
           saving()
             ? ('common.saving' | translate)
-            : ('workOrders.materials.saveMaterial' | translate)
+            : (isEditing()
+                ? ('workOrders.materials.updateMaterial' | translate)
+                : ('workOrders.materials.saveMaterial' | translate))
         }}
       </button>
     </mat-dialog-actions>
@@ -105,10 +114,11 @@ export class AddMaterialDialogComponent {
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  readonly description = signal('');
-  readonly quantity = signal(1);
-  readonly unitCost = signal(0);
-  readonly supplierId = signal('');
+  readonly isEditing = signal(!!this.data.material);
+  readonly description = signal(this.data.material?.description || '');
+  readonly quantity = signal(this.data.material?.quantity ?? 1);
+  readonly unitCost = signal(this.data.material?.unitCost ?? 0);
+  readonly supplierId = signal(this.data.material?.supplier?.id || '');
   readonly saving = signal(false);
 
   readonly suppliersResource = httpResource<PaginatedResponse<Supplier>>(() => ({
@@ -124,21 +134,26 @@ export class AddMaterialDialogComponent {
     if (!this.description() || this.quantity() <= 0) return;
 
     this.saving.set(true);
-    this.workOrdersService
-      .addMaterial(this.data.workOrderId, {
-        description: this.description(),
-        quantity: this.quantity(),
-        unitCost: this.unitCost(),
-        supplierId: this.supplierId() || undefined,
-      })
-      .subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.dialogRef.close(true);
-        },
-        error: () => {
-          this.saving.set(false);
-        },
-      });
+
+    const dto = {
+      description: this.description(),
+      quantity: this.quantity(),
+      unitCost: this.unitCost(),
+      supplierId: this.supplierId() || undefined,
+    };
+
+    const request$ = this.isEditing() && this.data.material
+      ? this.workOrdersService.updateMaterial(this.data.workOrderId, this.data.material.id, dto)
+      : this.workOrdersService.addMaterial(this.data.workOrderId, dto);
+
+    request$.subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.saving.set(false);
+      },
+    });
   }
 }
