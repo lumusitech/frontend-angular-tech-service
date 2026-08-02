@@ -36,7 +36,7 @@ interface DialogData {
       }
     </h2>
 
-    <mat-dialog-content class="!p-6">
+    <mat-dialog-content class="p-6!">
       <form (submit)="onSubmit($event)" class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.notes.noteType' | translate }}</mat-label>
