@@ -337,7 +337,18 @@
       "assignTechnician": "Asignar técnico",
       "unassigned": "Sin asignar",
       "creating": "Creando...",
-      "createTask": "Crear tarea"
+      "createTask": "Crear tarea",
+      "taskCreatedSuccess": "Tarea agregada con éxito",
+      "taskCreatedError": "Error al agregar la tarea",
+      "editTask": "Editar tarea",
+      "saveChanges": "Guardar cambios",
+      "saving": "Guardando...",
+      "taskUpdatedSuccess": "Tarea actualizada con éxito",
+      "taskUpdatedError": "Error al actualizar la tarea",
+      "deleteTask": "Eliminar tarea",
+      "deleteTaskConfirm": "¿Estás seguro de que deseas eliminar esta tarea?",
+      "taskDeletedSuccess": "Tarea eliminada con éxito",
+      "taskDeletedError": "Error al eliminar la tarea"
     },
     "materials": {
       "addMaterial": "Agregar material",

@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -138,8 +139,11 @@ import { ExportButtonsComponent } from '../../shared/components/export-buttons/e
                 <app-tasks-tab
                   [tasks]="orderData()!.tasks || []"
                   [completedCount]="getCompletedTasks()"
+                  [workOrderId]="orderData()!.id"
+                  [orderTechnicians]="orderData()!.technicians || []"
                   (addTask)="openAddTaskDialog()"
                   (toggleTask)="onToggleTask($event)"
+                  (taskChanged)="loadOrder()"
                 />
               </mat-tab>
 
@@ -240,6 +244,7 @@ export class WorkOrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
+  private readonly websocketService = inject(WebsocketService);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
@@ -248,6 +253,15 @@ export class WorkOrderDetailComponent {
   readonly orderData = signal<WorkOrder>(this.route.snapshot.data['workOrder']);
   readonly selectedTabIndex = signal(0);
   readonly savingInfo = signal(false);
+
+  constructor() {
+    effect(() => {
+      const refreshKey = this.websocketService.workOrderRefreshKey();
+      if (refreshKey > 0) {
+        this.loadOrder();
+      }
+    });
+  }
 
   // --- Tab swipe gesture state ---
   private touchStartX = 0;
@@ -434,7 +448,10 @@ export class WorkOrderDetailComponent {
 
     const dialogRef = this.dialog.open(AddTaskDialogComponent, {
       width: '500px',
-      data: { workOrderId: workOrder.id },
+      data: {
+        workOrderId: workOrder.id,
+        orderTechnicians: workOrder.technicians,
+      },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
