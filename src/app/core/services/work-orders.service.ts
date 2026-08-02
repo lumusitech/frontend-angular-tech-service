@@ -56,6 +56,23 @@ export class WorkOrdersService {
     return this.http.post<void>(`${this.apiUrl}/${workOrderId}/materials`, dto);
   }
 
+  updateMaterial(
+    workOrderId: string,
+    materialId: string,
+    dto: Partial<CreateWorkOrderMaterialDto>,
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${workOrderId}/materials/${materialId}`,
+      dto,
+    );
+  }
+
+  deleteMaterial(workOrderId: string, materialId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${workOrderId}/materials/${materialId}`,
+    );
+  }
+
   addTask(workOrderId: string, dto: CreateTaskDto): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${workOrderId}/tasks`, dto);
   }
