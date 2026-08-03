@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatAccordion } from '@angular/material/expansion';
@@ -57,6 +58,7 @@ const STATUS_COLORS: Record<string, string> = {
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatAccordion,
@@ -171,7 +173,7 @@ const STATUS_COLORS: Record<string, string> = {
 
         <!-- Desktop: Table -->
         <div
-          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto"
         >
           <table
             mat-table
@@ -296,28 +298,25 @@ const STATUS_COLORS: Record<string, string> = {
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let inquiry" class="px-4 py-3 text-right">
-                <button
-                  mat-icon-button
-                  (click)="viewDetail(inquiry)"
-                  [title]="'common.details' | translate"
-                >
-                  <mat-icon>visibility</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  (click)="openEditDialog(inquiry); $event.stopPropagation()"
-                  [title]="'common.edit' | translate"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  (click)="deleteItem(inquiry); $event.stopPropagation()"
-                  [title]="'common.delete' | translate"
-                  color="warn"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <div class="action-btn-group">
+                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="inquiryActionsMenu" [title]="'common.actions' | translate">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #inquiryActionsMenu="matMenu">
+                    <button mat-menu-item (click)="openEditDialog(inquiry); $event.stopPropagation()">
+                      <mat-icon>edit</mat-icon>
+                      <span>{{ 'common.edit' | translate }}</span>
+                    </button>
+                    <button mat-menu-item (click)="deleteItem(inquiry); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                      <span>{{ 'common.delete' | translate }}</span>
+                    </button>
+                    <button mat-menu-item (click)="viewDetail(inquiry); $event.stopPropagation()">
+                      <mat-icon>visibility</mat-icon>
+                      <span>{{ 'common.details' | translate }}</span>
+                    </button>
+                  </mat-menu>
+                </div>
               </td>
             </ng-container>
 

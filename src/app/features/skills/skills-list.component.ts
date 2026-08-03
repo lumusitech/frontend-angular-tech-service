@@ -10,6 +10,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -37,6 +38,7 @@ import { TranslationService } from '../../core/services/translation.service';
     MatSortModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
@@ -118,7 +120,7 @@ import { TranslationService } from '../../core/services/translation.service';
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
           <table mat-table matSort matSortDisableClear [dataSource]="skillsResource.value().data" (matSortChange)="onSortChange($event)" class="w-full">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
@@ -163,12 +165,21 @@ import { TranslationService } from '../../core/services/translation.service';
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-right">
-                <button mat-icon-button (click)="openEditDialog(skill); $event.stopPropagation()" [title]="'common.edit' | translate">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="deleteSkill(skill); $event.stopPropagation()" [title]="'common.delete' | translate" color="warn">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <div class="action-btn-group">
+                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="skillActionsMenu" [title]="'common.actions' | translate">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #skillActionsMenu="matMenu">
+                    <button mat-menu-item (click)="openEditDialog(skill); $event.stopPropagation()">
+                      <mat-icon>edit</mat-icon>
+                      <span>{{ 'common.edit' | translate }}</span>
+                    </button>
+                    <button mat-menu-item (click)="deleteSkill(skill); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                      <span>{{ 'common.delete' | translate }}</span>
+                    </button>
+                  </mat-menu>
+                </div>
               </td>
             </ng-container>
 

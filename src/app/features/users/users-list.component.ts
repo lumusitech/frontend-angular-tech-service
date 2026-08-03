@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatAccordion } from '@angular/material/expansion';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -45,6 +46,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MatDialogModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    MatMenuModule,
     MatAccordion,
     EmptyStateComponent,
     ErrorStateComponent,
@@ -124,7 +126,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
           <table mat-table matSort matSortDisableClear [dataSource]="usersResource.value().data" (matSortChange)="onSortChange($event)" class="w-full">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
@@ -187,17 +189,27 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3 text-right">
-                @if (user.role === 'technician') {
-                  <button mat-icon-button (click)="viewTechnicianReport(user.id); $event.stopPropagation()" [title]="'users.viewTechnicianReport' | translate">
-                    <mat-icon>assessment</mat-icon>
+                <div class="action-btn-group">
+                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="userActionsMenu" [title]="'common.actions' | translate">
+                    <mat-icon>more_vert</mat-icon>
                   </button>
-                }
-                <button mat-icon-button (click)="openEditDialog(user); $event.stopPropagation()" [title]="'common.edit' | translate">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" [title]="'common.delete' | translate" color="warn">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                  <mat-menu #userActionsMenu="matMenu">
+                    <button mat-menu-item (click)="openEditDialog(user); $event.stopPropagation()">
+                      <mat-icon>edit</mat-icon>
+                      <span>{{ 'common.edit' | translate }}</span>
+                    </button>
+                    <button mat-menu-item (click)="deleteUser(user); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                      <span>{{ 'common.delete' | translate }}</span>
+                    </button>
+                    @if (user.role === 'technician') {
+                      <button mat-menu-item (click)="viewTechnicianReport(user.id); $event.stopPropagation()">
+                        <mat-icon>assessment</mat-icon>
+                        <span>{{ 'users.viewTechnicianReport' | translate }}</span>
+                      </button>
+                    }
+                  </mat-menu>
+                </div>
               </td>
             </ng-container>
 

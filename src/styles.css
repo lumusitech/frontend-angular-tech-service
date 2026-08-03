@@ -104,6 +104,16 @@ div:has(> table.mat-mdc-table) {
 .mat-mdc-row:focus-within {
   background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
 }
+/* --- Action Column: ⋮ menu always visible --- */
+.mat-column-actions {
+  white-space: nowrap;
+}
+
+.action-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* --- Mat Paginator --- */
 .mat-mdc-paginator {
