@@ -329,6 +329,7 @@ npx ng build
 - **PRs pequeños y enfocados.** Explicar qué cambió, por qué y cómo se verificó.
 - **Pre-commit:** `pnpm test && pnpm lint`.
 - **Commits:** Mensajes descriptivos en español.
+- **GitHub vía MCP:** Para issues, PRs, commits y workflows usar el MCP de `github` (`$GITHUB_TOKEN`). No usar la CLI `gh` salvo que el MCP no esté disponible.
 
 ---
 
