@@ -230,7 +230,7 @@ const TYPE_COLORS: Record<string, string> = {
                 class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                 [class]="getTypeColor(notification.type)"
               >
-                <mat-icon class="!w-5 !h-5">{{ getTypeIcon(notification.type) }}</mat-icon>
+                <mat-icon class="!w-5 !h-5 !text-[20px] !leading-none">{{ getTypeIcon(notification.type) }}</mat-icon>
               </div>
 
               <!-- Content -->
