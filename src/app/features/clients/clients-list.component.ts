@@ -363,7 +363,7 @@ export class ClientsListComponent implements OnInit {
       sortBy: this.sortBy(),
       order: this.sortOrder().toUpperCase(),
       ...(this.searchFilter() ? { search: this.searchFilter() } : {}),
-      ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() === 'true' } : {}),
+      ...(this.isActiveFilter() ? { isActive: this.isActiveFilter() } : {}),
       ...(this.dateFrom() ? { dateFrom: this.dateFrom() } : {}),
       ...(this.dateTo() ? { dateTo: this.dateTo() } : {}),
     },
