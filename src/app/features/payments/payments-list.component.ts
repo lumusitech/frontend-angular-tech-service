@@ -458,16 +458,17 @@ export class PaymentsListComponent implements OnInit {
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
     if (date) {
-      this.dateFrom.set(toLocalDateString(date));
-      this.dateError.set('');
-      // Validate dateTo is not before dateFrom
+      const newDateFrom = toLocalDateString(date);
       if (this.dateTo()) {
-        const from = parseLocalDate(this.dateFrom());
+        const from = parseLocalDate(newDateFrom);
         const to = parseLocalDate(this.dateTo());
         if (from > to) {
           this.dateError.set('common.invalidDateTo');
+          return;
         }
       }
+      this.dateFrom.set(newDateFrom);
+      this.dateError.set('');
     } else {
       this.dateFrom.set('');
       this.dateError.set('');

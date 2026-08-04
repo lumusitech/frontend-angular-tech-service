@@ -152,6 +152,60 @@ describe('ClientsListComponent', () => {
     });
   });
 
+  describe('date filter validation', () => {
+    it('should update dateFrom via onDateFromChange', () => {
+      const date = new Date(2026, 4, 15);
+      const event = { value: date } as never;
+      component.onDateFromChange(event);
+      expect(component.dateFrom()).toMatch(/2026-05-15/);
+      expect(component.dateError()).toBe('');
+    });
+
+    it('should clear dateFrom when value is null', () => {
+      component.dateFrom.set('2026-05-15');
+      const event = { value: null } as never;
+      component.onDateFromChange(event);
+      expect(component.dateFrom()).toBe('');
+    });
+
+    it('should update dateTo via onDateToChange', () => {
+      const date = new Date(2026, 5, 30);
+      const event = { value: date } as never;
+      component.onDateToChange(event);
+      expect(component.dateTo()).toMatch(/2026-06-30/);
+      expect(component.dateError()).toBe('');
+    });
+
+    it('should clear dateTo when value is null', () => {
+      component.dateTo.set('2026-06-30');
+      const event = { value: null } as never;
+      component.onDateToChange(event);
+      expect(component.dateTo()).toBe('');
+    });
+
+    it('should not set dateFrom when it is after dateTo', () => {
+      component.dateTo.set('2026-05-15');
+      const event = { value: new Date(2026, 5, 30) } as never;
+      component.onDateFromChange(event);
+      expect(component.dateFrom()).toBe('');
+      expect(component.dateError()).toBe('common.invalidDateTo');
+    });
+
+    it('should not set dateTo when it is before dateFrom', () => {
+      component.dateFrom.set('2026-05-15');
+      const event = { value: new Date(2026, 4, 10) } as never;
+      component.onDateToChange(event);
+      expect(component.dateTo()).toBe('');
+      expect(component.dateError()).toBe('common.invalidDateFrom');
+    });
+
+    it('should clear dateError when clearing filters', () => {
+      component.dateError.set('common.invalidDateTo');
+      component.clearFilters();
+      expect(component.dateError()).toBe('');
+    });
+  });
+
   describe('clearFilters()', () => {
     it('should reset all filters to empty', () => {
       component.searchFilter.set('test');
