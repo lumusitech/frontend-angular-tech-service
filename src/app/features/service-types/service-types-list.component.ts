@@ -98,6 +98,11 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
+          @if (dateError()) {
+            <div class="w-40 text-red-500 dark:text-red-400 text-xs">
+              {{ dateError() | translate }}
+            </div>
+          }
           </app-mobile-filter-bar>
         </div>
       </div>
@@ -304,6 +309,7 @@ export class ServiceTypesListComponent implements OnInit {
   readonly isActiveFilter = signal<'true' | 'false' | ''>('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
+  readonly dateError = signal('');
   readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
   readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
 
@@ -367,12 +373,42 @@ export class ServiceTypesListComponent implements OnInit {
 
   onDateFromChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateFrom.set(date ? toLocalDateString(date) : '');
+    if (date) {
+      const newDateFrom = toLocalDateString(date);
+      if (this.dateTo()) {
+        const from = parseLocalDate(newDateFrom);
+        const to = parseLocalDate(this.dateTo());
+        if (from > to) {
+          this.dateError.set('common.invalidDateTo');
+          return;
+        }
+      }
+      this.dateFrom.set(newDateFrom);
+      this.dateError.set('');
+    } else {
+      this.dateFrom.set('');
+      this.dateError.set('');
+    }
   }
 
   onDateToChange(event: MatDatepickerInputEvent<Date>): void {
     const date = event.value;
-    this.dateTo.set(date ? toLocalDateString(date) : '');
+    if (date) {
+      const newDateTo = toLocalDateString(date);
+      if (this.dateFrom()) {
+        const from = parseLocalDate(this.dateFrom());
+        const to = parseLocalDate(newDateTo);
+        if (to < from) {
+          this.dateError.set('common.invalidDateFrom');
+          return;
+        }
+      }
+      this.dateTo.set(newDateTo);
+      this.dateError.set('');
+    } else {
+      this.dateTo.set('');
+      this.dateError.set('');
+    }
   }
 
   openCreateDialog(): void {
@@ -407,6 +443,7 @@ export class ServiceTypesListComponent implements OnInit {
     this.isActiveFilter.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.dateError.set('');
   }
 
   getServiceTypeFields(serviceType: ServiceType): MobileCardField[] {
