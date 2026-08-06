@@ -1,11 +1,13 @@
 # AGENTS.md — Tech Service Frontend
 
+
 ## Contexto del Proyecto
 
 Frontend Angular 22 para sistema de gestión de servicios técnicos.
 **Stack:** Angular 22, Signals, httpResource, Tailwind CSS 4, Angular Material 22
 **Backend asociado:** NestJS 11 (Tech Service API) en `localhost:3000`
 **Credenciales de Dev/Test:** `admin@techservice.local` / `admin123`
+
 
 ---
 
@@ -17,6 +19,7 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - **Documentación continua:** Si se introduce una nueva restricción ("nunca X", "siempre Y"), documentarla en este archivo.
 - **Verificación pre-finalización:** Antes de marcar una tarea como completada, verificar que los endpoints del backend que consume la feature modificada respondan correctamente (200 OK) y que `ng build` compile sin errores. Si se modificó el backend, validar también `pnpm lint` y `pnpm test:unit`.
 
+
 ---
 
 ## Principios de Arquitectura
@@ -26,6 +29,7 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - **Lógica de dominio:** TypeScript nativo, sin acoplamiento a infraestructura.
 - **Abstracciones:** Si se necesita una herramienta externa (ej. UUID), depender de interfaces, no de la implementación concreta.
 - **Organización de código:** `core/`, `shared/`, `features/`, `layouts/`. Carpetas planas dentro de `features/`, una por dominio.
+
 
 ---
 
@@ -50,6 +54,7 @@ Frontend Angular 22 para sistema de gestión de servicios técnicos.
 - ✅ `signal()`, `computed()`, `effect()`, `linkedSignal()`
 - ✅ Signal Forms (`form()`, `FormField`) para **todos** los formularios, sin excepción
 - ✅ `resource()` con `fetch` solo si no se necesita el stack HTTP de Angular
+
 
 ---
 
@@ -85,6 +90,7 @@ load(): void {
 - Listas con filtros reactivos
 - Consultas que cambian por signals
 - Componentes sin problemas de flicker (dashboard, reportes, etc.)
+
 
 ---
 
@@ -217,6 +223,7 @@ export class ClientFormComponent {
 }
 ```
 
+
 ---
 
 ## Excepciones Permitidas (RxJS)
@@ -229,6 +236,7 @@ export class ClientFormComponent {
 
 4. **`MatDialog.afterClosed().subscribe()`:** Para obtener el resultado de un diálogo. No tiene alternativa en signals.
 
+
 ---
 
 ## UI, Estilos y Accesibilidad
@@ -240,6 +248,7 @@ export class ClientFormComponent {
 - **Fuentes:** Inter (headings + body) + JetBrains Mono (códigos y tracking codes).
 - **Responsive:** Mobile-first. La app se usa en campo (técnicos) y escritorio (admin).
 - **Tema:** Soporte light/dark completo vía CSS custom properties + `ThemeService`.
+
 
 ---
 
@@ -257,6 +266,7 @@ export class ClientFormComponent {
 - **Package manager:** `pnpm` exclusivamente. `pnpm install`, `pnpm add`, etc.
 - **Runtime:** Node.js ≥ 18. Preferir ESM y sintaxis moderna.
 
+
 ---
 
 ## Decisiones de Dominio
@@ -271,6 +281,7 @@ export class ClientFormComponent {
 | **Auth** | JWT Bearer token en header `Authorization`. Token almacenado en `localStorage` (`auth_token`). |
 | **PWA** | Service Worker con `@angular/service-worker`. Estrategia `networkFirst` para `/api`, precaching de assets. Push notifications vía `PushNotificationService` + VAPID. |
 
+
 ---
 
 ## Backend API Contract
@@ -281,6 +292,7 @@ export class ClientFormComponent {
 - **Respuesta exitosa:** `{ statusCode, data, timestamp }` — el interceptor `apiResponseInterceptor` desenvuelve `data` automáticamente.
 - **Respuesta error:** `{ statusCode, message, error, timestamp }`
 - **Paginación:** `{ data, total, page, limit, totalPages }`
+
 
 ---
 
@@ -295,6 +307,7 @@ export class ClientFormComponent {
 - Añadir o actualizar tests cuando se cambie comportamiento.
 - No se acepta código con errores de tipos, lint o tests fallidos.
 - Los tests usan `TestBed.configureTestingModule()` con providers mock para servicios.
+
 
 ---
 
@@ -320,6 +333,7 @@ npx ng build
 4. Actualizar `TODO.md` si se agregó una feature, se completó una tarea pendiente o surgieron nuevos requisitos
 5. El error de prerender en `/` (timeout a `/api/business-settings`) es pre-existente y esperado cuando el backend no está corriendo — ignorar ese error específico
 
+
 ---
 
 ## Pull Requests y Commits
@@ -330,6 +344,7 @@ npx ng build
 - **Pre-commit:** `pnpm test && pnpm lint`.
 - **Commits:** Mensajes descriptivos en español.
 
+
 ---
 
 ## Construcción de documentación
@@ -337,6 +352,8 @@ npx ng build
 - **ROADMAP.md**: Archivo de planificación a largo plazo con tabla de próximos pasos priorizados. Ver ROADMAP.md para la estructura.
 - **TODO.md**: Archivo de contexto rápido con últimas features, bugs conocidos y próxima sesión. Ver TODO.md para el estado actual.
 - **ROADMAP.md** y **TODO.md** se actualizan al finalizar cada tarea (al recibir OK del usuario).
+- **`docs/domain/`**: Flujos de negocio transversales documentados archivo por archivo con diagramas Mermaid y referencias `archivo:línea` al código real. Índice en `docs/domain/README.md`. Cubren Inquiry → Pending → WorkOrder, ciclo de vida de la WorkOrder, Invoice/Payment, y notificaciones en tiempo real.
+
 
 ---
 
@@ -384,6 +401,7 @@ pnpm test:mutate           # Mutation testing (Stryker)
 pnpm lint                  # Linter
 pnpm sync:types            # Generar interfaces desde Swagger del backend
 ```
+
 
 ---
 
