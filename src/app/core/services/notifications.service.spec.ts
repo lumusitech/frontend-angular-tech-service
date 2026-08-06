@@ -255,4 +255,33 @@ describe('NotificationsService', () => {
       expect(service.unreadCount()).toBe(0);
     });
   });
+
+  describe('offline & network failure edge cases', () => {
+    it('should handle network disconnection (status 0) when fetching unread count without breaking signal state', () => {
+      service.unreadCount.set(5);
+
+      service.getUnreadCount().subscribe({
+        error: (err) => {
+          expect(err.status).toBe(0);
+        },
+      });
+
+      const req = httpMock.expectOne('/api/notifications/unread-count');
+      req.error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
+
+      // Signal state remains preserved
+      expect(service.unreadCount()).toBe(5);
+    });
+
+    it('should handle network error (status 0) when marking notification as read', () => {
+      service.markAsRead('n-1').subscribe({
+        error: (err) => {
+          expect(err.status).toBe(0);
+        },
+      });
+
+      const req = httpMock.expectOne('/api/notifications/n-1/read');
+      req.error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
+    });
+  });
 });

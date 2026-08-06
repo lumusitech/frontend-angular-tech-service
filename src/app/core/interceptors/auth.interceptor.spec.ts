@@ -182,5 +182,20 @@ describe('authInterceptor', () => {
 
       expect(authService.logout).not.toHaveBeenCalled();
     });
+
+    it('should handle network error (status 0 / offline) without logging out user', () => {
+      (authService.getToken as ReturnType<typeof vi.fn>).mockReturnValue('valid-token');
+
+      httpClient.get('/api/test').subscribe({
+        error: (err) => {
+          expect(err.status).toBe(0);
+        },
+      });
+
+      const req = httpMock.expectOne('/api/test');
+      req.error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
+
+      expect(authService.logout).not.toHaveBeenCalled();
+    });
   });
 });
