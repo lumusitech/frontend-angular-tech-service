@@ -232,6 +232,38 @@ describe('GlobalSearchService', () => {
       expect(service.results()).toEqual([]);
       expect(service.loading()).toBe(false);
     });
+
+    it('should safely execute search with HTML tags or potential XSS input without throwing', () => {
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.clientsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.serviceTypesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.skillsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.inquiriesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.expensesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.pendingItemsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.notificationsGetAll.mockReturnValue(paginatedResponse([]));
+
+      expect(() => service.search('<script>alert("xss")</script>')).not.toThrow();
+      expect(Array.isArray(service.results())).toBe(true);
+      expect(service.loading()).toBe(false);
+    });
+
+    it('should handle special search characters like SQL wildcards %, _, quotes, and backslashes', () => {
+      mocks.usersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.clientsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.workOrdersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.suppliersGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.serviceTypesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.skillsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.inquiriesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.expensesGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.pendingItemsGetAll.mockReturnValue(paginatedResponse([]));
+      mocks.notificationsGetAll.mockReturnValue(paginatedResponse([]));
+
+      expect(() => service.search("'; DROP TABLE users; -- %_\\")).not.toThrow();
+    });
   });
 
   describe('clear()', () => {

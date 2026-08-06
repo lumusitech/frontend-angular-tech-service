@@ -207,7 +207,8 @@ describe('ClientsListComponent', () => {
   });
 
   describe('clearFilters()', () => {
-    it('should reset all filters to empty', () => {
+    it('should reset all filters to empty and reset page to 1', () => {
+      component.currentPage.set(5);
       component.searchFilter.set('test');
       component.isActiveFilter.set('true');
       component.dateFrom.set('2026-01-01');
@@ -219,6 +220,7 @@ describe('ClientsListComponent', () => {
       expect(component.isActiveFilter()).toBe('');
       expect(component.dateFrom()).toBe('');
       expect(component.dateTo()).toBe('');
+      expect(component.currentPage()).toBe(1);
     });
   });
 

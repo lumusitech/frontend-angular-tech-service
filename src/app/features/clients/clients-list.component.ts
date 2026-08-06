@@ -493,6 +493,7 @@ export class ClientsListComponent implements OnInit {
     this.dateFrom.set('');
     this.dateTo.set('');
     this.dateError.set('');
+    this.currentPage.set(1);
   }
 
   deleteClient(client: Client): void {
