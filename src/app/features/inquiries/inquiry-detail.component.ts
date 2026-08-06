@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { InquiryContactFormComponent } from './inquiry-contact-form.component';
+import { ConvertInquiryDialogComponent } from './convert-inquiry-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -285,23 +286,15 @@ export class InquiryDetailComponent {
   }
 
   convertToWorkOrder(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        titleKey: 'inquiries.convertTitle',
-        messageKey: 'inquiries.convertMessage',
-        confirmLabel: 'Convert',
-        color: 'primary',
-      },
+    if (!this.resource.hasValue()) return;
+
+    const dialogRef = this.dialog.open(ConvertInquiryDialogComponent, {
+      width: '700px',
+      data: { inquiry: this.resource.value() },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed && this.resource.hasValue()) {
-        const inquiry = this.resource.value()!;
-        this.inquiriesService.convert(inquiry.id, '', '').subscribe({
-          next: () => this.resource.reload(),
-        });
-      }
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.resource.reload();
     });
   }
 }

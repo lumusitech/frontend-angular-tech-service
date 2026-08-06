@@ -1,3 +1,5 @@
+import type { WorkOrderPriority, WorkOrderLocation } from './work-order.interfaces';
+
 export interface Inquiry {
   id: string;
   clientName: string;
@@ -100,6 +102,18 @@ export interface ContactInquiryDto {
   estimatedDuration?: number;
   materialsNeeded?: string;
   recommendation?: InquiryRecommendation;
+}
+
+export interface ConvertInquiryDto {
+  clientId: string;
+  serviceTypeId: string;
+  technicianIds?: string[];
+  priority?: WorkOrderPriority;
+  location?: WorkOrderLocation;
+  diagnosis?: string;
+  workAddress?: string;
+  warrantyUntil?: string;
+  scheduledDate?: string;
 }
 
 export interface InquiryFilters {

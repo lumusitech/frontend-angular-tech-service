@@ -6,6 +6,7 @@ import {
   CreateInquiryDto,
   UpdateInquiryDto,
   ContactInquiryDto,
+  ConvertInquiryDto,
   InquiryFilters,
   PaginatedResponse,
 } from '../models/inquiry.interfaces';
@@ -53,8 +54,8 @@ export class InquiriesService {
     return this.http.patch<Inquiry>(`${this.apiUrl}/${id}/review`, dto);
   }
 
-  convert(id: string, clientId: string, serviceTypeId: string): Observable<Inquiry> {
-    return this.http.post<Inquiry>(`${this.apiUrl}/${id}/convert`, { clientId, serviceTypeId });
+  convert(id: string, dto: ConvertInquiryDto): Observable<Inquiry> {
+    return this.http.post<Inquiry>(`${this.apiUrl}/${id}/convert`, dto);
   }
 
   delete(id: string): Observable<void> {
