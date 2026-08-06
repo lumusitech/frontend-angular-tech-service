@@ -55,6 +55,15 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (06/08/2026)
+
+### Fix: Conversión de consulta a orden de trabajo end-to-end (PR frontend #236, backend #142)
+
+- **Bug corregido:** `convert()` en `inquiry-detail.component.ts` llamaba al backend con `clientId`/`serviceTypeId` vacíos (`convert(inquiry.id, '', '')`), y el backend solo marcaba `status=CONVERTED` con `workOrderId=null` — **nunca creaba la orden de trabajo**.
+- **Backend:** Nuevo `ConvertInquiryDto` (clientId+serviceTypeId requeridos, técnicos/prioridad/ubicación/diagnóstico/dirección/fechas opcionales). `convertToWorkOrder(id, dto)` valida REVIEWED+APPROVED, delega en `WorkOrdersService.create()` (genera tracking code + emite `workorder.created`), persiste `status=CONVERTED` + `workOrderId` real, cierra pending items vinculados (`referenceType='inquiry'`) vía `PendingItemsService.completeForReference()`, y devuelve la inquiry recargada con la relación `workOrder`.
+- **Frontend:** Nuevo `ConvertInquiryDialogComponent` con Signal Forms — toggle cliente **Nuevo cliente** (pre-rellenado desde la inquiry, editable, se crea vía `clientsService.create`) o **Cliente existente** (autocomplete), selección de tipo de servicio, prioridad, ubicación, diagnóstico y dirección pre-rellenados, fechas. `InquiriesService.convert(id, dto)` envía el DTO completo. i18n es/en. 10 tests Vitest.
+- **Verificación:** 555 tests frontend PASS, `npx ng build` OK, E2E Playwright contra backend real (cliente + work order `TS-1S8XJ` creados, inquiry → `converted` con `workOrderId`). Backend: 432 tests PASS + curl verificado (400 con body vacío, 201 con conversión).
+
 ## Últimas features implementadas (02/08/2026)
 
 ### Feature: CRUD completo de materiales, rediseño UI/UX y corrección de totales
@@ -512,9 +521,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
-### 0. Mergear feature "Real-time del detalle del timeline" (ramas `feat/status-detail-realtime`)
+### ~~0. Mergear feature "Real-time del detalle del timeline" (ramas `feat/status-detail-realtime`)~~ ✅
 
-✅ Feature completa (commit `b7345c4` backend, `92b3d0d` frontend). PRs abiertos: backend **#133**, frontend **#212**. Pendiente solo review y merge. El detalle del timeline ahora se propaga en vivo a admins y técnicos asignados al editar/eliminar (antes solo el usuario mutador actualizaba su vista).
+✅ Ya mergeado (PRs backend #133, frontend #212). El detalle del timeline se propaga en vivo a admins y técnicos asignados al editar/eliminar.
 
 ### 1. Ejecutar E2E tests contra backend real
 
@@ -671,6 +680,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 - [x] Notifications (list, mark read, WebSocket, unreadCount, bell badge in header)
 - [x] Pending Items (list, form, dashboard widget)
 - [x] Inquiries (list, detail, contact, review, convert)
+- [x] Convert inquiry → work order end-to-end (diálogo con cliente nuevo/existente, crea orden real) — PRs #236/#142
 - [x] Landing Page (SSG/prerender, 6 sub-components) — 🔄 rediseño profesional + Logo B pendiente (ver "Próxima sesión")
 - [x] Portal Tracking (search, result, timeline, tasks, notes, payments)
 - [x] PWA (service worker, manifest, install prompt)
