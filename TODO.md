@@ -192,6 +192,21 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (15/08/2026)
+
+### Feature: Bulk actions en listas (piloto clients + work-orders)
+
+- **Backend (PR backend):** Nuevos endpoints bulk — `PATCH /api/work-orders/bulk-status` (`BulkUpdateWorkOrderStatusDto {ids, status}`, retorna `{succeeded:[{id,status}], failed:[{id,reason}]}`, valida transición por id sin abortar el lote, crea status logs y emite `workorder.status_changed` por éxito), `PATCH /api/clients/bulk-status` ({ids, isActive}) y `POST /api/clients/bulk-delete` (soft delete). Rutas declaradas ANTES de `:id`. DTOs con `IsUUID(...,{each:true})`. 9 tests unitarios nuevos. 441 tests PASS, lint OK.
+- **Frontend:** Util `exportToCsv()` (`shared/utils/csv-export.util.ts`, BOM UTF-8, escapado de `,"` y newlines), componente toolbar `BulkActionsComponent` (`shared/components/bulk-actions/`, sticky bajo el header, select-all con indeterminate, conteo, clear, export CSV, cambiar estado, activar/desactivar, eliminar), `MobileCardComponent` ahora acepta `selectable`/`checked`/`selectionChange` (checkbox en mobile), `StatusChangeDialogComponent` extendido con `statusOptions` + `statusLabel` para cambio de estado masivo.
+- **Integración:** clients-list (selección por fila + select-all página, export CSV de seleccionados, activar/desactivar masivo, delete masivo con confirmación) y work-orders-list (ídem + cambio de estado masivo vía diálogo). Services: `ClientsService.bulkUpdateStatus/bulkDelete`, `WorkOrdersService.bulkStatusChange`. i18n es/en/pt con bloque `bulk.*`. 65 tests nuevos (43 clients + 22 work-orders).
+- **Verificación:** 578 tests PASS, `npx ng build` OK (solo prerender `/` pre-existente), lint OK.
+
+### i18n: Portugués (14/08/2026)
+
+`public/i18n/pt.json` con las 883 keys de `es.json` traducidas a portugués. `pt` agregado a los selectores de idioma en header y settings.
+
+---
+
 ## Resumen de prioridades pendientes
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
@@ -213,7 +228,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 10. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
 11. ~~**i18n: Portugués**~~ ✅ — `pt.json` con 883 keys + selector en header y settings (14/08/2026)
-12. **Bulk actions** — Selección múltiple, exportar masivo.
+12. ~~**Bulk actions**~~ ✅ — Selección múltiple, exportar CSV, cambiar estado masivo. Piloto en clients + work-orders (15/08/2026). Ver sección "Bulk actions".
 13. **Kanban board** — Vista visual alternativa a tabla.
 
 ---
@@ -545,12 +560,9 @@ Fixes necesarios para que la suite corriera contra el backend real:
 
 **Completado (14/08/2026):** `public/i18n/pt.json` creado con las 883 keys de `es.json` traducidas a portugués (paridad verificada programáticamente: keys y placeholders `{{param}}` idénticos). `pt` agregado a los selectores de idioma en `header.component.ts` y `settings.component.ts`. `TranslationService` no requirió cambios (carga `${locale}.json` dinámicamente). Verificación: `ng build` OK (solo el error de prerender pre-existente), 555 tests PASS, lint OK.
 
-### 3. Bulk actions — selección múltiple en listas (esfuerzo medio)
+### ~~3. Bulk actions — selección múltiple en listas (esfuerzo medio)~~ ✅
 
-Agregar checkbox en cada fila de tabla, botones de acción masiva (exportar, cambiar estado).
-Reutilizar `ExportButtonsComponent` existente.
-
-**Archivos involucrados:** 9 list components (clients, suppliers, work-orders, payments, expenses, billing, pending-items, inquiries, notifications)
+**Completado (15/08/2026):** Piloto en clients y work-orders. Checkbox por fila (desktop + mobile via MobileCard), toolbar bulk sticky con select-all de página (indeterminate), conteo, clear, export CSV (`exportToCsv` util), cambiar estado (work-orders vía `StatusChangeDialogComponent` con status select), activar/desactivar y eliminar masivo (clients). Backend: endpoints `bulk-status`/`bulk-delete` con resultado `{succeeded, failed}` por id. 65 tests nuevos. Replicar patrón en los otros 7 list components (suppliers, payments, expenses, billing, pending-items, inquiries, notifications) queda como mejora incremental.
 
 ### 4. Offline mode — PWA real (esfuerzo alto)
 

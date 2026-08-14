@@ -170,3 +170,18 @@ export interface WorkOrderFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkWorkOrderStatusSucceeded {
+  id: string;
+  status: WorkOrderStatus;
+}
+
+export interface BulkWorkOrderFailedItem {
+  id: string;
+  reason: string;
+}
+
+export interface BulkWorkOrderStatusResult {
+  succeeded: BulkWorkOrderStatusSucceeded[];
+  failed: BulkWorkOrderFailedItem[];
+}

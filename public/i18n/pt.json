@@ -169,6 +169,27 @@
       "viewReport": "Ver Relatório"
     }
   },
+  "bulk": {
+    "selectAll": "Selecionar tudo",
+    "selected": "selecionados",
+    "clearSelection": "Limpar seleção",
+    "exportCsv": "Exportar CSV",
+    "status": "Status",
+    "activate": "Ativar",
+    "deactivate": "Desativar",
+    "deleteSelected": "Excluir selecionados",
+    "deleteTitle": "Excluir clientes",
+    "deleteMessage": "Tem certeza de que deseja excluir {{count}} cliente(s)? Esta ação não pode ser desfeita.",
+    "changeStatus": "Alterar status",
+    "changeStatusMessage": "O status de {{count}} ordem(ns) de trabalho será alterado. Transições inválidas serão ignoradas.",
+    "toast": {
+      "activated": "Clientes ativados com sucesso",
+      "deactivated": "Clientes desativados com sucesso",
+      "statusChanged": "Status atualizado com sucesso",
+      "partial": "Concluído: {{succeeded}}, ignorados: {{failed}}",
+      "error": "Erro ao processar a seleção"
+    }
+  },
   "users": {
     "title": "Usuários",
     "subtitle": "Gerencie os usuários do sistema",

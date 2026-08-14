@@ -4,6 +4,7 @@ import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
+import { WorkOrdersService } from '../../core/services/work-orders.service';
 import {
   WorkOrder,
   WorkOrderStatus,
@@ -19,6 +20,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -42,6 +44,14 @@ import {
   DateFieldOption,
 } from '../../shared/components/date-field-selector/date-field-selector.component';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
+import {
+  StatusChangeDialogComponent,
+  StatusChangeDialogResult,
+  StatusChangeOption,
+} from '../../shared/components/status-change-dialog/status-change-dialog.component';
+import { ToastService } from '../../core/services/toast.service';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -55,6 +65,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
@@ -68,6 +79,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MobileCardComponent,
     MobileFilterBarComponent,
     DateFieldSelectorComponent,
+    BulkActionsComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -210,6 +222,20 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (workOrdersResource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="true"
+          [statusChangeLabel]="'workOrders.changeStatus' | translate"
+          [showActivateDeactivate]="false"
+          [showDelete]="false"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (statusChange)="openBulkStatusDialog()"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (order of liveOrders()!.data; track order.id) {
@@ -219,6 +245,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               [statusType]="$any('workOrderStatus')"
               [fields]="getOrderFields(order)"
               [canSwipe]="true"
+              [selectable]="true"
+              [checked]="isSelected(order.id)"
+              (selectionChange)="toggleSelection(order.id, $event)"
               [onEdit]="onEditSwipe(order)"
               editIcon="visibility"
               editLabel="Detalle"
@@ -238,6 +267,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let order"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(order.id)"
+                  (change)="toggleSelection(order.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="trackingCode">
               <th
                 mat-header-cell
@@ -430,8 +483,148 @@ export class WorkOrdersListComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly websocketService = inject(WebsocketService);
+  private readonly workOrdersService = inject(WorkOrdersService);
+  private readonly toastService = inject(ToastService);
   readonly translationService = inject(TranslationService);
   readonly parseLocalDate = parseLocalDate;
+
+  private readonly statusOptions: StatusChangeOption[] = [
+    { value: 'pending', labelKey: 'workOrders.statuses.pending' },
+    { value: 'assigned', labelKey: 'workOrders.statuses.assigned' },
+    { value: 'on_the_way', labelKey: 'workOrders.statuses.onTheWay' },
+    { value: 'in_progress', labelKey: 'workOrders.statuses.inProgress' },
+    { value: 'postponed', labelKey: 'workOrders.statuses.postponed' },
+    { value: 'completed', labelKey: 'workOrders.statuses.completed' },
+    { value: 'delivered', labelKey: 'workOrders.statuses.delivered' },
+    { value: 'cancelled', labelKey: 'workOrders.statuses.cancelled' },
+  ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<WorkOrder[]>(() => this.liveOrders()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((order) => this.selectedIds().has(order.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((order) => this.selectedIds().has(order.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const order of this.currentPageData()) {
+      if (checked) {
+        next.add(order.id);
+      } else {
+        next.delete(order.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((order) => this.selectedIds().has(order.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('workOrders.code'),
+      t('common.status'),
+      t('workOrders.priority'),
+      t('workOrders.client'),
+      t('workOrders.service'),
+      t('common.created'),
+    ];
+    const rows = selected.map((order) => [
+      order.trackingCode,
+      order.status,
+      order.priority,
+      order.client?.name ?? '-',
+      order.serviceType?.name ?? '-',
+      order.createdAt,
+    ]);
+    exportToCsv(`work-orders-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  openBulkStatusDialog(): void {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    const dialogRef = this.dialog.open(StatusChangeDialogComponent, {
+      width: '420px',
+      data: {
+        titleKey: 'bulk.changeStatus',
+        message: this.translationService.instant('bulk.changeStatusMessage', {
+          count: String(ids.length),
+        }),
+        confirmLabel: 'bulk.changeStatus',
+        color: 'primary',
+        statusOptions: this.statusOptions,
+        statusLabel: 'bulk.status',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: StatusChangeDialogResult | undefined) => {
+      if (result?.confirmed && result.status) {
+        this.applyBulkStatus(ids, result.status as WorkOrderStatus);
+      }
+    });
+  }
+
+  private applyBulkStatus(ids: string[], status: WorkOrderStatus): void {
+    this.bulkLoading.set(true);
+    this.workOrdersService.bulkStatusChange(ids, status).subscribe({
+      next: (result) => {
+        this.bulkLoading.set(false);
+        const failedCount = result.failed.length;
+        if (failedCount === 0) {
+          this.toastService.show(
+            this.translationService.instant('bulk.toast.statusChanged'),
+            'success',
+          );
+        } else {
+          this.toastService.show(
+            this.translationService.instant('bulk.toast.partial', {
+              succeeded: String(result.succeeded.length),
+              failed: String(failedCount),
+            }),
+            'info',
+          );
+        }
+        this.clearSelection();
+        this.workOrdersResource.reload();
+      },
+      error: (err) => {
+        this.bulkLoading.set(false);
+        const msg = Array.isArray(err.error?.message)
+          ? err.error.message.join(', ')
+          : err.error?.message || this.translationService.instant('bulk.toast.error');
+        this.toastService.show(msg, 'error');
+      },
+    });
+  }
 
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
 
@@ -514,6 +707,7 @@ export class WorkOrdersListComponent {
   });
 
   displayedColumns = [
+    'select',
     'trackingCode',
     'status',
     'priority',

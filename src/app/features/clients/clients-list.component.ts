@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -31,9 +32,11 @@ import {
   MobileCardField,
 } from '../../shared/components/mobile-card/mobile-card.component';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
 import { ClientFormComponent } from './client-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 @Component({
   selector: 'app-clients-list',
@@ -48,6 +51,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
@@ -59,6 +63,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     StatusBadgeComponent,
     MobileCardComponent,
     MobileFilterBarComponent,
+    BulkActionsComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -150,6 +155,20 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (clientsResource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showActivateDeactivate]="true"
+          [showDelete]="true"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (activate)="bulkSetActive($event)"
+          (deleteSelected)="bulkDeleteClients()"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (client of clientsResource.value().data; track client.id) {
@@ -163,6 +182,9 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
               [statusType]="$any('activeInactive')"
               [fields]="getClientFields(client)"
               [canSwipe]="true"
+              [selectable]="true"
+              [checked]="isSelected(client.id)"
+              (selectionChange)="toggleSelection(client.id, $event)"
               [onEdit]="onEditSwipe(client)"
               [onDelete]="onDeleteSwipe(client)"
             />
@@ -181,6 +203,30 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let client"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(client.id)"
+                  (change)="toggleSelection(client.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -383,7 +429,167 @@ export class ClientsListComponent {
     },
   }));
 
-  displayedColumns = ['name', 'email', 'phone', 'address', 'isActive', 'createdAt', 'actions'];
+  displayedColumns = [
+    'select',
+    'name',
+    'email',
+    'phone',
+    'address',
+    'isActive',
+    'createdAt',
+    'actions',
+  ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<Client[]>(() => this.clientsResource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((client) => this.selectedIds().has(client.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((client) => this.selectedIds().has(client.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const client of this.currentPageData()) {
+      if (checked) {
+        next.add(client.id);
+      } else {
+        next.delete(client.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((client) => this.selectedIds().has(client.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('clients.name'),
+      t('clients.email'),
+      t('clients.phone'),
+      t('common.address'),
+      t('common.status'),
+      t('common.created'),
+    ];
+    const rows = selected.map((client) => [
+      client.name,
+      client.email,
+      client.phone,
+      client.address,
+      client.isActive ? t('common.active') : t('common.inactive'),
+      client.createdAt,
+    ]);
+    exportToCsv(`clients-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkSetActive(isActive: boolean): void {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    const key = isActive ? 'bulk.toast.activated' : 'bulk.toast.deactivated';
+    this.bulkLoading.set(true);
+    this.clientsService.bulkUpdateStatus(ids, isActive).subscribe({
+      next: (result) => {
+        this.bulkLoading.set(false);
+        const failedCount = result.failed.length;
+        if (failedCount === 0) {
+          this.toastService.show(this.translationService.instant(key), 'success');
+        } else {
+          this.toastService.show(
+            this.translationService.instant('bulk.toast.partial', {
+              succeeded: String(result.succeeded.length),
+              failed: String(failedCount),
+            }),
+            'info',
+          );
+        }
+        this.clearSelection();
+        this.clientsResource.reload();
+      },
+      error: (err) => {
+        this.bulkLoading.set(false);
+        const msg = Array.isArray(err.error?.message)
+          ? err.error.message.join(', ')
+          : err.error?.message || this.translationService.instant('bulk.toast.error');
+        this.toastService.show(msg, 'error');
+      },
+    });
+  }
+
+  bulkDeleteClients(): void {
+    const count = this.selectedIds().size;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        titleKey: 'bulk.deleteTitle',
+        message: this.translationService.instant('bulk.deleteMessage', { count: String(count) }),
+        confirmLabel: 'common.delete',
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      this.bulkLoading.set(true);
+      this.clientsService.bulkDelete(ids).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.clientsResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
 
   constructor() {
     effect(() => {
