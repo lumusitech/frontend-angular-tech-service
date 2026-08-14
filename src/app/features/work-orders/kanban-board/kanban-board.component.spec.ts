@@ -215,4 +215,27 @@ describe('KanbanBoardComponent', () => {
       expect(navigateSpy).toHaveBeenCalledWith(['/admin/work-orders']);
     });
   });
+
+  describe('drag feedback DOM', () => {
+    it('should render each card wrapped in a cdk drag container', async () => {
+      httpMock
+        .match((r) => r.url === '/api/work-orders')
+        .forEach((req) =>
+          req.flush({
+            data: [makeOrder('1', 'pending')],
+            total: 1,
+            page: 1,
+            limit: 200,
+            totalPages: 1,
+          } satisfies PaginatedResponse<WorkOrder>),
+        );
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const el = fixture.nativeElement as HTMLElement;
+      const dragWrappers = el.querySelectorAll('.cdk-drag-kanban-card');
+      expect(dragWrappers.length).toBe(1);
+      expect(dragWrappers[0].getAttribute('cdkdrag')).not.toBeNull();
+    });
+  });
 });

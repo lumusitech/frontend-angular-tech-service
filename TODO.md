@@ -234,7 +234,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - **Drag & drop:** CDK `CdkDropListGroup` + `cdkDropList` por columna + `cdkDrag` por card. Reorder dentro de la misma columna es solo visual (el modelo no tiene campo de orden). Cruzar de columna llama `workOrdersService.update(id, { status })` → backend valida transición, crea status log y emite `work_order.status_changed` por websocket. Drop a `delivered` solo permitido si `serviceType.requiresDelivery`.
 - **Validación de transiciones DRY:** Nueva `core/utils/work-order-transitions.util.ts` con `WORK_ORDER_TRANSITION_ACTIONS`, `getTransitionActions(status, requiresDelivery)` y `getAllowedTargetStatuses(status, requiresDelivery)`. `status-transition.component.ts` refactorizado para consumirla (sin cambio de comportamiento) — kanban y detalle comparten la misma matriz.
 - **Real-time:** `boardResource` (`httpResource`) keyed en `websocketService.workOrderRefreshKey()` → refetch al recibir notificaciones de work_order/task.
-- **UX:** `cdkDropListEnterPredicate` restringe drops a columnas válidas (highlight azul en columna destino válida durante el drag), card clicable → detalle (a11y: role=button, tabindex, Enter/Space), toasts de éxito/error.
+- **UX:** `cdkDropListEnterPredicate` restringe drops a columnas válidas (highlight azul en columna destino válida durante el drag), card clicable → detalle (a11y: role=button, tabindex, Enter/Space), toasts de éxito/error. **Feedback de drag pulido:** `*cdkDragPreview` con sombra y rotación + `*cdkDragPlaceholder` dashed que preserva el layout + transición CSS `150ms cubic-bezier` → arrastre fluido sin saltos.
 - **i18n:** keys `workOrders.kanban.*` + `workOrders.viewToggle.*` en es/en/pt.
 - **Tests:** 32 nuevos (util 13, kanban-board 13, kanban-card 6).
 - **Verificación:** 747 tests frontend PASS, lint OK (0 errores), `ng build` OK (solo prerender `/` pre-existente).
@@ -269,9 +269,23 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 14. **Offline mode — PWA real para técnicos en campo** — Cola de mutaciones (IndexedDB) para crear/editar offline, sync al reconectar. Complejidad alta. Ver "Próximos pasos priorizados" → item 4.
 
+### 🟠 Bulk actions faltantes (deuda)
+
+15. **Bulk actions en service-types, skills y users** — Las 9 listas restantes ya tienen bulk actions (15/08/2026), pero **service-types, skills y users no tienen selección múltiple** (ni en componente ni en servicios). Pendiente: backend (bulk-status/bulk-delete para service-types y skills, bulk-status/bulk-deactivate para users), `BulkActionsComponent` integrado en las 3 listas, y tests. Reportado 16/08/2026.
+
 ---
 
 ## Bugs conocidos
+
+### ~~BUG-006: Botón "Vista Kanban" no se mostraba correctamente~~ ✅
+
+**Reportado (16/08/2026):** El botón para pasar al kanban estaba proyectado vía `ng-content` del `PageHeaderComponent`, que lo coloca a la izquierda del título en un flex con `justify-between`. En mobile el botón desbordaba el header (quedaba fuera del área visible, solo icono de 35px) y en general era fácil de perder.
+
+**Fix:** Se quitó del `PageHeader` y se movió a la toolbar de filtros de `work-orders-list.component.ts` como un `mat-flat-button` con texto siempre visible y `ml-auto` (alineado a la derecha). Visible en todos los breakpoints.
+
+**Archivo modificado:** `src/app/features/work-orders/work-orders-list.component.ts`
+
+---
 
 ### ~~BUG-001: Material Button Colors — Color por defecto persiste~~ ✅
 

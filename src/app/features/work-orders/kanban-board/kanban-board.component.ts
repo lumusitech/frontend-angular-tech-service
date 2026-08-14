@@ -7,6 +7,8 @@ import {
   CdkDropList,
   CdkDrag,
   CdkDragStart,
+  CdkDragPreview,
+  CdkDragPlaceholder,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
@@ -50,6 +52,8 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
     CdkDropListGroup,
     CdkDropList,
     CdkDrag,
+    CdkDragPreview,
+    CdkDragPlaceholder,
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule,
@@ -59,6 +63,37 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
     ErrorStateComponent,
     TranslatePipe,
     StatusLabelPipe,
+  ],
+  styles: [
+    `
+      .cdk-drag-kanban-card {
+        transition:
+          transform 150ms cubic-bezier(0, 0, 0.2, 1),
+          opacity 150ms ease;
+      }
+
+      .cdk-drop-list-dragging .cdk-drag-kanban-card:not(.cdk-drag-placeholder) {
+        transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+      }
+
+      .kanban-drag-preview {
+        border-radius: 12px;
+        box-shadow:
+          0 12px 28px rgba(0, 0, 0, 0.18),
+          0 4px 10px rgba(0, 0, 0, 0.1);
+        transform: rotate(2deg);
+        cursor: grabbing;
+        z-index: 1000;
+      }
+
+      .kanban-drag-placeholder {
+        border-radius: 12px;
+        border: 2px dashed rgba(59, 130, 246, 0.5);
+        background: rgba(59, 130, 246, 0.08);
+        min-height: 96px;
+        transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+      }
+    `,
   ],
   template: `
     <div class="space-y-6">
@@ -124,6 +159,10 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
                     class="cdk-drag-kanban-card"
                   >
                     <app-kanban-card [order]="order" (cardClick)="viewDetail($event)" />
+                    <div *cdkDragPreview class="kanban-drag-preview w-72">
+                      <app-kanban-card [order]="order" />
+                    </div>
+                    <div *cdkDragPlaceholder class="kanban-drag-placeholder"></div>
                   </div>
                 }
               </div>

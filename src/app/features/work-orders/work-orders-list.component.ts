@@ -91,18 +91,7 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
         [actionLabel]="'workOrders.newOrder' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
-      >
-        <button
-          mat-flat-button
-          color="primary"
-          class="!min-w-0 !px-3"
-          (click)="openKanban()"
-          [title]="'workOrders.viewToggle.viewKanban' | translate"
-        >
-          <mat-icon>view_kanban</mat-icon>
-          <span class="hidden sm:inline">{{ 'workOrders.viewToggle.viewKanban' | translate }}</span>
-        </button>
-      </app-page-header>
+      />
 
       <div
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
@@ -216,6 +205,17 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               {{ 'notifications.filteredFromNotification' | translate }}
             </span>
           }
+
+          <button
+            mat-flat-button
+            color="primary"
+            class="ml-auto shrink-0"
+            (click)="openKanban()"
+            [title]="'workOrders.viewToggle.viewKanban' | translate"
+          >
+            <mat-icon>view_kanban</mat-icon>
+            <span>{{ 'workOrders.viewToggle.viewKanban' | translate }}</span>
+          </button>
         </div>
       </div>
 
