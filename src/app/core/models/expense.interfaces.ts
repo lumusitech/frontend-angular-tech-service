@@ -49,3 +49,8 @@ export interface ExpenseFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkExpenseDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

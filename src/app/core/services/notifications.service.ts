@@ -40,6 +40,16 @@ export class NotificationsService {
     return this.http.patch<void>(`${this.apiUrl}/read-all`, {});
   }
 
+  bulkMarkAsRead(ids: string[]): Observable<{
+    succeeded: string[];
+    failed: { id: string; reason: string }[];
+  }> {
+    return this.http.patch<{
+      succeeded: string[];
+      failed: { id: string; reason: string }[];
+    }>(`${this.apiUrl}/bulk-read`, { ids });
+  }
+
   incrementUnread(): void {
     this.unreadCount.update((c) => c + 1);
     this.refreshCounter.update((c) => c + 1);

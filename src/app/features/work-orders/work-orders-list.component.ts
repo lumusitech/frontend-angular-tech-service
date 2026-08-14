@@ -573,12 +573,14 @@ export class WorkOrdersListComponent {
     const ids = Array.from(this.selectedIds());
     if (ids.length === 0) return;
 
+    const entity = this.translationService.instant('workOrders.title');
     const dialogRef = this.dialog.open(StatusChangeDialogComponent, {
       width: '420px',
       data: {
         titleKey: 'bulk.changeStatus',
         message: this.translationService.instant('bulk.changeStatusMessage', {
           count: String(ids.length),
+          entity,
         }),
         confirmLabel: this.translationService.instant('bulk.changeStatus'),
         color: 'primary',

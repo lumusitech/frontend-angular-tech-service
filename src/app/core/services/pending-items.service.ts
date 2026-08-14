@@ -6,6 +6,9 @@ import {
   CreatePendingItemDto,
   UpdatePendingItemDto,
   PendingItemFilters,
+  PendingItemStatus,
+  BulkPendingItemStatusResult,
+  BulkPendingItemDeleteResult,
   PaginatedResponse,
 } from '../models/pending-item.interfaces';
 
@@ -46,5 +49,19 @@ export class PendingItemsService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(
+    ids: string[],
+    status: PendingItemStatus,
+  ): Observable<BulkPendingItemStatusResult> {
+    return this.http.patch<BulkPendingItemStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      status,
+    });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkPendingItemDeleteResult> {
+    return this.http.post<BulkPendingItemDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

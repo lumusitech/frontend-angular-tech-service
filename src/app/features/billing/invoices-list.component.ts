@@ -18,7 +18,9 @@ import { MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -36,6 +38,9 @@ import {
   DateFieldOption,
 } from '../../shared/components/date-field-selector/date-field-selector.component';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
+import { ToastService } from '../../core/services/toast.service';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 @Component({
   selector: 'app-invoices-list',
@@ -52,6 +57,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
+    MatCheckboxModule,
     MatProgressSpinnerModule,
     MatAccordion,
     EmptyStateComponent,
@@ -62,6 +68,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MobileCardComponent,
     MobileFilterBarComponent,
     DateFieldSelectorComponent,
+    BulkActionsComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -180,6 +187,22 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (invoicesResource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showIssue]="true"
+          [showCancel]="true"
+          [showActivateDeactivate]="false"
+          [showDelete]="false"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (issue)="bulkIssueInvoices()"
+          (cancelSelected)="bulkCancelInvoices()"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (invoice of invoicesResource.value().data; track invoice.id) {
@@ -188,6 +211,10 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               [status]="invoice.status"
               [statusType]="$any('invoiceStatus')"
               [fields]="getInvoiceFields(invoice)"
+              [canSwipe]="false"
+              [selectable]="true"
+              [checked]="isSelected(invoice.id)"
+              (selectionChange)="toggleSelection(invoice.id, $event)"
             />
           }
         </mat-accordion>
@@ -204,6 +231,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let invoice"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(invoice.id)"
+                  (change)="toggleSelection(invoice.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="invoiceNumber">
               <th mat-header-cell mat-sort-header *matHeaderCellDef>
                 {{ 'billing.invoiceNumber' | translate }}
@@ -262,6 +313,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             <tr
               mat-row
               *matRowDef="let row; columns: displayedColumns"
+              [class.selected-row]="isSelected(row.id)"
               (click)="goToDetail(row)"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             ></tr>
@@ -284,6 +336,7 @@ export class InvoicesListComponent {
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly translationService = inject(TranslationService);
+  private readonly toastService = inject(ToastService);
   readonly parseLocalDate = parseLocalDate;
 
   readonly pageSize = signal(10);
@@ -323,7 +376,187 @@ export class InvoicesListComponent {
     },
   }));
 
-  displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
+  displayedColumns = [
+    'select',
+    'invoiceNumber',
+    'invoiceType',
+    'status',
+    'clientName',
+    'total',
+    'createdAt',
+  ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<Invoice[]>(() => this.invoicesResource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((invoice) => this.selectedIds().has(invoice.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((invoice) => this.selectedIds().has(invoice.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const invoice of this.currentPageData()) {
+      if (checked) {
+        next.add(invoice.id);
+      } else {
+        next.delete(invoice.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((invoice) => this.selectedIds().has(invoice.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('billing.invoiceNumber'),
+      t('billing.invoiceType'),
+      t('common.status'),
+      t('billing.clientName'),
+      t('billing.total'),
+      t('billing.createdAt'),
+    ];
+    const rows = selected.map((invoice) => [
+      invoice.invoiceNumber,
+      invoice.invoiceType,
+      invoice.status,
+      invoice.clientName,
+      String(invoice.total),
+      invoice.createdAt,
+    ]);
+    exportToCsv(`invoices-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkIssueInvoices(): void {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    const entity = this.translationService.instant('billing.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('bulk.issueConfirmTitle', { entity }),
+        message: this.translationService.instant('bulk.issueConfirmMessage', {
+          count: String(ids.length),
+          entity,
+        }),
+        confirmLabel: this.translationService.instant('bulk.issue'),
+        color: 'primary',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.bulkLoading.set(true);
+      this.billingService.bulkIssue(ids).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(this.translationService.instant('bulk.toast.issued'), 'success');
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.invoicesResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
+
+  bulkCancelInvoices(): void {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    const entity = this.translationService.instant('billing.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('bulk.cancelConfirmTitle', { entity }),
+        message: this.translationService.instant('bulk.cancelConfirmMessage', {
+          count: String(ids.length),
+          entity,
+        }),
+        confirmLabel: this.translationService.instant('bulk.cancel'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.bulkLoading.set(true);
+      this.billingService.bulkCancel(ids).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.cancelled'),
+              'success',
+            );
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.invoicesResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
 
   readonly hasActiveFilters = computed(() => {
     return (

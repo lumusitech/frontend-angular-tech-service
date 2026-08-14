@@ -286,6 +286,99 @@ describe('BulkActionsComponent', () => {
     });
   });
 
+  describe('issue', () => {
+    it('should hide issue button by default', () => {
+      setSelected(1);
+      expect(buttonByText('bulk.issue')).toBeNull();
+    });
+
+    it('should show issue button when enabled', () => {
+      fixture.componentRef.setInput('showIssue', true);
+      setSelected(1);
+      expect(buttonByText('bulk.issue')).toBeTruthy();
+    });
+
+    it('should emit issue when clicked', () => {
+      const spy = vi.fn();
+      component.issue.subscribe(spy);
+
+      fixture.componentRef.setInput('showIssue', true);
+      setSelected(2);
+      buttonByText('bulk.issue')?.click();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show issue in the mobile toolbar', () => {
+      fixture.componentRef.setInput('showIssue', true);
+      setSelected(2);
+      const toolbar = mobileToolbar();
+      expect(toolbar?.textContent).toContain('bulk.issue');
+    });
+  });
+
+  describe('cancel', () => {
+    it('should hide cancel button by default', () => {
+      setSelected(1);
+      expect(buttonByText('bulk.cancel')).toBeNull();
+    });
+
+    it('should show cancel button when enabled', () => {
+      fixture.componentRef.setInput('showCancel', true);
+      setSelected(1);
+      expect(buttonByText('bulk.cancel')).toBeTruthy();
+    });
+
+    it('should emit cancel when clicked', () => {
+      const spy = vi.fn();
+      component.cancelSelected.subscribe(spy);
+
+      fixture.componentRef.setInput('showCancel', true);
+      setSelected(2);
+      buttonByText('bulk.cancel')?.click();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show cancel in the mobile toolbar', () => {
+      fixture.componentRef.setInput('showCancel', true);
+      setSelected(2);
+      const toolbar = mobileToolbar();
+      expect(toolbar?.textContent).toContain('bulk.cancel');
+    });
+  });
+
+  describe('markRead', () => {
+    it('should hide markRead button by default', () => {
+      setSelected(1);
+      expect(buttonByText('bulk.markRead')).toBeNull();
+    });
+
+    it('should show markRead button when enabled', () => {
+      fixture.componentRef.setInput('showMarkRead', true);
+      setSelected(1);
+      expect(buttonByText('bulk.markRead')).toBeTruthy();
+    });
+
+    it('should emit markRead when clicked', () => {
+      const spy = vi.fn();
+      component.markRead.subscribe(spy);
+
+      fixture.componentRef.setInput('showMarkRead', true);
+      setSelected(2);
+      buttonByText('bulk.markRead')?.click();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show markRead in the mobile toolbar', () => {
+      fixture.componentRef.setInput('showMarkRead', true);
+      setSelected(2);
+      const toolbar = mobileToolbar();
+      expect(toolbar?.textContent).toContain('bulk.markRead');
+    });
+  });
+
   describe('loading', () => {
     it('should show the progress bar when loading', () => {
       fixture.componentRef.setInput('loading', true);

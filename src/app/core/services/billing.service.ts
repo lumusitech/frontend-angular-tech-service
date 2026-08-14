@@ -2,6 +2,7 @@ import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Invoice, InvoiceFilters } from '../models/invoice.interfaces';
+import { BulkInvoiceCancelResult, BulkInvoiceIssueResult } from '../models/invoice.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
 @Service()
@@ -55,5 +56,13 @@ export class BillingService {
 
   downloadPdf(id: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
+  }
+
+  bulkIssue(ids: string[]): Observable<BulkInvoiceIssueResult> {
+    return this.http.post<BulkInvoiceIssueResult>(`${this.apiUrl}/bulk-issue`, { ids });
+  }
+
+  bulkCancel(ids: string[]): Observable<BulkInvoiceCancelResult> {
+    return this.http.post<BulkInvoiceCancelResult>(`${this.apiUrl}/bulk-cancel`, { ids });
   }
 }

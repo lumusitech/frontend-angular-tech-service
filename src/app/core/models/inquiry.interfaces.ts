@@ -137,3 +137,8 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface BulkInquiryDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

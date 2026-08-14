@@ -90,3 +90,13 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface BulkPendingItemStatusResult {
+  succeeded: { id: string; status: PendingItemStatus }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkPendingItemDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

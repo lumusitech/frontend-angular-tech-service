@@ -173,6 +173,45 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               </button>
             }
 
+            @if (showIssue()) {
+              <button
+                mat-flat-button
+                type="button"
+                color="primary"
+                [disabled]="loading()"
+                (click)="issue.emit()"
+              >
+                <mat-icon>fact_check</mat-icon>
+                {{ 'bulk.issue' | translate }}
+              </button>
+            }
+
+            @if (showCancel()) {
+              <button
+                mat-stroked-button
+                type="button"
+                color="warn"
+                [disabled]="loading()"
+                (click)="cancelSelected.emit()"
+              >
+                <mat-icon>block</mat-icon>
+                {{ 'bulk.cancel' | translate }}
+              </button>
+            }
+
+            @if (showMarkRead()) {
+              <button
+                mat-flat-button
+                type="button"
+                color="primary"
+                [disabled]="loading()"
+                (click)="markRead.emit()"
+              >
+                <mat-icon>mark_email_read</mat-icon>
+                {{ 'bulk.markRead' | translate }}
+              </button>
+            }
+
             @if (showActivateDeactivate()) {
               <button
                 mat-stroked-button
@@ -286,6 +325,42 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               </button>
             }
 
+            @if (showIssue()) {
+              <button
+                type="button"
+                class="mobile-action mobile-action-primary"
+                [disabled]="loading()"
+                (click)="issue.emit()"
+              >
+                <mat-icon class="!w-5 !h-5 !text-[20px]">fact_check</mat-icon>
+                <span class="truncate w-full text-center">{{ 'bulk.issue' | translate }}</span>
+              </button>
+            }
+
+            @if (showCancel()) {
+              <button
+                type="button"
+                class="mobile-action mobile-action-danger"
+                [disabled]="loading()"
+                (click)="cancelSelected.emit()"
+              >
+                <mat-icon class="!w-5 !h-5 !text-[20px]">block</mat-icon>
+                <span class="truncate w-full text-center">{{ 'bulk.cancel' | translate }}</span>
+              </button>
+            }
+
+            @if (showMarkRead()) {
+              <button
+                type="button"
+                class="mobile-action mobile-action-primary"
+                [disabled]="loading()"
+                (click)="markRead.emit()"
+              >
+                <mat-icon class="!w-5 !h-5 !text-[20px]">mark_email_read</mat-icon>
+                <span class="truncate w-full text-center">{{ 'bulk.markRead' | translate }}</span>
+              </button>
+            }
+
             @if (showActivateDeactivate()) {
               <button
                 type="button"
@@ -331,6 +406,9 @@ export class BulkActionsComponent {
   readonly totalCount = input(0);
   readonly showExport = input(true);
   readonly showStatusChange = input(false);
+  readonly showIssue = input(false);
+  readonly showCancel = input(false);
+  readonly showMarkRead = input(false);
   readonly showActivateDeactivate = input(false);
   readonly showDelete = input(true);
   readonly statusChangeLabel = input('');
@@ -340,6 +418,9 @@ export class BulkActionsComponent {
   readonly clearSelection = output<void>();
   readonly exportCsv = output<void>();
   readonly statusChange = output<void>();
+  readonly issue = output<void>();
+  readonly cancelSelected = output<void>();
+  readonly markRead = output<void>();
   readonly activate = output<boolean>();
   readonly deleteSelected = output<void>();
 

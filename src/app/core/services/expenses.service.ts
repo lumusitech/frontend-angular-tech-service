@@ -6,6 +6,7 @@ import {
   CreateExpenseDto,
   UpdateExpenseDto,
   ExpenseFilters,
+  BulkExpenseDeleteResult,
 } from '../models/expense.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
@@ -43,5 +44,9 @@ export class ExpensesService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkExpenseDeleteResult> {
+    return this.http.post<BulkExpenseDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

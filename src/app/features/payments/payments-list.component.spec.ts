@@ -28,20 +28,39 @@ function createActivatedRouteMock(queryParams: Record<string, string | null> = {
 describe('PaymentsListComponent - Date Filtering', () => {
   let component: PaymentsListComponent;
   let fixture: ComponentFixture<PaymentsListComponent>;
+  let bulkUpdateStatusSpy: ReturnType<typeof vi.fn>;
+  let bulkDeleteSpy: ReturnType<typeof vi.fn>;
+  let toastSpy: ReturnType<typeof vi.fn>;
+  let dialogSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    bulkUpdateStatusSpy = vi.fn();
+    bulkDeleteSpy = vi.fn();
+    toastSpy = vi.fn();
+    dialogSpy = vi.fn();
     TestBed.configureTestingModule({
       imports: [PaymentsListComponent],
       providers: [
-        { provide: PaymentsService, useValue: {} },
-        { provide: ToastService, useValue: { show: vi.fn() } },
+        {
+          provide: PaymentsService,
+          useValue: {
+            update: vi.fn(),
+            delete: vi.fn(),
+            bulkUpdateStatus: bulkUpdateStatusSpy,
+            bulkDelete: bulkDeleteSpy,
+          },
+        },
+        { provide: ToastService, useValue: { show: toastSpy } },
         {
           provide: TranslationService,
           useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
         },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
-        { provide: MatDialog, useValue: { open: vi.fn() } },
       ],
+    });
+
+    TestBed.overrideComponent(PaymentsListComponent, {
+      add: { providers: [{ provide: MatDialog, useValue: { open: dialogSpy } }] },
     });
 
     fixture = TestBed.createComponent(PaymentsListComponent);
@@ -258,6 +277,87 @@ describe('PaymentsListComponent - Date Filtering', () => {
 
       const resource = component.paymentsResource;
       expect(resource).toBeTruthy();
+    });
+  });
+
+  describe('bulk selection', () => {
+    it('should toggle selection', () => {
+      component.toggleSelection('p-1', true);
+      expect(component.isSelected('p-1')).toBe(true);
+      component.toggleSelection('p-1', false);
+      expect(component.isSelected('p-1')).toBe(false);
+    });
+
+    it('should clear selection', () => {
+      component.toggleSelection('p-1', true);
+      component.toggleSelection('p-2', true);
+      component.clearSelection();
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should select all visible page data', () => {
+      const pageData = [{ id: 'p-1' }, { id: 'p-2' }] as never;
+      vi.spyOn(component, 'currentPageData').mockReturnValue(pageData as never);
+
+      component.onSelectAllPage(true);
+
+      expect(component.selectedIds().size).toBe(2);
+      expect(component.isSelected('p-1')).toBe(true);
+      expect(component.isSelected('p-2')).toBe(true);
+
+      component.onSelectAllPage(false);
+      expect(component.selectedIds().size).toBe(0);
+    });
+  });
+
+  describe('openBulkStatusDialog()', () => {
+    it('should do nothing when no ids are selected', () => {
+      component.openBulkStatusDialog();
+      expect(bulkUpdateStatusSpy).not.toHaveBeenCalled();
+    });
+
+    it('should open dialog and call bulkUpdateStatus when confirmed', () => {
+      component.toggleSelection('p-1', true);
+      dialogSpy.mockReturnValue({
+        afterClosed: () => of({ confirmed: true, status: 'approved', detail: '' }),
+      });
+      bulkUpdateStatusSpy.mockReturnValue(
+        of({ succeeded: [{ id: 'p-1', status: 'approved' }], failed: [] }),
+      );
+
+      component.openBulkStatusDialog();
+
+      expect(bulkUpdateStatusSpy).toHaveBeenCalledWith(['p-1'], 'approved');
+      expect(toastSpy).toHaveBeenCalledWith('bulk.toast.statusChanged', 'success');
+    });
+
+    it('should not call bulkUpdateStatus when dialog is cancelled', () => {
+      component.toggleSelection('p-1', true);
+      dialogSpy.mockReturnValue({
+        afterClosed: () => of({ confirmed: false, status: '', detail: '' }),
+      });
+
+      component.openBulkStatusDialog();
+
+      expect(bulkUpdateStatusSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('bulkDeletePayments()', () => {
+    it('should do nothing when nothing is selected', () => {
+      component.bulkDeletePayments();
+      expect(bulkDeleteSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call bulkDelete and show success toast when confirmed', () => {
+      component.toggleSelection('p-1', true);
+      bulkDeleteSpy.mockReturnValue(of({ succeeded: [{ id: 'p-1' }], failed: [] }));
+      dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
+
+      component.bulkDeletePayments();
+
+      expect(bulkDeleteSpy).toHaveBeenCalledWith(['p-1']);
+      expect(toastSpy).toHaveBeenCalledWith('common.toast.deleted', 'success');
     });
   });
 });

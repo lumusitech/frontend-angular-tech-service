@@ -49,3 +49,13 @@ export interface PaymentFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkPaymentStatusResult {
+  succeeded: { id: string; status: PaymentStatus }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkPaymentDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

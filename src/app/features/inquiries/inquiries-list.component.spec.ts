@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { InquiriesListComponent } from './inquiries-list.component';
 import { InquiriesService } from '../../core/services/inquiries.service';
@@ -16,20 +17,30 @@ function createActivatedRouteMock(queryParams: Record<string, string | null> = {
 describe('InquiriesListComponent', () => {
   let component: InquiriesListComponent;
   let fixture: ComponentFixture<InquiriesListComponent>;
+  let bulkDeleteSpy: ReturnType<typeof vi.fn>;
+  let toastSpy: ReturnType<typeof vi.fn>;
+  let dialogSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    bulkDeleteSpy = vi.fn();
+    toastSpy = vi.fn();
+    dialogSpy = vi.fn();
     TestBed.configureTestingModule({
       imports: [InquiriesListComponent],
       providers: [
-        { provide: InquiriesService, useValue: { delete: vi.fn() } },
+        { provide: InquiriesService, useValue: { delete: vi.fn(), bulkDelete: bulkDeleteSpy } },
         { provide: Router, useValue: { navigate: vi.fn(), events: of() } },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
-        { provide: ToastService, useValue: { show: vi.fn() } },
+        { provide: ToastService, useValue: { show: toastSpy } },
         {
           provide: TranslationService,
           useValue: { instant: vi.fn().mockImplementation((key: string) => key) },
         },
       ],
+    });
+
+    TestBed.overrideComponent(InquiriesListComponent, {
+      add: { providers: [{ provide: MatDialog, useValue: { open: dialogSpy } }] },
     });
 
     fixture = TestBed.createComponent(InquiriesListComponent);
@@ -85,6 +96,63 @@ describe('InquiriesListComponent', () => {
       component.dateError.set('common.invalidDateTo');
       component.clearFilters();
       expect(component.dateError()).toBe('');
+    });
+  });
+
+  describe('bulk selection', () => {
+    it('should toggle selection', () => {
+      component.toggleSelection('iq-1', true);
+      expect(component.isSelected('iq-1')).toBe(true);
+      component.toggleSelection('iq-1', false);
+      expect(component.isSelected('iq-1')).toBe(false);
+    });
+
+    it('should clear selection', () => {
+      component.toggleSelection('iq-1', true);
+      component.toggleSelection('iq-2', true);
+      component.clearSelection();
+      expect(component.selectedIds().size).toBe(0);
+    });
+
+    it('should select all visible page data', () => {
+      const pageData = [{ id: 'iq-1' }, { id: 'iq-2' }] as never;
+      vi.spyOn(component, 'currentPageData').mockReturnValue(pageData as never);
+
+      component.onSelectAllPage(true);
+
+      expect(component.selectedIds().size).toBe(2);
+      expect(component.isSelected('iq-1')).toBe(true);
+      expect(component.isSelected('iq-2')).toBe(true);
+
+      component.onSelectAllPage(false);
+      expect(component.selectedIds().size).toBe(0);
+    });
+  });
+
+  describe('bulkDeleteInquiries()', () => {
+    it('should do nothing when nothing is selected', () => {
+      component.bulkDeleteInquiries();
+      expect(bulkDeleteSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call bulkDelete and show success toast when confirmed', () => {
+      component.toggleSelection('iq-1', true);
+      bulkDeleteSpy.mockReturnValue(of({ succeeded: [{ id: 'iq-1' }], failed: [] }));
+      dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
+
+      component.bulkDeleteInquiries();
+
+      expect(bulkDeleteSpy).toHaveBeenCalledWith(['iq-1']);
+      expect(toastSpy).toHaveBeenCalledWith('common.toast.deleted', 'success');
+    });
+
+    it('should not call bulkDelete when dialog is cancelled', () => {
+      component.toggleSelection('iq-1', true);
+      dialogSpy.mockReturnValue({ afterClosed: () => of(false) });
+
+      component.bulkDeleteInquiries();
+
+      expect(bulkDeleteSpy).not.toHaveBeenCalled();
     });
   });
 });

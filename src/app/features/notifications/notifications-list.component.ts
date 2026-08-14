@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -16,6 +17,11 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
+import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { toLocalDateString } from '../../core/utils/date.utils';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 const TYPE_ICONS: Record<string, string> = {
   'work_order.created': 'assignment',
@@ -71,6 +77,7 @@ const TYPE_COLORS: Record<string, string> = {
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatButtonToggleModule,
@@ -80,6 +87,7 @@ const TYPE_COLORS: Record<string, string> = {
     TranslatePipe,
     RelativeDatePipe,
     MobileFilterBarComponent,
+    BulkActionsComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -212,10 +220,25 @@ const TYPE_COLORS: Record<string, string> = {
           [message]="'notifications.noNotificationsMessage' | translate"
         />
       } @else if (resource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showActivateDeactivate]="false"
+          [showDelete]="false"
+          [showMarkRead]="true"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (markRead)="bulkMarkAsRead()"
+        />
+
         <div class="space-y-2">
           @for (notification of resource.value().data; track notification.id) {
             <div
               class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              [class.selected-row]="isSelected(notification.id)"
               [style.border-left-color]="
                 !notification.isRead ? 'var(--color-primary)' : 'var(--color-secondary)'
               "
@@ -225,6 +248,15 @@ const TYPE_COLORS: Record<string, string> = {
               (keydown.enter)="handleItemClick(notification)"
               (keydown.space.prevent)="handleItemClick(notification)"
             >
+              <mat-checkbox
+                color="primary"
+                class="mt-1"
+                [checked]="isSelected(notification.id)"
+                (change)="toggleSelection(notification.id, $event.checked)"
+                (click)="$event.stopPropagation()"
+                [attr.aria-label]="'bulk.selectAll' | translate"
+              />
+
               <!-- Icon -->
               <div
                 class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
@@ -281,6 +313,8 @@ const TYPE_COLORS: Record<string, string> = {
 })
 export class NotificationsListComponent {
   readonly notificationsService = inject(NotificationsService);
+  private readonly toastService = inject(ToastService);
+  readonly translationService = inject(TranslationService);
   readonly notificationClick = output<AppNotification>();
 
   readonly pageSize = signal(10);
@@ -288,6 +322,114 @@ export class NotificationsListComponent {
   readonly readFilter = signal<string>('all');
   readonly typeFilter = signal('');
   readonly searchFilter = signal('');
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<AppNotification[]>(() => this.resource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((n) => this.selectedIds().has(n.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((n) => this.selectedIds().has(n.id)) && !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const notification of this.currentPageData()) {
+      if (checked) {
+        next.add(notification.id);
+      } else {
+        next.delete(notification.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((n) => this.selectedIds().has(n.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('notifications.type'),
+      t('notifications.title'),
+      'message',
+      t('notifications.unread'),
+      t('common.created'),
+    ];
+    const rows = selected.map((n) => [
+      n.type,
+      n.title,
+      n.message,
+      n.isRead ? t('notifications.markRead') : t('notifications.unread'),
+      n.createdAt,
+    ]);
+    exportToCsv(`notifications-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkMarkAsRead(): void {
+    const ids = Array.from(this.selectedIds());
+    if (ids.length === 0) return;
+
+    this.bulkLoading.set(true);
+    this.notificationsService.bulkMarkAsRead(ids).subscribe({
+      next: (result) => {
+        this.bulkLoading.set(false);
+        const failedCount = result.failed.length;
+        if (failedCount === 0) {
+          this.notificationsService.unreadCount.update((c) =>
+            Math.max(0, c - result.succeeded.length),
+          );
+          this.toastService.show(
+            this.translationService.instant('bulk.toast.markedRead'),
+            'success',
+          );
+        } else {
+          this.notificationsService.unreadCount.update((c) =>
+            Math.max(0, c - result.succeeded.length),
+          );
+          this.toastService.show(
+            this.translationService.instant('bulk.toast.partial', {
+              succeeded: String(result.succeeded.length),
+              failed: String(failedCount),
+            }),
+            'info',
+          );
+        }
+        this.clearSelection();
+        this.resource.reload();
+      },
+      error: (err) => {
+        this.bulkLoading.set(false);
+        const msg = Array.isArray(err.error?.message)
+          ? err.error.message.join(', ')
+          : err.error?.message || this.translationService.instant('bulk.toast.error');
+        this.toastService.show(msg, 'error');
+      },
+    });
+  }
 
   readonly resource = httpResource<PaginatedNotifications>(() => {
     this.notificationsService.refreshCounter();
