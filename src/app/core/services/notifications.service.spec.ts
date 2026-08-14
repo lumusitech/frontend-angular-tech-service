@@ -290,4 +290,21 @@ describe('NotificationsService', () => {
       req.error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
     });
   });
+
+  describe('bulkMarkAsRead()', () => {
+    it('should PATCH /api/notifications/bulk-read with ids', () => {
+      const result = {
+        succeeded: ['n-1'],
+        failed: [],
+      };
+      service.bulkMarkAsRead(['n-1']).subscribe((res) => {
+        expect(res).toEqual(result);
+      });
+
+      const req = httpMock.expectOne('/api/notifications/bulk-read');
+      expect(req.request.method).toBe('PATCH');
+      expect(req.request.body).toEqual({ ids: ['n-1'] });
+      req.flush(result);
+    });
+  });
 });

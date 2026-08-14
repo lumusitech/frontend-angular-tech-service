@@ -8,6 +8,7 @@ import {
   ContactInquiryDto,
   ConvertInquiryDto,
   InquiryFilters,
+  BulkInquiryDeleteResult,
   PaginatedResponse,
 } from '../models/inquiry.interfaces';
 
@@ -63,5 +64,9 @@ export class InquiriesService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkInquiryDeleteResult> {
+    return this.http.post<BulkInquiryDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

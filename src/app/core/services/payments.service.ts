@@ -6,6 +6,9 @@ import {
   CreatePaymentDto,
   UpdatePaymentDto,
   PaymentFilters,
+  PaymentStatus,
+  BulkPaymentStatusResult,
+  BulkPaymentDeleteResult,
 } from '../models/payment.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
@@ -40,5 +43,16 @@ export class PaymentsService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], status: PaymentStatus): Observable<BulkPaymentStatusResult> {
+    return this.http.patch<BulkPaymentStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      status,
+    });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkPaymentDeleteResult> {
+    return this.http.post<BulkPaymentDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

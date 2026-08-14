@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
@@ -33,6 +34,8 @@ import { InquiryFormComponent } from './inquiry-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'text-blue-400 bg-blue-500/15',
@@ -57,6 +60,7 @@ const STATUS_COLORS: Record<string, string> = {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatAccordion,
@@ -65,6 +69,7 @@ const STATUS_COLORS: Record<string, string> = {
     PageHeaderComponent,
     MobileCardComponent,
     MobileFilterBarComponent,
+    BulkActionsComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -204,6 +209,19 @@ const STATUS_COLORS: Record<string, string> = {
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (resource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showActivateDeactivate]="false"
+          [showDelete]="true"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (deleteSelected)="bulkDeleteInquiries()"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (inquiry of resource.value().data; track inquiry.id) {
@@ -212,6 +230,10 @@ const STATUS_COLORS: Record<string, string> = {
               [status]="inquiry.status"
               [statusType]="$any('inquiryStatus')"
               [fields]="getInquiryFields(inquiry)"
+              [canSwipe]="true"
+              [selectable]="true"
+              [checked]="isSelected(inquiry.id)"
+              (selectionChange)="toggleSelection(inquiry.id, $event)"
             >
               <button
                 mat-icon-button
@@ -244,6 +266,30 @@ const STATUS_COLORS: Record<string, string> = {
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let inquiry"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(inquiry.id)"
+                  (change)="toggleSelection(inquiry.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="clientName">
               <th
                 mat-header-cell
@@ -394,6 +440,7 @@ const STATUS_COLORS: Record<string, string> = {
               mat-row
               *matRowDef="let row; columns: displayedColumns"
               [class.highlight-pulse]="highlightedId() === row.id"
+              [class.selected-row]="isSelected(row.id)"
             ></tr>
           </table>
 
@@ -477,6 +524,7 @@ export class InquiriesListComponent {
   });
 
   displayedColumns = [
+    'select',
     'clientName',
     'clientAddress',
     'source',
@@ -485,6 +533,128 @@ export class InquiriesListComponent {
     'createdAt',
     'actions',
   ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<Inquiry[]>(() => this.resource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((inquiry) => this.selectedIds().has(inquiry.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((inquiry) => this.selectedIds().has(inquiry.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const inquiry of this.currentPageData()) {
+      if (checked) {
+        next.add(inquiry.id);
+      } else {
+        next.delete(inquiry.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((inquiry) => this.selectedIds().has(inquiry.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('inquiries.clientName'),
+      t('inquiries.clientAddress'),
+      t('inquiries.source'),
+      t('common.status'),
+      t('inquiries.assignedTo'),
+      t('common.created'),
+    ];
+    const rows = selected.map((inquiry) => [
+      inquiry.clientName,
+      inquiry.clientAddress ?? '-',
+      inquiry.source,
+      inquiry.status,
+      inquiry.assignedTo?.name ?? '-',
+      inquiry.createdAt,
+    ]);
+    exportToCsv(`inquiries-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkDeleteInquiries(): void {
+    const count = this.selectedIds().size;
+    if (count === 0) return;
+    const entity = this.translationService.instant('inquiries.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('bulk.deleteTitle', { entity }),
+        message: this.translationService.instant('bulk.deleteMessage', {
+          count: String(count),
+          entity,
+        }),
+        confirmLabel: this.translationService.instant('common.delete'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      this.bulkLoading.set(true);
+      this.inquiriesService.bulkDelete(ids).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.resource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
 
   constructor() {
     effect(() => {

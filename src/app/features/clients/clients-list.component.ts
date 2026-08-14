@@ -514,13 +514,17 @@ export class ClientsListComponent {
     const count = this.selectedIds().size;
     if (count === 0) return;
 
+    const entity = this.translationService.instant('clients.title');
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        titleKey: isActive ? 'bulk.activateConfirmTitle' : 'bulk.deactivateConfirmTitle',
+        title: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmTitle' : 'bulk.deactivateConfirmTitle',
+          { entity },
+        ),
         message: this.translationService.instant(
           isActive ? 'bulk.activateConfirmMessage' : 'bulk.deactivateConfirmMessage',
-          { count: String(count) },
+          { count: String(count), entity },
         ),
         confirmLabel: this.translationService.instant(
           isActive ? 'bulk.activate' : 'bulk.deactivate',
@@ -539,7 +543,7 @@ export class ClientsListComponent {
           this.bulkLoading.set(false);
           const failedCount = result.failed.length;
           if (failedCount === 0) {
-            this.toastService.show(this.translationService.instant(key), 'success');
+            this.toastService.show(this.translationService.instant(key, { entity }), 'success');
           } else {
             this.toastService.show(
               this.translationService.instant('bulk.toast.partial', {
@@ -565,11 +569,15 @@ export class ClientsListComponent {
 
   bulkDeleteClients(): void {
     const count = this.selectedIds().size;
+    const entity = this.translationService.instant('clients.title');
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        titleKey: 'bulk.deleteTitle',
-        message: this.translationService.instant('bulk.deleteMessage', { count: String(count) }),
+        title: this.translationService.instant('bulk.deleteTitle', { entity }),
+        message: this.translationService.instant('bulk.deleteMessage', {
+          count: String(count),
+          entity,
+        }),
         confirmLabel: this.translationService.instant('common.delete'),
         color: 'warn',
       },

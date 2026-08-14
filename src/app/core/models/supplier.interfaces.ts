@@ -37,3 +37,13 @@ export interface SupplierFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkSupplierStatusResult {
+  succeeded: { id: string; isActive: boolean }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkSupplierDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

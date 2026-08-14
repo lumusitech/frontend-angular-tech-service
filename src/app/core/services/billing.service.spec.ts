@@ -272,4 +272,38 @@ describe('BillingService', () => {
       });
     });
   });
+
+  describe('bulkIssue()', () => {
+    it('should POST /api/billing/invoices/bulk-issue with ids', () => {
+      const result = {
+        succeeded: [{ id: 'inv-1', status: 'issued' }],
+        failed: [],
+      };
+      service.bulkIssue(['inv-1']).subscribe((res) => {
+        expect(res).toEqual(result);
+      });
+
+      const req = httpMock.expectOne('/api/billing/invoices/bulk-issue');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ ids: ['inv-1'] });
+      req.flush(result);
+    });
+  });
+
+  describe('bulkCancel()', () => {
+    it('should POST /api/billing/invoices/bulk-cancel with ids', () => {
+      const result = {
+        succeeded: [{ id: 'inv-1', status: 'cancelled' }],
+        failed: [],
+      };
+      service.bulkCancel(['inv-1']).subscribe((res) => {
+        expect(res).toEqual(result);
+      });
+
+      const req = httpMock.expectOne('/api/billing/invoices/bulk-cancel');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ ids: ['inv-1'] });
+      req.flush(result);
+    });
+  });
 });

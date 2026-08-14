@@ -67,3 +67,13 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface BulkInvoiceIssueResult {
+  succeeded: { id: string; status: 'issued' }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkInvoiceCancelResult {
+  succeeded: { id: string; status: 'cancelled' }[];
+  failed: { id: string; reason: string }[];
+}

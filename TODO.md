@@ -201,6 +201,25 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - **Integración:** clients-list (selección por fila + select-all página, export CSV de seleccionados, activar/desactivar masivo, delete masivo con confirmación) y work-orders-list (ídem + cambio de estado masivo vía diálogo). Services: `ClientsService.bulkUpdateStatus/bulkDelete`, `WorkOrdersService.bulkStatusChange`. i18n es/en/pt con bloque `bulk.*`. 65 tests nuevos (43 clients + 22 work-orders).
 - **Verificación:** 578 tests PASS, `npx ng build` OK (solo prerender `/` pre-existente), lint OK.
 
+### Feature: Bulk actions en las 7 listas restantes (15/08/2026)
+
+- **Backend (PR backend):** 11 endpoints bulk nuevos replicando el patrón `{succeeded, failed}` por id con fallos aislados:
+  - `PATCH /api/suppliers/bulk-status` + `POST /api/suppliers/bulk-delete`
+  - `PATCH /api/payments/bulk-status` (reutiliza `update()` → emite `payment.status_changed` + setea `paidAt` al aprobar) + `POST /api/payments/bulk-delete`
+  - `POST /api/expenses/bulk-delete`
+  - `PATCH /api/pending-items/bulk-status` (reutiliza `update()`) + `POST /api/pending-items/bulk-delete`
+  - `POST /api/inquiries/bulk-delete`
+  - `POST /api/billing/invoices/bulk-issue` (draft→issued, ARCA por factura, fallos aislados) + `POST /api/billing/invoices/bulk-cancel`
+  - `PATCH /api/notifications/bulk-read` (scoped al usuario)
+  - Rutas bulk declaradas ANTES de `:id`. DTOs con `@IsUUID(undefined, {each:true})`. 22 tests unitarios nuevos → 463 tests PASS, lint OK (0 errores).
+- **Frontend:**
+  - i18n `bulk.*` generalizado con `{{entity}}` (activate/deactivate/delete/changeStatus/toast) + keys nuevas `issue`/`cancel`/`markRead` + `toast.issued`/`toast.cancelled`/`toast.markedRead` en es/en/pt. Clients/work-orders actualizados para pasar `{entity}`.
+  - `BulkActionsComponent` extendido con `showIssue`/`showCancel`/`showMarkRead` + outputs `issue`/`cancelSelected`/`markRead` (desktop + mobile toolbar).
+  - Servicios: `SuppliersService.bulkUpdateStatus/bulkDelete`, `PaymentsService.bulkUpdateStatus/bulkDelete`, `ExpensesService.bulkDelete`, `PendingItemsService.bulkUpdateStatus/bulkDelete`, `InquiriesService.bulkDelete`, `BillingService.bulkIssue/bulkCancel`, `NotificationsService.bulkMarkAsRead` + interfaces de resultado en modelos.
+  - Integración en 7 list components: **suppliers** (activate/deactivate + delete + CSV), **payments** (status vía StatusChangeDialog + delete + CSV), **expenses** (delete + CSV), **pending-items** (status + delete + CSV), **invoices** (issue/cancel + CSV), **inquiries** (delete + CSV), **notifications** (mark-read + CSV, checkbox custom en cards — no usa MobileCard ni tabla).
+  - 138 tests nuevos (bulk-actions 12, services 6, list components 5) → **716 tests PASS**.
+- **Verificación:** 716 tests frontend PASS, `npx ng build` OK (solo prerender `/` pre-existente, confirmado también en `main` limpio), lint OK, backend 463 tests PASS + curl verificado (400 con body vacío, éxito con datos reales).
+
 ### i18n: Portugués (14/08/2026)
 
 `public/i18n/pt.json` con las 883 keys de `es.json` traducidas a portugués. `pt` agregado a los selectores de idioma en header y settings.
@@ -228,7 +247,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 10. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
 11. ~~**i18n: Portugués**~~ ✅ — `pt.json` con 883 keys + selector en header y settings (14/08/2026)
-12. ~~**Bulk actions**~~ ✅ — Selección múltiple, exportar CSV, cambiar estado masivo. Piloto en clients + work-orders (15/08/2026). Ver sección "Bulk actions".
+12. ~~**Bulk actions**~~ ✅ — Selección múltiple, exportar CSV, cambiar estado masivo. Completado en las 9 listas: clients, work-orders, suppliers, payments, expenses, pending-items, invoices, inquiries, notifications (15/08/2026). Ver sección "Bulk actions".
 13. **Kanban board** — Vista visual alternativa a tabla.
 
 ---
@@ -562,7 +581,7 @@ Fixes necesarios para que la suite corriera contra el backend real:
 
 ### ~~3. Bulk actions — selección múltiple en listas (esfuerzo medio)~~ ✅
 
-**Completado (15/08/2026):** Piloto en clients y work-orders. Checkbox por fila (desktop + mobile via MobileCard), toolbar bulk sticky con select-all de página (indeterminate), conteo, clear, export CSV (`exportToCsv` util), cambiar estado (work-orders vía `StatusChangeDialogComponent` con status select), activar/desactivar y eliminar masivo (clients). Backend: endpoints `bulk-status`/`bulk-delete` con resultado `{succeeded, failed}` por id. 65 tests nuevos. Replicar patrón en los otros 7 list components (suppliers, payments, expenses, billing, pending-items, inquiries, notifications) queda como mejora incremental.
+**Completado (15/08/2026):** Piloto en clients y work-orders. Checkbox por fila (desktop + mobile via MobileCard), toolbar bulk sticky con select-all de página (indeterminate), conteo, clear, export CSV (`exportToCsv` util), cambiar estado (work-orders vía `StatusChangeDialogComponent` con status select), activar/desactivar y eliminar masivo (clients). Backend: endpoints `bulk-status`/`bulk-delete` con resultado `{succeeded, failed}` por id. 65 tests nuevos. **Extendido a las 7 listas restantes** (suppliers, payments, expenses, pending-items, invoices, inquiries, notifications) con 11 endpoints bulk backend y 138 tests nuevos — ver "Últimas features implementadas (15/08/2026)".
 
 ### 4. Offline mode — PWA real (esfuerzo alto)
 

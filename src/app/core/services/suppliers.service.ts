@@ -6,6 +6,8 @@ import {
   CreateSupplierDto,
   UpdateSupplierDto,
   SupplierFilters,
+  BulkSupplierStatusResult,
+  BulkSupplierDeleteResult,
 } from '../models/supplier.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
@@ -40,5 +42,16 @@ export class SuppliersService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], isActive: boolean): Observable<BulkSupplierStatusResult> {
+    return this.http.patch<BulkSupplierStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      isActive,
+    });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkSupplierDeleteResult> {
+    return this.http.post<BulkSupplierDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }
