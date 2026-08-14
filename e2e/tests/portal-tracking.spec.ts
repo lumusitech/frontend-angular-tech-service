@@ -7,8 +7,7 @@ test.describe('Portal Tracking', () => {
   });
 
   test('should display tracking form', async ({ page }) => {
-    await expect(page.locator('input[type="text"], input[placeholder*="ódigo"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"], button:has-text("Buscar")')).toBeVisible();
+    await expect(page.locator('input[placeholder*="TS-"]')).toBeVisible();
   });
 
   test('should show error for invalid tracking code', async ({ page }) => {

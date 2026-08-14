@@ -30,8 +30,8 @@ test.describe('Clients CRUD', () => {
 
   test('should view client detail', async ({ adminPage }) => {
     await adminPage.goto('/admin/clients');
-    await adminPage.waitForSelector('mat-row', { timeout: 10000 });
-    const firstRow = adminPage.locator('mat-row').first();
+    await adminPage.waitForSelector('tr[mat-row]', { timeout: 10000 });
+    const firstRow = adminPage.locator('tr[mat-row]').first();
     await firstRow.click();
     await adminPage.waitForURL(/\/admin\/clients\/(?!new)[a-f0-9-]+/, { timeout: 5000 });
     expect(adminPage.url()).toMatch(/\/admin\/clients\/[a-f0-9-]+/);

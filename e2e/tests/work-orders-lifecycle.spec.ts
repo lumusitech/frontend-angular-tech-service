@@ -7,7 +7,7 @@ test.describe('Work Orders Lifecycle', () => {
     await workOrdersPage.goto();
     await adminPage.waitForTimeout(1000);
     const title = await adminPage.locator('h1').textContent();
-    expect(title?.toLowerCase()).toContain('orden');
+    expect(title?.toLowerCase()).toContain('órden');
   });
 
   test('should show status badges', async ({ adminPage }) => {
@@ -29,7 +29,7 @@ test.describe('Work Orders Lifecycle', () => {
   test('should view order detail', async ({ adminPage }) => {
     await adminPage.goto('/admin/work-orders');
     await adminPage.waitForTimeout(1000);
-    const firstRow = adminPage.locator('mat-row').first();
+    const firstRow = adminPage.locator('tr[mat-row]').first();
     if (await firstRow.isVisible()) {
       await firstRow.click();
       await adminPage.waitForTimeout(500);

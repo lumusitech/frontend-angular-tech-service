@@ -8,7 +8,7 @@ export class ClientsPage {
   }
 
   async getClientCount() {
-    return this.page.locator('mat-row, tr[data-row]').count();
+    return this.page.locator('tr[mat-row], tr[data-row]').count();
   }
 
   async clickCreate() {
@@ -37,6 +37,6 @@ export class ClientsPage {
   }
 
   async getTableRows() {
-    return this.page.locator('mat-row').count();
+    return this.page.locator('tr[mat-row]').count();
   }
 }

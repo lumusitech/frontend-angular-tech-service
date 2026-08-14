@@ -33,7 +33,7 @@ test.describe('Login', () => {
 
   test('should show loading state during login', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.login('admin@test.com', 'admin123');
+    await loginPage.login('admin@techservice.local', 'admin123');
     const btn = page.locator('button[type="submit"]');
     await expect(btn).toBeDisabled();
   });

@@ -13,12 +13,12 @@ export class SkillsPage {
 
   async clickCreate() {
     await this.page
-      .locator('button:has-text("Nueva Skill"), button:has-text("Create")')
+      .locator('button:has-text("Nueva Habilidad"), button:has-text("Create")')
       .first()
       .click();
   }
 
   async getRowCount(): Promise<number> {
-    return this.page.locator('mat-row').count();
+    return this.page.locator('tr[mat-row]').count();
   }
 }

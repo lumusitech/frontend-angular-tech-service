@@ -8,14 +8,8 @@ export class PortalPage {
   }
 
   async searchTrackingCode(code: string) {
-    await this.page.fill(
-      'input[placeholder*="Código"], input[placeholder*="code"], input[type="text"]',
-      code,
-    );
-    await this.page
-      .locator('button[type="submit"], button:has-text("Buscar"), button:has-text("Track")')
-      .first()
-      .click();
+    await this.page.fill('input[placeholder*="TS-"]', code);
+    await this.page.press('input[placeholder*="TS-"]', 'Enter');
   }
 
   async hasTimeline() {

@@ -13,7 +13,7 @@ test.describe('Notifications', () => {
   test('should have notifications items', async ({ adminPage }) => {
     const page = new NotificationsPage(adminPage);
     await page.goto();
-    await adminPage.waitForSelector('[class*="notification"], mat-card, mat-row', {
+    await adminPage.waitForSelector('main div[role="button"]', {
       timeout: 10000,
     });
     const count = await page.getRowCount();

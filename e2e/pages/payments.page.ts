@@ -19,6 +19,6 @@ export class PaymentsPage {
   }
 
   async getRowCount(): Promise<number> {
-    return this.page.locator('mat-row').count();
+    return this.page.locator('tr[mat-row]').count();
   }
 }

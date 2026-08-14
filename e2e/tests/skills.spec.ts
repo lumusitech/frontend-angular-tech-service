@@ -7,7 +7,7 @@ test.describe('Skills', () => {
     await page.goto();
     await adminPage.waitForSelector('h1', { timeout: 10000 });
     const title = await adminPage.locator('h1').textContent();
-    expect(title?.toLowerCase()).toContain('skill');
+    expect(title?.toLowerCase()).toContain('habilidad');
   });
 
   test('should open create skill dialog', async ({ adminPage }) => {
