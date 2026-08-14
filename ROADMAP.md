@@ -516,6 +516,7 @@ server.ts                          # Express server (SSR entry point)
 - [x] Implementado con approach custom (JSON + TranslatePipe + TranslationService)
 - [x] Spanish (`public/i18n/es.json`) — default, completo
 - [x] English (`public/i18n/en.json`) — completo
+- [x] Portuguese (`public/i18n/pt.json`) — completo (883 keys, 14/08/2026)
 - [x] Language switcher in header
 - [x] Persist locale in localStorage
 - [ ] `@angular/localize` — No implementado (se usó approach custom)
@@ -687,6 +688,6 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 | #   | Item                                  | Descripción                                                                                      | Esfuerzo |
 | --- | ------------------------------------- | ------------------------------------------------------------------------------------------------ | -------- |
 | 7   | **Offline mode — cola de mutaciones** | PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar. Complejidad alta. | Alto     |
-| 8   | **i18n: Portugués**                   | Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`.                          | Bajo     |
+| 8   | ~~**i18n: Portugués**~~ ✅         | ~~Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`.~~ Completado 14/08/2026 | Bajo     |
 | 9   | **Bulk actions (selección múltiple)** | Exportar, cambiar estado masivamente. UX para gestión masiva.                                    | Medio    |
 | 10  | **Kanban board para work orders**     | Vista visual alternativa a tabla (columnas por estado, drag & drop).                             | Alto     |

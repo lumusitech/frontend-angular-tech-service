@@ -194,6 +194,7 @@ export class HeaderComponent implements OnInit {
   availableLanguages: LanguageOption[] = [
     { code: 'es', label: 'Español', flag: '🇦🇷' },
     { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'pt', label: 'Português', flag: '🇧🇷' },
   ];
 
   currentFlag = computed(() => {

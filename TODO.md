@@ -212,7 +212,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
 
 10. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
-11. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
+11. ~~**i18n: Portugués**~~ ✅ — `pt.json` con 883 keys + selector en header y settings (14/08/2026)
 12. **Bulk actions** — Selección múltiple, exportar masivo.
 13. **Kanban board** — Vista visual alternativa a tabla.
 
@@ -541,17 +541,9 @@ Fixes necesarios para que la suite corriera contra el backend real:
 
 **Archivos involucrados:** `e2e/tests/*.spec.ts`, `e2e/pages/*.page.ts`, `e2e/fixtures/seed.fixture.ts`, `e2e/fixtures/auth.fixture.ts`
 
-### 2. i18n: Portugués (esfuerzo bajo, impacto medio)
+### ~~2. i18n: Portugués~~ ✅
 
-Copiar `public/i18n/es.json` → `public/i18n/pt.json` y traducir los textos.
-Agregar `pt` al `TranslationService` y al selector de idioma en el header.
-
-**Archivos a modificar:**
-
-- `public/i18n/pt.json` (nuevo)
-- `src/app/core/services/translation.service.ts` — agregar locale
-- `src/app/shared/components/header/header.component.ts` — agregar opción al menú
-- `public/i18n/es.json` + `public/i18n/en.json` — sincronizar keys faltantes
+**Completado (14/08/2026):** `public/i18n/pt.json` creado con las 883 keys de `es.json` traducidas a portugués (paridad verificada programáticamente: keys y placeholders `{{param}}` idénticos). `pt` agregado a los selectores de idioma en `header.component.ts` y `settings.component.ts`. `TranslationService` no requirió cambios (carga `${locale}.json` dinámicamente). Verificación: `ng build` OK (solo el error de prerender pre-existente), 555 tests PASS, lint OK.
 
 ### 3. Bulk actions — selección múltiple en listas (esfuerzo medio)
 
