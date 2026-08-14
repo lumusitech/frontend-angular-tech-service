@@ -91,7 +91,18 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
         [actionLabel]="'workOrders.newOrder' | translate"
         actionIcon="add"
         [action]="openCreateDialog.bind(this)"
-      />
+      >
+        <button
+          mat-flat-button
+          color="primary"
+          class="!min-w-0 !px-3"
+          (click)="openKanban()"
+          [title]="'workOrders.viewToggle.viewKanban' | translate"
+        >
+          <mat-icon>view_kanban</mat-icon>
+          <span class="hidden sm:inline">{{ 'workOrders.viewToggle.viewKanban' | translate }}</span>
+        </button>
+      </app-page-header>
 
       <div
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
@@ -791,6 +802,10 @@ export class WorkOrdersListComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.workOrdersResource.reload();
     });
+  }
+
+  openKanban(): void {
+    this.router.navigate(['/admin/work-orders/kanban']);
   }
 
   readonly hasActiveFilters = computed(() => {

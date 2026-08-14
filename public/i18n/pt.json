@@ -279,6 +279,18 @@
     "title": "Ordens de Trabalho",
     "subtitle": "Gerencie as ordens de serviço técnico",
     "newOrder": "Nova Ordem",
+    "viewToggle": {
+      "viewTable": "Ver tabela",
+      "viewKanban": "Visão Kanban"
+    },
+    "kanban": {
+      "title": "Quadro Kanban",
+      "subtitle": "Gerencie as ordens arrastando-as entre os estados",
+      "toast": {
+        "statusChanged": "Status da ordem atualizado com sucesso",
+        "error": "Não foi possível atualizar o status da ordem"
+      }
+    },
     "trackingCode": "Código",
     "code": "Código",
     "client": "Cliente",
