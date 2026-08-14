@@ -11,7 +11,7 @@ async function getAdminToken(): Promise<string | null> {
   });
   if (!res.ok()) return null;
   const body = await res.json();
-  return body?.data?.token || body?.token || null;
+  return body?.data?.accessToken || null;
 }
 
 async function ensureExists(token: string, url: string, data: Record<string, unknown>) {
@@ -56,6 +56,7 @@ async function ensureTestSupplier(token: string) {
     contact: 'Contacto E2E',
     email: 'supplier-e2e@test.com',
     phone: '987654321',
+    address: 'Calle E2E 456',
   });
 }
 
@@ -72,7 +73,7 @@ export async function seed(): Promise<void> {
   const token = await getAdminToken();
   if (!token) {
     console.warn(
-      'Seed: no se pudo obtener token admin. Asegurate de que el backend tenga admin@test.com/admin123',
+      'Seed: no se pudo obtener token admin. Asegurate de que el backend tenga admin@techservice.local/admin123',
     );
     return;
   }

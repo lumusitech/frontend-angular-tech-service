@@ -2,7 +2,7 @@ import { test as base, Page } from '@playwright/test';
 import { seed } from './seed.fixture';
 
 export const TEST_CREDENTIALS = {
-  admin: { email: 'admin@test.com', password: 'admin123' },
+  admin: { email: 'admin@techservice.local', password: 'admin123' },
   technician: { email: 'tech@test.com', password: 'tech123' },
   seller: { email: 'seller@test.com', password: 'seller123' },
 };

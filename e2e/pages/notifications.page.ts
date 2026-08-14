@@ -8,7 +8,7 @@ export class NotificationsPage {
   }
 
   async getRowCount(): Promise<number> {
-    return this.page.locator('[class*="notification"], mat-card, mat-row').count();
+    return this.page.locator('main div[role="button"]').count();
   }
 
   async clickFirstNotification() {

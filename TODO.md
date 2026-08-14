@@ -177,7 +177,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - Fixture de auth con 3 roles (admin, tech, seller) + seed automático vía API
 - Seed de datos de prueba: crea usuarios y data via `POST /api/auth/login` + `POST /api/users` + CRUD endpoints
 - Waits deterministas en todos los specs (sin `waitForTimeout`)
-- Pendiente: ejecutar contra backend real (requiere backend NestJS corriendo con seed)
+- ✅ Ejecutado contra backend real (14/08/2026): 59/59 tests passing
 
 ### Notificaciones en tiempo real (22/07/2026)
 
@@ -206,7 +206,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 6. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
 7. ~~**Tests de componentes**~~ ✅ — 474 tests pasando (26 archivos, 100% pass rate). Incluye global-search (23 tests), local-date.adapter (4 tests), app, pipes, directives, guards, interceptors, list components.
-8. **E2E tests (Playwright)** — 🔄 Avanzado: 16 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
+8. ~~**E2E tests (Playwright)**~~ ✅ — **59/59 tests pasando** contra backend real (16 spec files, 16 POs, seed fixture, auth auto-seed). Ejecutado el 14/08/2026. Ver sección "Próxima sesión".
 9. ~~**Google Maps + WhatsApp + Tap-to-Call**~~ ✅ — Completado. Iconos de acción en CopyFieldComponent (address → maps, phone → call + WhatsApp), InfoTabComponent, TechWorkOrderDetailComponent (nueva sección contacto), ClientDetailComponent. Fix: agregar `type: 'address'` faltante en clients-list y suppliers-list.
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
@@ -402,8 +402,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 - List components: clients, payments, work-orders (date filtering), invoices, dashboard
 - Nuevos: global-search.component (12 tests)
 
-**Completado:** Service tests, global-search, pipes, directives, guards, interceptors, list components date-filtering.
-**Pendiente:** E2E tests contra backend real (ver sección "Próxima sesión").
+**Completado:** Service tests, global-search, pipes, directives, guards, interceptors, list components date-filtering, E2E contra backend real (59/59, 14/08/2026).
 
 ---
 
@@ -525,20 +524,22 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ✅ Ya mergeado (PRs backend #133, frontend #212). El detalle del timeline se propaga en vivo a admins y técnicos asignados al editar/eliminar.
 
-### 1. Ejecutar E2E tests contra backend real
+### ~~1. Ejecutar E2E tests contra backend real~~ ✅
 
-Los tests están listos pero necesitan el backend corriendo con seed de datos:
+**Completado (14/08/2026): 59/59 tests pasando contra backend real.**
 
-```bash
-# Levantar backend NestJS (puerto 3000)
-# Luego ejecutar E2E:
-pnpm test:e2e
-```
+Fixes necesarios para que la suite corriera contra el backend real:
 
-Si fallan, depurar selectores de los POs contra la UI real. El seed automático
-crea los usuarios y datos de prueba vía API. Ver `e2e/fixtures/seed.fixture.ts`.
+- `e2e/fixtures/auth.fixture.ts` — credenciales admin: `admin@test.com` → `admin@techservice.local` (el backend real solo tiene `@techservice.local`).
+- `e2e/fixtures/seed.fixture.ts` — `getAdminToken()` leía `body.data.token` pero el backend devuelve `data.accessToken` (el seed abortaba silenciosamente). Además faltaba `address` en el payload del proveedor (`CreateSupplierDto` requiere `address`, 400 BAD_REQUEST).
+- `e2e/tests/login.spec.ts` — credencial de loading state actualizada.
+- Selectores: la mat-table renderiza `<tr mat-row>` (no `<mat-row>`) → todos los POs/specs usan `tr[mat-row]`. Notificaciones: items son `main div[role="button"]`. Reportes: KPI cards usan `[class*="border-l-4"]`.
+- i18n: títulos en español — skills `habilidad`, work-orders `órden`.
+- Portal tracking: el input no tiene atributo `type` (Material) → selector `input[placeholder*="TS-"]`; no hay botón submit, se busca con Enter.
 
-**Archivos involucrados:** `e2e/tests/*.spec.ts`, `e2e/pages/*.page.ts`, `e2e/fixtures/seed.fixture.ts`
+**Cómo ejecutar:** backend NestJS corriendo en puerto 3000 + `pnpm test:e2e`.
+
+**Archivos involucrados:** `e2e/tests/*.spec.ts`, `e2e/pages/*.page.ts`, `e2e/fixtures/seed.fixture.ts`, `e2e/fixtures/auth.fixture.ts`
 
 ### 2. i18n: Portugués (esfuerzo bajo, impacto medio)
 
@@ -702,6 +703,7 @@ Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → B
 - [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
 - [x] Tests de componentes y utils (474 tests pasando, 100% pass rate) — incluye global-search (23 tests) y local-date.adapter (4 tests)
 - [x] E2E tests: 16 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
+- [x] E2E tests contra backend real: 59/59 passing (14/08/2026) — fixes de credenciales, seed, y selectores
 - [x] Google Maps + WhatsApp + Tap-to-Call (iconos en CopyFieldComponent, InfoTabComponent, TechWorkOrderDetail, ClientDetail)
 - [x] LocalDateAdapter (adaptador de fecha local para prevención de desfasajes GMT) — PR #214
 - [x] Swipe entre tabs y reordenamiento de acciones en detalle de orden mobile — PR #213

@@ -8,7 +8,7 @@ export class WorkOrdersPage {
   }
 
   async getOrderCount() {
-    return this.page.locator('mat-row').count();
+    return this.page.locator('tr[mat-row]').count();
   }
 
   async clickCreate() {

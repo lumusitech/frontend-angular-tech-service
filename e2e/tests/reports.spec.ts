@@ -23,7 +23,7 @@ test.describe('Reports', () => {
   test('should display KPI cards', async ({ adminPage }) => {
     await adminPage.goto('/admin/reports');
     await adminPage.waitForTimeout(2000);
-    const kpiCards = await adminPage.locator('[class*="kpi"], [class*="card"]').count();
+    const kpiCards = await adminPage.locator('[class*="border-l-4"]').count();
     expect(kpiCards).toBeGreaterThan(0);
   });
 
