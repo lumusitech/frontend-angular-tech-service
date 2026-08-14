@@ -398,9 +398,12 @@ pnpm test                  # Unit tests (Vitest)
 pnpm test:e2e              # E2E tests (Playwright)
 pnpm test:e2e:ui           # E2E con Playwright UI
 pnpm test:mutate           # Mutation testing (Stryker)
-pnpm lint                  # Linter
+pnpm lint                  # Linter (ESLint + Angular ESLint + Prettier como regla de formato)
+pnpm lint --fix            # Auto-corrige errores de formato y reglas fixable
 pnpm sync:types            # Generar interfaces desde Swagger del backend
 ```
+
+> **Lint y formato:** `pnpm lint` es la única puerta de formato del proyecto. Incluye ESLint (TypeScript + templates Angular) y Prettier como regla `prettier/prettier` — no se necesita correr `prettier` por separado. Correr `pnpm lint --fix` antes de commitear para formatear automáticamente. Config: `eslint.config.js` (flat config), `.prettierrc` (printWidth 100, single quotes).
 
 
 ---
