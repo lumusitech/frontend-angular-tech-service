@@ -11,6 +11,7 @@ import {
   WorkOrderTask,
   UpdateWorkOrderDto,
 } from '../../core/models/work-order.interfaces';
+import { NotificationType } from '../../core/models/notification.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -218,10 +219,14 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
                           ? 'bg-emerald-500 border-emerald-500 text-white'
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-500 dark:hover:border-emerald-400 bg-white dark:bg-gray-700/50'
                       "
-                      [title]="task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'"
+                      [title]="
+                        task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'
+                      "
                     >
                       @if (task.isCompleted) {
-                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold">check</mat-icon>
+                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold"
+                          >check</mat-icon
+                        >
                       }
                     </button>
 
@@ -247,9 +252,15 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
 
                       @if (task.assignedTo) {
                         <div class="mt-2 flex items-center">
-                          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50">
-                            <mat-icon class="!w-3.5 !h-3.5 !text-[13px] !leading-none text-blue-500">person</mat-icon>
-                            <span class="truncate max-w-[160px] sm:max-w-[220px]">{{ task.assignedTo.name }}</span>
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50"
+                          >
+                            <mat-icon class="!w-3.5 !h-3.5 !text-[13px] !leading-none text-blue-500"
+                              >person</mat-icon
+                            >
+                            <span class="truncate max-w-[160px] sm:max-w-[220px]">{{
+                              task.assignedTo.name
+                            }}</span>
                           </span>
                         </div>
                       }
@@ -257,7 +268,9 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
                   </div>
 
                   <!-- Right: Actions (Edit / Delete) -->
-                  <div class="flex items-center justify-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/50 dark:border-gray-600/40">
+                  <div
+                    class="flex items-center justify-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/50 dark:border-gray-600/40"
+                  >
                     <button
                       mat-icon-button
                       (click)="onEditTask(order, task)"
@@ -404,7 +417,9 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
                   [title]="'common.whatsapp' | translate"
                 >
                   <svg class="w-5 h-5 shrink-0 fill-current" viewBox="0 0 24 24">
-                    <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zm-7.01 15.24h-.004c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.198 8.198 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.188 8.188 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.21 8.24zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.15.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.76 2.69 4.26 3.77.6.26 1.06.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.11-.23-.17-.48-.29z"/>
+                    <path
+                      d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zm-7.01 15.24h-.004c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.198 8.198 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.188 8.188 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.21 8.24zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.15.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.76 2.69 4.26 3.77.6.26 1.06.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.11-.23-.17-.48-.29z"
+                    />
                   </svg>
                 </a>
               </div>
@@ -495,7 +510,7 @@ export class TechWorkOrderDetailComponent {
   readonly unassigned = computed(() => {
     const notification = this.websocketService.lastNotification();
     return (
-      notification?.type === ('work_order.technician_unassigned' as any) &&
+      notification?.type === NotificationType.WORK_ORDER_TECHNICIAN_UNASSIGNED &&
       notification?.referenceId === this.orderId
     );
   });

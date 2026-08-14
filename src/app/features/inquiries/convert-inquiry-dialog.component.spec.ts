@@ -62,9 +62,13 @@ describe('ConvertInquiryDialogComponent', () => {
     toast = createToastMock();
     convertSpy = vi.fn().mockReturnValue(of(inquiry));
     createClientSpy = vi.fn().mockReturnValue(of({ id: 'c-1' }));
-    getAllClientsSpy = vi.fn().mockReturnValue(
-      of(createPaginated([{ id: 'c-1', name: 'Cliente Ex', email: 'ex@test.com', phone: '999' }])),
-    );
+    getAllClientsSpy = vi
+      .fn()
+      .mockReturnValue(
+        of(
+          createPaginated([{ id: 'c-1', name: 'Cliente Ex', email: 'ex@test.com', phone: '999' }]),
+        ),
+      );
 
     TestBed.configureTestingModule({
       imports: [ConvertInquiryDialogComponent],
@@ -85,9 +89,9 @@ describe('ConvertInquiryDialogComponent', () => {
         {
           provide: ServiceTypesService,
           useValue: {
-            getAll: vi.fn().mockReturnValue(
-              of(createPaginated([{ id: 'st-1', name: 'Reparación' }])),
-            ),
+            getAll: vi
+              .fn()
+              .mockReturnValue(of(createPaginated([{ id: 'st-1', name: 'Reparación' }]))),
           },
         },
         { provide: ToastService, useValue: toast },

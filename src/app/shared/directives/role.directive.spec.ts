@@ -5,25 +5,25 @@ import { RoleDirective } from './role.directive';
 import { Component } from '@angular/core';
 
 @Component({
-  template: `<div *role="'admin'">Admin Content</div>`,
+  template: `<div *appRole="'admin'">Admin Content</div>`,
   imports: [RoleDirective],
 })
 class TestAdminComponent {}
 
 @Component({
-  template: `<div *role="'technician'">Tech Content</div>`,
+  template: `<div *appRole="'technician'">Tech Content</div>`,
   imports: [RoleDirective],
 })
 class TestTechComponent {}
 
 @Component({
-  template: `<div *role="'admin,technician'">Admin or Tech Content</div>`,
+  template: `<div *appRole="'admin,technician'">Admin or Tech Content</div>`,
   imports: [RoleDirective],
 })
 class TestMultiRoleComponent {}
 
 @Component({
-  template: `<div *role="'seller'">Seller Content</div>`,
+  template: `<div *appRole="'seller'">Seller Content</div>`,
   imports: [RoleDirective],
 })
 class TestSellerComponent {}

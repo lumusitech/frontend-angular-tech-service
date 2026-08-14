@@ -22,7 +22,11 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
       <div class="max-w-6xl mx-auto px-4 h-18 sm:h-20 flex items-center justify-between gap-3">
         <!-- Logo de marca -->
         <a routerLink="/" class="flex items-center gap-2.5 group focus:outline-hidden">
-          <app-brand-logo variant="full" size="w-7 h-7 sm:w-8 sm:h-8" customClass="text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform" />
+          <app-brand-logo
+            variant="full"
+            size="w-7 h-7 sm:w-8 sm:h-8"
+            customClass="text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform"
+          />
           <span class="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
             Tech Service
           </span>
@@ -71,7 +75,9 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
             class="md:hidden w-10 h-10 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center"
             [title]="'landing.header.track' | translate"
           >
-            <mat-icon class="!w-5 !h-5 !text-xl flex items-center justify-center">pin_drop</mat-icon>
+            <mat-icon class="!w-5 !h-5 !text-xl flex items-center justify-center"
+              >pin_drop</mat-icon
+            >
           </a>
 
           <!-- Botón Iniciar Sesión -->

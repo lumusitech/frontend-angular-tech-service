@@ -2,6 +2,17 @@ import { Component, input } from '@angular/core';
 import { StatusLabelPipe } from '../../pipes/status-label.pipe';
 import { StatusClassPipe } from '../../pipes/status-class.pipe';
 
+export type StatusBadgeType =
+  | 'workOrderStatus'
+  | 'workOrderPriority'
+  | 'paymentStatus'
+  | 'paymentMethod'
+  | 'expenseCategory'
+  | 'noteType'
+  | 'activeInactive'
+  | 'invoiceStatus'
+  | 'invoiceType';
+
 @Component({
   selector: 'app-status-badge',
   imports: [StatusLabelPipe, StatusClassPipe],
@@ -16,15 +27,5 @@ import { StatusClassPipe } from '../../pipes/status-class.pipe';
 })
 export class StatusBadgeComponent {
   value = input.required<string | boolean>();
-  type = input.required<
-    | 'workOrderStatus'
-    | 'workOrderPriority'
-    | 'paymentStatus'
-    | 'paymentMethod'
-    | 'expenseCategory'
-    | 'noteType'
-    | 'activeInactive'
-    | 'invoiceStatus'
-    | 'invoiceType'
-  >();
+  type = input.required<StatusBadgeType>();
 }

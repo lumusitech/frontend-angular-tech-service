@@ -12,7 +12,10 @@ export class SuppliersPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nuevo Proveedor"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nuevo Proveedor"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async getRowCount(): Promise<number> {

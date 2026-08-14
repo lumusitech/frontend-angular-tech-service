@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,38 +28,56 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
         @let orders = result.data;
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+          >
             <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ orders.length }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Órdenes totales</p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+          >
             <p class="text-2xl font-bold text-yellow-600">{{ pendingCount() }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pendientes</p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+          >
             <p class="text-2xl font-bold text-blue-600">{{ inProgressCount() }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">En progreso</p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+          >
             <p class="text-2xl font-bold text-green-600">{{ completedCount() }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Completadas</p>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
+        >
           <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Órdenes recientes</h2>
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Órdenes recientes
+            </h2>
           </div>
           <div class="divide-y divide-gray-200 dark:divide-gray-700">
             @for (order of orders.slice(0, 5); track order.id) {
-              <a [routerLink]="['/seller/orders']"
-                 class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <a
+                [routerLink]="['/seller/orders']"
+                class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
                 <div>
-                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ order.trackingCode }}</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ order.trackingCode }}
+                  </p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">{{ order.client.name }}</p>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full font-medium"
-                      [class]="statusClass(order.status)">
+                <span
+                  class="text-xs px-2 py-0.5 rounded-full font-medium"
+                  [class]="statusClass(order.status)"
+                >
                   {{ order.status }}
                 </span>
               </a>
@@ -75,18 +93,24 @@ export class SellerDashboardComponent {
 
   private readonly sellerId = computed(() => this.authService.user()?.id);
 
-  readonly ordersResource = httpResource<PaginatedResponse<WorkOrder>>(
-    () => this.sellerId() ? `/api/work-orders?sellerId=${this.sellerId()}&limit=100` : undefined,
+  readonly ordersResource = httpResource<PaginatedResponse<WorkOrder>>(() =>
+    this.sellerId() ? `/api/work-orders?sellerId=${this.sellerId()}&limit=100` : undefined,
   );
 
-  readonly pendingCount = computed(() =>
-    this.ordersResource.value()?.data.filter((o) => o.status === 'pending' || o.status === 'assigned').length ?? 0,
+  readonly pendingCount = computed(
+    () =>
+      this.ordersResource
+        .value()
+        ?.data.filter((o) => o.status === 'pending' || o.status === 'assigned').length ?? 0,
   );
-  readonly inProgressCount = computed(() =>
-    this.ordersResource.value()?.data.filter((o) => o.status === 'in_progress').length ?? 0,
+  readonly inProgressCount = computed(
+    () => this.ordersResource.value()?.data.filter((o) => o.status === 'in_progress').length ?? 0,
   );
-  readonly completedCount = computed(() =>
-    this.ordersResource.value()?.data.filter((o) => o.status === 'completed' || o.status === 'delivered').length ?? 0,
+  readonly completedCount = computed(
+    () =>
+      this.ordersResource
+        .value()
+        ?.data.filter((o) => o.status === 'completed' || o.status === 'delivered').length ?? 0,
   );
 
   statusClass(status: string): string {

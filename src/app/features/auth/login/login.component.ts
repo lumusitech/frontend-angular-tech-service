@@ -1,17 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { BrandLogoComponent } from '../../../shared/components/brand-logo/brand-logo.component';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, BrandLogoComponent],
   template: `
     <div class="min-h-svh flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div class="w-full max-w-md">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
           <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <app-brand-logo
+              variant="full"
+              size="w-12 h-12 mx-auto"
+              customClass="text-[var(--color-primary)] dark:text-blue-400"
+            />
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-4">
               {{ 'auth.appTitle' | translate }}
             </h1>
             <p class="text-gray-500 dark:text-gray-400 mt-2">

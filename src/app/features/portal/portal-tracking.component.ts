@@ -9,19 +9,18 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
 
 @Component({
   selector: 'app-portal-tracking',
-  imports: [
-    MatIconModule,
-    PortalSearchComponent,
-    PortalResultComponent,
-    BrandLogoComponent,
-  ],
+  imports: [MatIconModule, PortalSearchComponent, PortalResultComponent, BrandLogoComponent],
   template: `
     <div class="min-h-svh bg-gray-50 dark:bg-gray-950 flex flex-col">
-      <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
+      <header
+        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50"
+      >
         <div class="max-w-xl mx-auto px-4 h-18 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <app-brand-logo variant="full" size="w-7 h-7" />
-            <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tech Service</span>
+            <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight"
+              >Tech Service</span
+            >
           </div>
           <button
             (click)="themeService.toggle()"
@@ -40,7 +39,7 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
           @if (!code()) {
             <app-portal-search (track)="onTrack($event)" />
           } @else {
-            <app-portal-result [code]="code()" (search)="onSearch()" />
+            <app-portal-result [code]="code()" (searchRequested)="onSearch()" />
           }
         </div>
       </main>

@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpErrorResponse, provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  provideHttpClient,
+  withInterceptors,
+} from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { authInterceptor } from './auth.interceptor';
@@ -10,7 +15,6 @@ describe('authInterceptor', () => {
   let httpClient: HttpClient;
   let httpMock: HttpTestingController;
   let authService: AuthService;
-  let toastService: ToastService;
   let navigateSpy: ReturnType<typeof vi.fn>;
   let showToastSpy: ReturnType<typeof vi.fn>;
 
@@ -40,7 +44,6 @@ describe('authInterceptor', () => {
     httpClient = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
     authService = TestBed.inject(AuthService);
-    toastService = TestBed.inject(ToastService);
   });
 
   afterEach(() => {
@@ -116,7 +119,7 @@ describe('authInterceptor', () => {
       (authService.getToken as ReturnType<typeof vi.fn>).mockReturnValue('expired-token');
 
       httpClient.get('/api/test').subscribe({
-        error: () => {},
+        error: () => undefined,
       });
 
       const req = httpMock.expectOne('/api/test');

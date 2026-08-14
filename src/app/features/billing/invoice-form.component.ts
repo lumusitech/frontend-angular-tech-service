@@ -61,8 +61,12 @@ interface InvoiceFormModel {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.concept' | translate }}</mat-label>
             <mat-select [formField]="invoiceForm.concept">
-              <mat-option value="services">{{ 'billing.concepts.services' | translate }}</mat-option>
-              <mat-option value="products">{{ 'billing.concepts.products' | translate }}</mat-option>
+              <mat-option value="services">{{
+                'billing.concepts.services' | translate
+              }}</mat-option>
+              <mat-option value="products">{{
+                'billing.concepts.products' | translate
+              }}</mat-option>
               <mat-option value="both">{{ 'billing.concepts.both' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -83,7 +87,9 @@ interface InvoiceFormModel {
             }
           </mat-form-field>
           @if (showClientDropdown() && filteredClients().length > 0) {
-            <div class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div
+              class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+            >
               @for (client of filteredClients(); track client.id) {
                 <button
                   type="button"
@@ -101,29 +107,31 @@ interface InvoiceFormModel {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.clientCuit' | translate }}</mat-label>
-            <input
-              matInput
-              [formField]="invoiceForm.clientCuit"
-            />
+            <input matInput [formField]="invoiceForm.clientCuit" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.clientIvaCondition' | translate }}</mat-label>
             <mat-select [formField]="invoiceForm.clientIvaCondition">
-              <mat-option value="consumidor_final">{{ 'billing.ivaConditions.consumidorFinal' | translate }}</mat-option>
-              <mat-option value="responsable_inscripto">{{ 'billing.ivaConditions.responsableInscripto' | translate }}</mat-option>
-              <mat-option value="monotributo">{{ 'billing.ivaConditions.monotributo' | translate }}</mat-option>
-              <mat-option value="exento">{{ 'billing.ivaConditions.exento' | translate }}</mat-option>
+              <mat-option value="consumidor_final">{{
+                'billing.ivaConditions.consumidorFinal' | translate
+              }}</mat-option>
+              <mat-option value="responsable_inscripto">{{
+                'billing.ivaConditions.responsableInscripto' | translate
+              }}</mat-option>
+              <mat-option value="monotributo">{{
+                'billing.ivaConditions.monotributo' | translate
+              }}</mat-option>
+              <mat-option value="exento">{{
+                'billing.ivaConditions.exento' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'billing.clientAddress' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="invoiceForm.clientAddress"
-          />
+          <input matInput [formField]="invoiceForm.clientAddress" />
           @if (invoiceForm.clientAddress().invalid() && invoiceForm.clientAddress().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -132,12 +140,7 @@ interface InvoiceFormModel {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.subtotal' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="invoiceForm.subtotal"
-              step="0.01"
-            />
+            <input matInput type="number" [formField]="invoiceForm.subtotal" step="0.01" />
             @if (invoiceForm.subtotal().invalid() && invoiceForm.subtotal().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
@@ -145,22 +148,12 @@ interface InvoiceFormModel {
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.ivaAmount' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="invoiceForm.ivaAmount"
-              step="0.01"
-            />
+            <input matInput type="number" [formField]="invoiceForm.ivaAmount" step="0.01" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'billing.total' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="invoiceForm.total"
-              step="0.01"
-            />
+            <input matInput type="number" [formField]="invoiceForm.total" step="0.01" />
             @if (invoiceForm.total().invalid() && invoiceForm.total().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
@@ -182,7 +175,9 @@ interface InvoiceFormModel {
             }
           </mat-form-field>
           @if (showWorkOrderDropdown() && filteredWorkOrders().length > 0) {
-            <div class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div
+              class="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+            >
               @for (wo of filteredWorkOrders(); track wo.id) {
                 <button
                   type="button"
@@ -255,21 +250,17 @@ export class InvoiceFormComponent {
   private clientSearch = signal('');
   private workOrderSearch = signal('');
 
-  readonly clientsResource = httpResource<PaginatedResponse<Client>>(
-    () => {
-      const term = this.clientSearch();
-      if (!term || term.length < 2) return undefined;
-      return { url: '/api/clients', params: { search: term, limit: '5' } };
-    },
-  );
+  readonly clientsResource = httpResource<PaginatedResponse<Client>>(() => {
+    const term = this.clientSearch();
+    if (!term || term.length < 2) return undefined;
+    return { url: '/api/clients', params: { search: term, limit: '5' } };
+  });
 
-  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(
-    () => {
-      const term = this.workOrderSearch();
-      if (!term || term.length < 2) return undefined;
-      return { url: '/api/work-orders', params: { search: term, limit: '10' } };
-    },
-  );
+  readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => {
+    const term = this.workOrderSearch();
+    if (!term || term.length < 2) return undefined;
+    return { url: '/api/work-orders', params: { search: term, limit: '10' } };
+  });
 
   readonly filteredClients = computed(() => {
     if (this.clientsResource.hasValue()) {
@@ -302,7 +293,7 @@ export class InvoiceFormComponent {
 
   selectClient(client: Client): void {
     this.selectedClientId.set(client.id);
-    this.model.update(m => ({
+    this.model.update((m) => ({
       ...m,
       clientName: client.name,
       clientCuit: client.cuit ?? '',
@@ -326,7 +317,7 @@ export class InvoiceFormComponent {
 
   selectWorkOrder(wo: WorkOrder): void {
     this.selectedWorkOrderId.set(wo.id);
-    this.model.update(m => ({ ...m, workOrderDisplay: wo.trackingCode }));
+    this.model.update((m) => ({ ...m, workOrderDisplay: wo.trackingCode }));
     this.showWorkOrderDropdown.set(false);
   }
 
@@ -342,7 +333,7 @@ export class InvoiceFormComponent {
       clientName: m.clientName,
       clientCuit: m.clientCuit || undefined,
       clientAddress: m.clientAddress,
-      clientIvaCondition: m.clientIvaCondition as any,
+      clientIvaCondition: m.clientIvaCondition as CreateInvoiceDto['clientIvaCondition'],
       subtotal: parseFloat(m.subtotal) || 0,
       ivaAmount: parseFloat(m.ivaAmount) || 0,
       total: parseFloat(m.total) || 0,

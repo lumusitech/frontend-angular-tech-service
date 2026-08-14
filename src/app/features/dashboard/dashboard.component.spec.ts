@@ -32,11 +32,16 @@ describe('DashboardComponent', () => {
       averageTicketChange: 3,
     },
     monthlyTrend: { labels: ['Jan', 'Feb'], income: [30000, 40000], expenses: [20000, 25000] },
-    workOrdersByStatus: [{ status: 'pending', count: 3 }, { status: 'completed', count: 10 }],
+    workOrdersByStatus: [
+      { status: 'pending', count: 3 },
+      { status: 'completed', count: 10 },
+    ],
     topServices: [{ name: 'Installation', count: 8, revenue: 40000 }],
     paymentMethodDistribution: [{ method: 'cash', count: 5, total: 25000 }],
     topClients: [{ id: 'c-1', name: 'Client A', totalOrders: 5, totalPaid: 25000 }],
-    technicianPerformance: [{ id: 't-1', name: 'Tech A', completed: 8, avgTime: 2.5, revenue: 40000 }],
+    technicianPerformance: [
+      { id: 't-1', name: 'Tech A', completed: 8, avgTime: 2.5, revenue: 40000 },
+    ],
     workOrdersByPriority: [{ priority: 'high', count: 3 }],
     trends: { incomeTrend: 10, expenseTrend: -5, profitTrend: 15, ordersTrend: 8 },
   };
@@ -53,9 +58,21 @@ describe('DashboardComponent', () => {
         {
           provide: DashboardLayoutService,
           useValue: {
-            layout: signal(['kpis', 'charts', 'quickActions', 'pendingItems', 'inquiries', 'topClients']),
+            layout: signal([
+              'kpis',
+              'charts',
+              'quickActions',
+              'pendingItems',
+              'inquiries',
+              'topClients',
+            ]),
             widgets: signal({
-              kpis: true, charts: true, quickActions: true, pendingItems: true, inquiries: true, topClients: true,
+              kpis: true,
+              charts: true,
+              quickActions: true,
+              pendingItems: true,
+              inquiries: true,
+              topClients: true,
             }),
             reorder: vi.fn(),
             reset: vi.fn(),
@@ -65,9 +82,14 @@ describe('DashboardComponent', () => {
           provide: BusinessSettingsService,
           useValue: {
             settings: signal({
-              id: '1', businessName: 'Tech Service', logoUrl: 'https://example.com/logo.png',
-              primaryColor: '#1E40AF', secondaryColor: '#059669',
-              address: '123 Main St', phone: '1234567890', email: 'info@test.com',
+              id: '1',
+              businessName: 'Tech Service',
+              logoUrl: 'https://example.com/logo.png',
+              primaryColor: '#1E40AF',
+              secondaryColor: '#059669',
+              address: '123 Main St',
+              phone: '1234567890',
+              email: 'info@test.com',
             }),
           },
         },
@@ -127,17 +149,25 @@ describe('DashboardComponent', () => {
       TestBed.configureTestingModule({
         imports: [DashboardComponent],
         providers: [
-          { provide: DashboardService, useValue: { getSummary: getSummarySpy.mockReturnValue(of(mockSummary)) } },
+          {
+            provide: DashboardService,
+            useValue: { getSummary: getSummarySpy.mockReturnValue(of(mockSummary)) },
+          },
           { provide: Router, useValue: { navigate: navigateSpy } },
           {
             provide: DashboardLayoutService,
             useValue: {
-              layout: signal(['kpis']), widgets: signal({ kpis: true }),
-              reorder: vi.fn(), reset: vi.fn(),
+              layout: signal(['kpis']),
+              widgets: signal({ kpis: true }),
+              reorder: vi.fn(),
+              reset: vi.fn(),
             },
           },
           { provide: BusinessSettingsService, useValue: { settings: signal(null) } },
-          { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((key: string) => key) } },
+          {
+            provide: TranslationService,
+            useValue: { instant: vi.fn().mockImplementation((key: string) => key) },
+          },
         ],
       });
       const freshFixture = TestBed.createComponent(DashboardComponent);
@@ -208,9 +238,14 @@ describe('DashboardComponent', () => {
 
     it('should update colors when business settings change', () => {
       const settingsSignal = signal({
-        id: '1', businessName: 'Test', logoUrl: '',
-        primaryColor: '#FF0000', secondaryColor: '#00FF00',
-        address: '', phone: '', email: '',
+        id: '1',
+        businessName: 'Test',
+        logoUrl: '',
+        primaryColor: '#FF0000',
+        secondaryColor: '#00FF00',
+        address: '',
+        phone: '',
+        email: '',
       });
 
       getSummarySpy = vi.fn().mockReturnValue(of(mockSummary));
@@ -246,9 +281,14 @@ describe('DashboardComponent', () => {
       expect(freshComponent.secondaryColor()).toBe('#00FF00');
 
       settingsSignal.set({
-        id: '1', businessName: 'Test', logoUrl: '',
-        primaryColor: '#0000FF', secondaryColor: '#FFFF00',
-        address: '', phone: '', email: '',
+        id: '1',
+        businessName: 'Test',
+        logoUrl: '',
+        primaryColor: '#0000FF',
+        secondaryColor: '#FFFF00',
+        address: '',
+        phone: '',
+        email: '',
       });
 
       expect(freshComponent.primaryColor()).toBe('#0000FF');

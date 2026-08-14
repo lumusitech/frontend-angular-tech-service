@@ -63,10 +63,7 @@ interface PendingItemFormModel {
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.titleColumn' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="pendingItemForm.title"
-          />
+          <input matInput [formField]="pendingItemForm.title" />
           @if (pendingItemForm.title().invalid() && pendingItemForm.title().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -74,21 +71,25 @@ interface PendingItemFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'pendingItems.description' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formField]="pendingItemForm.description"
-            rows="3"
-          ></textarea>
+          <textarea matInput [formField]="pendingItemForm.description" rows="3"></textarea>
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'pendingItems.type' | translate }}</mat-label>
             <mat-select [formField]="pendingItemForm.type">
-              <mat-option value="work_order">{{ 'pendingItems.types.workOrder' | translate }}</mat-option>
-              <mat-option value="inquiry">{{ 'pendingItems.types.inquiry' | translate }}</mat-option>
-              <mat-option value="maintenance">{{ 'pendingItems.types.maintenance' | translate }}</mat-option>
-              <mat-option value="follow_up">{{ 'pendingItems.types.followUp' | translate }}</mat-option>
+              <mat-option value="work_order">{{
+                'pendingItems.types.workOrder' | translate
+              }}</mat-option>
+              <mat-option value="inquiry">{{
+                'pendingItems.types.inquiry' | translate
+              }}</mat-option>
+              <mat-option value="maintenance">{{
+                'pendingItems.types.maintenance' | translate
+              }}</mat-option>
+              <mat-option value="follow_up">{{
+                'pendingItems.types.followUp' | translate
+              }}</mat-option>
               <mat-option value="other">{{ 'pendingItems.types.other' | translate }}</mat-option>
             </mat-select>
             @if (pendingItemForm.type().invalid() && pendingItemForm.type().touched()) {
@@ -100,9 +101,13 @@ interface PendingItemFormModel {
             <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
             <mat-select [formField]="pendingItemForm.priority">
               <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{ 'pendingItems.priorities.medium' | translate }}</mat-option>
+              <mat-option value="medium">{{
+                'pendingItems.priorities.medium' | translate
+              }}</mat-option>
               <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
-              <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
+              <mat-option value="urgent">{{
+                'pendingItems.priorities.urgent' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -124,10 +129,18 @@ interface PendingItemFormModel {
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'common.status' | translate }}</mat-label>
             <mat-select [formField]="pendingItemForm.status">
-              <mat-option value="pending">{{ 'pendingItems.statuses.pending' | translate }}</mat-option>
-              <mat-option value="in_progress">{{ 'pendingItems.statuses.inProgress' | translate }}</mat-option>
-              <mat-option value="completed">{{ 'pendingItems.statuses.completed' | translate }}</mat-option>
-              <mat-option value="cancelled">{{ 'pendingItems.statuses.cancelled' | translate }}</mat-option>
+              <mat-option value="pending">{{
+                'pendingItems.statuses.pending' | translate
+              }}</mat-option>
+              <mat-option value="in_progress">{{
+                'pendingItems.statuses.inProgress' | translate
+              }}</mat-option>
+              <mat-option value="completed">{{
+                'pendingItems.statuses.completed' | translate
+              }}</mat-option>
+              <mat-option value="cancelled">{{
+                'pendingItems.statuses.cancelled' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         }
@@ -136,7 +149,12 @@ interface PendingItemFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || pendingItemForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || pendingItemForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -150,7 +168,7 @@ export class PendingItemFormComponent {
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly dueDateValue = signal<Date | null>(
-    this.data.item?.dueDate ? new Date(this.data.item.dueDate) : null
+    this.data.item?.dueDate ? new Date(this.data.item.dueDate) : null,
   );
 
   readonly model = signal<PendingItemFormModel>({

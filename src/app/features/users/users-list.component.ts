@@ -26,7 +26,10 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { UserFormComponent } from './user-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -67,12 +70,25 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.search' | translate }}</mat-label>
-              <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-44">
@@ -80,7 +96,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               <mat-select [value]="roleFilter()" (selectionChange)="roleFilter.set($event.value)">
                 <mat-option value="">{{ 'common.all' | translate }}</mat-option>
                 <mat-option value="admin">{{ 'users.roles.admin' | translate }}</mat-option>
-                <mat-option value="technician">{{ 'users.roles.technician' | translate }}</mat-option>
+                <mat-option value="technician">{{
+                  'users.roles.technician' | translate
+                }}</mat-option>
                 <mat-option value="seller">{{ 'users.roles.seller' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -108,17 +126,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             <app-mobile-card
               [class.highlight-pulse]="user.id === highlightedId() && highlightApplied()"
               [title]="user.name"
-              [status]="user.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
+              [status]="
+                user.isActive
+                  ? translationService.instant('common.active')
+                  : translationService.instant('common.inactive')
+              "
               [statusType]="$any('activeInactive')"
               [fields]="getUserFields(user)"
               [canSwipe]="true"
               [onEdit]="onEditSwipe(user)"
               [onDelete]="onDeleteSwipe(user)"
             >
-              <button mat-icon-button (click)="openEditDialog(user); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(user); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteUser(user); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -126,48 +157,92 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
-          <table mat-table matSort matSortDisableClear [dataSource]="usersResource.value().data" (matSortChange)="onSortChange($event)" class="w-full">
+        <div
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto"
+        >
+          <table
+            mat-table
+            matSort
+            matSortDisableClear
+            [dataSource]="usersResource.value().data"
+            (matSortChange)="onSortChange($event)"
+            class="w-full"
+          >
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'users.name' | translate }}
               </th>
-              <td mat-cell *matCellDef="let user" class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
+              <td
+                mat-cell
+                *matCellDef="let user"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium"
+              >
                 {{ user.name }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'users.email' | translate }}
               </th>
-              <td mat-cell *matCellDef="let user" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              <td
+                mat-cell
+                *matCellDef="let user"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ user.email }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'users.phone' | translate }}
               </th>
-              <td mat-cell *matCellDef="let user" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              <td
+                mat-cell
+                *matCellDef="let user"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ user.phone || '—' }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'users.role' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3">
                 <span [class]="getRoleChipClass(user.role)">
-                  {{ ('users.roles.' + user.role) | translate }}
+                  {{ 'users.roles.' + user.role | translate }}
                 </span>
               </td>
             </ng-container>
 
             <ng-container matColumnDef="isActive">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'common.status' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3">
@@ -176,21 +251,39 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             </ng-container>
 
             <ng-container matColumnDef="createdAt">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let user" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              <td
+                mat-cell
+                *matCellDef="let user"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ user.createdAt | relativeDate }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let user" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="userActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="userActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #userActionsMenu="matMenu">
@@ -203,7 +296,10 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
                       <span>{{ 'common.delete' | translate }}</span>
                     </button>
                     @if (user.role === 'technician') {
-                      <button mat-menu-item (click)="viewTechnicianReport(user.id); $event.stopPropagation()">
+                      <button
+                        mat-menu-item
+                        (click)="viewTechnicianReport(user.id); $event.stopPropagation()"
+                      >
                         <mat-icon>assessment</mat-icon>
                         <span>{{ 'users.viewTechnicianReport' | translate }}</span>
                       </button>
@@ -214,7 +310,13 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" [class.highlight-pulse]="highlightedId() === row.id && highlightApplied()"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="openEditDialog(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+              [class.highlight-pulse]="highlightedId() === row.id && highlightApplied()"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -244,7 +346,9 @@ export class UsersListComponent {
   readonly sortOrder = signal<'asc' | 'desc'>('desc');
   readonly searchFilter = signal<string>(this.route.snapshot.queryParamMap.get('search') ?? '');
   readonly roleFilter = signal('');
-  readonly routeHighlight = signal<string | null>(this.route.snapshot.queryParamMap.get('highlight'));
+  readonly routeHighlight = signal<string | null>(
+    this.route.snapshot.queryParamMap.get('highlight'),
+  );
   readonly highlightApplied = signal(false);
   readonly previousPath = signal('');
 
@@ -298,7 +402,6 @@ export class UsersListComponent {
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.roleFilter() !== '';
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -361,9 +464,17 @@ export class UsersListComponent {
   getUserFields(user: User): MobileCardField[] {
     return [
       { label: this.translationService.instant('users.email'), value: user.email, type: 'email' },
-      { label: this.translationService.instant('users.phone'), value: user.phone || '-', type: 'phone' },
+      {
+        label: this.translationService.instant('users.phone'),
+        value: user.phone || '-',
+        type: 'phone',
+      },
       { label: this.translationService.instant('users.role'), value: user.role },
-      { label: this.translationService.instant('common.created'), value: user.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('common.created'),
+        value: user.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -382,11 +493,16 @@ export class UsersListComponent {
       if (confirmed) {
         this.usersService.delete(user.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.usersResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -399,10 +515,10 @@ export class UsersListComponent {
   }
 
   onEditSwipe(user: User): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(user);
+    return () => this.openEditDialog(user);
   }
 
   onDeleteSwipe(user: User): (event: Event) => void {
-    return (_event: Event) => this.deleteUser(user);
+    return () => this.deleteUser(user);
   }
 }

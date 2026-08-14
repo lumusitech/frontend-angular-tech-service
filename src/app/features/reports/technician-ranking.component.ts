@@ -8,7 +8,10 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   selector: 'app-technician-ranking',
   imports: [DecimalPipe, CurrencyArsPipe, TranslatePipe],
   template: `
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6" [style.border-left-color]="'var(--color-primary)'">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6"
+      [style.border-left-color]="'var(--color-primary)'"
+    >
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
         {{ 'reports.technicianRanking' | translate }}
       </h3>
@@ -16,11 +19,31 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th class="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">#</th>
-              <th class="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ 'technician.title' | translate }}</th>
-              <th class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.completedOrders' | translate }}</th>
-              <th class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.avgResolution' | translate }}</th>
-              <th class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalRevenue' | translate }}</th>
+              <th
+                class="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                #
+              </th>
+              <th
+                class="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'technician.title' | translate }}
+              </th>
+              <th
+                class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'reports.completedOrders' | translate }}
+              </th>
+              <th
+                class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'reports.avgResolution' | translate }}
+              </th>
+              <th
+                class="text-right py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'reports.totalRevenue' | translate }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -31,8 +54,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               >
                 <td class="py-2.5 text-gray-400 dark:text-gray-500 font-bold">{{ i + 1 }}</td>
                 <td class="py-2.5 font-medium text-gray-900 dark:text-gray-100">{{ tech.name }}</td>
-                <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.completedOrders }}</td>
-                <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">{{ tech.averageResolutionDays | number: '1.1-1' }}d</td>
+                <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">
+                  {{ tech.completedOrders }}
+                </td>
+                <td class="py-2.5 text-right text-gray-900 dark:text-gray-100">
+                  {{ tech.averageResolutionDays | number: '1.1-1' }}d
+                </td>
                 <td class="py-2.5 text-right font-medium text-gray-900 dark:text-gray-100">
                   {{ tech.totalRevenue | currencyArs: '1.2-2' }}
                 </td>

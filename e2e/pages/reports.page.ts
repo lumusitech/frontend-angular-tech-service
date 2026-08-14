@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class ReportsPage {
   constructor(private page: Page) {}
@@ -12,7 +12,9 @@ export class ReportsPage {
   }
 
   async hasExportButtons(): Promise<boolean> {
-    return (await this.page.locator('button:has-text("Exportar"), button:has-text("PDF")').count()) > 0;
+    return (
+      (await this.page.locator('button:has-text("Exportar"), button:has-text("PDF")').count()) > 0
+    );
   }
 
   async clickExportPdf() {

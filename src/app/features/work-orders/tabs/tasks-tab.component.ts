@@ -3,7 +3,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkOrderTask } from '../../../core/models/work-order.interfaces';
-import { User } from '../../../core/models/user.interfaces';
 import { WorkOrdersService } from '../../../core/services/work-orders.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -23,8 +22,12 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
         </button>
       </div>
       @if (!tasks() || tasks().length === 0) {
-        <div class="text-center py-10 px-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-          <mat-icon class="!w-10 !h-10 !text-[40px] text-gray-300 dark:text-gray-600 mb-2">task</mat-icon>
+        <div
+          class="text-center py-10 px-4 bg-gray-50/50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700"
+        >
+          <mat-icon class="!w-10 !h-10 !text-[40px] text-gray-300 dark:text-gray-600 mb-2"
+            >task</mat-icon
+          >
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
             {{ 'workOrders.tasks.noTasks' | translate }}
           </p>
@@ -51,7 +54,9 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                   [title]="task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'"
                 >
                   @if (task.isCompleted) {
-                    <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold">check</mat-icon>
+                    <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold"
+                      >check</mat-icon
+                    >
                   }
                 </button>
 
@@ -77,9 +82,15 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
                   @if (task.assignedTo) {
                     <div class="mt-2 flex items-center">
-                      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50">
-                        <mat-icon class="!w-3.5 !h-3.5 !text-[13px] !leading-none text-blue-500">person</mat-icon>
-                        <span class="truncate max-w-[160px] sm:max-w-[220px]">{{ task.assignedTo.name }}</span>
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50"
+                      >
+                        <mat-icon class="!w-3.5 !h-3.5 !text-[13px] !leading-none text-blue-500"
+                          >person</mat-icon
+                        >
+                        <span class="truncate max-w-[160px] sm:max-w-[220px]">{{
+                          task.assignedTo.name
+                        }}</span>
                       </span>
                     </div>
                   }
@@ -87,7 +98,9 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
               </div>
 
               <!-- Right: Actions (Edit / Delete) -->
-              <div class="flex items-center justify-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-700/50">
+              <div
+                class="flex items-center justify-end gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-700/50"
+              >
                 <button
                   mat-icon-button
                   (click)="onEditTask(task)"

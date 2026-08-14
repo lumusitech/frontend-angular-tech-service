@@ -30,7 +30,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideClientHydration(),
-    provideHttpClient(withInterceptors([apiResponseInterceptor, authInterceptor, loadingInterceptor])),
+    provideHttpClient(
+      withInterceptors([apiResponseInterceptor, authInterceptor, loadingInterceptor]),
+    ),
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(MatNativeDateModule),
     { provide: DateAdapter, useClass: LocalDateAdapter },

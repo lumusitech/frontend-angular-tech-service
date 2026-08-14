@@ -32,7 +32,10 @@ import { AdminBottomNavComponent } from '../../shared/components/admin-bottom-na
       @if (mobileSidebarOpen()) {
         <div
           class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          role="button"
+          tabindex="-1"
           (click)="mobileSidebarOpen.set(false)"
+          (keydown.escape)="mobileSidebarOpen.set(false)"
         ></div>
         <div class="fixed inset-y-0 left-0 z-50 lg:hidden">
           <app-sidebar

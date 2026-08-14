@@ -12,7 +12,10 @@ export class ExpensesPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nuevo Gasto"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nuevo Gasto"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async getRowCount(): Promise<number> {

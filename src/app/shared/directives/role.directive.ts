@@ -1,14 +1,14 @@
 import { Directive, inject, input, TemplateRef, ViewContainerRef, effect } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 
-@Directive({ selector: '[role]' })
+@Directive({ selector: '[appRole]' })
 export class RoleDirective {
   private readonly authService = inject(AuthService);
   private readonly templateRef = inject(TemplateRef<unknown>);
   private readonly viewContainer = inject(ViewContainerRef);
   private rendered = false;
 
-  readonly appRole = input.required<string>({ alias: 'role' });
+  readonly appRole = input.required<string>();
 
   constructor() {
     effect(() => {

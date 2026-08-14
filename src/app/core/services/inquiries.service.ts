@@ -50,7 +50,10 @@ export class InquiriesService {
     return this.http.patch<Inquiry>(`${this.apiUrl}/${id}/contact`, dto);
   }
 
-  review(id: string, dto: { adminDecision: 'approved' | 'rejected'; adminNotes?: string }): Observable<Inquiry> {
+  review(
+    id: string,
+    dto: { adminDecision: 'approved' | 'rejected'; adminNotes?: string },
+  ): Observable<Inquiry> {
     return this.http.patch<Inquiry>(`${this.apiUrl}/${id}/review`, dto);
   }
 

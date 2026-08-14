@@ -10,41 +10,75 @@ import { ThemeService } from '../../../core/services/theme.service';
   imports: [BaseChartDirective, TranslatePipe],
   styles: `
     @keyframes chartEntry {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     .chart-entry {
       animation: chartEntry 0.5s ease-out both;
     }
-    .chart-entry:nth-child(2) { animation-delay: 0.1s; }
-    .chart-entry:nth-child(3) { animation-delay: 0.2s; }
+    .chart-entry:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    .chart-entry:nth-child(3) {
+      animation-delay: 0.2s;
+    }
   `,
   template: `
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
+      <div
+        class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry"
+        [style.border-left-color]="borderColor()"
+      >
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.monthlyTrend' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions()" type="line"></canvas>
+          <canvas
+            baseChart
+            [data]="lineChartData()"
+            [options]="lineChartOptions()"
+            type="line"
+          ></canvas>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry"
+        [style.border-left-color]="borderColor()"
+      >
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.ordersByStatus' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="donutChartData()" [options]="donutChartOptions()" type="doughnut"></canvas>
+          <canvas
+            baseChart
+            [data]="donutChartData()"
+            [options]="donutChartOptions()"
+            type="doughnut"
+          ></canvas>
         </div>
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry" [style.border-left-color]="borderColor()">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 chart-entry"
+        [style.border-left-color]="borderColor()"
+      >
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {{ 'dashboard.topServices' | translate }}
         </h3>
         <div class="h-64">
-          <canvas baseChart [data]="barChartData()" [options]="barChartOptions()" type="bar"></canvas>
+          <canvas
+            baseChart
+            [data]="barChartData()"
+            [options]="barChartOptions()"
+            type="bar"
+          ></canvas>
         </div>
       </div>
     </div>
@@ -112,15 +146,7 @@ export class ChartsWidgetComponent {
       datasets: [
         {
           data: s.workOrdersByStatus.map((st) => st.count),
-          backgroundColor: [
-            pColor,
-            sColor,
-            '#FCD34D',
-            '#818CF8',
-            '#F87171',
-            '#A78BFA',
-            '#9CA3AF',
-          ],
+          backgroundColor: [pColor, sColor, '#FCD34D', '#818CF8', '#F87171', '#A78BFA', '#9CA3AF'],
           borderColor: this.chartBgColor(),
           borderWidth: 2,
         },

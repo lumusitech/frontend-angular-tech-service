@@ -6,10 +6,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   imports: [TranslatePipe],
   template: `
     <div class="flex items-center gap-1.5">
-      <span
-        class="inline-block w-2.5 h-2.5 rounded-full"
-        [class]="dotColor()"
-      ></span>
+      <span class="inline-block w-2.5 h-2.5 rounded-full" [class]="dotColor()"></span>
       <span class="text-xs font-medium" [class]="textColor()">
         {{ label() | translate }}
       </span>

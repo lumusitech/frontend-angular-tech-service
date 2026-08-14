@@ -44,7 +44,15 @@ describe('SupplierFormComponent', () => {
   }
 
   function fillValidModel() {
-    component.model.set({ name: 'S', contact: 'C', phone: '111', address: 'A', email: 's@t.com', notes: '', isActive: true });
+    component.model.set({
+      name: 'S',
+      contact: 'C',
+      phone: '111',
+      address: 'A',
+      email: 's@t.com',
+      notes: '',
+      isActive: true,
+    });
   }
 
   describe('create mode', () => {

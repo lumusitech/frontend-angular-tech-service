@@ -61,26 +61,56 @@ import { MatTableModule } from '@angular/material/table';
 
         <!-- KPIs -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-primary)'">
-            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.technicianDetail.completedOrders' | translate }}</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{{ tech.completedOrders }}</p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+            [style.border-left-color]="'var(--color-primary)'"
+          >
+            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+              {{ 'reports.technicianDetail.completedOrders' | translate }}
+            </p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+              {{ tech.completedOrders }}
+            </p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'#F59E0B'">
-            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.technicianDetail.inProgressOrders' | translate }}</p>
-            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{{ tech.inProgressOrders }}</p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+            [style.border-left-color]="'#F59E0B'"
+          >
+            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+              {{ 'reports.technicianDetail.inProgressOrders' | translate }}
+            </p>
+            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
+              {{ tech.inProgressOrders }}
+            </p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-secondary)'">
-            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.technicianDetail.avgResolution' | translate }}</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{{ tech.averageResolutionDays | number: '1.1-1' }}d</p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+            [style.border-left-color]="'var(--color-secondary)'"
+          >
+            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+              {{ 'reports.technicianDetail.avgResolution' | translate }}
+            </p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+              {{ tech.averageResolutionDays | number: '1.1-1' }}d
+            </p>
           </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-primary)'">
-            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.technicianDetail.totalRevenue' | translate }}</p>
-            <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ tech.totalRevenue | currencyArs: '1.0-0' }}</p>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+            [style.border-left-color]="'var(--color-primary)'"
+          >
+            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+              {{ 'reports.technicianDetail.totalRevenue' | translate }}
+            </p>
+            <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+              {{ tech.totalRevenue | currencyArs: '1.0-0' }}
+            </p>
           </div>
         </div>
 
         <!-- Recent orders -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {{ 'reports.technicianDetail.recentOrders' | translate }}
           </h2>
@@ -92,7 +122,11 @@ import { MatTableModule } from '@angular/material/table';
           } @else {
             <table mat-table [dataSource]="tech.recentOrders" class="w-full">
               <ng-container matColumnDef="trackingCode">
-                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                >
                   {{ 'workOrders.trackingCode' | translate }}
                 </th>
                 <td mat-cell *matCellDef="let order" class="px-4 py-3">
@@ -101,16 +135,28 @@ import { MatTableModule } from '@angular/material/table';
               </ng-container>
 
               <ng-container matColumnDef="serviceType">
-                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                >
                   {{ 'workOrders.serviceType' | translate }}
                 </th>
-                <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                <td
+                  mat-cell
+                  *matCellDef="let order"
+                  class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+                >
                   {{ order.serviceTypeName }}
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                >
                   {{ 'common.status' | translate }}
                 </th>
                 <td mat-cell *matCellDef="let order" class="px-4 py-3">
@@ -119,10 +165,18 @@ import { MatTableModule } from '@angular/material/table';
               </ng-container>
 
               <ng-container matColumnDef="completedAt">
-                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                >
                   {{ 'reports.technicianDetail.completedAt' | translate }}
                 </th>
-                <td mat-cell *matCellDef="let order" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                <td
+                  mat-cell
+                  *matCellDef="let order"
+                  class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                >
                   @if (order.completedAt) {
                     {{ order.completedAt | relativeDate }}
                   } @else {
@@ -132,7 +186,11 @@ import { MatTableModule } from '@angular/material/table';
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                >
                   {{ 'common.actions' | translate }}
                 </th>
                 <td mat-cell *matCellDef="let order" class="px-4 py-3 text-right">

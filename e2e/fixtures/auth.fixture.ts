@@ -30,6 +30,7 @@ export const test = base.extend<{
   seed: void;
 }>({
   seed: [
+    // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
       await seed();
       await use();

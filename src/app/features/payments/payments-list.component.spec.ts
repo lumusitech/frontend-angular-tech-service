@@ -1,12 +1,20 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaymentsListComponent } from './payments-list.component';
 import { PaymentsService } from '../../core/services/payments.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { of } from 'rxjs';
+
+function matDateEvent(value: Date | null): MatDatepickerInputEvent<Date> {
+  return {
+    value,
+    target: undefined as unknown as MatDatepickerInputEvent<Date>['target'],
+    targetElement: document.createElement('input'),
+  };
+}
 
 function createActivatedRouteMock(queryParams: Record<string, string | null> = {}) {
   return {
@@ -27,7 +35,10 @@ describe('PaymentsListComponent - Date Filtering', () => {
       providers: [
         { provide: PaymentsService, useValue: {} },
         { provide: ToastService, useValue: { show: vi.fn() } },
-        { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((k: string) => k) } },
+        {
+          provide: TranslationService,
+          useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
+        },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
         { provide: MatDialog, useValue: { open: vi.fn() } },
       ],
@@ -60,28 +71,28 @@ describe('PaymentsListComponent - Date Filtering', () => {
 
     it('should update dateFrom via onDateFromChange', () => {
       const date = new Date(2026, 4, 15);
-      const event = { value: date } as any;
+      const event = matDateEvent(date);
       component.onDateFromChange(event);
       expect(component.dateFrom()).toMatch(/2026-05-15/);
     });
 
     it('should clear dateFrom when value is null', () => {
       component.dateFrom.set('2026-05-15');
-      const event = { value: null } as any;
+      const event = matDateEvent(null);
       component.onDateFromChange(event);
       expect(component.dateFrom()).toBe('');
     });
 
     it('should update dateTo via onDateToChange', () => {
       const date = new Date(2026, 5, 30);
-      const event = { value: date } as any;
+      const event = matDateEvent(date);
       component.onDateToChange(event);
       expect(component.dateTo()).toMatch(/2026-06-30/);
     });
 
     it('should clear dateTo when value is null', () => {
       component.dateTo.set('2026-06-30');
-      const event = { value: null } as any;
+      const event = matDateEvent(null);
       component.onDateToChange(event);
       expect(component.dateTo()).toBe('');
     });
@@ -169,7 +180,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     it('should show error when dateTo is before dateFrom', () => {
       component.dateFrom.set('2026-05-15');
 
-      const event = { value: new Date(2026, 4, 10) } as any;
+      const event = matDateEvent(new Date(2026, 4, 10));
       component.onDateToChange(event);
 
       expect(component.dateError()).toBe('common.invalidDateFrom');
@@ -178,7 +189,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     it('should not set dateTo when it is before dateFrom', () => {
       component.dateFrom.set('2026-05-15');
 
-      const event = { value: new Date(2026, 4, 10) } as any;
+      const event = matDateEvent(new Date(2026, 4, 10));
       component.onDateToChange(event);
 
       expect(component.dateTo()).toBe('');
@@ -187,7 +198,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     it('should accept same-day range', () => {
       component.dateFrom.set('2026-05-12');
 
-      const event = { value: new Date(2026, 4, 12) } as any;
+      const event = matDateEvent(new Date(2026, 4, 12));
       component.onDateToChange(event);
 
       expect(component.dateTo()).toMatch(/2026-05-12/);
@@ -197,7 +208,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
     it('should show error when dateFrom is after dateTo', () => {
       component.dateTo.set('2026-05-10');
 
-      const event = { value: new Date(2026, 4, 15) } as any;
+      const event = matDateEvent(new Date(2026, 4, 15));
       component.onDateFromChange(event);
 
       expect(component.dateError()).toBe('common.invalidDateTo');
@@ -208,7 +219,7 @@ describe('PaymentsListComponent - Date Filtering', () => {
       component.dateTo.set('2026-05-10');
       component.dateError.set('common.invalidDateTo');
 
-      const event = { value: new Date(2026, 4, 20) } as any;
+      const event = matDateEvent(new Date(2026, 4, 20));
       component.onDateToChange(event);
 
       expect(component.dateError()).toBe('');

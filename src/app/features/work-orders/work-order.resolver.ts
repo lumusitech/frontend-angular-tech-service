@@ -11,6 +11,6 @@ export const workOrderResolver: ResolveFn<WorkOrder> = (route) => {
   return firstValueFrom(
     http.get<WorkOrder>(`/api/work-orders/${id}`, {
       headers: new HttpHeaders({ 'X-Skip-Loading': 'true' }),
-    })
+    }),
   );
 };

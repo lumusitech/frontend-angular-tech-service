@@ -172,7 +172,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### E2E Tests con Playwright (PRs #190–#193)
 
-- 15 spec files con ~530 líneas de tests E2E
+- 16 spec files con ~530 líneas de tests E2E
 - 16 page objects para todas las entidades
 - Fixture de auth con 3 roles (admin, tech, seller) + seed automático vía API
 - Seed de datos de prueba: crea usuarios y data via `POST /api/auth/login` + `POST /api/users` + CRUD endpoints
@@ -204,17 +204,17 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### 🟡 Media prioridad (valor de negocio / calidad)
 
-5. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
-6. ~~**Tests de componentes**~~ ✅ — 474 tests pasando (26 archivos, 100% pass rate). Incluye global-search (23 tests), local-date.adapter (4 tests), app, pipes, directives, guards, interceptors, list components.
-7. **E2E tests (Playwright)** — 🔄 Avanzado: 15 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
-8. ~~**Google Maps + WhatsApp + Tap-to-Call**~~ ✅ — Completado. Iconos de acción en CopyFieldComponent (address → maps, phone → call + WhatsApp), InfoTabComponent, TechWorkOrderDetailComponent (nueva sección contacto), ClientDetailComponent. Fix: agregar `type: 'address'` faltante en clients-list y suppliers-list.
+6. ~~**Search global desde header**~~ ✅ — Completado en PRs #182–#186, #188, #191.
+7. ~~**Tests de componentes**~~ ✅ — 474 tests pasando (26 archivos, 100% pass rate). Incluye global-search (23 tests), local-date.adapter (4 tests), app, pipes, directives, guards, interceptors, list components.
+8. **E2E tests (Playwright)** — 🔄 Avanzado: 16 spec files, 16 POs, seed fixture, auth auto-seed. Pendiente de ejecución contra backend real. Ver sección "Próxima sesión".
+9. ~~**Google Maps + WhatsApp + Tap-to-Call**~~ ✅ — Completado. Iconos de acción en CopyFieldComponent (address → maps, phone → call + WhatsApp), InfoTabComponent, TechWorkOrderDetailComponent (nueva sección contacto), ClientDetailComponent. Fix: agregar `type: 'address'` faltante en clients-list y suppliers-list.
 
 ### 🟢 Baja prioridad (mejoras incrementales / polish)
 
-9. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
-10. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
-11. **Bulk actions** — Selección múltiple, exportar masivo.
-12. **Kanban board** — Vista visual alternativa a tabla.
+10. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
+11. **i18n: Portugués** — Patrón existe, agregar `pt.json`.
+12. **Bulk actions** — Selección múltiple, exportar masivo.
+13. **Kanban board** — Vista visual alternativa a tabla.
 
 ---
 
@@ -572,11 +572,11 @@ Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
 
 Completado. CopyFieldComponent: `location_on` → Maps, `phone` → call, `chat` → WhatsApp. InfoTabComponent, TechWorkOrderDetailComponent (sección contacto), ClientDetailComponent. Fix: `type: 'address'` faltante en clients-list y suppliers-list.
 
-### 7. BUG-005: Mobile work order detail UI/UX (esfuerzo medio) — PRIORIDAD
+### ~~7. BUG-005: Mobile work order detail UI/UX~~ ✅
 
-Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, sin scroll horizontal, acciones accesibles. Verificar también `work-order-detail.component.ts` y `tech-layout.component.ts`.
+Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → BUG-005).
 
-### 7. BUG-005: Mobile work order detail UI/UX (esfuerzo medio)
+### ~~7. BUG-005: Mobile work order detail UI/UX~~ ✅
 
 **Problema:** El detalle de orden en mobile (`tech-work-order-detail`) tiene:
 
@@ -610,7 +610,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 
 ---
 
-### 12. Migración a Signal Forms — Eliminar template-driven forms legacy (PR1: 7/15 ✅)
+### ~~12. Migración a Signal Forms — Eliminar template-driven forms legacy~~ ✅ (15/15 en 3 PRs)
 
 **Valor:** Consistencia con la arquitectura Signals-Only. Eliminar deuda técnica.
 
@@ -645,9 +645,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 
 **Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
 
-**Patrón destino:** Ver `ProfileSettingsComponent` (`src/app/features/profile/profile-settings.component.ts`) y `SettingsComponent` (`src/app/features/settings/settings.component.ts`) como referencia de Signal Forms ya implementados.
-
-**Estado:** Pendiente
+**Estado:** ✅ Completado — 15/15 migrados en 3 PRs. Verificación en código: 0 archivos en `src/app` usan `FormsModule`/`NgForm`/`ngModel`.
 
 ---
 
@@ -681,7 +679,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 - [x] Pending Items (list, form, dashboard widget)
 - [x] Inquiries (list, detail, contact, review, convert)
 - [x] Convert inquiry → work order end-to-end (diálogo con cliente nuevo/existente, crea orden real) — PRs #236/#142
-- [x] Landing Page (SSG/prerender, 6 sub-components) — 🔄 rediseño profesional + Logo B pendiente (ver "Próxima sesión")
+- [x] Landing Page (SSG/prerender, 6 sub-components) + Logo B (BrandLogoComponent) — 01/08/2026
 - [x] Portal Tracking (search, result, timeline, tasks, notes, payments)
 - [x] PWA (service worker, manifest, install prompt)
 - [x] Push Notifications (VAPID keys, web-push, PushSubscription entity, PushNotificationService)
@@ -703,7 +701,7 @@ Rediseñar `tech-work-order-detail.component.ts` mobile-first: stack vertical, s
 - [x] Dialog transparency fix (backgrounds sólidos en dark mode)
 - [x] Search global en header (9 entidades, debounce 300ms, grouped results, highlight en lista, sin flicker ni blur) — PRs #182–#186
 - [x] Tests de componentes y utils (474 tests pasando, 100% pass rate) — incluye global-search (23 tests) y local-date.adapter (4 tests)
-- [x] E2E tests: 15 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
+- [x] E2E tests: 16 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
 - [x] Google Maps + WhatsApp + Tap-to-Call (iconos en CopyFieldComponent, InfoTabComponent, TechWorkOrderDetail, ClientDetail)
 - [x] LocalDateAdapter (adaptador de fecha local para prevención de desfasajes GMT) — PR #214
 - [x] Swipe entre tabs y reordenamiento de acciones en detalle de orden mobile — PR #213

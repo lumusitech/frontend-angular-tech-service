@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -6,12 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InquiriesService } from '../../core/services/inquiries.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
-import {
-  Inquiry,
-  InquiryStatus,
-  InquirySource,
-  PaginatedResponse,
-} from '../../core/models/inquiry.interfaces';
+import { Inquiry, PaginatedResponse } from '../../core/models/inquiry.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -30,7 +25,10 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { InquiryFormComponent } from './inquiry-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -80,62 +78,111 @@ const STATUS_COLORS: Record<string, string> = {
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option value="">{{ 'inquiries.filters.all' | translate }}</mat-option>
-              <mat-option value="new">{{ 'inquiries.statuses.new' | translate }}</mat-option>
-              <mat-option value="contacted">{{ 'inquiries.statuses.contacted' | translate }}</mat-option>
-              <mat-option value="reviewed">{{ 'inquiries.statuses.reviewed' | translate }}</mat-option>
-              <mat-option value="approved">{{ 'inquiries.statuses.approved' | translate }}</mat-option>
-              <mat-option value="rejected">{{ 'inquiries.statuses.rejected' | translate }}</mat-option>
-              <mat-option value="converted">{{ 'inquiries.statuses.converted' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
-            <mat-select [value]="sourceFilter()" (selectionChange)="sourceFilter.set($event.value)">
-              <mat-option value="">{{ 'inquiries.filters.allSources' | translate }}</mat-option>
-              <mat-option value="phone">{{ 'inquiries.sources.phone' | translate }}</mat-option>
-              <mat-option value="email">{{ 'inquiries.sources.email' | translate }}</mat-option>
-              <mat-option value="website">{{ 'inquiries.sources.website' | translate }}</mat-option>
-              <mat-option value="referral">{{ 'inquiries.sources.referral' | translate }}</mat-option>
-              <mat-option value="social_media">{{ 'inquiries.sources.socialMedia' | translate }}</mat-option>
-              <mat-option value="walk_in">{{ 'inquiries.sources.walkIn' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
             <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-          </mat-form-field>
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select
+                [value]="statusFilter()"
+                (selectionChange)="statusFilter.set($event.value)"
+              >
+                <mat-option value="">{{ 'inquiries.filters.all' | translate }}</mat-option>
+                <mat-option value="new">{{ 'inquiries.statuses.new' | translate }}</mat-option>
+                <mat-option value="contacted">{{
+                  'inquiries.statuses.contacted' | translate
+                }}</mat-option>
+                <mat-option value="reviewed">{{
+                  'inquiries.statuses.reviewed' | translate
+                }}</mat-option>
+                <mat-option value="approved">{{
+                  'inquiries.statuses.approved' | translate
+                }}</mat-option>
+                <mat-option value="rejected">{{
+                  'inquiries.statuses.rejected' | translate
+                }}</mat-option>
+                <mat-option value="converted">{{
+                  'inquiries.statuses.converted' | translate
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          @if (dateError()) {
-            <div class="w-40 text-red-500 dark:text-red-400 text-xs">
-              {{ dateError() | translate }}
-            </div>
-          }
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'inquiries.source' | translate }}</mat-label>
+              <mat-select
+                [value]="sourceFilter()"
+                (selectionChange)="sourceFilter.set($event.value)"
+              >
+                <mat-option value="">{{ 'inquiries.filters.allSources' | translate }}</mat-option>
+                <mat-option value="phone">{{ 'inquiries.sources.phone' | translate }}</mat-option>
+                <mat-option value="email">{{ 'inquiries.sources.email' | translate }}</mat-option>
+                <mat-option value="website">{{
+                  'inquiries.sources.website' | translate
+                }}</mat-option>
+                <mat-option value="referral">{{
+                  'inquiries.sources.referral' | translate
+                }}</mat-option>
+                <mat-option value="social_media">{{
+                  'inquiries.sources.socialMedia' | translate
+                }}</mat-option>
+                <mat-option value="walk_in">{{
+                  'inquiries.sources.walkIn' | translate
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+            </mat-form-field>
+
+            @if (dateError()) {
+              <div class="w-40 text-red-500 dark:text-red-400 text-xs">
+                {{ dateError() | translate }}
+              </div>
+            }
           </app-mobile-filter-bar>
 
           @if (fromNotification()) {
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+            >
               <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
               {{ 'notifications.filteredFromNotification' | translate }}
             </span>
@@ -166,10 +213,19 @@ const STATUS_COLORS: Record<string, string> = {
               [statusType]="$any('inquiryStatus')"
               [fields]="getInquiryFields(inquiry)"
             >
-              <button mat-icon-button (click)="openEditDialog(inquiry); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(inquiry); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteItem(inquiry); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteItem(inquiry); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -304,11 +360,19 @@ const STATUS_COLORS: Record<string, string> = {
               </th>
               <td mat-cell *matCellDef="let inquiry" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="inquiryActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="inquiryActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #inquiryActionsMenu="matMenu">
-                    <button mat-menu-item (click)="openEditDialog(inquiry); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="openEditDialog(inquiry); $event.stopPropagation()"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>{{ 'common.edit' | translate }}</span>
                     </button>
@@ -326,7 +390,11 @@ const STATUS_COLORS: Record<string, string> = {
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -341,7 +409,7 @@ const STATUS_COLORS: Record<string, string> = {
     </div>
   `,
 })
-export class InquiriesListComponent implements OnInit {
+export class InquiriesListComponent {
   private readonly inquiriesService = inject(InquiriesService);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
@@ -365,8 +433,10 @@ export class InquiriesListComponent implements OnInit {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateError = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly resource = httpResource<PaginatedResponse<Inquiry>>(() => ({
     url: '/api/inquiries',
@@ -394,9 +464,7 @@ export class InquiriesListComponent implements OnInit {
     if (!data || cleared || loading) return null;
 
     if (fromNotif && search) {
-      const match = data.data.find(
-        (row) => row.clientName === search || row.id === search,
-      );
+      const match = data.data.find((row) => row.clientName === search || row.id === search);
       return match?.id ?? null;
     }
 
@@ -408,7 +476,15 @@ export class InquiriesListComponent implements OnInit {
     return null;
   });
 
-  displayedColumns = ['clientName', 'clientAddress', 'source', 'status', 'assignedTo', 'createdAt', 'actions'];
+  displayedColumns = [
+    'clientName',
+    'clientAddress',
+    'source',
+    'status',
+    'assignedTo',
+    'createdAt',
+    'actions',
+  ];
 
   constructor() {
     effect(() => {
@@ -435,8 +511,6 @@ export class InquiriesListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   getStatusColor(status: string): string {
     return STATUS_COLORS[status] || 'text-gray-400 bg-gray-500/15';
@@ -497,9 +571,15 @@ export class InquiriesListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.sourceFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
+    return (
+      this.searchFilter() !== '' ||
+      this.statusFilter() !== '' ||
+      this.sourceFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== '' ||
+      this.fromNotification()
+    );
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -538,8 +618,15 @@ export class InquiriesListComponent implements OnInit {
   getInquiryFields(inquiry: Inquiry): MobileCardField[] {
     return [
       { label: this.translationService.instant('inquiries.source'), value: inquiry.source },
-      { label: this.translationService.instant('inquiries.assignedTo'), value: inquiry.assignedTo?.name || '-' },
-      { label: this.translationService.instant('common.created'), value: inquiry.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('inquiries.assignedTo'),
+        value: inquiry.assignedTo?.name || '-',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: inquiry.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -563,11 +650,16 @@ export class InquiriesListComponent implements OnInit {
       if (confirmed) {
         this.inquiriesService.delete(inquiry.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.resource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });

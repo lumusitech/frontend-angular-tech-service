@@ -15,7 +15,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       >
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="hidden sm:flex w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-950 items-center justify-center shrink-0">
+            <div
+              class="hidden sm:flex w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-950 items-center justify-center shrink-0"
+            >
               <mat-icon class="text-blue-600 dark:text-blue-400">download</mat-icon>
             </div>
             <div class="min-w-0">

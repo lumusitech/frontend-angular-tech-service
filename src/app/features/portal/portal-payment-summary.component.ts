@@ -17,7 +17,9 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">{{ 'portal.payments.total' | translate }}</span>
+            <span class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">{{
+              'portal.payments.total' | translate
+            }}</span>
             <span class="text-lg font-bold text-gray-900 dark:text-white tabular-nums">
               {{ summary().totalApproved | currencyArs }}
             </span>
@@ -43,7 +45,14 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 
           @if (hasInstallments()) {
             <p class="text-xs text-gray-400 dark:text-gray-500">
-              {{ 'portal.payments.installments' | translate : { pending: '' + summary().installmentsPending, total: '' + summary().installmentsTotal } }}
+              {{
+                'portal.payments.installments'
+                  | translate
+                    : {
+                        pending: '' + summary().installmentsPending,
+                        total: '' + summary().installmentsTotal,
+                      }
+              }}
             </p>
           }
         </div>
@@ -54,7 +63,5 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 export class PortalPaymentSummaryComponent {
   readonly summary = input.required<PortalPaymentSummary>();
 
-  readonly hasInstallments = computed(
-    () => this.summary().installmentsTotal > 0,
-  );
+  readonly hasInstallments = computed(() => this.summary().installmentsTotal > 0);
 }

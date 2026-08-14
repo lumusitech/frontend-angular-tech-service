@@ -57,10 +57,7 @@ interface ServiceTypeFormModel {
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.name' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="serviceTypeForm.name"
-          />
+          <input matInput [formField]="serviceTypeForm.name" />
           @if (serviceTypeForm.name().invalid() && serviceTypeForm.name().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -68,20 +65,12 @@ interface ServiceTypeFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.description' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formField]="serviceTypeForm.description"
-            rows="3"
-          ></textarea>
+          <textarea matInput [formField]="serviceTypeForm.description" rows="3"></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'serviceTypes.estimatedDurationLabel' | translate }}</mat-label>
-          <input
-            matInput
-            type="number"
-            [formField]="serviceTypeForm.estimatedDuration"
-          />
+          <input matInput type="number" [formField]="serviceTypeForm.estimatedDuration" />
         </mat-form-field>
 
         <mat-checkbox [formField]="serviceTypeForm.isActive">
@@ -106,7 +95,12 @@ interface ServiceTypeFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || serviceTypeForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || serviceTypeForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>

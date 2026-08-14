@@ -32,10 +32,8 @@ interface DialogData {
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>{{ isEditing() ? 'edit' : 'build' }}</mat-icon>
       {{
-        (isEditing()
-          ? 'workOrders.materials.editMaterial'
-          : 'workOrders.materials.addMaterial'
-        ) | translate
+        (isEditing() ? 'workOrders.materials.editMaterial' : 'workOrders.materials.addMaterial')
+          | translate
       }}
     </h2>
 
@@ -79,7 +77,9 @@ interface DialogData {
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'workOrders.materials.supplierOptional' | translate }}</mat-label>
           <mat-select [value]="supplierId()" (selectionChange)="supplierId.set($event.value)">
-            <mat-option [value]="''">{{ 'workOrders.materials.noSupplier' | translate }}</mat-option>
+            <mat-option [value]="''">{{
+              'workOrders.materials.noSupplier' | translate
+            }}</mat-option>
             @if (suppliersResource.hasValue()) {
               @for (supplier of suppliersResource.value().data; track supplier.id) {
                 <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
@@ -101,9 +101,9 @@ interface DialogData {
         {{
           saving()
             ? ('common.saving' | translate)
-            : (isEditing()
-                ? ('workOrders.materials.updateMaterial' | translate)
-                : ('workOrders.materials.saveMaterial' | translate))
+            : isEditing()
+              ? ('workOrders.materials.updateMaterial' | translate)
+              : ('workOrders.materials.saveMaterial' | translate)
         }}
       </button>
     </mat-dialog-actions>
@@ -142,9 +142,10 @@ export class AddMaterialDialogComponent {
       supplierId: this.supplierId() || undefined,
     };
 
-    const request$ = this.isEditing() && this.data.material
-      ? this.workOrdersService.updateMaterial(this.data.workOrderId, this.data.material.id, dto)
-      : this.workOrdersService.addMaterial(this.data.workOrderId, dto);
+    const request$ =
+      this.isEditing() && this.data.material
+        ? this.workOrdersService.updateMaterial(this.data.workOrderId, this.data.material.id, dto)
+        : this.workOrdersService.addMaterial(this.data.workOrderId, dto);
 
     request$.subscribe({
       next: () => {

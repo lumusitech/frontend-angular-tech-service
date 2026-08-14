@@ -11,7 +11,9 @@ test.describe('Payments', () => {
   test('should have search input', async ({ adminPage }) => {
     await adminPage.goto('/admin/payments');
     await adminPage.waitForTimeout(500);
-    const searchInput = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const searchInput = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(searchInput).toBeVisible();
   });
 

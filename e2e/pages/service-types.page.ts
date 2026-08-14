@@ -12,7 +12,10 @@ export class ServiceTypesPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nuevo Tipo"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nuevo Tipo"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async getRowCount(): Promise<number> {

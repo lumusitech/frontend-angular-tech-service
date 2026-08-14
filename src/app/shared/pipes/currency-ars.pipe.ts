@@ -5,7 +5,7 @@ import { CurrencyPipe } from '@angular/common';
 export class CurrencyArsPipe implements PipeTransform {
   private readonly currencyPipe = new CurrencyPipe('es-AR');
 
-  transform(value: number | null | undefined, decimals: string = '1.0-2'): string | null {
+  transform(value: number | null | undefined, decimals = '1.0-2'): string | null {
     if (value == null) return null;
     return this.currencyPipe.transform(value, 'ARS', 'symbol', decimals);
   }

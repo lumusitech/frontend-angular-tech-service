@@ -2,12 +2,7 @@ import { Service, inject, signal } from '@angular/core';
 import { UserPreferencesService } from './user-preferences.service';
 
 export type DashboardWidgetId =
-  | 'kpis'
-  | 'pendingItems'
-  | 'inquiries'
-  | 'charts'
-  | 'quickActions'
-  | 'topClients';
+  'kpis' | 'pendingItems' | 'inquiries' | 'charts' | 'quickActions' | 'topClients';
 
 export interface DashboardLayoutConfig {
   layout: DashboardWidgetId[];
@@ -30,11 +25,6 @@ const DEFAULT_WIDGETS: Record<DashboardWidgetId, boolean> = {
   charts: true,
   quickActions: true,
   topClients: true,
-};
-
-const DEFAULT_CONFIG: DashboardLayoutConfig = {
-  layout: DEFAULT_LAYOUT,
-  widgets: DEFAULT_WIDGETS,
 };
 
 @Service()
@@ -89,7 +79,7 @@ export class DashboardLayoutService {
             dashboardWidgets: this.widgets(),
           },
         })
-        .subscribe({ error: () => {} });
+        .subscribe();
     }, 500);
   }
 }

@@ -1,17 +1,8 @@
-import {
-  Component,
-  computed,
-  input,
-  output,
-  signal,
-  ElementRef,
-  inject,
-  viewChild,
-} from '@angular/core';
+import { Component, input, signal, ElementRef, inject, viewChild } from '@angular/core';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { StatusBadgeComponent } from '../status-badge/status-badge.component';
+import { StatusBadgeComponent, StatusBadgeType } from '../status-badge/status-badge.component';
 import { CopyFieldComponent } from '../copy-field/copy-field.component';
 
 export interface MobileCardField {
@@ -127,7 +118,7 @@ export interface MobileCardField {
               {{ title() }}
             </span>
             @if (status()) {
-              <app-status-badge [value]="status()!" [type]="statusTypeCast()" />
+              <app-status-badge [value]="status()!" [type]="statusType()" />
             }
           </mat-panel-title>
         </mat-expansion-panel-header>
@@ -178,7 +169,7 @@ export class MobileCardComponent {
 
   readonly title = input.required<string>();
   readonly status = input<string | null>(null);
-  readonly statusType = input<string>('workOrderStatus');
+  readonly statusType = input<StatusBadgeType>('workOrderStatus');
   readonly fields = input.required<MobileCardField[]>();
   readonly canSwipe = input(false);
   readonly editIcon = input<string>('edit');
@@ -186,7 +177,6 @@ export class MobileCardComponent {
   readonly onEdit = input<((event: Event) => void) | null>(null);
   readonly onDelete = input<((event: Event) => void) | null>(null);
 
-  readonly statusTypeCast = computed(() => this.statusType() as any);
   readonly panelExpanded = signal(false);
 
   private startX = 0;

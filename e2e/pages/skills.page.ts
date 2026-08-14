@@ -12,7 +12,10 @@ export class SkillsPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nueva Skill"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nueva Skill"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async getRowCount(): Promise<number> {

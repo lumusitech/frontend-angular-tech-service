@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -76,7 +76,10 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
       >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.search' | translate }}</mat-label>
               <input
@@ -321,15 +324,26 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               </th>
               <td mat-cell *matCellDef="let supplier" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="supplierActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="supplierActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #supplierActionsMenu="matMenu">
-                    <button mat-menu-item (click)="openEditDialog(supplier); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="openEditDialog(supplier); $event.stopPropagation()"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>{{ 'common.edit' | translate }}</span>
                     </button>
-                    <button mat-menu-item (click)="deleteSupplier(supplier); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="deleteSupplier(supplier); $event.stopPropagation()"
+                    >
                       <mat-icon>delete</mat-icon>
                       <span>{{ 'common.delete' | translate }}</span>
                     </button>
@@ -360,7 +374,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     </div>
   `,
 })
-export class SuppliersListComponent implements OnInit {
+export class SuppliersListComponent {
   private readonly suppliersService = inject(SuppliersService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
@@ -427,8 +441,6 @@ export class SuppliersListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
@@ -554,10 +566,10 @@ export class SuppliersListComponent implements OnInit {
   }
 
   onEditSwipe(supplier: Supplier): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(supplier);
+    return () => this.openEditDialog(supplier);
   }
 
   onDeleteSwipe(supplier: Supplier): (event: Event) => void {
-    return (_event: Event) => this.deleteSupplier(supplier);
+    return () => this.deleteSupplier(supplier);
   }
 }

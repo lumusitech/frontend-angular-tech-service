@@ -44,7 +44,13 @@ describe('ServiceTypeFormComponent', () => {
   }
 
   function fillValidModel() {
-    component.model.set({ name: 'T', description: 'D', estimatedDuration: '60', isActive: true, requiresDelivery: false });
+    component.model.set({
+      name: 'T',
+      description: 'D',
+      estimatedDuration: '60',
+      isActive: true,
+      requiresDelivery: false,
+    });
   }
 
   describe('create mode', () => {

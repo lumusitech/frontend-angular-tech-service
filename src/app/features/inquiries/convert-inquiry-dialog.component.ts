@@ -18,16 +18,10 @@ import { ServiceTypesService } from '../../core/services/service-types.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import {
-  Inquiry,
-  ConvertInquiryDto,
-} from '../../core/models/inquiry.interfaces';
+import { Inquiry, ConvertInquiryDto } from '../../core/models/inquiry.interfaces';
 import { CreateClientDto, Client } from '../../core/models/client.interfaces';
 import { ServiceType } from '../../core/models/service-type.interfaces';
-import {
-  WorkOrderPriority,
-  WorkOrderLocation,
-} from '../../core/models/work-order.interfaces';
+import { WorkOrderPriority, WorkOrderLocation } from '../../core/models/work-order.interfaces';
 
 interface DialogData {
   inquiry: Inquiry;
@@ -79,7 +73,9 @@ interface NewClientModel {
           <mat-label>{{ 'inquiries.convertClientMode' | translate }}</mat-label>
           <mat-select [value]="clientMode()" (selectionChange)="onClientModeChange($event.value)">
             <mat-option value="new">{{ 'inquiries.clientModeNew' | translate }}</mat-option>
-            <mat-option value="existing">{{ 'inquiries.clientModeExisting' | translate }}</mat-option>
+            <mat-option value="existing">{{
+              'inquiries.clientModeExisting' | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -226,9 +222,7 @@ interface NewClientModel {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving()">
-        {{
-          saving() ? ('workOrders.creating' | translate) : ('inquiries.convert' | translate)
-        }}
+        {{ saving() ? ('workOrders.creating' | translate) : ('inquiries.convert' | translate) }}
       </button>
     </mat-dialog-actions>
   `,
@@ -354,7 +348,6 @@ export class ConvertInquiryDialogComponent implements OnInit {
       clientId = this.existingClientId;
     } else {
       if (this.newClientForm().invalid()) return;
-      clientId = '';
       const nc = this.newClientModel();
       const dto: CreateClientDto = {
         name: nc.name,

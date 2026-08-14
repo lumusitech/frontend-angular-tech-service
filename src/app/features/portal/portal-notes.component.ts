@@ -24,16 +24,27 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
               >
                 <mat-icon class="!w-3.5 !h-3.5">{{ getNoteIcon(note.type) }}</mat-icon>
               </div>
-              <div class="flex-1 min-w-0" [class.pb-3]="!last" [class.border-b]="!last" [class.border-gray-100]="!last" [class.dark:border-gray-800]="!last">
+              <div
+                class="flex-1 min-w-0"
+                [class.pb-3]="!last"
+                [class.border-b]="!last"
+                [class.border-gray-100]="!last"
+                [class.dark:border-gray-800]="!last"
+              >
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="text-[11px] font-semibold uppercase tracking-wider" [class]="getNoteLabelClasses(note.type)">
+                  <span
+                    class="text-[11px] font-semibold uppercase tracking-wider"
+                    [class]="getNoteLabelClasses(note.type)"
+                  >
                     {{ 'portal.notes.types.' + note.type | translate }}
                   </span>
                   <span class="text-[11px] text-gray-400 dark:text-gray-500">
                     {{ note.createdAt | relativeDate }}
                   </span>
                 </div>
-                <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{{ note.content }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {{ note.content }}
+                </p>
               </div>
             </div>
           }

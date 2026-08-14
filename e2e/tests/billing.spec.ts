@@ -11,7 +11,9 @@ test.describe('Billing', () => {
   test('should open create invoice dialog', async ({ adminPage }) => {
     await adminPage.goto('/admin/billing');
     await adminPage.waitForTimeout(500);
-    const createBtn = adminPage.locator('button:has-text("Nueva Factura"), button:has-text("New Invoice")').first();
+    const createBtn = adminPage
+      .locator('button:has-text("Nueva Factura"), button:has-text("New Invoice")')
+      .first();
     if (await createBtn.isVisible()) {
       await createBtn.click();
       await expect(adminPage.locator('mat-dialog-container')).toBeVisible();

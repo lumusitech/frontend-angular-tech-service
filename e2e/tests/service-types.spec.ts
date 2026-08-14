@@ -21,7 +21,9 @@ test.describe('Service Types', () => {
     const page = new ServiceTypesPage(adminPage);
     await page.goto();
     await page.search('reparacion');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('reparacion');
   });
 });

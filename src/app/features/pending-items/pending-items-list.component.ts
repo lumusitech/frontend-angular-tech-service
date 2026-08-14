@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -6,13 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PendingItemsService } from '../../core/services/pending-items.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
-import {
-  PendingItem,
-  PendingItemStatus,
-  PendingItemPriority,
-  PendingItemType,
-  PaginatedResponse,
-} from '../../core/models/pending-item.interfaces';
+import { PendingItem, PaginatedResponse } from '../../core/models/pending-item.interfaces';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -32,7 +26,10 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { PendingItemFormComponent } from './pending-item-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -110,52 +107,102 @@ const TYPE_LABELS: Record<string, string> = {
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.status' | translate }}</mat-label>
-              <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+              <mat-select
+                [value]="statusFilter()"
+                (selectionChange)="statusFilter.set($event.value)"
+              >
                 <mat-option value="">{{ 'pendingItems.filters.all' | translate }}</mat-option>
-                <mat-option value="pending">{{ 'pendingItems.statuses.pending' | translate }}</mat-option>
-                <mat-option value="in_progress">{{ 'pendingItems.statuses.inProgress' | translate }}</mat-option>
-                <mat-option value="completed">{{ 'pendingItems.statuses.completed' | translate }}</mat-option>
-                <mat-option value="cancelled">{{ 'pendingItems.statuses.cancelled' | translate }}</mat-option>
+                <mat-option value="pending">{{
+                  'pendingItems.statuses.pending' | translate
+                }}</mat-option>
+                <mat-option value="in_progress">{{
+                  'pendingItems.statuses.inProgress' | translate
+                }}</mat-option>
+                <mat-option value="completed">{{
+                  'pendingItems.statuses.completed' | translate
+                }}</mat-option>
+                <mat-option value="cancelled">{{
+                  'pendingItems.statuses.cancelled' | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'pendingItems.priority' | translate }}</mat-label>
-              <mat-select [value]="priorityFilter()" (selectionChange)="priorityFilter.set($event.value)">
-                <mat-option value="">{{ 'pendingItems.filters.allPriorities' | translate }}</mat-option>
+              <mat-select
+                [value]="priorityFilter()"
+                (selectionChange)="priorityFilter.set($event.value)"
+              >
+                <mat-option value="">{{
+                  'pendingItems.filters.allPriorities' | translate
+                }}</mat-option>
                 <mat-option value="low">{{ 'pendingItems.priorities.low' | translate }}</mat-option>
-                <mat-option value="medium">{{ 'pendingItems.priorities.medium' | translate }}</mat-option>
-                <mat-option value="high">{{ 'pendingItems.priorities.high' | translate }}</mat-option>
-                <mat-option value="urgent">{{ 'pendingItems.priorities.urgent' | translate }}</mat-option>
+                <mat-option value="medium">{{
+                  'pendingItems.priorities.medium' | translate
+                }}</mat-option>
+                <mat-option value="high">{{
+                  'pendingItems.priorities.high' | translate
+                }}</mat-option>
+                <mat-option value="urgent">{{
+                  'pendingItems.priorities.urgent' | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.search' | translate }}</mat-label>
-              <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.from' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dueDateFromPicker" [value]="dueDateFromValue()" (dateChange)="onDueDateFromChange($event)" />
-              <mat-datepicker-toggle matIconSuffix [for]="dueDateFromPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="dueDateFromPicker"
+                [value]="dueDateFromValue()"
+                (dateChange)="onDueDateFromChange($event)"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dueDateFromPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #dueDateFromPicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.to' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dueDateToPicker" [value]="dueDateToValue()" (dateChange)="onDueDateToChange($event)" />
+              <input
+                matInput
+                [matDatepicker]="dueDateToPicker"
+                [value]="dueDateToValue()"
+                (dateChange)="onDueDateToChange($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="dueDateToPicker"></mat-datepicker-toggle>
               <mat-datepicker #dueDateToPicker></mat-datepicker>
             </mat-form-field>
           </app-mobile-filter-bar>
 
           @if (fromNotification()) {
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+            >
               <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
               {{ 'notifications.filteredFromNotification' | translate }}
             </span>
@@ -189,10 +236,19 @@ const TYPE_LABELS: Record<string, string> = {
               [onEdit]="onEditSwipe(item)"
               [onDelete]="onDeleteSwipe(item)"
             >
-              <button mat-icon-button (click)="openEditDialog(item); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(item); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteItem(item); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteItem(item); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -347,7 +403,12 @@ const TYPE_LABELS: Record<string, string> = {
               </th>
               <td mat-cell *matCellDef="let item" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="itemActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="itemActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #itemActionsMenu="matMenu">
@@ -365,7 +426,13 @@ const TYPE_LABELS: Record<string, string> = {
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              (click)="openEditDialog(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -380,7 +447,7 @@ const TYPE_LABELS: Record<string, string> = {
     </div>
   `,
 })
-export class PendingItemsListComponent implements OnInit {
+export class PendingItemsListComponent {
   private readonly pendingItemsService = inject(PendingItemsService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
@@ -402,8 +469,10 @@ export class PendingItemsListComponent implements OnInit {
   readonly searchFilter = signal('');
   readonly dueDateFrom = signal('');
   readonly dueDateTo = signal('');
-  readonly dueDateFromValue = computed(() => this.dueDateFrom() ? new Date(this.dueDateFrom()) : null);
-  readonly dueDateToValue = computed(() => this.dueDateTo() ? new Date(this.dueDateTo()) : null);
+  readonly dueDateFromValue = computed(() =>
+    this.dueDateFrom() ? new Date(this.dueDateFrom()) : null,
+  );
+  readonly dueDateToValue = computed(() => (this.dueDateTo() ? new Date(this.dueDateTo()) : null));
 
   readonly resource = httpResource<PaginatedResponse<PendingItem>>(() => ({
     url: '/api/pending-items',
@@ -432,10 +501,7 @@ export class PendingItemsListComponent implements OnInit {
 
     if (fromNotif && search) {
       const match = data.data.find(
-        (row) =>
-          row.title === search ||
-          row.title.startsWith(search) ||
-          row.id === search,
+        (row) => row.title === search || row.title.startsWith(search) || row.id === search,
       );
       return match?.id ?? null;
     }
@@ -484,8 +550,6 @@ export class PendingItemsListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   getPriorityLabel(priority: string): string {
     return PRIORITY_LABELS[priority] || priority;
@@ -542,9 +606,15 @@ export class PendingItemsListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.priorityFilter() !== '' || this.dueDateFrom() !== '' || this.dueDateTo() !== '' || this.fromNotification();
+    return (
+      this.searchFilter() !== '' ||
+      this.statusFilter() !== '' ||
+      this.priorityFilter() !== '' ||
+      this.dueDateFrom() !== '' ||
+      this.dueDateTo() !== '' ||
+      this.fromNotification()
+    );
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -581,11 +651,28 @@ export class PendingItemsListComponent implements OnInit {
 
   getPendingItemFields(item: PendingItem): MobileCardField[] {
     return [
-      { label: this.translationService.instant('pendingItems.type'), value: this.getTypeLabel(item.type) },
-      { label: this.translationService.instant('pendingItems.priority'), value: this.getPriorityLabel(item.priority) },
-      { label: this.translationService.instant('pendingItems.dueDate'), value: item.dueDate || '-', type: 'date' },
-      { label: this.translationService.instant('pendingItems.assignedTo'), value: item.assignedTo?.name || '-' },
-      { label: this.translationService.instant('common.created'), value: item.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('pendingItems.type'),
+        value: this.getTypeLabel(item.type),
+      },
+      {
+        label: this.translationService.instant('pendingItems.priority'),
+        value: this.getPriorityLabel(item.priority),
+      },
+      {
+        label: this.translationService.instant('pendingItems.dueDate'),
+        value: item.dueDate || '-',
+        type: 'date',
+      },
+      {
+        label: this.translationService.instant('pendingItems.assignedTo'),
+        value: item.assignedTo?.name || '-',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: item.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -604,11 +691,16 @@ export class PendingItemsListComponent implements OnInit {
       if (confirmed) {
         this.pendingItemsService.delete(item.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.resource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -617,10 +709,10 @@ export class PendingItemsListComponent implements OnInit {
   }
 
   onEditSwipe(item: PendingItem): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(item);
+    return () => this.openEditDialog(item);
   }
 
   onDeleteSwipe(item: PendingItem): (event: Event) => void {
-    return (_event: Event) => this.deleteItem(item);
+    return () => this.deleteItem(item);
   }
 }

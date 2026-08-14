@@ -1,4 +1,4 @@
-import { Page, expect, Locator } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class GlobalSearchPage {
   readonly searchInput: Locator;
@@ -6,7 +6,9 @@ export class GlobalSearchPage {
   readonly clearButton: Locator;
 
   constructor(private page: Page) {
-    this.searchInput = page.locator('app-global-search input[placeholder*="globalSearch"], app-global-search input').first();
+    this.searchInput = page
+      .locator('app-global-search input[placeholder*="globalSearch"], app-global-search input')
+      .first();
     this.dropdown = page.locator('app-global-search .shadow-lg');
     this.clearButton = page.locator('app-global-search button:has(mat-icon:has-text("close"))');
   }

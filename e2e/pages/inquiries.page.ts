@@ -12,7 +12,10 @@ export class InquiriesPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nueva Consulta"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nueva Consulta"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async getRowCount(): Promise<number> {

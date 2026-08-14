@@ -1,11 +1,7 @@
 import { Component, computed, inject, output, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { NotificationsService } from '../../core/services/notifications.service';
-import {
-  AppNotification,
-  NotificationType,
-  PaginatedNotifications,
-} from '../../core/models/notification.interfaces';
+import { AppNotification, PaginatedNotifications } from '../../core/models/notification.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -219,18 +215,24 @@ const TYPE_COLORS: Record<string, string> = {
         <div class="space-y-2">
           @for (notification of resource.value().data; track notification.id) {
             <div
-              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3"
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 cursor-pointer hover:shadow-md transition-shadow flex items-start gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               [style.border-left-color]="
                 !notification.isRead ? 'var(--color-primary)' : 'var(--color-secondary)'
               "
+              role="button"
+              tabindex="0"
               (click)="handleItemClick(notification)"
+              (keydown.enter)="handleItemClick(notification)"
+              (keydown.space.prevent)="handleItemClick(notification)"
             >
               <!-- Icon -->
               <div
                 class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                 [class]="getTypeColor(notification.type)"
               >
-                <mat-icon class="!w-5 !h-5 !text-[20px] !leading-none">{{ getTypeIcon(notification.type) }}</mat-icon>
+                <mat-icon class="!w-5 !h-5 !text-[20px] !leading-none">{{
+                  getTypeIcon(notification.type)
+                }}</mat-icon>
               </div>
 
               <!-- Content -->

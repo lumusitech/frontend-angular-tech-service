@@ -21,7 +21,9 @@ test.describe('Pending Items', () => {
     const page = new PendingItemsPage(adminPage);
     await page.goto();
     await page.search('seguimiento');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('seguimiento');
   });
 });

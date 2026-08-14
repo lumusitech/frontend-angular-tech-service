@@ -15,14 +15,26 @@ async function getAdminToken(): Promise<string | null> {
 }
 
 async function ensureExists(token: string, url: string, data: Record<string, unknown>) {
-  const ctx = await apiRequest.newContext({ extraHTTPHeaders: { Authorization: `Bearer ${token}` } });
-  await ctx.post(`${BASE}${url}`, { data }).catch(() => {});
+  const ctx = await apiRequest.newContext({
+    extraHTTPHeaders: { Authorization: `Bearer ${token}` },
+  });
+  await ctx.post(`${BASE}${url}`, { data }).catch(() => undefined);
 }
 
 async function ensureTestUsers(token: string) {
   const users = [
-    { email: TEST_CREDENTIALS.technician.email, password: TEST_CREDENTIALS.technician.password, name: 'Técnico de Prueba', role: 'technician' },
-    { email: TEST_CREDENTIALS.seller.email, password: TEST_CREDENTIALS.seller.password, name: 'Vendedor de Prueba', role: 'seller' },
+    {
+      email: TEST_CREDENTIALS.technician.email,
+      password: TEST_CREDENTIALS.technician.password,
+      name: 'Técnico de Prueba',
+      role: 'technician',
+    },
+    {
+      email: TEST_CREDENTIALS.seller.email,
+      password: TEST_CREDENTIALS.seller.password,
+      name: 'Vendedor de Prueba',
+      role: 'seller',
+    },
   ];
   for (const user of users) {
     await ensureExists(token, '/api/users', user);
@@ -59,7 +71,9 @@ async function ensureTestExpense(token: string) {
 export async function seed(): Promise<void> {
   const token = await getAdminToken();
   if (!token) {
-    console.warn('Seed: no se pudo obtener token admin. Asegurate de que el backend tenga admin@test.com/admin123');
+    console.warn(
+      'Seed: no se pudo obtener token admin. Asegurate de que el backend tenga admin@test.com/admin123',
+    );
     return;
   }
 

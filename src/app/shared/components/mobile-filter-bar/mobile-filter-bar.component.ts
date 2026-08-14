@@ -11,12 +11,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     <div class="filter-fields" [class.expanded]="expanded()">
       <ng-content />
       @if (hasActiveFilters()) {
-        <button
-          mat-stroked-button
-          (click)="onClearFilters()"
-          class="clear-btn"
-          type="button"
-        >
+        <button mat-stroked-button (click)="onClearFilters()" class="clear-btn" type="button">
           <mat-icon class="!w-5 !h-5">filter_list_off</mat-icon>
           {{ 'common.clearFilters' | translate }}
         </button>
@@ -25,7 +20,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
     <!-- Mobile backdrop -->
     @if (expanded()) {
-      <div class="backdrop" (click)="expanded.set(false)"></div>
+      <div
+        class="backdrop"
+        role="button"
+        tabindex="-1"
+        (click)="expanded.set(false)"
+        (keydown.escape)="expanded.set(false)"
+      ></div>
     }
 
     <!-- Mobile toggle button -->
@@ -41,12 +42,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         Filtros
       </button>
       @if (hasActiveFilters()) {
-        <button
-          mat-icon-button
-          (click)="clearFilters.emit()"
-          class="clear-icon-btn"
-          type="button"
-        >
+        <button mat-icon-button (click)="clearFilters.emit()" class="clear-icon-btn" type="button">
           <mat-icon class="!text-base">close</mat-icon>
         </button>
       }
@@ -103,7 +99,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         background: white;
         padding: 1rem;
         border-radius: 0.75rem;
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+        box-shadow:
+          0 20px 25px -5px rgb(0 0 0 / 0.1),
           0 8px 10px -6px rgb(0 0 0 / 0.1);
         border: 1px solid #e5e7eb;
         max-height: 80vh;

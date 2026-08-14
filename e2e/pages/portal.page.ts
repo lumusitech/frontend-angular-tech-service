@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class PortalPage {
   constructor(private page: Page) {}
@@ -8,8 +8,14 @@ export class PortalPage {
   }
 
   async searchTrackingCode(code: string) {
-    await this.page.fill('input[placeholder*="Código"], input[placeholder*="code"], input[type="text"]', code);
-    await this.page.locator('button[type="submit"], button:has-text("Buscar"), button:has-text("Track")').first().click();
+    await this.page.fill(
+      'input[placeholder*="Código"], input[placeholder*="code"], input[type="text"]',
+      code,
+    );
+    await this.page
+      .locator('button[type="submit"], button:has-text("Buscar"), button:has-text("Track")')
+      .first()
+      .click();
   }
 
   async hasTimeline() {

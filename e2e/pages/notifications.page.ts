@@ -16,6 +16,9 @@ export class NotificationsPage {
   }
 
   async markAllAsRead() {
-    await this.page.locator('button:has-text("Marcar todas"), button:has-text("Mark all")').first().click();
+    await this.page
+      .locator('button:has-text("Marcar todas"), button:has-text("Mark all")')
+      .first()
+      .click();
   }
 }

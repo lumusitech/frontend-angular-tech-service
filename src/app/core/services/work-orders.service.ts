@@ -61,16 +61,11 @@ export class WorkOrdersService {
     materialId: string,
     dto: Partial<CreateWorkOrderMaterialDto>,
   ): Observable<void> {
-    return this.http.patch<void>(
-      `${this.apiUrl}/${workOrderId}/materials/${materialId}`,
-      dto,
-    );
+    return this.http.patch<void>(`${this.apiUrl}/${workOrderId}/materials/${materialId}`, dto);
   }
 
   deleteMaterial(workOrderId: string, materialId: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/${workOrderId}/materials/${materialId}`,
-    );
+    return this.http.delete<void>(`${this.apiUrl}/${workOrderId}/materials/${materialId}`);
   }
 
   addTask(workOrderId: string, dto: CreateTaskDto): Observable<void> {

@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from './auth.service';
 import { NotificationsService } from './notifications.service';
-import { AppNotification } from '../models/notification.interfaces';
+import { AppNotification, NotificationType } from '../models/notification.interfaces';
 import {
   NOTIFICATION_TOAST_ICONS,
   ToastContentComponent,
@@ -71,7 +71,7 @@ export class WebsocketService implements OnDestroy {
           this.workOrderRefreshKey.update((n) => n + 1);
         }
         if (
-          data.type === ('work_order.status_changed' as any) &&
+          data.type === NotificationType.WORK_ORDER_STATUS_CHANGED &&
           data.referenceId &&
           data.metadata
         ) {

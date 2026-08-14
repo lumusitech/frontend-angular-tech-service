@@ -83,9 +83,12 @@ describe('GlobalSearchComponent', () => {
 
     const dropdown = fixture.nativeElement.querySelector('.shadow-lg');
     expect(dropdown).toBeTruthy();
-    const noResults = dropdown.querySelector('.hidden') === null
-      ? null
-      : Array.from(dropdown.querySelectorAll('div')).find((el) => (el as HTMLElement).textContent?.includes('common.noResults'));
+    const noResults =
+      dropdown.querySelector('.hidden') === null
+        ? null
+        : Array.from(dropdown.querySelectorAll('div')).find((el) =>
+            (el as HTMLElement).textContent?.includes('common.noResults'),
+          );
     expect(noResults).toBeTruthy();
   });
 
@@ -93,9 +96,30 @@ describe('GlobalSearchComponent', () => {
     component.query.set('juan');
     component.isOpen.set(true);
     resultsSignal.set([
-      { type: 'client', id: 'c1', title: 'Juan', subtitle: 'j@t.com', icon: 'person', route: '/admin/clients/c1' },
-      { type: 'client', id: 'c2', title: 'Juana', subtitle: 'ju@t.com', icon: 'person', route: '/admin/clients/c2' },
-      { type: 'supplier', id: 's1', title: 'Proveedor', subtitle: 'p@t.com', icon: 'local_shipping', route: '/admin/suppliers' },
+      {
+        type: 'client',
+        id: 'c1',
+        title: 'Juan',
+        subtitle: 'j@t.com',
+        icon: 'person',
+        route: '/admin/clients/c1',
+      },
+      {
+        type: 'client',
+        id: 'c2',
+        title: 'Juana',
+        subtitle: 'ju@t.com',
+        icon: 'person',
+        route: '/admin/clients/c2',
+      },
+      {
+        type: 'supplier',
+        id: 's1',
+        title: 'Proveedor',
+        subtitle: 'p@t.com',
+        icon: 'local_shipping',
+        route: '/admin/suppliers',
+      },
     ]);
     fixture.detectChanges();
 
@@ -109,7 +133,9 @@ describe('GlobalSearchComponent', () => {
     component.query.set('juan');
     fixture.detectChanges();
 
-    const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+    const buttons = Array.from(
+      fixture.nativeElement.querySelectorAll('button'),
+    ) as HTMLButtonElement[];
     const xButton = buttons.find((b) => b.textContent?.includes('close'));
     expect(xButton).toBeTruthy();
     xButton!.click();
@@ -122,7 +148,14 @@ describe('GlobalSearchComponent', () => {
     component.query.set('juan');
     component.isOpen.set(true);
     resultsSignal.set([
-      { type: 'client', id: 'c1', title: 'Juan', subtitle: 'j@t.com', icon: 'person', route: '/admin/clients/c1' },
+      {
+        type: 'client',
+        id: 'c1',
+        title: 'Juan',
+        subtitle: 'j@t.com',
+        icon: 'person',
+        route: '/admin/clients/c1',
+      },
     ]);
     fixture.detectChanges();
 
@@ -136,17 +169,23 @@ describe('GlobalSearchComponent', () => {
     component.query.set('prov');
     component.isOpen.set(true);
     resultsSignal.set([
-      { type: 'supplier', id: 's1', title: 'Proveedor', subtitle: 'p@t.com', icon: 'local_shipping', route: '/admin/suppliers' },
+      {
+        type: 'supplier',
+        id: 's1',
+        title: 'Proveedor',
+        subtitle: 'p@t.com',
+        icon: 'local_shipping',
+        route: '/admin/suppliers',
+      },
     ]);
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector('.shadow-lg button');
     button.click();
 
-    expect(navigateSpy).toHaveBeenCalledWith(
-      ['/admin/suppliers'],
-      { queryParams: { highlight: 's1', search: 'Proveedor' } },
-    );
+    expect(navigateSpy).toHaveBeenCalledWith(['/admin/suppliers'], {
+      queryParams: { highlight: 's1', search: 'Proveedor' },
+    });
   });
 
   it('should debounce search calls on input', () => {

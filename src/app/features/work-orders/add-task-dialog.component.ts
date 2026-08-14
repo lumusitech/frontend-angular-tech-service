@@ -83,7 +83,10 @@ interface DialogData {
         @if (saving()) {
           {{ (isEditing() ? 'workOrders.tasks.saving' : 'workOrders.tasks.creating') | translate }}
         } @else {
-          {{ (isEditing() ? 'workOrders.tasks.saveChanges' : 'workOrders.tasks.createTask') | translate }}
+          {{
+            (isEditing() ? 'workOrders.tasks.saveChanges' : 'workOrders.tasks.createTask')
+              | translate
+          }}
         }
       </button>
     </mat-dialog-actions>

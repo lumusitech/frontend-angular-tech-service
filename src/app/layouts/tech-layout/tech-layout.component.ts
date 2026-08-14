@@ -18,9 +18,15 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-na
         </div>
         <div class="flex items-center gap-3">
           @if (authService.user()?.avatar) {
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden bg-blue-600">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden bg-blue-600"
+            >
               @if (authService.user()!.avatar!.startsWith('data:')) {
-                <img [src]="authService.user()!.avatar" class="w-full h-full object-cover" />
+                <img
+                  [src]="authService.user()!.avatar"
+                  alt="Avatar del técnico"
+                  class="w-full h-full object-cover"
+                />
               } @else {
                 {{ authService.user()!.avatar }}
               }

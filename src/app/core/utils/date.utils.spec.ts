@@ -68,7 +68,6 @@ describe('parseLocalDate', () => {
   it('should create Date at midnight local, not UTC', () => {
     // new Date("2026-05-02") creates UTC midnight
     // parseLocalDate("2026-05-02") should create local midnight
-    const isoDate = new Date('2026-05-02');
     const localDate = parseLocalDate('2026-05-02');
 
     // They should represent the same calendar day in local time
