@@ -7,6 +7,8 @@ import {
   UpdateClientDto,
   ClientFilters,
   PaginatedResponse,
+  BulkClientStatusResult,
+  BulkClientDeleteResult,
 } from '../models/client.interfaces';
 
 @Service()
@@ -40,5 +42,13 @@ export class ClientsService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], isActive: boolean): Observable<BulkClientStatusResult> {
+    return this.http.patch<BulkClientStatusResult>(`${this.apiUrl}/bulk-status`, { ids, isActive });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkClientDeleteResult> {
+    return this.http.post<BulkClientDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

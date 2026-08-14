@@ -13,6 +13,8 @@ import {
   CreateTaskDto,
   UpdateTaskDto,
   WorkOrderFilters,
+  WorkOrderStatus,
+  BulkWorkOrderStatusResult,
 } from '../models/work-order.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
@@ -115,5 +117,12 @@ export class WorkOrdersService {
     return this.http.delete<WorkOrderStatusLog>(
       `${this.apiUrl}/${workOrderId}/status-logs/${logId}/detail`,
     );
+  }
+
+  bulkStatusChange(ids: string[], status: WorkOrderStatus): Observable<BulkWorkOrderStatusResult> {
+    return this.http.patch<BulkWorkOrderStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      status,
+    });
   }
 }

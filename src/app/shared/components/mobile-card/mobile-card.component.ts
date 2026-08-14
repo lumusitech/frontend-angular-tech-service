@@ -1,7 +1,8 @@
-import { Component, input, signal, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, input, output, signal, ElementRef, inject, viewChild } from '@angular/core';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { StatusBadgeComponent, StatusBadgeType } from '../status-badge/status-badge.component';
 import { CopyFieldComponent } from '../copy-field/copy-field.component';
 
@@ -17,6 +18,7 @@ export interface MobileCardField {
     MatExpansionModule,
     MatIconModule,
     MatButtonModule,
+    MatCheckboxModule,
     StatusBadgeComponent,
     CopyFieldComponent,
   ],
@@ -114,6 +116,15 @@ export interface MobileCardField {
       >
         <mat-expansion-panel-header class="!py-3">
           <mat-panel-title class="!flex !items-center !gap-3">
+            @if (selectable()) {
+              <mat-checkbox
+                color="primary"
+                [checked]="checked()"
+                class="!mr-1"
+                (click)="$event.stopPropagation()"
+                (change)="selectionChange.emit($event.checked)"
+              />
+            }
             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate flex-1">
               {{ title() }}
             </span>
@@ -172,10 +183,14 @@ export class MobileCardComponent {
   readonly statusType = input<StatusBadgeType>('workOrderStatus');
   readonly fields = input.required<MobileCardField[]>();
   readonly canSwipe = input(false);
+  readonly selectable = input(false);
+  readonly checked = input(false);
   readonly editIcon = input<string>('edit');
   readonly editLabel = input<string>('Editar');
   readonly onEdit = input<((event: Event) => void) | null>(null);
   readonly onDelete = input<((event: Event) => void) | null>(null);
+
+  readonly selectionChange = output<boolean>();
 
   readonly panelExpanded = signal(false);
 

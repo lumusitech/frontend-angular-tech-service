@@ -169,6 +169,27 @@
       "viewReport": "View Report"
     }
   },
+  "bulk": {
+    "selectAll": "Select all",
+    "selected": "selected",
+    "clearSelection": "Clear selection",
+    "exportCsv": "Export CSV",
+    "status": "Status",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "deleteSelected": "Delete selected",
+    "deleteTitle": "Delete clients",
+    "deleteMessage": "Are you sure you want to delete {{count}} client(s)? This action cannot be undone.",
+    "changeStatus": "Change status",
+    "changeStatusMessage": "The status of {{count}} work order(s) will be changed. Invalid transitions will be skipped.",
+    "toast": {
+      "activated": "Clients activated successfully",
+      "deactivated": "Clients deactivated successfully",
+      "statusChanged": "Status updated successfully",
+      "partial": "Completed: {{succeeded}}, skipped: {{failed}}",
+      "error": "Error processing selection"
+    }
+  },
   "users": {
     "title": "Users",
     "subtitle": "Manage system users",

@@ -51,3 +51,23 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface BulkClientStatusSucceeded {
+  id: string;
+  isActive: boolean;
+}
+
+export interface BulkClientFailedItem {
+  id: string;
+  reason: string;
+}
+
+export interface BulkClientStatusResult {
+  succeeded: BulkClientStatusSucceeded[];
+  failed: BulkClientFailedItem[];
+}
+
+export interface BulkClientDeleteResult {
+  succeeded: { id: string }[];
+  failed: BulkClientFailedItem[];
+}
