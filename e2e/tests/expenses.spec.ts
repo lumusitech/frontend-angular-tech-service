@@ -11,15 +11,23 @@ test.describe('Expenses', () => {
   test('should open create dialog', async ({ adminPage }) => {
     await adminPage.goto('/admin/expenses');
     await adminPage.waitForSelector('h1');
-    await adminPage.locator('button:has-text("Nuevo Gasto"), button:has-text("Create")').first().click();
+    await adminPage
+      .locator('button:has-text("Nuevo Gasto"), button:has-text("Create")')
+      .first()
+      .click();
     await expect(adminPage.locator('mat-dialog-container')).toBeVisible();
   });
 
   test('should search expenses', async ({ adminPage }) => {
     await adminPage.goto('/admin/expenses');
     await adminPage.waitForSelector('h1');
-    await adminPage.fill('input[placeholder*="Buscar"], input[placeholder*="Search"]', 'materiales');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    await adminPage.fill(
+      'input[placeholder*="Buscar"], input[placeholder*="Search"]',
+      'materiales',
+    );
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('materiales');
   });
 

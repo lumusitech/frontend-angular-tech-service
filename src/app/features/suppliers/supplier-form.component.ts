@@ -57,10 +57,7 @@ interface SupplierFormModel {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'suppliers.name' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="supplierForm.name"
-          />
+          <input matInput [formField]="supplierForm.name" />
           @if (supplierForm.name().invalid() && supplierForm.name().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -68,10 +65,7 @@ interface SupplierFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'suppliers.contact' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="supplierForm.contact"
-          />
+          <input matInput [formField]="supplierForm.contact" />
           @if (supplierForm.contact().invalid() && supplierForm.contact().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -79,10 +73,7 @@ interface SupplierFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'suppliers.phone' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="supplierForm.phone"
-          />
+          <input matInput [formField]="supplierForm.phone" />
           @if (supplierForm.phone().invalid() && supplierForm.phone().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -90,11 +81,7 @@ interface SupplierFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'suppliers.email' | translate }}</mat-label>
-          <input
-            matInput
-            type="email"
-            [formField]="supplierForm.email"
-          />
+          <input matInput type="email" [formField]="supplierForm.email" />
           @if (supplierForm.email().invalid() && supplierForm.email().touched()) {
             <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
           }
@@ -103,10 +90,7 @@ interface SupplierFormModel {
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>{{ 'suppliers.address' | translate }}</mat-label>
-        <input
-          matInput
-          [formField]="supplierForm.address"
-        />
+        <input matInput [formField]="supplierForm.address" />
         @if (supplierForm.address().invalid() && supplierForm.address().touched()) {
           <mat-error>{{ t('validation.required') }}</mat-error>
         }
@@ -114,11 +98,7 @@ interface SupplierFormModel {
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>{{ 'suppliers.notes' | translate }}</mat-label>
-        <textarea
-          matInput
-          [formField]="supplierForm.notes"
-          rows="3"
-        ></textarea>
+        <textarea matInput [formField]="supplierForm.notes" rows="3"></textarea>
       </mat-form-field>
 
       <mat-checkbox [formField]="supplierForm.isActive">
@@ -128,7 +108,12 @@ interface SupplierFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || supplierForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || supplierForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>

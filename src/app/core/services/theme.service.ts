@@ -90,9 +90,7 @@ export class ThemeService {
 
     this.updateTimeout = setTimeout(() => {
       if (this.authService.isAuthenticated()) {
-        this.prefsService.update({ theme }).subscribe({
-          error: () => {},
-        });
+        this.prefsService.update({ theme }).subscribe();
       }
     }, 500);
   }

@@ -24,7 +24,10 @@ describe('WorkOrdersListComponent - Date Filtering', () => {
       imports: [WorkOrdersListComponent],
       providers: [
         { provide: WorkOrdersService, useValue: {} },
-        { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((k: string) => k) } },
+        {
+          provide: TranslationService,
+          useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
+        },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
         { provide: MatDialog, useValue: { open: vi.fn() } },
       ],

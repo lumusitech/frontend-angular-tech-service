@@ -103,11 +103,15 @@ interface BusinessForm {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label
+                for="primary-color-input"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+              >
                 {{ 'settings.primaryColor' | translate }}
               </label>
               <div class="flex items-center gap-2">
                 <input
+                  id="primary-color-input"
                   type="color"
                   [formField]="businessForm.primaryColor"
                   class="w-10 h-10 rounded cursor-pointer border-0"
@@ -121,11 +125,15 @@ interface BusinessForm {
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label
+                for="secondary-color-input"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+              >
                 {{ 'settings.secondaryColor' | translate }}
               </label>
               <div class="flex items-center gap-2">
                 <input
+                  id="secondary-color-input"
                   type="color"
                   [formField]="businessForm.secondaryColor"
                   class="w-10 h-10 rounded cursor-pointer border-0"

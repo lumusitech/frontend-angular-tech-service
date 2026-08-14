@@ -78,7 +78,9 @@ interface DialogData {
         {{
           saving()
             ? ('common.saving' | translate)
-            : (data.note ? ('workOrders.notes.saveNote' | translate) : ('workOrders.notes.saveNote' | translate))
+            : data.note
+              ? ('workOrders.notes.saveNote' | translate)
+              : ('workOrders.notes.saveNote' | translate)
         }}
       </button>
     </mat-dialog-actions>

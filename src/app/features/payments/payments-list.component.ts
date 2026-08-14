@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -29,11 +29,17 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { TrackingCodeComponent } from '../../shared/components/tracking-code/tracking-code.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { PaymentFormComponent } from './payment-form.component';
-import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
+import {
+  DateFieldSelectorComponent,
+  DateFieldOption,
+} from '../../shared/components/date-field-selector/date-field-selector.component';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 @Component({
@@ -75,69 +81,112 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
-          <mat-form-field appearance="outline" class="w-40">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-              <mat-option>{{ 'payments.filters.all' | translate }}</mat-option>
-              <mat-option value="pending">{{ 'payments.statuses.pending' | translate }}</mat-option>
-              <mat-option value="approved">{{ 'payments.statuses.approved' | translate }}</mat-option>
-              <mat-option value="rejected">{{ 'payments.statuses.rejected' | translate }}</mat-option>
-              <mat-option value="refunded">{{ 'payments.statuses.refunded' | translate }}</mat-option>
-              <mat-option value="cancelled">{{
-                'payments.statuses.cancelled' | translate
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
+            <mat-form-field appearance="outline" class="w-40">
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select
+                [value]="statusFilter()"
+                (selectionChange)="statusFilter.set($event.value)"
+              >
+                <mat-option>{{ 'payments.filters.all' | translate }}</mat-option>
+                <mat-option value="pending">{{
+                  'payments.statuses.pending' | translate
+                }}</mat-option>
+                <mat-option value="approved">{{
+                  'payments.statuses.approved' | translate
+                }}</mat-option>
+                <mat-option value="rejected">{{
+                  'payments.statuses.rejected' | translate
+                }}</mat-option>
+                <mat-option value="refunded">{{
+                  'payments.statuses.refunded' | translate
+                }}</mat-option>
+                <mat-option value="cancelled">{{
+                  'payments.statuses.cancelled' | translate
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-40">
-            <mat-label>{{ 'payments.method' | translate }}</mat-label>
-            <mat-select [value]="methodFilter()" (selectionChange)="methodFilter.set($event.value)">
-              <mat-option>{{ 'payments.filters.allMethods' | translate }}</mat-option>
-              <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
-              <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
-              <mat-option value="credit_card">{{
-                'payments.methods.creditCard' | translate
-              }}</mat-option>
-              <mat-option value="debit_card">{{
-                'payments.methods.debitCard' | translate
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-40">
+              <mat-label>{{ 'payments.method' | translate }}</mat-label>
+              <mat-select
+                [value]="methodFilter()"
+                (selectionChange)="methodFilter.set($event.value)"
+              >
+                <mat-option>{{ 'payments.filters.allMethods' | translate }}</mat-option>
+                <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
+                <mat-option value="transfer">{{
+                  'payments.methods.transfer' | translate
+                }}</mat-option>
+                <mat-option value="credit_card">{{
+                  'payments.methods.creditCard' | translate
+                }}</mat-option>
+                <mat-option value="debit_card">{{
+                  'payments.methods.debitCard' | translate
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
-
-          <app-date-field-selector
-            [fields]="dateFieldOptions"
-            [value]="dateField()"
-            (valueChange)="onDateFieldChange($event)"
-          />
-
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
             <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-          </mat-form-field>
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
+
+            <app-date-field-selector
+              [fields]="dateFieldOptions"
+              [value]="dateField()"
+              (valueChange)="onDateFieldChange($event)"
+            />
+
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+            </mat-form-field>
           </app-mobile-filter-bar>
 
           @if (dateError()) {
-            <div class="w-40 text-red-500 dark:text-red-400 text-xs">{{ dateError() | translate }}</div>
+            <div class="w-40 text-red-500 dark:text-red-400 text-xs">
+              {{ dateError() | translate }}
+            </div>
           }
 
           @if (fromNotification()) {
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+            >
               <mat-icon class="!w-3.5 !h-3.5">notifications</mat-icon>
               {{ 'notifications.filteredFromNotification' | translate }}
             </span>
@@ -169,10 +218,19 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               [onEdit]="onEditSwipe(payment)"
               [onDelete]="onDeleteSwipe(payment)"
             >
-              <button mat-icon-button (click)="openEditDialog(payment); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(payment); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deletePayment(payment); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deletePayment(payment); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -311,21 +369,35 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               </th>
               <td mat-cell *matCellDef="let payment" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="paymentActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="paymentActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #paymentActionsMenu="matMenu">
                     @if (payment.status === 'pending') {
-                      <button mat-menu-item (click)="approvePayment(payment); $event.stopPropagation()">
+                      <button
+                        mat-menu-item
+                        (click)="approvePayment(payment); $event.stopPropagation()"
+                      >
                         <mat-icon>check_circle</mat-icon>
                         <span>{{ 'payments.approve' | translate }}</span>
                       </button>
                     }
-                    <button mat-menu-item (click)="openEditDialog(payment); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="openEditDialog(payment); $event.stopPropagation()"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>{{ 'common.edit' | translate }}</span>
                     </button>
-                    <button mat-menu-item (click)="deletePayment(payment); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="deletePayment(payment); $event.stopPropagation()"
+                    >
                       <mat-icon>delete</mat-icon>
                       <span>{{ 'common.delete' | translate }}</span>
                     </button>
@@ -335,7 +407,13 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              (click)="openEditDialog(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -350,7 +428,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     </div>
   `,
 })
-export class PaymentsListComponent implements OnInit {
+export class PaymentsListComponent {
   private readonly paymentsService = inject(PaymentsService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -374,8 +452,10 @@ export class PaymentsListComponent implements OnInit {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateError = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly dateFieldOptions: DateFieldOption[] = [
     { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
@@ -432,8 +512,6 @@ export class PaymentsListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   onDateFieldChange(field: string): void {
     this.dateField.set(field);
@@ -497,9 +575,15 @@ export class PaymentsListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.statusFilter() !== '' || this.methodFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '' || this.fromNotification();
+    return (
+      this.searchFilter() !== '' ||
+      this.statusFilter() !== '' ||
+      this.methodFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== '' ||
+      this.fromNotification()
+    );
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -552,9 +636,20 @@ export class PaymentsListComponent implements OnInit {
     return [
       { label: this.translationService.instant('payments.amount'), value: String(payment.amount) },
       { label: this.translationService.instant('payments.method'), value: payment.method },
-      { label: this.translationService.instant('payments.provider'), value: payment.provider || '-' },
-      { label: this.translationService.instant('payments.paymentDate'), value: payment.paidAt || '-', type: 'date' },
-      { label: this.translationService.instant('common.created'), value: payment.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('payments.provider'),
+        value: payment.provider || '-',
+      },
+      {
+        label: this.translationService.instant('payments.paymentDate'),
+        value: payment.paidAt || '-',
+        type: 'date',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: payment.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -563,7 +658,9 @@ export class PaymentsListComponent implements OnInit {
       width: '400px',
       data: {
         title: this.translationService.instant('payments.deleteTitle'),
-        message: this.translationService.instant('payments.deleteMessage', { amount: String(payment.amount) }),
+        message: this.translationService.instant('payments.deleteMessage', {
+          amount: String(payment.amount),
+        }),
         confirmLabel: this.translationService.instant('common.delete'),
         color: 'warn',
       },
@@ -573,11 +670,16 @@ export class PaymentsListComponent implements OnInit {
       if (confirmed) {
         this.paymentsService.delete(payment.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.paymentsResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -586,10 +688,10 @@ export class PaymentsListComponent implements OnInit {
   }
 
   onEditSwipe(payment: Payment): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(payment);
+    return () => this.openEditDialog(payment);
   }
 
   onDeleteSwipe(payment: Payment): (event: Event) => void {
-    return (_event: Event) => this.deletePayment(payment);
+    return () => this.deletePayment(payment);
   }
 }

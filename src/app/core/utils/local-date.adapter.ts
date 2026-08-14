@@ -9,7 +9,7 @@ import { parseLocalDate } from './date.utils';
  */
 @Injectable()
 export class LocalDateAdapter extends NativeDateAdapter {
-  override parse(value: any): Date | null {
+  override parse(value: unknown): Date | null {
     if (typeof value === 'string') {
       const str = value.trim();
       if (!str) return null;

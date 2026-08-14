@@ -78,16 +78,12 @@ export const routes: Routes = [
       {
         path: 'skills',
         loadComponent: () =>
-          import('./features/skills/skills-list.component').then(
-            (m) => m.SkillsListComponent,
-          ),
+          import('./features/skills/skills-list.component').then((m) => m.SkillsListComponent),
       },
       {
         path: 'users',
         loadComponent: () =>
-          import('./features/users/users-list.component').then(
-            (m) => m.UsersListComponent,
-          ),
+          import('./features/users/users-list.component').then((m) => m.UsersListComponent),
       },
       {
         path: 'work-orders',
@@ -220,9 +216,7 @@ export const routes: Routes = [
     path: 'tech',
     canActivate: [technicianGuard],
     loadComponent: () =>
-      import('./layouts/tech-layout/tech-layout.component').then(
-        (m) => m.TechLayoutComponent,
-      ),
+      import('./layouts/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
     children: [
       {
         path: '',
@@ -291,6 +285,10 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', loadComponent: () => import('./features/landing/landing.component').then((m) => m.LandingComponent) },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./features/landing/landing.component').then((m) => m.LandingComponent),
+  },
   { path: '**', redirectTo: '/login' },
 ];

@@ -84,10 +84,7 @@ describe('ClientFormComponent', () => {
         }),
       );
       expect(dialogRef.close).toHaveBeenCalled();
-      expect(toast.show).toHaveBeenCalledWith(
-        'common.toast.created',
-        'success',
-      );
+      expect(toast.show).toHaveBeenCalledWith('common.toast.created', 'success');
     });
 
     it('should show error toast when create fails', () => {
@@ -108,10 +105,7 @@ describe('ClientFormComponent', () => {
       component.onSubmit();
 
       expect(dialogRef.close).not.toHaveBeenCalled();
-      expect(toast.show).toHaveBeenCalledWith(
-        'common.toast.errorCreated',
-        'error',
-      );
+      expect(toast.show).toHaveBeenCalledWith('common.toast.errorCreated', 'error');
     });
   });
 
@@ -127,9 +121,7 @@ describe('ClientFormComponent', () => {
       updatedAt: '2026-01-01',
     };
 
-    beforeEach(() =>
-      setup({ mode: 'edit', client: existingClient } as never),
-    );
+    beforeEach(() => setup({ mode: 'edit', client: existingClient } as never));
 
     it('should pre-fill form with existing client data', () => {
       expect(component.model().name).toBe('Existing');
@@ -145,10 +137,7 @@ describe('ClientFormComponent', () => {
 
       component.onSubmit();
 
-      expect(updateSpy).toHaveBeenCalledWith(
-        'c-1',
-        expect.objectContaining({ isActive: false }),
-      );
+      expect(updateSpy).toHaveBeenCalledWith('c-1', expect.objectContaining({ isActive: false }));
     });
 
     it('should submit update and close dialog', () => {
@@ -160,10 +149,7 @@ describe('ClientFormComponent', () => {
     it('should show error toast when update fails', () => {
       updateSpy.mockReturnValue(throwError(() => new Error('fail')));
       component.onSubmit();
-      expect(toast.show).toHaveBeenCalledWith(
-        'common.toast.errorUpdated',
-        'error',
-      );
+      expect(toast.show).toHaveBeenCalledWith('common.toast.errorUpdated', 'error');
     });
   });
 });

@@ -3,10 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { WebsocketService } from '../../core/services/websocket.service';
-import {
-  WorkOrder,
-  WorkOrderStatus,
-} from '../../core/models/work-order.interfaces';
+import { WorkOrder } from '../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../core/models/dashboard.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -89,8 +86,12 @@ const STATUS_COLORS: Record<string, string> = {
         <div class="space-y-3">
           @for (order of resource.value().data; track order.id) {
             <div
-              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:shadow-md transition-shadow"
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              role="button"
+              tabindex="0"
               (click)="viewDetail(order)"
+              (keydown.enter)="viewDetail(order)"
+              (keydown.space.prevent)="viewDetail(order)"
             >
               <!-- Top row: tracking code + status badge -->
               <div class="flex items-center justify-between mb-2">
@@ -125,7 +126,9 @@ const STATUS_COLORS: Record<string, string> = {
                 </div>
                 @if (order.tasks && order.tasks.length > 0) {
                   <div class="flex items-center gap-1.5">
-                    <div class="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div
+                      class="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                    >
                       <div
                         class="h-full bg-green-500 rounded-full"
                         [style.width.%]="getTaskProgress(order)"

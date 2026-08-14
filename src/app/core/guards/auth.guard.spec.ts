@@ -1,6 +1,12 @@
 import { signal, computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router, UrlTree } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { authGuard, adminGuard, technicianGuard, sellerGuard } from './auth.guard';
 
@@ -39,8 +45,10 @@ describe('Route Guards', () => {
     userSignal.set(null);
   });
 
-  function runGuard(guard: Function): boolean | UrlTree {
-    return TestBed.runInInjectionContext(() => guard() as boolean | UrlTree);
+  function runGuard(guard: CanActivateFn): boolean | UrlTree {
+    const route: ActivatedRouteSnapshot = {} as ActivatedRouteSnapshot;
+    const state: RouterStateSnapshot = {} as RouterStateSnapshot;
+    return TestBed.runInInjectionContext(() => guard(route, state) as boolean | UrlTree);
   }
 
   describe('authGuard', () => {

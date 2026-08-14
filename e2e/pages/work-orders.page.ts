@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class WorkOrdersPage {
   constructor(private page: Page) {}
@@ -12,7 +12,10 @@ export class WorkOrdersPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nueva Orden"), button:has-text("New Order")').first().click();
+    await this.page
+      .locator('button:has-text("Nueva Orden"), button:has-text("New Order")')
+      .first()
+      .click();
   }
 
   async getStatusBadges() {

@@ -1,4 +1,3 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { ClientsListComponent } from './clients-list.component';
@@ -68,7 +67,13 @@ describe('ClientsListComponent', () => {
 
     it('should have correct displayed columns', () => {
       expect(component.displayedColumns).toEqual([
-        'name', 'email', 'phone', 'address', 'isActive', 'createdAt', 'actions',
+        'name',
+        'email',
+        'phone',
+        'address',
+        'isActive',
+        'createdAt',
+        'actions',
       ]);
     });
   });
@@ -248,7 +253,11 @@ describe('ClientsListComponent', () => {
 
     it('should handle missing phone', () => {
       const client = {
-        id: 'c-1', email: 'test@example.com', phone: '', address: 'Addr', createdAt: '2026-01-15T10:00:00.000Z',
+        id: 'c-1',
+        email: 'test@example.com',
+        phone: '',
+        address: 'Addr',
+        createdAt: '2026-01-15T10:00:00.000Z',
       } as never;
       const fields = component.getClientFields(client);
       expect(fields[1].value).toBe('-');
@@ -256,7 +265,11 @@ describe('ClientsListComponent', () => {
 
     it('should handle missing address', () => {
       const client = {
-        id: 'c-1', email: 'test@example.com', phone: '123', address: '', createdAt: '2026-01-15T10:00:00.000Z',
+        id: 'c-1',
+        email: 'test@example.com',
+        phone: '123',
+        address: '',
+        createdAt: '2026-01-15T10:00:00.000Z',
       } as never;
       const fields = component.getClientFields(client);
       expect(fields[2].value).toBe('-');
@@ -287,9 +300,15 @@ describe('ClientsListComponent', () => {
         providers: [
           { provide: ClientsService, useValue: { delete: deleteSpy } },
           { provide: Router, useValue: { navigate: navigateSpy } },
-          { provide: ActivatedRoute, useValue: createActivatedRouteMock({ highlight: 'c-1', search: 'test' }) },
+          {
+            provide: ActivatedRoute,
+            useValue: createActivatedRouteMock({ highlight: 'c-1', search: 'test' }),
+          },
           { provide: ToastService, useValue: { show: vi.fn() } },
-          { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((key: string) => key) } },
+          {
+            provide: TranslationService,
+            useValue: { instant: vi.fn().mockImplementation((key: string) => key) },
+          },
         ],
       });
 

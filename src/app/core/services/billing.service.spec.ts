@@ -107,17 +107,19 @@ describe('BillingService', () => {
     });
 
     it('should send all filters combined', () => {
-      service.getAll({
-        status: 'draft',
-        invoiceType: 'B',
-        dateFrom: '2026-01-01',
-        dateTo: '2026-12-31',
-        clientName: 'Perez',
-        page: 1,
-        limit: 10,
-        sortBy: 'createdAt',
-        order: 'ASC',
-      }).subscribe();
+      service
+        .getAll({
+          status: 'draft',
+          invoiceType: 'B',
+          dateFrom: '2026-01-01',
+          dateTo: '2026-12-31',
+          clientName: 'Perez',
+          page: 1,
+          limit: 10,
+          sortBy: 'createdAt',
+          order: 'ASC',
+        })
+        .subscribe();
 
       const req = httpMock.expectOne((r) => r.url === '/api/billing/invoices');
       expect(req.request.params.keys().length).toBe(9);
@@ -141,7 +143,9 @@ describe('BillingService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/billing/invoices/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/billing/invoices/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -233,7 +237,10 @@ describe('BillingService', () => {
 
       httpMock
         .expectOne('/api/billing/invoices/inv-1/cancel')
-        .flush({ message: 'Invoice already cancelled' }, { status: 400, statusText: 'Bad Request' });
+        .flush(
+          { message: 'Invoice already cancelled' },
+          { status: 400, statusText: 'Bad Request' },
+        );
     });
   });
 
@@ -256,7 +263,9 @@ describe('BillingService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      const errorBlob = new Blob([JSON.stringify({ message: 'Not Found' })], { type: 'application/json' });
+      const errorBlob = new Blob([JSON.stringify({ message: 'Not Found' })], {
+        type: 'application/json',
+      });
       httpMock.expectOne('/api/billing/invoices/nonexistent/pdf').flush(errorBlob, {
         status: 404,
         statusText: 'Not Found',

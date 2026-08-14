@@ -20,8 +20,12 @@ test.describe('Dashboard', () => {
   });
 
   test('should have edit mode toggle', async ({ adminPage }) => {
-    await adminPage.waitForSelector('button:has-text("tune"), [title*="Reordenar"]', { timeout: 10000 });
-    const editBtn = adminPage.locator('button[title*="Reordenar"], mat-icon:has-text("tune")').first();
+    await adminPage.waitForSelector('button:has-text("tune"), [title*="Reordenar"]', {
+      timeout: 10000,
+    });
+    const editBtn = adminPage
+      .locator('button[title*="Reordenar"], mat-icon:has-text("tune")')
+      .first();
     await expect(editBtn).toBeVisible();
   });
 });

@@ -11,7 +11,10 @@ test.describe('Clients CRUD', () => {
   test('should open create dialog', async ({ adminPage }) => {
     await adminPage.goto('/admin/clients');
     await adminPage.waitForSelector('h1');
-    await adminPage.locator('button:has-text("Nuevo Cliente"), button:has-text("Create")').first().click();
+    await adminPage
+      .locator('button:has-text("Nuevo Cliente"), button:has-text("Create")')
+      .first()
+      .click();
     await expect(adminPage.locator('mat-dialog-container')).toBeVisible();
   });
 
@@ -19,7 +22,9 @@ test.describe('Clients CRUD', () => {
     await adminPage.goto('/admin/clients');
     await adminPage.waitForSelector('h1');
     await adminPage.fill('input[placeholder*="Buscar"], input[placeholder*="Search"]', 'E2E');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('E2E');
   });
 

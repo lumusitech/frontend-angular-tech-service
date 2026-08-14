@@ -1,11 +1,7 @@
 export type InvoiceType = 'A' | 'B' | 'C';
 export type InvoiceStatus = 'draft' | 'issued' | 'cancelled' | 'rejected';
 export type InvoiceConcept = 'products' | 'services' | 'both';
-export type IvaCondition =
-  | 'responsable_inscripto'
-  | 'consumidor_final'
-  | 'monotributo'
-  | 'exento';
+export type IvaCondition = 'responsable_inscripto' | 'consumidor_final' | 'monotributo' | 'exento';
 
 export interface Invoice {
   id: string;

@@ -51,8 +51,8 @@ export class PushNotificationService {
 
       if (!subscription) return;
 
-      const json = subscription.toJSON() as Record<string, any>;
-      const keys = json['keys'] as Record<string, string> | undefined;
+      const json = subscription.toJSON();
+      const keys = json.keys;
 
       await firstValueFrom(
         this.http.post(SUBSCRIBE_ENDPOINT, {
@@ -89,8 +89,8 @@ export class PushNotificationService {
   }
 
   private listenForMessages(): void {
-    this.swPush.messages.subscribe((message: any) => {
-      const data = message as { title?: string; body?: string; url?: string };
+    this.swPush.messages.subscribe((message: { title?: string; body?: string; url?: string }) => {
+      const data = message;
       if (data.title && data.body) {
         new Notification(data.title, {
           body: data.body,
@@ -104,7 +104,7 @@ export class PushNotificationService {
 
   private listenForClicks(): void {
     this.swPush.notificationClicks.subscribe((event) => {
-      const url = (event.notification.data as any)?.url ?? '/';
+      const url = (event.notification.data as { url?: string })?.url ?? '/';
       window.open(url, '_blank');
     });
   }

@@ -24,11 +24,17 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { InvoiceFormComponent } from './invoice-form.component';
-import { DateFieldSelectorComponent, DateFieldOption } from '../../shared/components/date-field-selector/date-field-selector.component';
+import {
+  DateFieldSelectorComponent,
+  DateFieldOption,
+} from '../../shared/components/date-field-selector/date-field-selector.component';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 
 @Component({
@@ -69,16 +75,26 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
             <mat-form-field appearance="outline" class="w-44">
               <mat-label>{{ 'common.status' | translate }}</mat-label>
-              <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+              <mat-select
+                [value]="statusFilter()"
+                (selectionChange)="statusFilter.set($event.value)"
+              >
                 <mat-option value="">{{ 'billing.filters.allStatuses' | translate }}</mat-option>
                 <mat-option value="draft">{{ 'billing.statuses.draft' | translate }}</mat-option>
                 <mat-option value="issued">{{ 'billing.statuses.issued' | translate }}</mat-option>
-                <mat-option value="cancelled">{{ 'billing.statuses.cancelled' | translate }}</mat-option>
+                <mat-option value="cancelled">{{
+                  'billing.statuses.cancelled' | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
 
@@ -111,17 +127,35 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               (valueChange)="onDateFieldChange($event)"
             />
 
-            <mat-form-field appearance="outline" class="w-44"
-              [class.mat-form-field-invalid]="dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())">
+            <mat-form-field
+              appearance="outline"
+              class="w-44"
+              [class.mat-form-field-invalid]="
+                dateFrom() && dateTo() && parseLocalDate(dateFrom()) > parseLocalDate(dateTo())
+              "
+            >
               <mat-label>{{ 'common.from' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
               <mat-datepicker #dateFromPicker></mat-datepicker>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="w-44"
-              [class.mat-form-field-invalid]="dateError()">
+            <mat-form-field
+              appearance="outline"
+              class="w-44"
+              [class.mat-form-field-invalid]="dateError()"
+            >
               <mat-label>{{ 'common.to' | translate }}</mat-label>
-              <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
               <mat-datepicker #dateToPicker></mat-datepicker>
               @if (dateError()) {
@@ -159,7 +193,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
           <table
             mat-table
             matSort
@@ -261,8 +297,10 @@ export class InvoicesListComponent {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateError = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly dateFieldOptions: DateFieldOption[] = [
     { value: 'createdAt', labelKey: 'common.dateFieldCreated' },
@@ -288,9 +326,14 @@ export class InvoicesListComponent {
   displayedColumns = ['invoiceNumber', 'invoiceType', 'status', 'clientName', 'total', 'createdAt'];
 
   readonly hasActiveFilters = computed(() => {
-    return this.statusFilter() !== '' || this.typeFilter() !== '' || this.clientNameFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return (
+      this.statusFilter() !== '' ||
+      this.typeFilter() !== '' ||
+      this.clientNameFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== ''
+    );
   });
-
 
   clearFilters(): void {
     this.statusFilter.set('');
@@ -382,9 +425,16 @@ export class InvoicesListComponent {
   getInvoiceFields(invoice: Invoice): MobileCardField[] {
     return [
       { label: this.translationService.instant('billing.invoiceType'), value: invoice.invoiceType },
-      { label: this.translationService.instant('billing.clientName'), value: invoice.clientName || '-' },
+      {
+        label: this.translationService.instant('billing.clientName'),
+        value: invoice.clientName || '-',
+      },
       { label: this.translationService.instant('billing.total'), value: String(invoice.total) },
-      { label: this.translationService.instant('billing.createdAt'), value: invoice.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('billing.createdAt'),
+        value: invoice.createdAt,
+        type: 'date',
+      },
     ];
   }
 }

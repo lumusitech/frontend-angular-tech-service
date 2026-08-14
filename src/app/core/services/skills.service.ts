@@ -1,12 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  Skill,
-  CreateSkillDto,
-  UpdateSkillDto,
-  SkillFilters,
-} from '../models/skill.interfaces';
+import { Skill, CreateSkillDto, UpdateSkillDto, SkillFilters } from '../models/skill.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
 @Service()
@@ -19,7 +14,8 @@ export class SkillsService {
 
     if (filters?.search) params = params.set('search', filters.search);
     if (filters?.category) params = params.set('category', filters.category);
-    if (filters?.isActive !== undefined) params = params.set('isActive', filters.isActive.toString());
+    if (filters?.isActive !== undefined)
+      params = params.set('isActive', filters.isActive.toString());
     if (filters?.page) params = params.set('page', filters.page.toString());
     if (filters?.limit) params = params.set('limit', filters.limit.toString());
 

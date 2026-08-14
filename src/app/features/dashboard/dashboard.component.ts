@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { DashboardService } from '../../core/services/dashboard.service';
 import {
   DashboardLayoutService,
@@ -47,7 +47,11 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           @if (businessSettings()?.logoUrl) {
-            <img [src]="businessSettings()!.logoUrl" [alt]="businessSettings()!.businessName" class="h-10 w-10 rounded-lg object-cover" />
+            <img
+              [src]="businessSettings()!.logoUrl"
+              [alt]="businessSettings()!.businessName"
+              class="h-10 w-10 rounded-lg object-cover"
+            />
           }
           <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -97,7 +101,14 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                 }
                 @switch (widgetId) {
                   @case ('kpis') {
-                    <app-kpi-cards [kpis]="summary()!.kpis" [trends]="summary()!.trends" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" [borderColor]="primaryColor()" (kpiClick)="navigateTo($event)" />
+                    <app-kpi-cards
+                      [kpis]="summary()!.kpis"
+                      [trends]="summary()!.trends"
+                      [primaryColor]="primaryColor()"
+                      [secondaryColor]="secondaryColor()"
+                      [borderColor]="primaryColor()"
+                      (kpiClick)="navigateTo($event)"
+                    />
                   }
                   @case ('pendingItems') {
                     <app-pending-items-widget
@@ -105,7 +116,12 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                       [secondaryColor]="secondaryColor()"
                       [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()"
                       (viewAll)="navigateTo('/admin/pending-items')"
-                      (itemClick)="navigateTo('/admin/pending-items', { highlight: $event.id, search: $event.title })"
+                      (itemClick)="
+                        navigateTo('/admin/pending-items', {
+                          highlight: $event.id,
+                          search: $event.title,
+                        })
+                      "
                     />
                   }
                   @case ('inquiries') {
@@ -126,10 +142,20 @@ import { BusinessSettingsService } from '../../core/services/business-settings.s
                     />
                   }
                   @case ('quickActions') {
-                    <app-quick-actions-widget [secondaryColor]="secondaryColor()" [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()" (navigate)="navigateTo($event)" />
+                    <app-quick-actions-widget
+                      [secondaryColor]="secondaryColor()"
+                      [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()"
+                      (navigate)="navigateTo($event)"
+                    />
                   }
                   @case ('topClients') {
-                    <app-top-clients-widget [clients]="summary()!.topClients" [primaryColor]="primaryColor()" [secondaryColor]="secondaryColor()" [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()" (clientClick)="navigateTo('/admin/reports/clients/' + $event.id)" />
+                    <app-top-clients-widget
+                      [clients]="summary()!.topClients"
+                      [primaryColor]="primaryColor()"
+                      [secondaryColor]="secondaryColor()"
+                      [borderColor]="i % 2 === 0 ? primaryColor() : secondaryColor()"
+                      (clientClick)="navigateTo('/admin/reports/clients/' + $event.id)"
+                    />
                   }
                 }
               </div>
@@ -155,10 +181,12 @@ export class DashboardComponent implements OnInit {
   readonly primaryColor = computed(() => this.businessSettings()?.primaryColor ?? '#1E40AF');
   readonly secondaryColor = computed(() => this.businessSettings()?.secondaryColor ?? '#059669');
 
-  private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(() => ({
-    url: '/api/pending-items',
-    params: { status: 'pending', limit: '5', sortBy: 'dueDate', order: 'ASC' },
-  }));
+  private readonly pendingItemsResource = httpResource<PaginatedResponse<PendingItemSummary>>(
+    () => ({
+      url: '/api/pending-items',
+      params: { status: 'pending', limit: '5', sortBy: 'dueDate', order: 'ASC' },
+    }),
+  );
 
   private readonly inquiriesResource = httpResource<PaginatedResponse<InquirySummary>>(() => ({
     url: '/api/inquiries',

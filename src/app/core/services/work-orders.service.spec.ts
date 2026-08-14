@@ -102,7 +102,18 @@ describe('WorkOrdersService', () => {
     });
 
     it('should send all filters combined', () => {
-      service.getAll({ search: 'x', status: 'pending', priority: 'high', technicianId: 't-1', sellerId: 's-1', clientId: 'c-1', page: 2, limit: 5 }).subscribe();
+      service
+        .getAll({
+          search: 'x',
+          status: 'pending',
+          priority: 'high',
+          technicianId: 't-1',
+          sellerId: 's-1',
+          clientId: 'c-1',
+          page: 2,
+          limit: 5,
+        })
+        .subscribe();
 
       const req = httpMock.expectOne((r) => r.url === '/api/work-orders');
       expect(req.request.params.get('search')).toBe('x');
@@ -143,7 +154,9 @@ describe('WorkOrdersService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/work-orders/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/work-orders/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -189,7 +202,9 @@ describe('WorkOrdersService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/work-orders/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/work-orders/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -239,7 +254,14 @@ describe('WorkOrdersService', () => {
     });
 
     it('should include supplierId when provided', () => {
-      service.addMaterial('wo-1', { description: 'Cable', quantity: 1, unitCost: 5, supplierId: 'sup-1' }).subscribe();
+      service
+        .addMaterial('wo-1', {
+          description: 'Cable',
+          quantity: 1,
+          unitCost: 5,
+          supplierId: 'sup-1',
+        })
+        .subscribe();
 
       const req = httpMock.expectOne('/api/work-orders/wo-1/materials');
       expect(req.request.body.supplierId).toBe('sup-1');
@@ -260,10 +282,16 @@ describe('WorkOrdersService', () => {
     });
 
     it('should handle optional fields', () => {
-      service.addTask('wo-1', { title: 'Task', description: 'Desc', assignedToId: 'tech-1' }).subscribe();
+      service
+        .addTask('wo-1', { title: 'Task', description: 'Desc', assignedToId: 'tech-1' })
+        .subscribe();
 
       const req = httpMock.expectOne('/api/work-orders/wo-1/tasks');
-      expect(req.request.body).toEqual({ title: 'Task', description: 'Desc', assignedToId: 'tech-1' });
+      expect(req.request.body).toEqual({
+        title: 'Task',
+        description: 'Desc',
+        assignedToId: 'tech-1',
+      });
       req.flush(null);
     });
 

@@ -21,7 +21,9 @@ describe('StatusClassPipe', () => {
     });
 
     it('should return indigo for in_progress', () => {
-      expect(pipe.transform('in_progress', 'workOrderStatus')).toBe('bg-indigo-500/15 text-indigo-400');
+      expect(pipe.transform('in_progress', 'workOrderStatus')).toBe(
+        'bg-indigo-500/15 text-indigo-400',
+      );
     });
 
     it('should return gray for postponed', () => {
@@ -33,7 +35,9 @@ describe('StatusClassPipe', () => {
     });
 
     it('should return emerald for delivered', () => {
-      expect(pipe.transform('delivered', 'workOrderStatus')).toBe('bg-emerald-500/15 text-emerald-400');
+      expect(pipe.transform('delivered', 'workOrderStatus')).toBe(
+        'bg-emerald-500/15 text-emerald-400',
+      );
     });
 
     it('should return red for cancelled', () => {
@@ -91,11 +95,15 @@ describe('StatusClassPipe', () => {
     });
 
     it('should return purple for credit_card', () => {
-      expect(pipe.transform('credit_card', 'paymentMethod')).toBe('bg-purple-500/15 text-purple-400');
+      expect(pipe.transform('credit_card', 'paymentMethod')).toBe(
+        'bg-purple-500/15 text-purple-400',
+      );
     });
 
     it('should return orange for debit_card', () => {
-      expect(pipe.transform('debit_card', 'paymentMethod')).toBe('bg-orange-500/15 text-orange-400');
+      expect(pipe.transform('debit_card', 'paymentMethod')).toBe(
+        'bg-orange-500/15 text-orange-400',
+      );
     });
   });
 
@@ -105,9 +113,13 @@ describe('StatusClassPipe', () => {
       expect(pipe.transform('utilities', 'expenseCategory')).toBe('bg-blue-500/15 text-blue-400');
       expect(pipe.transform('salaries', 'expenseCategory')).toBe('bg-green-500/15 text-green-400');
       expect(pipe.transform('tools', 'expenseCategory')).toBe('bg-orange-500/15 text-orange-400');
-      expect(pipe.transform('transport', 'expenseCategory')).toBe('bg-yellow-500/15 text-yellow-400');
+      expect(pipe.transform('transport', 'expenseCategory')).toBe(
+        'bg-yellow-500/15 text-yellow-400',
+      );
       expect(pipe.transform('advertising', 'expenseCategory')).toBe('bg-pink-500/15 text-pink-400');
-      expect(pipe.transform('supplies', 'expenseCategory')).toBe('bg-indigo-500/15 text-indigo-400');
+      expect(pipe.transform('supplies', 'expenseCategory')).toBe(
+        'bg-indigo-500/15 text-indigo-400',
+      );
       expect(pipe.transform('maintenance', 'expenseCategory')).toBe('bg-red-500/15 text-red-400');
       expect(pipe.transform('hosting', 'expenseCategory')).toBe('bg-cyan-500/15 text-cyan-400');
       expect(pipe.transform('other', 'expenseCategory')).toBe('bg-gray-500/15 text-gray-400');
@@ -181,7 +193,9 @@ describe('StatusClassPipe', () => {
 
   describe('edge cases', () => {
     it('should return default gray for unknown value', () => {
-      expect(pipe.transform('unknown_status', 'workOrderStatus')).toBe('bg-gray-500/15 text-gray-400');
+      expect(pipe.transform('unknown_status', 'workOrderStatus')).toBe(
+        'bg-gray-500/15 text-gray-400',
+      );
     });
 
     it('should return default gray for empty string', () => {

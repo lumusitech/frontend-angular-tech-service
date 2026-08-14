@@ -39,12 +39,17 @@ interface SkillFormModel {
   template: `
     <div class="p-6">
       <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+        <div
+          class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center"
+        >
           <mat-icon class="text-purple-600 dark:text-purple-400">build</mat-icon>
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {{ (data.mode === 'create' ? 'skills.newSkillTitle' : 'skills.editSkillTitle') | translate }}
+            {{
+              (data.mode === 'create' ? 'skills.newSkillTitle' : 'skills.editSkillTitle')
+                | translate
+            }}
           </h2>
         </div>
       </div>
@@ -60,7 +65,11 @@ interface SkillFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'skills.category' | translate }}</mat-label>
-          <input matInput [formField]="skillForm.category" [placeholder]="'skills.categoryPlaceholder' | translate" />
+          <input
+            matInput
+            [formField]="skillForm.category"
+            [placeholder]="'skills.categoryPlaceholder' | translate"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
@@ -78,7 +87,12 @@ interface SkillFormModel {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || skillForm().invalid()">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="onSubmit()"
+            [disabled]="loading() || skillForm().invalid()"
+          >
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>

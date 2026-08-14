@@ -130,7 +130,12 @@ interface ClientFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || clientForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || clientForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -182,7 +187,7 @@ export class ClientFormComponent {
         cuit: m.cuit || undefined,
         internetProvider: m.internetProvider || undefined,
         internetPlan: m.internetPlan || undefined,
-        ivaCondition: (m.ivaCondition as any) || undefined,
+        ivaCondition: (m.ivaCondition as Client['ivaCondition']) || undefined,
         isActive: m.isActive,
       };
 
@@ -207,7 +212,7 @@ export class ClientFormComponent {
         cuit: m.cuit || undefined,
         internetProvider: m.internetProvider || undefined,
         internetPlan: m.internetPlan || undefined,
-        ivaCondition: (m.ivaCondition as any) || undefined,
+        ivaCondition: (m.ivaCondition as Client['ivaCondition']) || undefined,
         isActive: m.isActive,
       };
 

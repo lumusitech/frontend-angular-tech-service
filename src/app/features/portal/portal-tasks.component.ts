@@ -21,20 +21,18 @@ import { DatePipe } from '@angular/common';
           </span>
         </div>
 
-        <mat-progress-bar
-          mode="determinate"
-          [value]="progressPercent()"
-          class="!h-1.5 mb-4"
-        />
+        <mat-progress-bar mode="determinate" [value]="progressPercent()" class="!h-1.5 mb-4" />
 
         <div class="space-y-2.5">
           @for (task of tasks(); track task.title) {
             <div class="flex items-start gap-3 group">
               <div
                 class="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5"
-                [class]="task.isCompleted
-                  ? 'bg-emerald-500 border-emerald-500'
-                  : 'border-gray-200 dark:border-gray-700'"
+                [class]="
+                  task.isCompleted
+                    ? 'bg-emerald-500 border-emerald-500'
+                    : 'border-gray-200 dark:border-gray-700'
+                "
               >
                 @if (task.isCompleted) {
                   <mat-icon class="!w-3 !h-3 text-white">check</mat-icon>
@@ -43,19 +41,25 @@ import { DatePipe } from '@angular/common';
               <div class="flex-1 min-w-0">
                 <span
                   class="text-sm"
-                  [class]="task.isCompleted
-                    ? 'text-gray-500 dark:text-gray-400 line-through'
-                    : 'text-gray-700 dark:text-gray-200'"
+                  [class]="
+                    task.isCompleted
+                      ? 'text-gray-500 dark:text-gray-400 line-through'
+                      : 'text-gray-700 dark:text-gray-200'
+                  "
                 >
                   {{ task.title }}
                 </span>
                 @if (task.description) {
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{{ task.description }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+                    {{ task.description }}
+                  </p>
                 }
               </div>
               @if (task.completedAt) {
-                <span class="text-[11px] text-gray-400 dark:text-gray-500 shrink-0 mt-0.5 tabular-nums">
-                  {{ task.completedAt | date : 'dd/MM' }}
+                <span
+                  class="text-[11px] text-gray-400 dark:text-gray-500 shrink-0 mt-0.5 tabular-nums"
+                >
+                  {{ task.completedAt | date: 'dd/MM' }}
                 </span>
               }
             </div>

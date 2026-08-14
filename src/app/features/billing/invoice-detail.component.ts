@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BillingService } from '../../core/services/billing.service';
 import { Invoice } from '../../core/models/invoice.interfaces';
 import { MatIconModule } from '@angular/material/icon';
@@ -77,35 +77,49 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-card-content class="!p-6">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.invoiceNumber' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.invoiceNumber' | translate }}
+                    </p>
                     <p class="font-mono">{{ invoice.invoiceNumber }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'common.status' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'common.status' | translate }}
+                    </p>
                     <app-status-badge [value]="invoice.status" type="invoiceStatus" />
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.invoiceType' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.invoiceType' | translate }}
+                    </p>
                     <app-status-badge [value]="invoice.invoiceType" type="invoiceType" />
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.concept' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.concept' | translate }}
+                    </p>
                     <p>{{ 'billing.concepts.' + invoice.concept | translate }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.createdAt' | translate }}</p>
-                    <p>{{ invoice.createdAt | date : 'dd/MM/yyyy HH:mm' }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.createdAt' | translate }}
+                    </p>
+                    <p>{{ invoice.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
                   </div>
                   @if (invoice.issuedAt) {
                     <div>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.issuedAt' | translate }}</p>
-                      <p>{{ invoice.issuedAt | date : 'dd/MM/yyyy HH:mm' }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'billing.issuedAt' | translate }}
+                      </p>
+                      <p>{{ invoice.issuedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
                     </div>
                   }
                   @if (invoice.cancelledAt) {
                     <div>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.cancelledAt' | translate }}</p>
-                      <p>{{ invoice.cancelledAt | date : 'dd/MM/yyyy HH:mm' }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'billing.cancelledAt' | translate }}
+                      </p>
+                      <p>{{ invoice.cancelledAt | date: 'dd/MM/yyyy HH:mm' }}</p>
                     </div>
                   }
                 </div>
@@ -119,21 +133,29 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-card-content class="!p-6">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.clientName' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.clientName' | translate }}
+                    </p>
                     <p>{{ invoice.clientName }}</p>
                   </div>
                   @if (invoice.clientCuit) {
                     <div>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.clientCuit' | translate }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'billing.clientCuit' | translate }}
+                      </p>
                       <p class="font-mono">{{ invoice.clientCuit }}</p>
                     </div>
                   }
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.clientAddress' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.clientAddress' | translate }}
+                    </p>
                     <p>{{ invoice.clientAddress }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.clientIvaCondition' | translate }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ 'billing.clientIvaCondition' | translate }}
+                    </p>
                     <p>{{ 'billing.ivaConditions.' + invoice.clientIvaCondition | translate }}</p>
                   </div>
                 </div>
@@ -148,18 +170,24 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <mat-card-content class="!p-6">
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.code' | translate }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'workOrders.code' | translate }}
+                      </p>
                       <p class="font-mono">{{ invoice.workOrder.trackingCode }}</p>
                     </div>
                     @if (invoice.workOrder.client) {
                       <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.client' | translate }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ 'workOrders.client' | translate }}
+                        </p>
                         <p>{{ invoice.workOrder.client.name }}</p>
                       </div>
                     }
                     @if (invoice.workOrder.serviceType) {
                       <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'workOrders.serviceType' | translate }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ 'workOrders.serviceType' | translate }}
+                        </p>
                         <p>{{ invoice.workOrder.serviceType.name }}</p>
                       </div>
                     }
@@ -177,12 +205,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               <mat-card-content class="!p-6">
                 <div class="space-y-3">
                   <div class="flex justify-between">
-                    <span class="text-gray-500 dark:text-gray-400">{{ 'billing.subtotal' | translate }}</span>
+                    <span class="text-gray-500 dark:text-gray-400">{{
+                      'billing.subtotal' | translate
+                    }}</span>
                     <span>{{ invoice.subtotal | currencyArs }}</span>
                   </div>
                   @if (invoice.ivaAmount > 0) {
                     <div class="flex justify-between">
-                      <span class="text-gray-500 dark:text-gray-400">{{ 'billing.ivaAmount' | translate }}</span>
+                      <span class="text-gray-500 dark:text-gray-400">{{
+                        'billing.ivaAmount' | translate
+                      }}</span>
                       <span>{{ invoice.ivaAmount | currencyArs }}</span>
                     </div>
                   }
@@ -203,13 +235,17 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <mat-card-content class="!p-6">
                   <div class="space-y-3">
                     <div>
-                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.cae' | translate }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ 'billing.cae' | translate }}
+                      </p>
                       <p class="font-mono text-lg">{{ invoice.cae }}</p>
                     </div>
                     @if (invoice.caeExpiry) {
                       <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'billing.caeExpiry' | translate }}</p>
-                        <p>{{ invoice.caeExpiry | date : 'dd/MM/yyyy' }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ 'billing.caeExpiry' | translate }}
+                        </p>
+                        <p>{{ invoice.caeExpiry | date: 'dd/MM/yyyy' }}</p>
                       </div>
                     }
                   </div>

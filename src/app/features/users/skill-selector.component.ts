@@ -1,10 +1,13 @@
-import { Component, inject, input, model, signal } from '@angular/core';
+import { Component, model, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Skill } from '../../core/models/skill.interfaces';
 import { PaginatedResponse } from '../../core/models/client.interfaces';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -85,7 +88,7 @@ export class SkillSelectorComponent {
     this.searchInput.set(value);
   }
 
-  onSkillSelected(event: any): void {
+  onSkillSelected(event: MatAutocompleteSelectedEvent): void {
     const name: string = event.option.value;
     const skill = this.skillsResource.value()?.data.find((s) => s.name === name);
     if (skill && !this.selectedSkills().find((s) => s.id === skill.id)) {

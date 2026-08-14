@@ -64,12 +64,7 @@ interface PaymentFormModel {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'payments.amount' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="paymentForm.amount"
-              step="0.01"
-            />
+            <input matInput type="number" [formField]="paymentForm.amount" step="0.01" />
             @if (paymentForm.amount().invalid() && paymentForm.amount().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
@@ -79,19 +74,22 @@ interface PaymentFormModel {
             <mat-label>{{ 'payments.method' | translate }}</mat-label>
             <mat-select [formField]="paymentForm.method">
               <mat-option value="cash">{{ 'payments.methods.cash' | translate }}</mat-option>
-              <mat-option value="transfer">{{ 'payments.methods.transfer' | translate }}</mat-option>
-              <mat-option value="credit_card">{{ 'payments.methods.creditCard' | translate }}</mat-option>
-              <mat-option value="debit_card">{{ 'payments.methods.debitCard' | translate }}</mat-option>
+              <mat-option value="transfer">{{
+                'payments.methods.transfer' | translate
+              }}</mat-option>
+              <mat-option value="credit_card">{{
+                'payments.methods.creditCard' | translate
+              }}</mat-option>
+              <mat-option value="debit_card">{{
+                'payments.methods.debitCard' | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'payments.provider' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="paymentForm.provider"
-          />
+          <input matInput [formField]="paymentForm.provider" />
           @if (paymentForm.provider().invalid() && paymentForm.provider().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -99,30 +97,18 @@ interface PaymentFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'payments.description' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formField]="paymentForm.description"
-            rows="2"
-          ></textarea>
+          <textarea matInput [formField]="paymentForm.description" rows="2"></textarea>
         </mat-form-field>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'payments.installmentNumber' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="paymentForm.installmentNumber"
-            />
+            <input matInput type="number" [formField]="paymentForm.installmentNumber" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'payments.totalInstallments' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="paymentForm.totalInstallments"
-            />
+            <input matInput type="number" [formField]="paymentForm.totalInstallments" />
           </mat-form-field>
         </div>
 
@@ -143,7 +129,12 @@ interface PaymentFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || paymentForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || paymentForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -157,7 +148,7 @@ export class PaymentFormComponent {
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly dueDateValue = signal<Date | null>(
-    this.data.payment?.dueDate ? new Date(this.data.payment.dueDate) : null
+    this.data.payment?.dueDate ? new Date(this.data.payment.dueDate) : null,
   );
 
   readonly model = signal<PaymentFormModel>({

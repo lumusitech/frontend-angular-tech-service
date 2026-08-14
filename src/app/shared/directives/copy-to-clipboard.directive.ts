@@ -7,7 +7,7 @@ export class CopyToClipboardDirective {
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
 
-  readonly appCopyToClipboard = input.required<string>({ alias: 'appCopyToClipboard' });
+  readonly appCopyToClipboard = input.required<string>();
 
   @HostListener('click', ['$event'])
   async onClick(event: Event): Promise<void> {
@@ -17,10 +17,7 @@ export class CopyToClipboardDirective {
 
     try {
       await navigator.clipboard.writeText(text);
-      this.toastService.show(
-        this.translationService.instant('common.copied'),
-        'success',
-      );
+      this.toastService.show(this.translationService.instant('common.copied'), 'success');
     } catch {
       this.fallbackCopy(text);
     }
@@ -35,15 +32,9 @@ export class CopyToClipboardDirective {
     textarea.select();
     try {
       document.execCommand('copy');
-      this.toastService.show(
-        this.translationService.instant('common.copied'),
-        'success',
-      );
+      this.toastService.show(this.translationService.instant('common.copied'), 'success');
     } catch {
-      this.toastService.show(
-        this.translationService.instant('common.copyError'),
-        'error',
-      );
+      this.toastService.show(this.translationService.instant('common.copyError'), 'error');
     }
     document.body.removeChild(textarea);
   }

@@ -29,15 +29,24 @@ import { WorkOrder } from '../../core/models/work-order.interfaces';
 
         <div class="space-y-3">
           @for (order of orders; track order.id) {
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+            >
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100">{{ order.trackingCode }}</span>
-                <span class="text-xs px-2 py-0.5 rounded-full font-medium"
-                      [class]="statusClass(order.status)">{{ order.status }}</span>
+                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100">{{
+                  order.trackingCode
+                }}</span>
+                <span
+                  class="text-xs px-2 py-0.5 rounded-full font-medium"
+                  [class]="statusClass(order.status)"
+                  >{{ order.status }}</span
+                >
               </div>
               <p class="text-sm text-gray-600 dark:text-gray-300">{{ order.client.name }}</p>
-              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ order.serviceType.name }}</p>
-              @if (order.commissionPercent != null) {
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {{ order.serviceType.name }}
+              </p>
+              @if (order.commissionPercent !== null) {
                 <p class="text-xs text-green-600 dark:text-green-400 mt-1">
                   Comisión: {{ order.commissionPercent }}%
                 </p>
@@ -54,8 +63,8 @@ export class SellerWorkOrdersComponent {
 
   private readonly sellerId = computed(() => this.authService.user()?.id);
 
-  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(
-    () => this.sellerId() ? `/api/work-orders?sellerId=${this.sellerId()}&limit=50` : undefined,
+  readonly resource = httpResource<PaginatedResponse<WorkOrder>>(() =>
+    this.sellerId() ? `/api/work-orders?sellerId=${this.sellerId()}&limit=50` : undefined,
   );
 
   statusClass(status: string): string {

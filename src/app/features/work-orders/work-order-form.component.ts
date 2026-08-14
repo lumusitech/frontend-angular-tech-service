@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { toLocalDateString } from '../../core/utils/date.utils';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -22,10 +22,6 @@ import {
 import { Client } from '../../core/models/client.interfaces';
 import { ServiceType } from '../../core/models/service-type.interfaces';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-
-interface DialogData {
-  mode: 'create';
-}
 
 interface WorkOrderFormModel {
   clientId: string;

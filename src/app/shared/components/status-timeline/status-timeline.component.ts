@@ -62,7 +62,7 @@ function formatDuration(seconds: number): string {
                 {{ log.timestamp | date: 'dd/MM/yy HH:mm' }}
               </span>
             </div>
-            @if (log.duration != null) {
+            @if (log.duration !== null) {
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                 {{ 'statusTimeline.duration' | translate }}: {{ formatDuration(log.duration) }}
               </p>

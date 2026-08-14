@@ -35,12 +35,16 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
           class="px-3! min-h-9! rounded-xl!"
         >
           <mat-icon class="text-sm shrink-0">add</mat-icon>
-          <span class="text-xs sm:text-sm font-medium">{{ 'workOrders.notes.addNote' | translate }}</span>
+          <span class="text-xs sm:text-sm font-medium">{{
+            'workOrders.notes.addNote' | translate
+          }}</span>
         </button>
       </div>
 
       @if (!notes() || notes().length === 0) {
-        <div class="text-center py-8 px-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+        <div
+          class="text-center py-8 px-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700"
+        >
           <mat-icon class="text-gray-400 dark:text-gray-500 text-2xl mb-1">description</mat-icon>
           <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
             {{ 'workOrders.notes.noNotes' | translate }}
@@ -49,7 +53,9 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
       } @else {
         <div class="space-y-3">
           @for (note of notes(); track note.id) {
-            <div class="p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200/80 dark:border-gray-700 space-y-2 shadow-2xs">
+            <div
+              class="p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200/80 dark:border-gray-700 space-y-2 shadow-2xs"
+            >
               <div class="flex items-center gap-2 flex-wrap">
                 <app-status-badge [value]="note.type" type="noteType" />
                 <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -76,7 +82,11 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
                   </div>
                 }
               </div>
-              <p class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed">{{ note.content }}</p>
+              <p
+                class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed"
+              >
+                {{ note.content }}
+              </p>
             </div>
           }
         </div>

@@ -7,9 +7,7 @@ import { AppNotification } from '../../core/models/notification.interfaces';
 @Component({
   selector: 'app-notifications-page',
   imports: [NotificationsListComponent],
-  template: `
-    <app-notifications-list (notificationClick)="handleClick($event)" />
-  `,
+  template: ` <app-notifications-list (notificationClick)="handleClick($event)" /> `,
 })
 export class NotificationsPageComponent {
   private readonly router = inject(Router);
@@ -29,10 +27,7 @@ export class NotificationsPageComponent {
     const refType = notification.referenceType;
     if (!refType) return;
 
-    if (
-      (refType === 'work_order' || refType === 'task') &&
-      notification.referenceId
-    ) {
+    if ((refType === 'work_order' || refType === 'task') && notification.referenceId) {
       this.router.navigate(['/admin/work-orders', notification.referenceId]);
       return;
     }
@@ -53,10 +48,7 @@ export class NotificationsPageComponent {
     const refType = notification.referenceType;
     if (!refType) return;
 
-    if (
-      (refType === 'work_order' || refType === 'task') &&
-      notification.referenceId
-    ) {
+    if ((refType === 'work_order' || refType === 'task') && notification.referenceId) {
       this.router.navigate(['/tech', notification.referenceId]);
       return;
     }

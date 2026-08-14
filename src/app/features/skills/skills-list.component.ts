@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
@@ -22,7 +22,10 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { SkillFormComponent } from './skill-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -64,23 +67,39 @@ import { TranslationService } from '../../core/services/translation.service';
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'skills.category' | translate }}</mat-label>
-            <mat-select [value]="categoryFilter()" (selectionChange)="categoryFilter.set($event.value)">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              @for (cat of categories(); track cat) {
-                <mat-option [value]="cat">{{ cat }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'skills.category' | translate }}</mat-label>
+              <mat-select
+                [value]="categoryFilter()"
+                (selectionChange)="categoryFilter.set($event.value)"
+              >
+                <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+                @for (cat of categories(); track cat) {
+                  <mat-option [value]="cat">{{ cat }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
           </app-mobile-filter-bar>
         </div>
       </div>
@@ -109,10 +128,19 @@ import { TranslationService } from '../../core/services/translation.service';
               [onEdit]="onEditSwipe(skill)"
               [onDelete]="onDeleteSwipe(skill)"
             >
-              <button mat-icon-button (click)="openEditDialog(skill); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(skill); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteSkill(skill); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteSkill(skill); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -120,53 +148,104 @@ import { TranslationService } from '../../core/services/translation.service';
         </mat-accordion>
 
         <!-- Desktop: Table -->
-        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
-          <table mat-table matSort matSortDisableClear [dataSource]="skillsResource.value().data" (matSortChange)="onSortChange($event)" class="w-full">
+        <div
+          class="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto"
+        >
+          <table
+            mat-table
+            matSort
+            matSortDisableClear
+            [dataSource]="skillsResource.value().data"
+            (matSortChange)="onSortChange($event)"
+            class="w-full"
+          >
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'skills.name' | translate }}
               </th>
-              <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
+              <td
+                mat-cell
+                *matCellDef="let skill"
+                class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium"
+              >
                 {{ skill.name }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="category">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'skills.category' | translate }}
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                  {{ skill.category ? (('skills.categories.' + skill.category) | translate) : '—' }}
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                >
+                  {{ skill.category ? ('skills.categories.' + skill.category | translate) : '—' }}
                 </span>
               </td>
             </ng-container>
 
             <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'skills.description' | translate }}
               </th>
-              <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
+              <td
+                mat-cell
+                *matCellDef="let skill"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate"
+              >
                 {{ skill.description || '—' }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="createdAt">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'common.created' | translate }}
               </th>
-              <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              <td
+                mat-cell
+                *matCellDef="let skill"
+                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+              >
                 {{ skill.createdAt | relativeDate }}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
                 {{ 'common.actions' | translate }}
               </th>
               <td mat-cell *matCellDef="let skill" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="skillActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="skillActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #skillActionsMenu="matMenu">
@@ -184,7 +263,13 @@ import { TranslationService } from '../../core/services/translation.service';
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openEditDialog(row)" [class.highlight-pulse]="highlightedId() === row.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="openEditDialog(row)"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -199,7 +284,7 @@ import { TranslationService } from '../../core/services/translation.service';
     </div>
   `,
 })
-export class SkillsListComponent implements OnInit {
+export class SkillsListComponent {
   private readonly skillsService = inject(SkillsService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -243,7 +328,6 @@ export class SkillsListComponent implements OnInit {
     return this.searchFilter() !== '' || this.categoryFilter() !== '';
   });
 
-
   clearFilters(): void {
     this.searchFilter.set('');
     this.categoryFilter.set('');
@@ -268,8 +352,6 @@ export class SkillsListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -310,8 +392,15 @@ export class SkillsListComponent implements OnInit {
   getSkillFields(skill: Skill): MobileCardField[] {
     return [
       { label: this.translationService.instant('skills.category'), value: skill.category || '-' },
-      { label: this.translationService.instant('skills.description'), value: skill.description || '-' },
-      { label: this.translationService.instant('common.created'), value: skill.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('skills.description'),
+        value: skill.description || '-',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: skill.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -330,11 +419,16 @@ export class SkillsListComponent implements OnInit {
       if (confirmed) {
         this.skillsService.delete(skill.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.skillsResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -343,10 +437,10 @@ export class SkillsListComponent implements OnInit {
   }
 
   onEditSwipe(skill: Skill): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(skill);
+    return () => this.openEditDialog(skill);
   }
 
   onDeleteSwipe(skill: Skill): (event: Event) => void {
-    return (_event: Event) => this.deleteSkill(skill);
+    return () => this.deleteSkill(skill);
   }
 }

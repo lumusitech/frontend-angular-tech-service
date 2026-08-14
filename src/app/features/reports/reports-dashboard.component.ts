@@ -61,7 +61,10 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
       />
 
       <!-- Filter bar -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 px-4 py-3" [style.border-left-color]="'var(--color-primary)'">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 px-4 py-3"
+        [style.border-left-color]="'var(--color-primary)'"
+      >
         <div class="flex items-center gap-3 flex-wrap">
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'reports.period' | translate }}</mat-label>
@@ -75,20 +78,34 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
 
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" [max]="dateToValue() || undefined" (dateChange)="onDateFromChange($event)" />
+            <input
+              matInput
+              [matDatepicker]="dateFromPicker"
+              [value]="dateFromValue()"
+              [max]="dateToValue() || undefined"
+              (dateChange)="onDateFromChange($event)"
+            />
             <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFromPicker></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-44">
             <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" [min]="dateFromValue() || undefined" (dateChange)="onDateToChange($event)" />
+            <input
+              matInput
+              [matDatepicker]="dateToPicker"
+              [value]="dateToValue()"
+              [min]="dateFromValue() || undefined"
+              (dateChange)="onDateToChange($event)"
+            />
             <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateToPicker></mat-datepicker>
           </mat-form-field>
 
           @if (dateError()) {
-            <span class="text-sm text-red-500 dark:text-red-400">{{ 'common.invalidDateRange' | translate }}</span>
+            <span class="text-sm text-red-500 dark:text-red-400">{{
+              'common.invalidDateRange' | translate
+            }}</span>
           }
         </div>
       </div>
@@ -103,33 +120,76 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
         <!-- KPI Cards -->
         @if (summary(); as s) {
           <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-primary)'">
-              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalIncome' | translate }}</p>
-              <p class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+              [style.border-left-color]="'var(--color-primary)'"
+            >
+              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                {{ 'reports.totalIncome' | translate }}
+              </p>
+              <p
+                class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate"
+              >
                 {{ s.kpis.totalIncome | currencyArs: '1.2-2' }}
               </p>
-              <p class="text-xs mt-1" [class]="s.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'">
-                {{ s.trends.incomeChange >= 0 ? '+' : '' }}{{ s.trends.incomeChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
+              <p
+                class="text-xs mt-1"
+                [class]="s.trends.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'"
+              >
+                {{ s.trends.incomeChange >= 0 ? '+' : ''
+                }}{{ s.trends.incomeChange | number: '1.1-1' }}%
+                {{ 'reports.vsPrevious' | translate }}
               </p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-secondary)'">
-              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.totalExpenses' | translate }}</p>
-              <p class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+              [style.border-left-color]="'var(--color-secondary)'"
+            >
+              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                {{ 'reports.totalExpenses' | translate }}
+              </p>
+              <p
+                class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate"
+              >
                 {{ s.kpis.totalExpenses | currencyArs: '1.2-2' }}
               </p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-primary)'">
-              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.netProfit' | translate }}</p>
-              <p class="text-xl lg:text-2xl font-bold mt-1 truncate" [class]="s.kpis.netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+              [style.border-left-color]="'var(--color-primary)'"
+            >
+              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                {{ 'reports.netProfit' | translate }}
+              </p>
+              <p
+                class="text-xl lg:text-2xl font-bold mt-1 truncate"
+                [class]="
+                  s.kpis.netProfit >= 0
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                "
+              >
                 {{ s.kpis.netProfit | currencyArs: '1.2-2' }}
               </p>
-              <p class="text-xs mt-1" [class]="s.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'">
-                {{ s.trends.profitChange >= 0 ? '+' : '' }}{{ s.trends.profitChange | number: '1.1-1' }}% {{ 'reports.vsPrevious' | translate }}
+              <p
+                class="text-xs mt-1"
+                [class]="s.trends.profitChange >= 0 ? 'text-green-600' : 'text-red-600'"
+              >
+                {{ s.trends.profitChange >= 0 ? '+' : ''
+                }}{{ s.trends.profitChange | number: '1.1-1' }}%
+                {{ 'reports.vsPrevious' | translate }}
               </p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4" [style.border-left-color]="'var(--color-secondary)'">
-              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'reports.averageTicket' | translate }}</p>
-              <p class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
+            <div
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4"
+              [style.border-left-color]="'var(--color-secondary)'"
+            >
+              <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                {{ 'reports.averageTicket' | translate }}
+              </p>
+              <p
+                class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate"
+              >
                 {{ s.kpis.averageTicket | currencyArs: '1.2-2' }}
               </p>
             </div>
@@ -159,7 +219,10 @@ import { CurrencyArsPipe } from '../../shared/pipes/currency-ars.pipe';
             <app-services-ranking [data]="services" />
           }
           @if (technicianRanking(); as technicians) {
-            <app-technician-ranking [data]="technicians" (technicianClick)="onTechnicianClick($event)" />
+            <app-technician-ranking
+              [data]="technicians"
+              (technicianClick)="onTechnicianClick($event)"
+            />
           }
         </div>
       }
@@ -173,8 +236,10 @@ export class ReportsDashboardComponent {
   readonly period = signal<string>('monthly');
   readonly dateFrom = signal<string>('');
   readonly dateTo = signal<string>('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
   readonly dateError = signal(false);
   readonly loading = signal(true);
   readonly error = signal(false);
@@ -216,32 +281,53 @@ export class ReportsDashboardComponent {
     };
 
     this.reportsService.getSummary().subscribe({
-      next: (data) => { this.summary.set(data); checkDone(); },
-      error: () => { this.error.set(true); this.loading.set(false); },
+      next: (data) => {
+        this.summary.set(data);
+        checkDone();
+      },
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
+      },
     });
 
     this.reportsService.getIncome(filters).subscribe({
-      next: (data) => { this.incomeReport.set(data); checkDone(); },
+      next: (data) => {
+        this.incomeReport.set(data);
+        checkDone();
+      },
       error: () => checkDone(),
     });
 
     this.reportsService.getExpenses(filters).subscribe({
-      next: (data) => { this.expenseReport.set(data); checkDone(); },
+      next: (data) => {
+        this.expenseReport.set(data);
+        checkDone();
+      },
       error: () => checkDone(),
     });
 
     this.reportsService.getProfit(filters).subscribe({
-      next: (data) => { this.profitReport.set(data); checkDone(); },
+      next: (data) => {
+        this.profitReport.set(data);
+        checkDone();
+      },
       error: () => checkDone(),
     });
 
     this.reportsService.getServices(filters).subscribe({
-      next: (data) => { this.servicesReport.set(data); checkDone(); },
+      next: (data) => {
+        this.servicesReport.set(data);
+        checkDone();
+      },
       error: () => checkDone(),
     });
 
     this.reportsService.getTechnicians().subscribe({
-      next: (data) => { this.technicianRanking.set(data); checkDone(); },
+      next: (data) => {
+        this.technicianRanking.set(data);
+        checkDone();
+      },
       error: () => checkDone(),
     });
   }

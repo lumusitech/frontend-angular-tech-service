@@ -25,12 +25,15 @@ test.describe('Global Search', () => {
     const search = new GlobalSearchPage(adminPage);
     await search.typeQuery('cliente');
 
-    await adminPage.waitForResponse(
-      (r) => r.url().includes('/api/') && r.url().includes('search='),
-      { timeout: 3000 },
-    ).catch(() => null);
+    await adminPage
+      .waitForResponse((r) => r.url().includes('/api/') && r.url().includes('search='), {
+        timeout: 3000,
+      })
+      .catch(() => null);
 
-    const overlay = adminPage.locator('app-loading-spinner .backdrop-blur-sm, app-loading-spinner .fixed.inset-0');
+    const overlay = adminPage.locator(
+      'app-loading-spinner .backdrop-blur-sm, app-loading-spinner .fixed.inset-0',
+    );
     await expect(overlay).toHaveCount(0);
   });
 

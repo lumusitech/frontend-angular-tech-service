@@ -21,7 +21,9 @@ test.describe('Skills', () => {
     const page = new SkillsPage(adminPage);
     await page.goto();
     await page.search('instalacion');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('instalacion');
   });
 });

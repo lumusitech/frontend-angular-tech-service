@@ -6,16 +6,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-portal-search',
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    TranslatePipe,
-  ],
+  imports: [MatFormFieldModule, MatInputModule, MatIconModule, TranslatePipe],
   template: `
     <div class="flex-1 flex flex-col items-center justify-center gap-6">
       <div class="flex flex-col items-center gap-4">
-        <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center">
+        <div
+          class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center"
+        >
           <mat-icon class="!w-7 !h-7 text-blue-600 dark:text-blue-400">manage_search</mat-icon>
         </div>
         <div class="text-center space-y-1.5">

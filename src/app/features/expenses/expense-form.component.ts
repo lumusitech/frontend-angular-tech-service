@@ -63,10 +63,7 @@ interface ExpenseFormModel {
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.description' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="expenseForm.description"
-          />
+          <input matInput [formField]="expenseForm.description" />
           @if (expenseForm.description().invalid() && expenseForm.description().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -75,12 +72,7 @@ interface ExpenseFormModel {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'expenses.amount' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="expenseForm.amount"
-              step="0.01"
-            />
+            <input matInput type="number" [formField]="expenseForm.amount" step="0.01" />
             @if (expenseForm.amount().invalid() && expenseForm.amount().touched()) {
               <mat-error>{{ t('validation.invalidAmount') }}</mat-error>
             }
@@ -104,13 +96,25 @@ interface ExpenseFormModel {
           <mat-label>{{ 'expenses.category' | translate }}</mat-label>
           <mat-select [formField]="expenseForm.category">
             <mat-option value="rent">{{ 'expenses.categories.rent' | translate }}</mat-option>
-            <mat-option value="utilities">{{ 'expenses.categories.utilities' | translate }}</mat-option>
-            <mat-option value="salaries">{{ 'expenses.categories.salaries' | translate }}</mat-option>
+            <mat-option value="utilities">{{
+              'expenses.categories.utilities' | translate
+            }}</mat-option>
+            <mat-option value="salaries">{{
+              'expenses.categories.salaries' | translate
+            }}</mat-option>
             <mat-option value="tools">{{ 'expenses.categories.tools' | translate }}</mat-option>
-            <mat-option value="transport">{{ 'expenses.categories.transport' | translate }}</mat-option>
-            <mat-option value="advertising">{{ 'expenses.categories.advertising' | translate }}</mat-option>
-            <mat-option value="supplies">{{ 'expenses.categories.supplies' | translate }}</mat-option>
-            <mat-option value="maintenance">{{ 'expenses.categories.maintenance' | translate }}</mat-option>
+            <mat-option value="transport">{{
+              'expenses.categories.transport' | translate
+            }}</mat-option>
+            <mat-option value="advertising">{{
+              'expenses.categories.advertising' | translate
+            }}</mat-option>
+            <mat-option value="supplies">{{
+              'expenses.categories.supplies' | translate
+            }}</mat-option>
+            <mat-option value="maintenance">{{
+              'expenses.categories.maintenance' | translate
+            }}</mat-option>
             <mat-option value="hosting">{{ 'expenses.categories.hosting' | translate }}</mat-option>
             <mat-option value="other">{{ 'expenses.categories.other' | translate }}</mat-option>
           </mat-select>
@@ -118,11 +122,7 @@ interface ExpenseFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'expenses.notes' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formField]="expenseForm.notes"
-            rows="3"
-          ></textarea>
+          <textarea matInput [formField]="expenseForm.notes" rows="3"></textarea>
         </mat-form-field>
 
         <mat-checkbox [formField]="expenseForm.isRecurring">
@@ -133,7 +133,12 @@ interface ExpenseFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || expenseForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || expenseForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -147,7 +152,7 @@ export class ExpenseFormComponent {
   readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
   readonly dateValue = signal<Date | null>(
-    this.data.expense?.date ? new Date(this.data.expense.date) : new Date()
+    this.data.expense?.date ? new Date(this.data.expense.date) : new Date(),
   );
 
   readonly model = signal<ExpenseFormModel>({

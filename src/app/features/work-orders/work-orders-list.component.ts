@@ -1,9 +1,8 @@
-import { Component, computed, DestroyRef, effect, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
-import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import {
   WorkOrder,
@@ -385,7 +384,12 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               </th>
               <td mat-cell *matCellDef="let order" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="orderActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="orderActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #orderActionsMenu="matMenu">
@@ -420,7 +424,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     </div>
   `,
 })
-export class WorkOrdersListComponent implements OnInit {
+export class WorkOrdersListComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -478,8 +482,6 @@ export class WorkOrdersListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   readonly workOrdersResource = httpResource<PaginatedResponse<WorkOrder>>(() => ({
     url: '/api/work-orders',
@@ -605,7 +607,6 @@ export class WorkOrdersListComponent implements OnInit {
     );
   });
 
-
   clearFilters(): void {
     this.searchFilter.set('');
     this.statusFilter.set('');
@@ -647,6 +648,6 @@ export class WorkOrdersListComponent implements OnInit {
   }
 
   onEditSwipe(order: WorkOrder): (event: Event) => void {
-    return (_event: Event) => this.viewDetail(order);
+    return () => this.viewDetail(order);
   }
 }

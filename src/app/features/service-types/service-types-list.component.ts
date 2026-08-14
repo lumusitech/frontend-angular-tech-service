@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -27,7 +27,10 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MobileCardComponent, MobileCardField } from '../../shared/components/mobile-card/mobile-card.component';
+import {
+  MobileCardComponent,
+  MobileCardField,
+} from '../../shared/components/mobile-card/mobile-card.component';
 import { ServiceTypeFormComponent } from './service-type-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
@@ -69,40 +72,66 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
         [action]="openCreateDialog.bind(this)"
       />
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3"
+      >
         <div class="flex items-center gap-3 flex-wrap">
-          <app-mobile-filter-bar [hasActiveFilters]="hasActiveFilters()" (clearFilters)="clearFilters()">
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.search' | translate }}</mat-label>
-            <input matInput [value]="searchFilter()" (input)="searchFilter.set(getInputValue($event))" inputmode="search" enterkeyhint="done" (keydown.enter)="$event.target.blur()" [placeholder]="'common.search' | translate" />
-          </mat-form-field>
+          <app-mobile-filter-bar
+            [hasActiveFilters]="hasActiveFilters()"
+            (clearFilters)="clearFilters()"
+          >
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.search' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="searchFilter()"
+                (input)="searchFilter.set(getInputValue($event))"
+                inputmode="search"
+                enterkeyhint="done"
+                (keydown.enter)="$event.target.blur()"
+                [placeholder]="'common.search' | translate"
+              />
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [value]="isActiveFilter()" (selectionChange)="isActiveFilter.set($event.value)">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
-              <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.status' | translate }}</mat-label>
+              <mat-select
+                [value]="isActiveFilter()"
+                (selectionChange)="isActiveFilter.set($event.value)"
+              >
+                <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+                <mat-option value="true">{{ 'common.active' | translate }}</mat-option>
+                <mat-option value="false">{{ 'common.inactive' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.from' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateFromPicker" [value]="dateFromValue()" (dateChange)="onDateFromChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFromPicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-44">
-            <mat-label>{{ 'common.to' | translate }}</mat-label>
-            <input matInput [matDatepicker]="dateToPicker" [value]="dateToValue()" (dateChange)="onDateToChange($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateToPicker></mat-datepicker>
-          </mat-form-field>
-          @if (dateError()) {
-            <div class="w-40 text-red-500 dark:text-red-400 text-xs">
-              {{ dateError() | translate }}
-            </div>
-          }
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.from' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateFromPicker"
+                [value]="dateFromValue()"
+                (dateChange)="onDateFromChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-44">
+              <mat-label>{{ 'common.to' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="dateToPicker"
+                [value]="dateToValue()"
+                (dateChange)="onDateToChange($event)"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateToPicker></mat-datepicker>
+            </mat-form-field>
+            @if (dateError()) {
+              <div class="w-40 text-red-500 dark:text-red-400 text-xs">
+                {{ dateError() | translate }}
+              </div>
+            }
           </app-mobile-filter-bar>
         </div>
       </div>
@@ -128,17 +157,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
           @for (serviceType of serviceTypesResource.value().data; track serviceType.id) {
             <app-mobile-card
               [title]="serviceType.name"
-              [status]="serviceType.isActive ? translationService.instant('common.active') : translationService.instant('common.inactive')"
+              [status]="
+                serviceType.isActive
+                  ? translationService.instant('common.active')
+                  : translationService.instant('common.inactive')
+              "
               [statusType]="$any('activeInactive')"
               [fields]="getServiceTypeFields(serviceType)"
               [canSwipe]="true"
               [onEdit]="onEditSwipe(serviceType)"
               [onDelete]="onDeleteSwipe(serviceType)"
             >
-              <button mat-icon-button (click)="openEditDialog(serviceType); $event.stopPropagation()" class="!w-8 !h-8">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(serviceType); $event.stopPropagation()"
+                class="!w-8 !h-8"
+              >
                 <mat-icon class="!w-4 !h-4">edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="deleteServiceType(serviceType); $event.stopPropagation()" class="!w-8 !h-8" color="warn">
+              <button
+                mat-icon-button
+                (click)="deleteServiceType(serviceType); $event.stopPropagation()"
+                class="!w-8 !h-8"
+                color="warn"
+              >
                 <mat-icon class="!w-4 !h-4">delete</mat-icon>
               </button>
             </app-mobile-card>
@@ -257,15 +299,26 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               </th>
               <td mat-cell *matCellDef="let serviceType" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="serviceTypeActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="serviceTypeActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #serviceTypeActionsMenu="matMenu">
-                    <button mat-menu-item (click)="openEditDialog(serviceType); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="openEditDialog(serviceType); $event.stopPropagation()"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>{{ 'common.edit' | translate }}</span>
                     </button>
-                    <button mat-menu-item (click)="deleteServiceType(serviceType); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="deleteServiceType(serviceType); $event.stopPropagation()"
+                    >
                       <mat-icon>delete</mat-icon>
                       <span>{{ 'common.delete' | translate }}</span>
                     </button>
@@ -275,7 +328,13 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.highlight-pulse]="highlightedId() === row.id" (click)="openEditDialog(row)" class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.highlight-pulse]="highlightedId() === row.id"
+              (click)="openEditDialog(row)"
+              class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            ></tr>
           </table>
 
           <mat-paginator
@@ -290,7 +349,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     </div>
   `,
 })
-export class ServiceTypesListComponent implements OnInit {
+export class ServiceTypesListComponent {
   private readonly serviceTypesService = inject(ServiceTypesService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
@@ -310,8 +369,10 @@ export class ServiceTypesListComponent implements OnInit {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly dateError = signal('');
-  readonly dateFromValue = computed(() => this.dateFrom() ? parseLocalDate(this.dateFrom()) : null);
-  readonly dateToValue = computed(() => this.dateTo() ? parseLocalDate(this.dateTo()) : null);
+  readonly dateFromValue = computed(() =>
+    this.dateFrom() ? parseLocalDate(this.dateFrom()) : null,
+  );
+  readonly dateToValue = computed(() => (this.dateTo() ? parseLocalDate(this.dateTo()) : null));
 
   readonly serviceTypesResource = httpResource<PaginatedResponse<ServiceType>>(() => ({
     url: '/api/service-types',
@@ -354,8 +415,6 @@ export class ServiceTypesListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex + 1);
@@ -434,9 +493,13 @@ export class ServiceTypesListComponent implements OnInit {
   }
 
   readonly hasActiveFilters = computed(() => {
-    return this.searchFilter() !== '' || this.isActiveFilter() !== '' || this.dateFrom() !== '' || this.dateTo() !== '';
+    return (
+      this.searchFilter() !== '' ||
+      this.isActiveFilter() !== '' ||
+      this.dateFrom() !== '' ||
+      this.dateTo() !== ''
+    );
   });
-
 
   clearFilters(): void {
     this.searchFilter.set('');
@@ -448,9 +511,19 @@ export class ServiceTypesListComponent implements OnInit {
 
   getServiceTypeFields(serviceType: ServiceType): MobileCardField[] {
     return [
-      { label: this.translationService.instant('serviceTypes.description'), value: serviceType.description || '-' },
-      { label: this.translationService.instant('serviceTypes.estimatedDuration'), value: serviceType.estimatedDuration ? `${serviceType.estimatedDuration} min` : '-' },
-      { label: this.translationService.instant('common.created'), value: serviceType.createdAt, type: 'date' },
+      {
+        label: this.translationService.instant('serviceTypes.description'),
+        value: serviceType.description || '-',
+      },
+      {
+        label: this.translationService.instant('serviceTypes.estimatedDuration'),
+        value: serviceType.estimatedDuration ? `${serviceType.estimatedDuration} min` : '-',
+      },
+      {
+        label: this.translationService.instant('common.created'),
+        value: serviceType.createdAt,
+        type: 'date',
+      },
     ];
   }
 
@@ -469,11 +542,16 @@ export class ServiceTypesListComponent implements OnInit {
       if (confirmed) {
         this.serviceTypesService.delete(serviceType.id).subscribe({
           next: () => {
-            this.toastService.show(this.translationService.instant('common.toast.deleted'), 'success');
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
             this.serviceTypesResource.reload();
           },
           error: (err) => {
-            const msg = Array.isArray(err.error?.message) ? err.error.message.join(', ') : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
             this.toastService.show(msg, 'error');
           },
         });
@@ -482,10 +560,10 @@ export class ServiceTypesListComponent implements OnInit {
   }
 
   onEditSwipe(serviceType: ServiceType): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(serviceType);
+    return () => this.openEditDialog(serviceType);
   }
 
   onDeleteSwipe(serviceType: ServiceType): (event: Event) => void {
-    return (_event: Event) => this.deleteServiceType(serviceType);
+    return () => this.deleteServiceType(serviceType);
   }
 }

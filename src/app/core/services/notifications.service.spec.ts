@@ -100,14 +100,16 @@ describe('NotificationsService', () => {
     });
 
     it('should send all filters combined', () => {
-      service.getAll({
-        page: 1,
-        limit: 10,
-        sortBy: 'createdAt',
-        order: 'ASC',
-        type: NotificationType.TASK_COMPLETED,
-        isRead: false,
-      }).subscribe();
+      service
+        .getAll({
+          page: 1,
+          limit: 10,
+          sortBy: 'createdAt',
+          order: 'ASC',
+          type: NotificationType.TASK_COMPLETED,
+          isRead: false,
+        })
+        .subscribe();
 
       const req = httpMock.expectOne((r) => r.url === '/api/notifications');
       expect(req.request.params.keys().length).toBe(6);
@@ -163,7 +165,9 @@ describe('NotificationsService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/notifications/nonexistent/read').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/notifications/nonexistent/read')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -242,7 +246,9 @@ describe('NotificationsService', () => {
         },
       });
 
-      httpMock.expectOne('/api/notifications/n-1/read').flush({ ...mockNotification, isRead: true });
+      httpMock
+        .expectOne('/api/notifications/n-1/read')
+        .flush({ ...mockNotification, isRead: true });
 
       expect(service.unreadCount()).toBe(4);
     });

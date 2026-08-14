@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toLocalDateString, parseLocalDate } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -296,11 +296,19 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
               </th>
               <td mat-cell *matCellDef="let client" class="px-4 py-3 text-right">
                 <div class="action-btn-group">
-                  <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="clientActionsMenu" [title]="'common.actions' | translate">
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation()"
+                    [matMenuTriggerFor]="clientActionsMenu"
+                    [title]="'common.actions' | translate"
+                  >
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #clientActionsMenu="matMenu">
-                    <button mat-menu-item (click)="openEditDialog(client); $event.stopPropagation()">
+                    <button
+                      mat-menu-item
+                      (click)="openEditDialog(client); $event.stopPropagation()"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>{{ 'common.edit' | translate }}</span>
                     </button>
@@ -335,7 +343,7 @@ import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
     </div>
   `,
 })
-export class ClientsListComponent implements OnInit {
+export class ClientsListComponent {
   private readonly clientsService = inject(ClientsService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -395,8 +403,6 @@ export class ClientsListComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit(): void {}
 
   viewDetail(client: Client): void {
     this.router.navigate(['/admin/clients', client.id]);
@@ -554,10 +560,10 @@ export class ClientsListComponent implements OnInit {
   }
 
   onEditSwipe(client: Client): (event: Event) => void {
-    return (_event: Event) => this.openEditDialog(client);
+    return () => this.openEditDialog(client);
   }
 
   onDeleteSwipe(client: Client): (event: Event) => void {
-    return (_event: Event) => this.deleteClient(client);
+    return () => this.deleteClient(client);
   }
 }

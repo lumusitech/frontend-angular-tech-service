@@ -126,7 +126,9 @@ describe('CopyToClipboardDirective', () => {
 
   describe('fallback copy', () => {
     it('should clean up textarea after fallback execution', async () => {
-      Object.assign(navigator, { clipboard: { writeText: vi.fn().mockRejectedValue(new Error()) } });
+      Object.assign(navigator, {
+        clipboard: { writeText: vi.fn().mockRejectedValue(new Error()) },
+      });
 
       const fixture = TestBed.createComponent(TestCopyComponent);
       fixture.detectChanges();

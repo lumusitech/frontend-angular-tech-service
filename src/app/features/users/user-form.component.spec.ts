@@ -44,7 +44,13 @@ describe('UserFormComponent', () => {
   }
 
   function fillValidModel() {
-    component.model.set({ name: 'U', email: 'u@t.com', role: 'technician', phone: '111', isActive: true });
+    component.model.set({
+      name: 'U',
+      email: 'u@t.com',
+      role: 'technician',
+      phone: '111',
+      isActive: true,
+    });
   }
 
   describe('create mode', () => {

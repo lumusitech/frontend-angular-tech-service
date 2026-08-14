@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class ClientsPage {
   constructor(private page: Page) {}
@@ -12,7 +12,10 @@ export class ClientsPage {
   }
 
   async clickCreate() {
-    await this.page.locator('button:has-text("Nuevo Cliente"), button:has-text("Create")').first().click();
+    await this.page
+      .locator('button:has-text("Nuevo Cliente"), button:has-text("Create")')
+      .first()
+      .click();
   }
 
   async fillForm(data: { name: string; email: string; phone: string; address: string }) {
@@ -23,7 +26,10 @@ export class ClientsPage {
   }
 
   async submitForm() {
-    await this.page.locator('button[type="submit"], button:has-text("Guardar"), button:has-text("Save")').first().click();
+    await this.page
+      .locator('button[type="submit"], button:has-text("Guardar"), button:has-text("Save")')
+      .first()
+      .click();
   }
 
   async search(text: string) {

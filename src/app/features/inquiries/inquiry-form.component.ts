@@ -47,17 +47,18 @@ interface InquiryFormModel {
   template: `
     <h2 mat-dialog-title class="flex items-center gap-2">
       <mat-icon>help_outline</mat-icon>
-      {{ data.mode === 'create' ? ('inquiries.newInquiry' | translate) : ('inquiries.editInquiry' | translate) }}
+      {{
+        data.mode === 'create'
+          ? ('inquiries.newInquiry' | translate)
+          : ('inquiries.editInquiry' | translate)
+      }}
     </h2>
 
     <mat-dialog-content class="!p-6">
       <div class="space-y-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.clientName' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="inquiryForm.clientName"
-          />
+          <input matInput [formField]="inquiryForm.clientName" />
           @if (inquiryForm.clientName().invalid() && inquiryForm.clientName().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -66,19 +67,12 @@ interface InquiryFormModel {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.phone' | translate }}</mat-label>
-            <input
-              matInput
-              [formField]="inquiryForm.clientPhone"
-            />
+            <input matInput [formField]="inquiryForm.clientPhone" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.email' | translate }}</mat-label>
-            <input
-              matInput
-              type="email"
-              [formField]="inquiryForm.clientEmail"
-            />
+            <input matInput type="email" [formField]="inquiryForm.clientEmail" />
             @if (inquiryForm.clientEmail().invalid() && inquiryForm.clientEmail().touched()) {
               <mat-error>{{ t('validation.invalidEmail') }}</mat-error>
             }
@@ -87,19 +81,12 @@ interface InquiryFormModel {
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.address' | translate }}</mat-label>
-          <input
-            matInput
-            [formField]="inquiryForm.clientAddress"
-          />
+          <input matInput [formField]="inquiryForm.clientAddress" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ 'inquiries.description' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formField]="inquiryForm.description"
-            rows="3"
-          ></textarea>
+          <textarea matInput [formField]="inquiryForm.description" rows="3"></textarea>
           @if (inquiryForm.description().invalid() && inquiryForm.description().touched()) {
             <mat-error>{{ t('validation.required') }}</mat-error>
           }
@@ -113,7 +100,9 @@ interface InquiryFormModel {
               <mat-option value="whatsapp">{{ 'statusLabels.whatsapp' | translate }}</mat-option>
               <mat-option value="email">{{ 'statusLabels.email' | translate }}</mat-option>
               <mat-option value="walk_in">{{ 'statusLabels.walk_in' | translate }}</mat-option>
-              <mat-option value="social_media">{{ 'statusLabels.social_media' | translate }}</mat-option>
+              <mat-option value="social_media">{{
+                'statusLabels.social_media' | translate
+              }}</mat-option>
               <mat-option value="referral">{{ 'statusLabels.referral' | translate }}</mat-option>
             </mat-select>
             @if (inquiryForm.source().invalid() && inquiryForm.source().touched()) {
@@ -136,7 +125,12 @@ interface InquiryFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || inquiryForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || inquiryForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
     </mat-dialog-actions>

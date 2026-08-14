@@ -62,7 +62,13 @@ const LIST_RESULT_TYPES: SearchResult['type'][] = [
 
     <!-- Mobile: search overlay -->
     @if (mobileSearchOpen()) {
-      <div class="fixed inset-0 bg-black/20 z-30 md:hidden" (click)="closeMobileSearch()"></div>
+      <div
+        class="fixed inset-0 bg-black/20 z-30 md:hidden"
+        role="button"
+        tabindex="-1"
+        (click)="closeMobileSearch()"
+        (keydown.escape)="closeMobileSearch()"
+      ></div>
       <div class="fixed left-0 right-0 top-0 z-40 bg-white dark:bg-gray-800 shadow-lg md:hidden">
         <div
           class="flex items-center gap-2 h-14 px-4 border-b border-gray-200 dark:border-gray-700"

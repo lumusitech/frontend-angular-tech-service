@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { ClientsService } from './clients.service';
-import { Client, ClientFilters } from '../models/client.interfaces';
+import { Client } from '../models/client.interfaces';
 
 describe('ClientsService', () => {
   let service: ClientsService;
@@ -138,7 +138,9 @@ describe('ClientsService', () => {
         },
       });
 
-      httpMock.expectOne('/api/clients/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/clients/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -190,7 +192,9 @@ describe('ClientsService', () => {
         },
       });
 
-      httpMock.expectOne('/api/clients/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/clients/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -212,7 +216,9 @@ describe('ClientsService', () => {
         },
       });
 
-      httpMock.expectOne('/api/clients/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/clients/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
 
     it('should propagate 403 error on forbidden delete', () => {

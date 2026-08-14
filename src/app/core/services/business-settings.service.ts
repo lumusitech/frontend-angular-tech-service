@@ -26,14 +26,14 @@ export class BusinessSettingsService {
   }
 
   load(): void {
-    this.http.get<BusinessSetting>('/api/business-settings').subscribe(data => {
+    this.http.get<BusinessSetting>('/api/business-settings').subscribe((data) => {
       this._settings.set(data);
     });
   }
 
   update(dto: Partial<BusinessSetting>): Observable<BusinessSetting> {
-    return this.http.patch<BusinessSetting>('/api/business-settings', dto).pipe(
-      tap(() => this.load()),
-    );
+    return this.http
+      .patch<BusinessSetting>('/api/business-settings', dto)
+      .pipe(tap(() => this.load()));
   }
 }

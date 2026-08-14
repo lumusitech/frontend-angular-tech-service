@@ -111,7 +111,14 @@ describe('ReportsService', () => {
     });
 
     it('should send all expense-specific filters', () => {
-      service.getExpenses({ period: 'yearly', dateFrom: '2026-01-01', dateTo: '2026-12-31', category: 'supplies' }).subscribe();
+      service
+        .getExpenses({
+          period: 'yearly',
+          dateFrom: '2026-01-01',
+          dateTo: '2026-12-31',
+          category: 'supplies',
+        })
+        .subscribe();
 
       const req = httpMock.expectOne((r) => r.url === '/api/reports/expenses');
       expect(req.request.params.get('period')).toBe('yearly');
@@ -188,7 +195,9 @@ describe('ReportsService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/reports/technicians/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/reports/technicians/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -210,7 +219,9 @@ describe('ReportsService', () => {
         error: (err) => expect(err.status).toBe(404),
       });
 
-      httpMock.expectOne('/api/reports/clients/nonexistent').flush('Not Found', { status: 404, statusText: 'Not Found' });
+      httpMock
+        .expectOne('/api/reports/clients/nonexistent')
+        .flush('Not Found', { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -254,28 +265,36 @@ describe('ReportsService', () => {
     });
 
     it('should handle all period filter combinations across methods', () => {
-      service.getIncome({ period: 'daily', dateFrom: '2026-01-01', dateTo: '2026-01-01' }).subscribe();
+      service
+        .getIncome({ period: 'daily', dateFrom: '2026-01-01', dateTo: '2026-01-01' })
+        .subscribe();
       const reqIncome = httpMock.expectOne((r) => r.url === '/api/reports/income');
       expect(reqIncome.request.params.get('period')).toBeTruthy();
       expect(reqIncome.request.params.get('dateFrom')).toBeTruthy();
       expect(reqIncome.request.params.get('dateTo')).toBeTruthy();
       reqIncome.flush({});
 
-      service.getExpenses({ period: 'weekly', dateFrom: '2026-01-06', dateTo: '2026-01-12' }).subscribe();
+      service
+        .getExpenses({ period: 'weekly', dateFrom: '2026-01-06', dateTo: '2026-01-12' })
+        .subscribe();
       const reqExpenses = httpMock.expectOne((r) => r.url === '/api/reports/expenses');
       expect(reqExpenses.request.params.get('period')).toBeTruthy();
       expect(reqExpenses.request.params.get('dateFrom')).toBeTruthy();
       expect(reqExpenses.request.params.get('dateTo')).toBeTruthy();
       reqExpenses.flush({});
 
-      service.getProfit({ period: 'monthly', dateFrom: '2026-06-01', dateTo: '2026-06-30' }).subscribe();
+      service
+        .getProfit({ period: 'monthly', dateFrom: '2026-06-01', dateTo: '2026-06-30' })
+        .subscribe();
       const reqProfit = httpMock.expectOne((r) => r.url === '/api/reports/profit');
       expect(reqProfit.request.params.get('period')).toBeTruthy();
       expect(reqProfit.request.params.get('dateFrom')).toBeTruthy();
       expect(reqProfit.request.params.get('dateTo')).toBeTruthy();
       reqProfit.flush({});
 
-      service.getServices({ period: 'yearly', dateFrom: '2026-01-01', dateTo: '2026-12-31' }).subscribe();
+      service
+        .getServices({ period: 'yearly', dateFrom: '2026-01-01', dateTo: '2026-12-31' })
+        .subscribe();
       const reqServices = httpMock.expectOne((r) => r.url === '/api/reports/services');
       expect(reqServices.request.params.get('period')).toBeTruthy();
       expect(reqServices.request.params.get('dateFrom')).toBeTruthy();

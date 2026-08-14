@@ -32,7 +32,11 @@ describe('AuthService', () => {
     localStorage.clear();
 
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: navigateSpy } }],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Router, useValue: { navigate: navigateSpy } },
+      ],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -108,7 +112,9 @@ describe('AuthService', () => {
 
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponseWithPrefs);
 
-      expect(JSON.parse(localStorage.getItem('auth_preferences')!)).toEqual(mockLoginResponseWithPrefs.preferences);
+      expect(JSON.parse(localStorage.getItem('auth_preferences')!)).toEqual(
+        mockLoginResponseWithPrefs.preferences,
+      );
     });
 
     it('should not store preferences in localStorage when absent', () => {
@@ -126,7 +132,9 @@ describe('AuthService', () => {
         },
       });
 
-      httpMock.expectOne('/api/auth/login').flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+      httpMock
+        .expectOne('/api/auth/login')
+        .flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 
       expect(service.token()).toBeNull();
       expect(service.user()).toBeNull();
@@ -140,7 +148,9 @@ describe('AuthService', () => {
         },
       });
 
-      httpMock.expectOne('/api/auth/login').flush('Server Error', { status: 500, statusText: 'Server Error' });
+      httpMock
+        .expectOne('/api/auth/login')
+        .flush('Server Error', { status: 500, statusText: 'Server Error' });
     });
   });
 
@@ -327,7 +337,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -340,7 +354,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -352,7 +370,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -364,7 +386,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -376,7 +402,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -390,7 +420,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 
@@ -402,7 +436,11 @@ describe('AuthService', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting(), { provide: Router, useValue: { navigate: vi.fn() } }],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
       });
       const freshService = TestBed.inject(AuthService);
 

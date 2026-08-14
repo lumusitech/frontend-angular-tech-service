@@ -1,12 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { InquiriesService } from '../../core/services/inquiries.service';
-import {
-  Inquiry,
-  InquiryStatus,
-  InquiryDecision,
-} from '../../core/models/inquiry.interfaces';
+import { Inquiry } from '../../core/models/inquiry.interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -102,7 +98,11 @@ const STATUS_COLORS: Record<string, string> = {
           @if (inquiry.adminDecision !== 'pending') {
             <span
               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-              [class]="inquiry.adminDecision === 'approved' ? 'text-green-400 bg-green-500/15' : 'text-red-400 bg-red-500/15'"
+              [class]="
+                inquiry.adminDecision === 'approved'
+                  ? 'text-green-400 bg-green-500/15'
+                  : 'text-red-400 bg-red-500/15'
+              "
             >
               {{ 'statusLabels.' + inquiry.adminDecision | translate }}
             </span>
@@ -117,28 +117,50 @@ const STATUS_COLORS: Record<string, string> = {
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.clientName' | translate }}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.clientName' | translate
+              }}</span>
               <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.clientName }}</p>
             </div>
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.phone' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.clientPhone || '-' }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.phone' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ inquiry.clientPhone || '-' }}
+              </p>
             </div>
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.email' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.clientEmail || '-' }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.email' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ inquiry.clientEmail || '-' }}
+              </p>
             </div>
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.address' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.clientAddress || '-' }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.address' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ inquiry.clientAddress || '-' }}
+              </p>
             </div>
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.source' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ 'statusLabels.' + inquiry.source | translate }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.source' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ 'statusLabels.' + inquiry.source | translate }}
+              </p>
             </div>
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.assignedTo' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.assignedTo?.name || '-' }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.assignedTo' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ inquiry.assignedTo?.name || '-' }}
+              </p>
             </div>
           </div>
         </mat-card>
@@ -149,7 +171,9 @@ const STATUS_COLORS: Record<string, string> = {
             <mat-icon class="mr-1 align-middle">description</mat-icon>
             {{ 'inquiries.problemDescription' | translate }}
           </h3>
-          <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ inquiry.description }}</p>
+          <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            {{ inquiry.description }}
+          </p>
         </mat-card>
 
         <!-- Technician notes (if contacted) -->
@@ -159,31 +183,49 @@ const STATUS_COLORS: Record<string, string> = {
               <mat-icon class="mr-1 align-middle">build</mat-icon>
               {{ 'inquiries.technicianNotesSection' | translate }}
             </h3>
-            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ inquiry.technicianNotes }}</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+              {{ inquiry.technicianNotes }}
+            </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               @if (inquiry.estimatedCost) {
                 <div>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.estimatedCost' | translate }}</span>
-                  <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.estimatedCost | number: '1.2-2' }}</p>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                    'inquiries.estimatedCost' | translate
+                  }}</span>
+                  <p class="text-sm text-gray-900 dark:text-gray-100">
+                    {{ inquiry.estimatedCost | number: '1.2-2' }}
+                  </p>
                 </div>
               }
               @if (inquiry.estimatedDuration) {
                 <div>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.estimatedDuration' | translate }}</span>
-                  <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.estimatedDuration }}h</p>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                    'inquiries.estimatedDuration' | translate
+                  }}</span>
+                  <p class="text-sm text-gray-900 dark:text-gray-100">
+                    {{ inquiry.estimatedDuration }}h
+                  </p>
                 </div>
               }
               @if (inquiry.recommendation) {
                 <div>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.recommendation' | translate }}</span>
-                  <p class="text-sm text-gray-900 dark:text-gray-100">{{ 'statusLabels.' + inquiry.recommendation | translate }}</p>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                    'inquiries.recommendation' | translate
+                  }}</span>
+                  <p class="text-sm text-gray-900 dark:text-gray-100">
+                    {{ 'statusLabels.' + inquiry.recommendation | translate }}
+                  </p>
                 </div>
               }
             </div>
             @if (inquiry.materialsNeeded) {
               <div class="mt-4">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.materialsNeeded' | translate }}</span>
-                <p class="text-sm text-gray-700 dark:text-gray-300">{{ inquiry.materialsNeeded }}</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                  'inquiries.materialsNeeded' | translate
+                }}</span>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                  {{ inquiry.materialsNeeded }}
+                </p>
               </div>
             }
           </mat-card>
@@ -196,7 +238,9 @@ const STATUS_COLORS: Record<string, string> = {
               <mat-icon class="mr-1 align-middle">admin_panel_settings</mat-icon>
               {{ 'inquiries.adminDecision' | translate }}
             </h3>
-            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ inquiry.adminNotes }}</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+              {{ inquiry.adminNotes }}
+            </p>
           </mat-card>
         }
 
@@ -208,19 +252,31 @@ const STATUS_COLORS: Record<string, string> = {
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.created' | translate }}</span>
-              <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.createdAt | relativeDate }}</p>
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                'inquiries.created' | translate
+              }}</span>
+              <p class="text-sm text-gray-900 dark:text-gray-100">
+                {{ inquiry.createdAt | relativeDate }}
+              </p>
             </div>
             @if (inquiry.contactedAt) {
               <div>
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.contactedAt' | translate }}</span>
-                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.contactedAt | relativeDate }}</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                  'inquiries.contactedAt' | translate
+                }}</span>
+                <p class="text-sm text-gray-900 dark:text-gray-100">
+                  {{ inquiry.contactedAt | relativeDate }}
+                </p>
               </div>
             }
             @if (inquiry.reviewedAt) {
               <div>
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{ 'inquiries.reviewedAt' | translate }}</span>
-                <p class="text-sm text-gray-900 dark:text-gray-100">{{ inquiry.reviewedAt | relativeDate }}</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">{{
+                  'inquiries.reviewedAt' | translate
+                }}</span>
+                <p class="text-sm text-gray-900 dark:text-gray-100">
+                  {{ inquiry.reviewedAt | relativeDate }}
+                </p>
               </div>
             }
           </div>
@@ -268,7 +324,8 @@ export class InquiryDetailComponent {
       width: '400px',
       data: {
         titleKey: decision === 'approved' ? 'inquiries.approveTitle' : 'inquiries.rejectTitle',
-        messageKey: decision === 'approved' ? 'inquiries.approveMessage' : 'inquiries.rejectMessage',
+        messageKey:
+          decision === 'approved' ? 'inquiries.approveMessage' : 'inquiries.rejectMessage',
         confirmLabel: decision === 'approved' ? 'Approve' : 'Reject',
         color: decision === 'approved' ? 'primary' : 'warn',
       },
@@ -276,11 +333,13 @@ export class InquiryDetailComponent {
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed && this.resource.hasValue()) {
-        this.inquiriesService.review(this.resource.value()!.id, {
-          adminDecision: decision,
-        }).subscribe({
-          next: () => this.resource.reload(),
-        });
+        this.inquiriesService
+          .review(this.resource.value()!.id, {
+            adminDecision: decision,
+          })
+          .subscribe({
+            next: () => this.resource.reload(),
+          });
       }
     });
   }

@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { form, FormField, required, email, minLength } from '@angular/forms/signals';
+import { form, FormField, required, email } from '@angular/forms/signals';
 import { UsersService } from '../../core/services/users.service';
 import { User } from '../../core/models/user.interfaces';
 import { Skill } from '../../core/models/skill.interfaces';
@@ -45,12 +45,16 @@ interface UserFormModel {
   template: `
     <div class="p-6">
       <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+        <div
+          class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+        >
           <mat-icon class="text-blue-600 dark:text-blue-400">person</mat-icon>
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {{ (data.mode === 'create' ? 'users.newUserTitle' : 'users.editUserTitle') | translate }}
+            {{
+              (data.mode === 'create' ? 'users.newUserTitle' : 'users.editUserTitle') | translate
+            }}
           </h2>
         </div>
       </div>
@@ -77,7 +81,15 @@ interface UserFormModel {
         <div class="grid grid-cols-2 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.password' | translate }}</mat-label>
-            <input matInput [value]="password()" (input)="password.set($any($event.target).value)" type="password" [required]="data.mode === 'create'" minlength="6" [placeholder]="data.mode === 'edit' ? '••••••••' : ''" />
+            <input
+              matInput
+              [value]="password()"
+              (input)="password.set($any($event.target).value)"
+              type="password"
+              [required]="data.mode === 'create'"
+              minlength="6"
+              [placeholder]="data.mode === 'edit' ? '••••••••' : ''"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -100,11 +112,19 @@ interface UserFormModel {
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.experience' | translate }}</mat-label>
-            <textarea matInput [value]="experience()" (input)="experience.set($any($event.target).value)" rows="3" [placeholder]="'users.experiencePlaceholder' | translate"></textarea>
+            <textarea
+              matInput
+              [value]="experience()"
+              (input)="experience.set($any($event.target).value)"
+              rows="3"
+              [placeholder]="'users.experiencePlaceholder' | translate"
+            ></textarea>
           </mat-form-field>
 
           <div class="flex items-center gap-4">
-            <span class="text-sm text-gray-600 dark:text-gray-400">{{ 'users.trustRating' | translate }}: {{ trustRating() }}</span>
+            <span class="text-sm text-gray-600 dark:text-gray-400"
+              >{{ 'users.trustRating' | translate }}: {{ trustRating() }}</span
+            >
             <div class="flex gap-1">
               @for (star of [1, 2, 3, 4, 5]; track star) {
                 <mat-icon
@@ -123,7 +143,14 @@ interface UserFormModel {
         @if (model().role === 'seller') {
           <mat-form-field appearance="outline">
             <mat-label>{{ 'users.commission' | translate }} (%)</mat-label>
-            <input matInput [value]="commission()" (input)="onCommissionChange($any($event.target).value)" type="number" min="0" max="100" />
+            <input
+              matInput
+              [value]="commission()"
+              (input)="onCommissionChange($any($event.target).value)"
+              type="number"
+              min="0"
+              max="100"
+            />
           </mat-form-field>
         }
       </div>
@@ -137,7 +164,12 @@ interface UserFormModel {
           <button mat-stroked-button (click)="dialogRef.close()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading() || userForm().invalid()">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="onSubmit()"
+            [disabled]="loading() || userForm().invalid()"
+          >
             {{ loading() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -157,9 +189,7 @@ export class UserFormComponent {
   readonly commission = signal(this.data.user?.commission ?? 5);
   readonly experience = signal(this.data.user?.experience || '');
   readonly trustRating = signal(this.data.user?.trustRating ?? 3);
-  readonly selectedSkills = signal<Skill[]>(
-    (this.data.user?.skills ?? []) as Skill[],
-  );
+  readonly selectedSkills = signal<Skill[]>((this.data.user?.skills ?? []) as Skill[]);
   readonly loading = signal(false);
 
   readonly model = signal<UserFormModel>({
@@ -200,52 +230,56 @@ export class UserFormComponent {
     const m = this.model();
 
     if (this.data.mode === 'create') {
-      this.usersService.create({
-        name: m.name,
-        email: m.email,
-        password: this.password(),
-        role: m.role,
-        phone: m.phone || undefined,
-        commission: m.role === 'seller' ? this.commission() : undefined,
-        experience: m.role === 'technician' ? this.experience() || undefined : undefined,
-        trustRating: m.role === 'technician' ? this.trustRating() : undefined,
-        skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
-      }).subscribe({
-        next: () => {
-          this.toastService.show(this.t('common.toast.created'), 'success');
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.loading.set(false);
-          console.error('Create user failed:', err);
-          this.toastService.show(this.t('common.toast.errorCreated'), 'error');
-        },
-        complete: () => this.loading.set(false),
-      });
+      this.usersService
+        .create({
+          name: m.name,
+          email: m.email,
+          password: this.password(),
+          role: m.role,
+          phone: m.phone || undefined,
+          commission: m.role === 'seller' ? this.commission() : undefined,
+          experience: m.role === 'technician' ? this.experience() || undefined : undefined,
+          trustRating: m.role === 'technician' ? this.trustRating() : undefined,
+          skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
+        })
+        .subscribe({
+          next: () => {
+            this.toastService.show(this.t('common.toast.created'), 'success');
+            this.dialogRef.close(true);
+          },
+          error: (err) => {
+            this.loading.set(false);
+            console.error('Create user failed:', err);
+            this.toastService.show(this.t('common.toast.errorCreated'), 'error');
+          },
+          complete: () => this.loading.set(false),
+        });
     } else if (this.data.user) {
-      this.usersService.update(this.data.user.id, {
-        name: m.name,
-        email: m.email,
-        password: this.password() || undefined,
-        role: m.role,
-        isActive: m.isActive,
-        phone: m.phone || undefined,
-        commission: m.role === 'seller' ? this.commission() : undefined,
-        experience: m.role === 'technician' ? this.experience() || undefined : undefined,
-        trustRating: m.role === 'technician' ? this.trustRating() : undefined,
-        skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
-      }).subscribe({
-        next: () => {
-          this.toastService.show(this.t('common.toast.updated'), 'success');
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.loading.set(false);
-          console.error('Update user failed:', err);
-          this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
-        },
-        complete: () => this.loading.set(false),
-      });
+      this.usersService
+        .update(this.data.user.id, {
+          name: m.name,
+          email: m.email,
+          password: this.password() || undefined,
+          role: m.role,
+          isActive: m.isActive,
+          phone: m.phone || undefined,
+          commission: m.role === 'seller' ? this.commission() : undefined,
+          experience: m.role === 'technician' ? this.experience() || undefined : undefined,
+          trustRating: m.role === 'technician' ? this.trustRating() : undefined,
+          skillIds: m.role === 'technician' ? this.selectedSkills().map((s) => s.id) : undefined,
+        })
+        .subscribe({
+          next: () => {
+            this.toastService.show(this.t('common.toast.updated'), 'success');
+            this.dialogRef.close(true);
+          },
+          error: (err) => {
+            this.loading.set(false);
+            console.error('Update user failed:', err);
+            this.toastService.show(this.t('common.toast.errorUpdated'), 'error');
+          },
+          complete: () => this.loading.set(false),
+        });
     }
   }
 }

@@ -60,20 +60,12 @@ interface ContactFormModel {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedCost' | translate }} ($)</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="contactForm.estimatedCost"
-            />
+            <input matInput type="number" [formField]="contactForm.estimatedCost" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ 'inquiries.estimatedDuration' | translate }} (h)</mat-label>
-            <input
-              matInput
-              type="number"
-              [formField]="contactForm.estimatedDuration"
-            />
+            <input matInput type="number" [formField]="contactForm.estimatedDuration" />
           </mat-form-field>
         </div>
 
@@ -91,8 +83,12 @@ interface ContactFormModel {
           <mat-label>{{ 'inquiries.recommendation' | translate }}</mat-label>
           <mat-select [formField]="contactForm.recommendation">
             <mat-option value="repair">{{ 'statusLabels.repair' | translate }}</mat-option>
-            <mat-option value="replacement">{{ 'statusLabels.replacement' | translate }}</mat-option>
-            <mat-option value="maintenance">{{ 'statusLabels.maintenance' | translate }}</mat-option>
+            <mat-option value="replacement">{{
+              'statusLabels.replacement' | translate
+            }}</mat-option>
+            <mat-option value="maintenance">{{
+              'statusLabels.maintenance' | translate
+            }}</mat-option>
             <mat-option value="inspection">{{ 'statusLabels.inspection' | translate }}</mat-option>
             <mat-option value="no_action">{{ 'statusLabels.no_action' | translate }}</mat-option>
           </mat-select>
@@ -105,7 +101,12 @@ interface ContactFormModel {
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="saving() || contactForm().invalid()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="saving() || contactForm().invalid()"
+      >
         {{ saving() ? ('common.saving' | translate) : ('inquiries.saveContact' | translate) }}
       </button>
     </mat-dialog-actions>
@@ -146,7 +147,7 @@ export class InquiryContactFormComponent {
       estimatedCost: m.estimatedCost ? parseFloat(m.estimatedCost) : undefined,
       estimatedDuration: m.estimatedDuration ? parseInt(m.estimatedDuration, 10) : undefined,
       materialsNeeded: m.materialsNeeded || undefined,
-      recommendation: m.recommendation as InquiryRecommendation || undefined,
+      recommendation: (m.recommendation as InquiryRecommendation) || undefined,
     };
 
     this.inquiriesService.contact(this.data.inquiryId, dto).subscribe({

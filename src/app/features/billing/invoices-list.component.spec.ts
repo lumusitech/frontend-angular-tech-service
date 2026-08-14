@@ -14,7 +14,10 @@ describe('InvoicesListComponent - Date Filtering', () => {
       imports: [InvoicesListComponent],
       providers: [
         { provide: BillingService, useValue: {} },
-        { provide: TranslationService, useValue: { instant: vi.fn().mockImplementation((k: string) => k) } },
+        {
+          provide: TranslationService,
+          useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
+        },
         { provide: Router, useValue: { navigate: vi.fn() } },
         { provide: MatDialog, useValue: { open: vi.fn() } },
       ],

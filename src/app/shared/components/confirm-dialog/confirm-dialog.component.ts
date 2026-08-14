@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -18,7 +18,9 @@ export interface ConfirmDialogData {
   imports: [MatDialogModule, MatButtonModule, TranslatePipe],
   template: `
     <h2 mat-dialog-title>{{ data.titleKey ? (data.titleKey | translate) : data.title }}</h2>
-    <mat-dialog-content>{{ data.messageKey ? (data.messageKey | translate) : data.message }}</mat-dialog-content>
+    <mat-dialog-content>{{
+      data.messageKey ? (data.messageKey | translate) : data.message
+    }}</mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button [mat-dialog-close]="false">
         {{ data.cancelLabel || ('common.cancel' | translate) }}

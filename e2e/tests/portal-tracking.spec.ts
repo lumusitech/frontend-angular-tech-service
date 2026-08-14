@@ -15,7 +15,9 @@ test.describe('Portal Tracking', () => {
     const portalPage = new PortalPage(page);
     await portalPage.searchTrackingCode('INVALID-CODE');
     await page.waitForTimeout(2000);
-    const errorVisible = await page.locator('[class*="red"], [class*="error"], mat-icon:has-text("error")').isVisible();
+    const errorVisible = await page
+      .locator('[class*="red"], [class*="error"], mat-icon:has-text("error")')
+      .isVisible();
     expect(errorVisible).toBeTruthy();
   });
 

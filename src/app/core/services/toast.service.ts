@@ -18,7 +18,15 @@ const TYPE_ICONS: Record<string, string> = {
   imports: [MatIconModule],
   template: `
     <div class="flex items-center gap-2 min-w-[250px] max-w-[400px]">
-      <mat-icon [class]="data.type === 'success' ? '!text-green-500' : data.type === 'error' ? '!text-red-500' : '!text-blue-500'">
+      <mat-icon
+        [class]="
+          data.type === 'success'
+            ? '!text-green-500'
+            : data.type === 'error'
+              ? '!text-red-500'
+              : '!text-blue-500'
+        "
+      >
         {{ icon }}
       </mat-icon>
       <span class="text-sm font-medium">{{ data.message }}</span>

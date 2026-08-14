@@ -30,20 +30,28 @@ export class RelativeDatePipe implements PipeTransform {
 
     if (absDiff < DAY) {
       const hours = Math.round(absDiff / HOUR);
-      return isFuture ? `en ~${hours} hora${hours > 1 ? 's' : ''}` : `hace ~${hours} hora${hours > 1 ? 's' : ''}`;
+      return isFuture
+        ? `en ~${hours} hora${hours > 1 ? 's' : ''}`
+        : `hace ~${hours} hora${hours > 1 ? 's' : ''}`;
     }
 
     if (absDiff < MONTH) {
       const days = Math.round(absDiff / DAY);
-      return isFuture ? `en ${days} día${days > 1 ? 's' : ''}` : `hace ${days} día${days > 1 ? 's' : ''}`;
+      return isFuture
+        ? `en ${days} día${days > 1 ? 's' : ''}`
+        : `hace ${days} día${days > 1 ? 's' : ''}`;
     }
 
     if (absDiff < YEAR) {
       const months = Math.round(absDiff / MONTH);
-      return isFuture ? `en ${months} mes${months > 1 ? 'es' : ''}` : `hace ${months} mes${months > 1 ? 'es' : ''}`;
+      return isFuture
+        ? `en ${months} mes${months > 1 ? 'es' : ''}`
+        : `hace ${months} mes${months > 1 ? 'es' : ''}`;
     }
 
     const years = Math.round(absDiff / YEAR);
-    return isFuture ? `en ${years} año${years > 1 ? 's' : ''}` : `hace ${years} año${years > 1 ? 's' : ''}`;
+    return isFuture
+      ? `en ${years} año${years > 1 ? 's' : ''}`
+      : `hace ${years} año${years > 1 ? 's' : ''}`;
   }
 }

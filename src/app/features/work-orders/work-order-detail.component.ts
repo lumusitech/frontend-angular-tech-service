@@ -53,7 +53,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
     @if (orderData() !== null) {
       <div class="space-y-6 pb-48 lg:pb-0">
         <!-- Hero Header Card -->
-        <div class="p-4 sm:p-6 bg-white dark:bg-gray-800/90 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs backdrop-blur-sm space-y-4">
+        <div
+          class="p-4 sm:p-6 bg-white dark:bg-gray-800/90 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs backdrop-blur-sm space-y-4"
+        >
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-start sm:items-center gap-3 min-w-0">
               <button mat-icon-button (click)="goBack()" class="shrink-0 -ml-1">
@@ -61,21 +63,29 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
               </button>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
+                  <h1
+                    class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate"
+                  >
                     <app-tracking-code [code]="orderData()!.trackingCode" />
                   </h1>
                   <app-status-badge [value]="orderData()!.status" type="workOrderStatus" />
                   <app-status-badge [value]="orderData()!.priority" type="workOrderPriority" />
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  <span class="font-medium text-gray-700 dark:text-gray-300">{{ orderData()!.serviceType.name }}</span>
+                  <span class="font-medium text-gray-700 dark:text-gray-300">{{
+                    orderData()!.serviceType.name
+                  }}</span>
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   {{ orderData()!.client.name }}
                 </p>
               </div>
               <!-- Export icon button (all viewports) -->
-              <app-export-buttons [workOrderId]="orderData()!.id" [iconOnly]="true" class="shrink-0" />
+              <app-export-buttons
+                [workOrderId]="orderData()!.id"
+                [iconOnly]="true"
+                class="shrink-0"
+              />
             </div>
 
             <!-- Desktop Action Bar -->
@@ -97,7 +107,10 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
             (touchend)="onTouchEnd($event)"
             (touchcancel)="onTouchEnd($event)"
           >
-            <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs overflow-hidden">
+            <mat-tab-group
+              [(selectedIndex)]="selectedTabIndex"
+              class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/70 shadow-xs overflow-hidden"
+            >
               <mat-tab>
                 <ng-template mat-tab-label>
                   <div
@@ -109,7 +122,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
                     "
                   >
                     <mat-icon class="text-base">info</mat-icon>
-                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.generalInfo' | translate }}</span>
+                    <span class="text-xs sm:text-sm">{{
+                      'workOrders.detail.generalInfo' | translate
+                    }}</span>
                   </div>
                 </ng-template>
                 <app-info-tab
@@ -160,7 +175,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
                     "
                   >
                     <mat-icon class="text-base">build</mat-icon>
-                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.materials' | translate }}</span>
+                    <span class="text-xs sm:text-sm">{{
+                      'workOrders.detail.materials' | translate
+                    }}</span>
                   </div>
                 </ng-template>
                 <app-materials-tab
@@ -183,7 +200,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
                     "
                   >
                     <mat-icon class="text-base">notes</mat-icon>
-                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.notes' | translate }}</span>
+                    <span class="text-xs sm:text-sm">{{
+                      'workOrders.detail.notes' | translate
+                    }}</span>
                   </div>
                 </ng-template>
                 <app-notes-tab
@@ -205,7 +224,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
                     "
                   >
                     <mat-icon class="text-base">timeline</mat-icon>
-                    <span class="text-xs sm:text-sm">{{ 'workOrders.detail.statusTimeline' | translate }}</span>
+                    <span class="text-xs sm:text-sm">{{
+                      'workOrders.detail.statusTimeline' | translate
+                    }}</span>
                   </div>
                 </ng-template>
                 <app-timeline-tab [orderId]="orderId()" />
@@ -224,7 +245,9 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
         </div>
 
         <!-- Mobile Floating Bottom Action Dock (Floating Island at bottom-20 above AdminBottomNavComponent) -->
-        <div class="fixed bottom-20 left-3 right-3 z-30 p-2.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl border border-gray-200/80 dark:border-gray-700/70 shadow-2xl lg:hidden">
+        <div
+          class="fixed bottom-20 left-3 right-3 z-30 p-2.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl border border-gray-200/80 dark:border-gray-700/70 shadow-2xl lg:hidden"
+        >
           <div
             #dockScroll
             class="flex items-center gap-2.5 overflow-x-scroll no-scrollbar"
@@ -279,7 +302,11 @@ export class WorkOrderDetailComponent {
 
   onTouchStart(event: TouchEvent): void {
     const target = event.target as HTMLElement | null;
-    if (target?.closest('button, a, input, textarea, select, mat-select, [contenteditable="true"], [role="button"], [role="menuitem"], app-export-buttons, app-status-transition')) {
+    if (
+      target?.closest(
+        'button, a, input, textarea, select, mat-select, [contenteditable="true"], [role="button"], [role="menuitem"], app-export-buttons, app-status-transition',
+      )
+    ) {
       this.touchStartTime = 0;
       return;
     }
@@ -311,7 +338,7 @@ export class WorkOrderDetailComponent {
   onDockTouchStart(event: TouchEvent): void {
     if (event.touches.length === 1) {
       this.dockTouchStartX = event.touches[0].clientX;
-      const container = (event.currentTarget as HTMLElement);
+      const container = event.currentTarget as HTMLElement;
       this.dockInitialScrollLeft = container.scrollLeft;
       this.isDockDragging = false;
     }
@@ -366,7 +393,7 @@ export class WorkOrderDetailComponent {
   getMaterialsTotal(): number {
     return (
       this.orderData()?.materials?.reduce((sum, m) => {
-        const itemTotal = m.totalCost ?? (Number(m.quantity || 0) * Number(m.unitCost || 0));
+        const itemTotal = m.totalCost ?? Number(m.quantity || 0) * Number(m.unitCost || 0);
         return sum + itemTotal;
       }, 0) || 0
     );

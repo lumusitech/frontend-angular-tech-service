@@ -131,7 +131,11 @@ interface LanguageOption {
               [style.background-color]="'var(--color-secondary)'"
             >
               @if (authService.user()!.avatar!.startsWith('data:')) {
-                <img [src]="authService.user()!.avatar" class="w-full h-full object-cover" />
+                <img
+                  [src]="authService.user()!.avatar"
+                  alt="Avatar del usuario"
+                  class="w-full h-full object-cover"
+                />
               } @else {
                 {{ authService.user()!.avatar }}
               }

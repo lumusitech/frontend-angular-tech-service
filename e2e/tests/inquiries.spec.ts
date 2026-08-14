@@ -21,7 +21,9 @@ test.describe('Inquiries', () => {
     const page = new InquiriesPage(adminPage);
     await page.goto();
     await page.search('cliente');
-    const input = adminPage.locator('input[placeholder*="Buscar"], input[placeholder*="Search"]').first();
+    const input = adminPage
+      .locator('input[placeholder*="Buscar"], input[placeholder*="Search"]')
+      .first();
     await expect(input).toHaveValue('cliente');
   });
 });
