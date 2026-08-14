@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { WorkOrderNote } from '../../../core/models/work-order.interfaces';
 import { AuthService } from '../../../core/services/auth.service';
 import { WorkOrdersService } from '../../../core/services/work-orders.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { NoteDialogComponent } from '../add-note-dialog.component';
@@ -97,6 +98,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 export class NotesTabComponent {
   private readonly dialog = inject(MatDialog);
   private readonly workOrdersService = inject(WorkOrdersService);
+  private readonly translationService = inject(TranslationService);
   readonly authService = inject(AuthService);
 
   notes = input.required<WorkOrderNote[]>();
@@ -118,10 +120,10 @@ export class NotesTabComponent {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Eliminar nota',
-        message: '¿Estás seguro de que deseas eliminar esta nota?',
-        confirmLabel: 'Eliminar',
-        cancelLabel: 'Cancelar',
+        title: this.translationService.instant('workOrders.notes.deleteTitle'),
+        message: this.translationService.instant('workOrders.notes.deleteMessage'),
+        confirmLabel: this.translationService.instant('common.delete'),
+        cancelLabel: this.translationService.instant('common.cancel'),
         color: 'warn',
       },
     });

@@ -171,17 +171,22 @@
   },
   "bulk": {
     "selectAll": "Seleccionar todo",
+    "selectHint": "Selecciona filas para acciones masivas",
     "selected": "seleccionados",
     "clearSelection": "Limpiar selección",
     "exportCsv": "Exportar CSV",
     "status": "Estado",
     "activate": "Activar",
     "deactivate": "Desactivar",
+    "activateConfirmTitle": "Activar clientes",
+    "activateConfirmMessage": "¿Estás seguro de que quieres activar {{count}} cliente(s) seleccionado(s)?",
+    "deactivateConfirmTitle": "Desactivar clientes",
+    "deactivateConfirmMessage": "¿Estás seguro de que quieres desactivar {{count}} cliente(s) seleccionado(s)?",
     "deleteSelected": "Eliminar seleccionados",
     "deleteTitle": "Eliminar clientes",
     "deleteMessage": "¿Estás seguro de eliminar {{count}} cliente(s)? Esta acción no se puede deshacer.",
     "changeStatus": "Cambiar estado",
-    "changeStatusMessage": "Se cambiará el estado de {{count}} orden(es) de trabajo. Las transiciones no válidas se omitirán.",
+    "changeStatusMessage": "¿Estás seguro de que quieres cambiar el estado de {{count}} orden(es) de trabajo seleccionada(s)? Las transiciones no válidas se omitirán.",
     "toast": {
       "activated": "Clientes activados correctamente",
       "deactivated": "Clientes desactivados correctamente",
@@ -285,6 +290,8 @@
     "addTask": "Agregar tarea",
     "assignTechnicians": "Asignar técnicos",
     "changeStatus": "Cambiar estado",
+    "confirmCancelMessage": "¿Estás seguro de cancelar esta orden? Esta acción no se puede deshacer.",
+    "confirmStatusMessage": "¿Estás seguro de que quieres cambiar el estado a \"{{label}}\"?",
     "actions": {
       "assignTechnicians": "Asignar Técnicos",
       "startWork": "Iniciar Trabajo",
@@ -295,7 +302,8 @@
       "cancel": "Cancelar",
       "resume": "Reanudar",
       "reopen": "Reabrir",
-      "deliver": "Entregar"
+      "deliver": "Entregar",
+      "viewDetail": "Ver detalle"
     },
     "serviceType": "Tipo de Servicio",
     "initialDiagnosis": "Diagnóstico inicial",
@@ -369,7 +377,9 @@
       "deleteTask": "Eliminar tarea",
       "deleteTaskConfirm": "¿Estás seguro de que deseas eliminar esta tarea?",
       "taskDeletedSuccess": "Tarea eliminada con éxito",
-      "taskDeletedError": "Error al eliminar la tarea"
+      "taskDeletedError": "Error al eliminar la tarea",
+      "markAsPending": "Marcar como pendiente",
+      "markAsCompleted": "Marcar como completada"
     },
     "materials": {
       "addMaterial": "Agregar material",
@@ -402,6 +412,8 @@
       "content": "Contenido",
       "contentPlaceholder": "Escribí el contenido de la nota...",
       "saveNote": "Guardar nota",
+      "deleteTitle": "Eliminar nota",
+      "deleteMessage": "¿Estás seguro de que deseas eliminar esta nota?",
       "types": {
         "diagnosis": "Diagnóstico",
         "issue": "Problema",
@@ -771,6 +783,12 @@
       "orders": "Órdenes",
       "notifications": "Notificaciones",
       "profile": "Perfil"
+    },
+    "profile": {
+      "title": "Perfil",
+      "experience": "Experiencia",
+      "trust": "Confianza",
+      "skills": "Habilidades"
     }
   },
   "seller": {
@@ -1114,5 +1132,27 @@
     "editDetail": "Editar detalle",
     "deleteDetailTitle": "Eliminar detalle",
     "deleteDetailMessage": "¿Estás seguro de eliminar el detalle? Esta acción no se puede deshacer."
+  },
+  "relativeTime": {
+    "inSeconds": "en unos segundos",
+    "agoSeconds": "hace unos segundos",
+    "inMinutes": "en {{count}} min",
+    "agoMinutes": "hace {{count}} min",
+    "inHour": "en ~{{count}} hora",
+    "inHours": "en ~{{count}} horas",
+    "agoHour": "hace ~{{count}} hora",
+    "agoHours": "hace ~{{count}} horas",
+    "inDay": "en {{count}} día",
+    "inDays": "en {{count}} días",
+    "agoDay": "hace {{count}} día",
+    "agoDays": "hace {{count}} días",
+    "inMonth": "en {{count}} mes",
+    "inMonths": "en {{count}} meses",
+    "agoMonth": "hace {{count}} mes",
+    "agoMonths": "hace {{count}} meses",
+    "inYear": "en {{count}} año",
+    "inYears": "en {{count}} años",
+    "agoYear": "hace {{count}} año",
+    "agoYears": "hace {{count}} años"
   }
 }

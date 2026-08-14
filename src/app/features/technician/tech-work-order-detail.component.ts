@@ -152,7 +152,11 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
           </span>
           @if (order.location) {
             <span class="text-xs text-gray-500 dark:text-gray-400">
-              {{ order.location === 'workshop' ? 'Taller' : 'Domicilio' }}
+              {{
+                order.location === 'workshop'
+                  ? ('workOrders.locations.workshop' | translate)
+                  : ('workOrders.locations.onSite' | translate)
+              }}
             </span>
           }
         </div>
@@ -220,7 +224,9 @@ const ACTIONS_BY_STATUS: Record<string, TechStatusAction[]> = {
                           : 'border-gray-300 dark:border-gray-600 hover:border-emerald-500 dark:hover:border-emerald-400 bg-white dark:bg-gray-700/50'
                       "
                       [title]="
-                        task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'
+                        task.isCompleted
+                          ? ('workOrders.tasks.markAsPending' | translate)
+                          : ('workOrders.tasks.markAsCompleted' | translate)
                       "
                     >
                       @if (task.isCompleted) {
@@ -631,8 +637,10 @@ export class TechWorkOrderDetailComponent {
       width: '420px',
       data: {
         titleKey: 'workOrders.changeStatus',
-        message: `¿Cambiar estado a "${label}"?`,
-        confirmLabel: 'Confirmar',
+        message: this.translationService.instant('workOrders.confirmStatusMessage', {
+          label,
+        }),
+        confirmLabel: this.translationService.instant('common.confirm'),
         color: action.nextStatus === 'cancelled' ? 'warn' : 'primary',
       },
     });

@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { TranslationService } from '../../core/services/translation.service';
 
 const MINUTE = 60_000;
 const HOUR = 3_600_000;
@@ -8,6 +9,8 @@ const YEAR = 31_536_000_000;
 
 @Pipe({ name: 'relativeDate', pure: false })
 export class RelativeDatePipe implements PipeTransform {
+  private readonly translationService = inject(TranslationService);
+
   transform(value: Date | string | number | null | undefined): string {
     if (!value) return '';
 
@@ -20,38 +23,63 @@ export class RelativeDatePipe implements PipeTransform {
     const isFuture = diff > 0;
 
     if (absDiff < MINUTE) {
-      return isFuture ? 'en unos segundos' : 'hace unos segundos';
+      return this.translationService.instant(
+        isFuture ? 'relativeTime.inSeconds' : 'relativeTime.agoSeconds',
+      );
     }
 
     if (absDiff < HOUR) {
       const mins = Math.round(absDiff / MINUTE);
-      return isFuture ? `en ${mins} min` : `hace ${mins} min`;
+      return this.translationService.instant(
+        isFuture ? 'relativeTime.inMinutes' : 'relativeTime.agoMinutes',
+        { count: String(mins) },
+      );
     }
 
     if (absDiff < DAY) {
       const hours = Math.round(absDiff / HOUR);
-      return isFuture
-        ? `en ~${hours} hora${hours > 1 ? 's' : ''}`
-        : `hace ~${hours} hora${hours > 1 ? 's' : ''}`;
+      const key = isFuture
+        ? hours > 1
+          ? 'relativeTime.inHours'
+          : 'relativeTime.inHour'
+        : hours > 1
+          ? 'relativeTime.agoHours'
+          : 'relativeTime.agoHour';
+      return this.translationService.instant(key, { count: String(hours) });
     }
 
     if (absDiff < MONTH) {
       const days = Math.round(absDiff / DAY);
-      return isFuture
-        ? `en ${days} día${days > 1 ? 's' : ''}`
-        : `hace ${days} día${days > 1 ? 's' : ''}`;
+      const key = isFuture
+        ? days > 1
+          ? 'relativeTime.inDays'
+          : 'relativeTime.inDay'
+        : days > 1
+          ? 'relativeTime.agoDays'
+          : 'relativeTime.agoDay';
+      return this.translationService.instant(key, { count: String(days) });
     }
 
     if (absDiff < YEAR) {
       const months = Math.round(absDiff / MONTH);
-      return isFuture
-        ? `en ${months} mes${months > 1 ? 'es' : ''}`
-        : `hace ${months} mes${months > 1 ? 'es' : ''}`;
+      const key = isFuture
+        ? months > 1
+          ? 'relativeTime.inMonths'
+          : 'relativeTime.inMonth'
+        : months > 1
+          ? 'relativeTime.agoMonths'
+          : 'relativeTime.agoMonth';
+      return this.translationService.instant(key, { count: String(months) });
     }
 
     const years = Math.round(absDiff / YEAR);
-    return isFuture
-      ? `en ${years} año${years > 1 ? 's' : ''}`
-      : `hace ${years} año${years > 1 ? 's' : ''}`;
+    const key = isFuture
+      ? years > 1
+        ? 'relativeTime.inYears'
+        : 'relativeTime.inYear'
+      : years > 1
+        ? 'relativeTime.agoYears'
+        : 'relativeTime.agoYear';
+    return this.translationService.instant(key, { count: String(years) });
   }
 }

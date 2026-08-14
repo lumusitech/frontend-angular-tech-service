@@ -2,13 +2,16 @@ import { Component, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { User } from '../../core/models/user.interfaces';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-tech-profile',
-  imports: [MatIconModule],
+  imports: [MatIconModule, TranslatePipe],
   template: `
     <div class="max-w-2xl mx-auto space-y-6">
-      <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100">Perfil</h1>
+      <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+        {{ 'technician.profile.title' | translate }}
+      </h1>
 
       @if (resource.isLoading()) {
         <div class="flex justify-center py-12">
@@ -39,7 +42,7 @@ import { User } from '../../core/models/user.interfaces';
                 <p
                   class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                 >
-                  Experiencia
+                  {{ 'technician.profile.experience' | translate }}
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 mt-1">
                   {{ profile.experience }}
@@ -52,7 +55,7 @@ import { User } from '../../core/models/user.interfaces';
                 <p
                   class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                 >
-                  Confianza
+                  {{ 'technician.profile.trust' | translate }}
                 </p>
                 <div class="flex items-center gap-1 mt-1">
                   @for (star of [1, 2, 3, 4, 5]; track star) {
@@ -79,7 +82,7 @@ import { User } from '../../core/models/user.interfaces';
                 <p
                   class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                 >
-                  Habilidades
+                  {{ 'technician.profile.skills' | translate }}
                 </p>
                 <div class="flex flex-wrap gap-2 mt-2">
                   @for (skill of profile.skills; track skill.id) {

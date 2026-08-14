@@ -44,6 +44,16 @@ describe('BulkActionsComponent', () => {
     fixture.detectChanges();
   }
 
+  function clearButton(): HTMLButtonElement | null {
+    return fixture.nativeElement.querySelector(
+      'button[aria-label="bulk.clearSelection"]',
+    ) as HTMLButtonElement | null;
+  }
+
+  function mobileToolbar(): HTMLElement | null {
+    return fixture.nativeElement.querySelector('[role="toolbar"]') as HTMLElement | null;
+  }
+
   describe('computeds', () => {
     it('should create', () => {
       expect(component).toBeTruthy();
@@ -101,10 +111,62 @@ describe('BulkActionsComponent', () => {
     });
   });
 
-  describe('clear selection', () => {
-    it('should be disabled with no selection', () => {
+  describe('idle state (no selection)', () => {
+    it('should render the select-all checkbox and a hint, but no action buttons', () => {
       setSelected(0);
-      expect(buttonByText('bulk.clearSelection')?.disabled).toBe(true);
+      expect(
+        fixture.nativeElement.querySelector('mat-checkbox input[type="checkbox"]'),
+      ).toBeTruthy();
+
+      const hint = fixture.nativeElement.querySelector('.select-hint') as HTMLElement;
+      expect(hint).toBeTruthy();
+      expect(hint.textContent).toContain('bulk.selectHint');
+
+      expect(buttonByText('bulk.clearSelection')).toBeNull();
+      expect(buttonByText('bulk.exportCsv')).toBeNull();
+      expect(buttonByText('bulk.deleteSelected')).toBeNull();
+      expect(clearButton()).toBeNull();
+    });
+
+    it('should not render the mobile toolbar without selection', () => {
+      setSelected(0);
+      expect(mobileToolbar()).toBeNull();
+    });
+  });
+
+  describe('active selection', () => {
+    it('should replace the hint with the action buttons and show the mobile toolbar', () => {
+      setSelected(2);
+      expect(fixture.nativeElement.querySelector('.select-hint')).toBeNull();
+      expect(buttonByText('bulk.exportCsv')).toBeTruthy();
+      expect(buttonByText('bulk.deleteSelected')).toBeTruthy();
+      expect(clearButton()).toBeTruthy();
+      expect(mobileToolbar()).toBeTruthy();
+    });
+
+    it('should hide the menu again when selection returns to zero', () => {
+      setSelected(2);
+      expect(mobileToolbar()).toBeTruthy();
+
+      setSelected(0);
+      expect(fixture.nativeElement.querySelector('.select-hint')).toBeTruthy();
+      expect(buttonByText('bulk.exportCsv')).toBeNull();
+      expect(mobileToolbar()).toBeNull();
+    });
+
+    it('should render the count chip with aria-live when items are selected', () => {
+      setSelected(4);
+      const chip = fixture.nativeElement.querySelector('.count-chip') as HTMLElement;
+      expect(chip).toBeTruthy();
+      expect(chip.getAttribute('aria-live')).toBe('polite');
+      expect(chip.textContent).toContain('4');
+    });
+  });
+
+  describe('clear selection', () => {
+    it('should be absent with no selection', () => {
+      setSelected(0);
+      expect(clearButton()).toBeNull();
     });
 
     it('should emit clearSelection when clicked with selection', () => {
@@ -112,9 +174,15 @@ describe('BulkActionsComponent', () => {
       component.clearSelection.subscribe(spy);
 
       setSelected(2);
-      buttonByText('bulk.clearSelection')?.click();
+      clearButton()?.click();
 
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be disabled while loading', () => {
+      fixture.componentRef.setInput('loading', true);
+      setSelected(2);
+      expect(clearButton()?.disabled).toBe(true);
     });
   });
 
@@ -140,9 +208,9 @@ describe('BulkActionsComponent', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should be disabled with no selection', () => {
+    it('should be hidden with no selection', () => {
       setSelected(0);
-      expect(buttonByText('bulk.exportCsv')?.disabled).toBe(true);
+      expect(buttonByText('bulk.exportCsv')).toBeNull();
     });
   });
 
@@ -219,23 +287,23 @@ describe('BulkActionsComponent', () => {
   });
 
   describe('loading', () => {
-    it('should show spinner when loading', () => {
+    it('should show the progress bar when loading', () => {
       fixture.componentRef.setInput('loading', true);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('mat-progress-spinner')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('mat-progress-bar')).toBeTruthy();
     });
 
-    it('should not show spinner when not loading', () => {
+    it('should not show the progress bar when not loading', () => {
       fixture.componentRef.setInput('loading', false);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('mat-progress-spinner')).toBeNull();
+      expect(fixture.nativeElement.querySelector('mat-progress-bar')).toBeNull();
     });
 
     it('should disable action buttons while loading', () => {
       fixture.componentRef.setInput('loading', true);
       setSelected(2);
       expect(buttonByText('bulk.exportCsv')?.disabled).toBe(true);
-      expect(buttonByText('bulk.clearSelection')?.disabled).toBe(true);
+      expect(clearButton()?.disabled).toBe(true);
     });
   });
 });

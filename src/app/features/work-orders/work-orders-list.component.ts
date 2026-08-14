@@ -250,7 +250,7 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               (selectionChange)="toggleSelection(order.id, $event)"
               [onEdit]="onEditSwipe(order)"
               editIcon="visibility"
-              editLabel="Detalle"
+              [editLabel]="'workOrders.actions.viewDetail'"
             />
           }
         </mat-accordion>
@@ -461,6 +461,7 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               *matRowDef="let row; columns: displayedColumns"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
               [class.highlight-pulse]="highlightedId() === row.id"
+              [class.selected-row]="isSelected(row.id)"
               (click)="viewDetail(row)"
             ></tr>
           </table>
@@ -579,10 +580,10 @@ export class WorkOrdersListComponent {
         message: this.translationService.instant('bulk.changeStatusMessage', {
           count: String(ids.length),
         }),
-        confirmLabel: 'bulk.changeStatus',
+        confirmLabel: this.translationService.instant('bulk.changeStatus'),
         color: 'primary',
         statusOptions: this.statusOptions,
-        statusLabel: 'bulk.status',
+        statusLabel: this.translationService.instant('bulk.status'),
       },
     });
 

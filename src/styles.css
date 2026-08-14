@@ -53,6 +53,14 @@ body {
   animation: highlight-pulse 2s ease-in-out;
 }
 
+/* Bulk selection — highlighted row in desktop tables */
+.mat-mdc-row.selected-row {
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.mat-mdc-row.selected-row:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
 /* ============================================
    Brand Colors — Primary & Secondary
    Applied globally to Material components
