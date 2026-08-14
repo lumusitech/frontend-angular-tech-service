@@ -171,17 +171,22 @@
   },
   "bulk": {
     "selectAll": "Select all",
+    "selectHint": "Select rows for bulk actions",
     "selected": "selected",
     "clearSelection": "Clear selection",
     "exportCsv": "Export CSV",
     "status": "Status",
     "activate": "Activate",
     "deactivate": "Deactivate",
+    "activateConfirmTitle": "Activate clients",
+    "activateConfirmMessage": "Are you sure you want to activate {{count}} selected client(s)?",
+    "deactivateConfirmTitle": "Deactivate clients",
+    "deactivateConfirmMessage": "Are you sure you want to deactivate {{count}} selected client(s)?",
     "deleteSelected": "Delete selected",
     "deleteTitle": "Delete clients",
     "deleteMessage": "Are you sure you want to delete {{count}} client(s)? This action cannot be undone.",
     "changeStatus": "Change status",
-    "changeStatusMessage": "The status of {{count}} work order(s) will be changed. Invalid transitions will be skipped.",
+    "changeStatusMessage": "Are you sure you want to change the status of {{count}} selected work order(s)? Invalid transitions will be skipped.",
     "toast": {
       "activated": "Clients activated successfully",
       "deactivated": "Clients deactivated successfully",
@@ -292,6 +297,8 @@
     "addTask": "Add task",
     "assignTechnicians": "Assign technicians",
     "changeStatus": "Change status",
+    "confirmCancelMessage": "Are you sure you want to cancel this order? This action cannot be undone.",
+    "confirmStatusMessage": "Are you sure you want to change the status to \"{{label}}\"?",
     "actions": {
       "assignTechnicians": "Assign Technicians",
       "startWork": "Start Work",
@@ -302,7 +309,8 @@
       "cancel": "Cancel",
       "resume": "Resume",
       "reopen": "Reopen",
-      "deliver": "Deliver"
+      "deliver": "Deliver",
+      "viewDetail": "View details"
     },
     "serviceType": "Service Type",
     "initialDiagnosis": "Initial diagnosis",
@@ -376,7 +384,9 @@
       "deleteTask": "Delete task",
       "deleteTaskConfirm": "Are you sure you want to delete this task?",
       "taskDeletedSuccess": "Task deleted successfully",
-      "taskDeletedError": "Error deleting task"
+      "taskDeletedError": "Error deleting task",
+      "markAsPending": "Mark as pending",
+      "markAsCompleted": "Mark as completed"
     },
     "materials": {
       "addMaterial": "Add material",
@@ -409,6 +419,8 @@
       "content": "Content",
       "contentPlaceholder": "Write the note content...",
       "saveNote": "Save note",
+      "deleteTitle": "Delete note",
+      "deleteMessage": "Are you sure you want to delete this note?",
       "types": {
         "diagnosis": "Diagnosis",
         "issue": "Issue",
@@ -777,6 +789,12 @@
       "orders": "Orders",
       "notifications": "Notifications",
       "profile": "Profile"
+    },
+    "profile": {
+      "title": "Profile",
+      "experience": "Experience",
+      "trust": "Trust",
+      "skills": "Skills"
     }
   },
   "inquiries": {
@@ -1112,5 +1130,27 @@
     "editDetail": "Edit detail",
     "deleteDetailTitle": "Delete detail",
     "deleteDetailMessage": "Are you sure you want to delete the detail? This action cannot be undone."
+  },
+  "relativeTime": {
+    "inSeconds": "in a few seconds",
+    "agoSeconds": "a few seconds ago",
+    "inMinutes": "in {{count}} min",
+    "agoMinutes": "{{count}} min ago",
+    "inHour": "in ~{{count}} hour",
+    "inHours": "in ~{{count}} hours",
+    "agoHour": "~{{count}} hour ago",
+    "agoHours": "~{{count}} hours ago",
+    "inDay": "in {{count}} day",
+    "inDays": "in {{count}} days",
+    "agoDay": "{{count}} day ago",
+    "agoDays": "{{count}} days ago",
+    "inMonth": "in {{count}} month",
+    "inMonths": "in {{count}} months",
+    "agoMonth": "{{count}} month ago",
+    "agoMonths": "{{count}} months ago",
+    "inYear": "in {{count}} year",
+    "inYears": "in {{count}} years",
+    "agoYear": "{{count}} year ago",
+    "agoYears": "{{count}} years ago"
   }
 }

@@ -1,7 +1,8 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CopyToClipboardDirective } from '../../directives/copy-to-clipboard.directive';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-copy-field',
@@ -102,6 +103,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   `,
 })
 export class CopyFieldComponent {
+  private readonly translationService = inject(TranslationService);
+
   readonly label = input.required<string>();
   readonly value = input.required<string>();
   readonly type = input<'phone' | 'email' | 'address' | 'date' | 'text'>('text');
@@ -117,7 +120,7 @@ export class CopyFieldComponent {
     if (this.type() !== 'date') return this.value();
     const d = new Date(this.value());
     if (isNaN(d.getTime())) return this.value();
-    return d.toLocaleDateString('es-AR', {
+    return d.toLocaleDateString(this.translationService.locale(), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -135,19 +138,43 @@ export class CopyFieldComponent {
     const diff = date.getTime() - now;
     const abs = Math.abs(diff);
     const future = diff > 0;
-    if (abs < 60_000) return future ? 'en unos segundos' : 'hace unos segundos';
+    if (abs < 60_000)
+      return this.translationService.instant(
+        future ? 'relativeTime.inSeconds' : 'relativeTime.agoSeconds',
+      );
     if (abs < 3_600_000) {
       const m = Math.round(abs / 60_000);
-      return future ? `en ${m} min` : `hace ${m} min`;
+      return this.translationService.instant(
+        future ? 'relativeTime.inMinutes' : 'relativeTime.agoMinutes',
+        { count: String(m) },
+      );
     }
     if (abs < 86_400_000) {
       const h = Math.round(abs / 3_600_000);
-      return future ? `en ~${h}h` : `hace ~${h}h`;
+      const key = future
+        ? h > 1
+          ? 'relativeTime.inHours'
+          : 'relativeTime.inHour'
+        : h > 1
+          ? 'relativeTime.agoHours'
+          : 'relativeTime.agoHour';
+      return this.translationService.instant(key, { count: String(h) });
     }
     if (abs < 2_592_000_000) {
       const d = Math.round(abs / 86_400_000);
-      return future ? `en ${d} días` : `hace ${d} días`;
+      const key = future
+        ? d > 1
+          ? 'relativeTime.inDays'
+          : 'relativeTime.inDay'
+        : d > 1
+          ? 'relativeTime.agoDays'
+          : 'relativeTime.agoDay';
+      return this.translationService.instant(key, { count: String(d) });
     }
-    return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
+    return date.toLocaleDateString(this.translationService.locale(), {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 }

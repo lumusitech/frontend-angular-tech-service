@@ -82,7 +82,7 @@ function formatDuration(seconds: number): string {
                 <button
                   mat-icon-button
                   type="button"
-                  aria-label="Editar detalle"
+                  [attr.aria-label]="'statusTimeline.editDetail' | translate"
                   (click)="editDetail(log)"
                 >
                   <mat-icon class="!text-base">edit</mat-icon>
@@ -90,7 +90,7 @@ function formatDuration(seconds: number): string {
                 <button
                   mat-icon-button
                   type="button"
-                  aria-label="Eliminar detalle"
+                  [attr.aria-label]="'statusTimeline.deleteDetailTitle' | translate"
                   (click)="removeDetail(log)"
                 >
                   <mat-icon class="!text-base">delete</mat-icon>
@@ -123,7 +123,7 @@ export class StatusTimelineComponent {
       width: '420px',
       data: {
         titleKey: 'statusTimeline.editDetail',
-        detailLabel: 'statusTimeline.detail',
+        detailLabel: this.translationService.instant('statusTimeline.detail'),
         initialDetail: log.detail ?? undefined,
       },
     });

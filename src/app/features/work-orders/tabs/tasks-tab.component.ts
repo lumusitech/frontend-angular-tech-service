@@ -51,7 +51,11 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
                       ? 'bg-emerald-500 border-emerald-500 text-white'
                       : 'border-gray-300 dark:border-gray-600 hover:border-emerald-500 dark:hover:border-emerald-400 bg-white dark:bg-gray-700/50'
                   "
-                  [title]="task.isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'"
+                  [title]="
+                    task.isCompleted
+                      ? ('workOrders.tasks.markAsPending' | translate)
+                      : ('workOrders.tasks.markAsCompleted' | translate)
+                  "
                 >
                   @if (task.isCompleted) {
                     <mat-icon class="!w-3.5 !h-3.5 !text-[14px] !leading-none font-bold"

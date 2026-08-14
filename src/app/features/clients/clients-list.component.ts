@@ -372,6 +372,7 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               mat-row
               *matRowDef="let row; columns: displayedColumns"
               [class.highlight-pulse]="highlightedId() === row.id"
+              [class.selected-row]="isSelected(row.id)"
               (click)="viewDetail(row)"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             ></tr>
@@ -510,36 +511,55 @@ export class ClientsListComponent {
   }
 
   bulkSetActive(isActive: boolean): void {
-    const ids = Array.from(this.selectedIds());
-    if (ids.length === 0) return;
+    const count = this.selectedIds().size;
+    if (count === 0) return;
 
-    const key = isActive ? 'bulk.toast.activated' : 'bulk.toast.deactivated';
-    this.bulkLoading.set(true);
-    this.clientsService.bulkUpdateStatus(ids, isActive).subscribe({
-      next: (result) => {
-        this.bulkLoading.set(false);
-        const failedCount = result.failed.length;
-        if (failedCount === 0) {
-          this.toastService.show(this.translationService.instant(key), 'success');
-        } else {
-          this.toastService.show(
-            this.translationService.instant('bulk.toast.partial', {
-              succeeded: String(result.succeeded.length),
-              failed: String(failedCount),
-            }),
-            'info',
-          );
-        }
-        this.clearSelection();
-        this.clientsResource.reload();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        titleKey: isActive ? 'bulk.activateConfirmTitle' : 'bulk.deactivateConfirmTitle',
+        message: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmMessage' : 'bulk.deactivateConfirmMessage',
+          { count: String(count) },
+        ),
+        confirmLabel: this.translationService.instant(
+          isActive ? 'bulk.activate' : 'bulk.deactivate',
+        ),
+        color: isActive ? 'primary' : 'warn',
       },
-      error: (err) => {
-        this.bulkLoading.set(false);
-        const msg = Array.isArray(err.error?.message)
-          ? err.error.message.join(', ')
-          : err.error?.message || this.translationService.instant('bulk.toast.error');
-        this.toastService.show(msg, 'error');
-      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      const key = isActive ? 'bulk.toast.activated' : 'bulk.toast.deactivated';
+      this.bulkLoading.set(true);
+      this.clientsService.bulkUpdateStatus(ids, isActive).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(this.translationService.instant(key), 'success');
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.clientsResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
     });
   }
 
@@ -550,7 +570,7 @@ export class ClientsListComponent {
       data: {
         titleKey: 'bulk.deleteTitle',
         message: this.translationService.instant('bulk.deleteMessage', { count: String(count) }),
-        confirmLabel: 'common.delete',
+        confirmLabel: this.translationService.instant('common.delete'),
         color: 'warn',
       },
     });

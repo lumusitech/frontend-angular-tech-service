@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { StatusBadgeComponent, StatusBadgeType } from '../status-badge/status-badge.component';
 import { CopyFieldComponent } from '../copy-field/copy-field.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface MobileCardField {
   label: string;
@@ -21,6 +22,7 @@ export interface MobileCardField {
     MatCheckboxModule,
     StatusBadgeComponent,
     CopyFieldComponent,
+    TranslatePipe,
   ],
   styles: `
     :host {
@@ -89,6 +91,15 @@ export interface MobileCardField {
     .swipe-card.dragging {
       transition: none;
     }
+
+    .swipe-card.card-selected {
+      border-color: var(--color-primary) !important;
+      background-color: color-mix(in srgb, var(--color-primary) 5%, #ffffff) !important;
+    }
+    :host(.dark) .swipe-card.card-selected {
+      border-color: var(--color-primary) !important;
+      background-color: color-mix(in srgb, var(--color-primary) 16%, #1f2937) !important;
+    }
   `,
   template: `
     <div
@@ -100,17 +111,18 @@ export interface MobileCardField {
       <div class="swipe-actions" [style.opacity]="swiping() ? 1 : 0">
         <div class="action-edit">
           <mat-icon class="!w-5 !h-5">{{ editIcon() }}</mat-icon>
-          <span>{{ editLabel() }}</span>
+          <span>{{ editLabel() | translate }}</span>
         </div>
         <div class="action-delete">
           <mat-icon class="!w-5 !h-5">delete</mat-icon>
-          <span>Borrar</span>
+          <span>{{ 'common.delete' | translate }}</span>
         </div>
       </div>
 
       <mat-expansion-panel
         #panel
         class="swipe-card !shadow-sm !border !border-gray-200 dark:!border-gray-700 !bg-white dark:!bg-gray-800 !mb-0"
+        [class.card-selected]="checked()"
         (opened)="panelExpanded.set(true)"
         (closed)="panelExpanded.set(false)"
       >
@@ -153,7 +165,7 @@ export interface MobileCardField {
                   class="!rounded-xl"
                 >
                   <mat-icon class="!w-4 !h-4 !text-base mr-1">{{ editIcon() }}</mat-icon>
-                  <span>{{ editLabel() }}</span>
+                  <span>{{ editLabel() | translate }}</span>
                 </button>
               }
               @if (onDelete()) {
@@ -164,7 +176,7 @@ export interface MobileCardField {
                   class="!rounded-xl"
                 >
                   <mat-icon class="!w-4 !h-4 !text-base mr-1">delete</mat-icon>
-                  <span>Borrar</span>
+                  <span>{{ 'common.delete' | translate }}</span>
                 </button>
               }
             </div>
@@ -186,7 +198,7 @@ export class MobileCardComponent {
   readonly selectable = input(false);
   readonly checked = input(false);
   readonly editIcon = input<string>('edit');
-  readonly editLabel = input<string>('Editar');
+  readonly editLabel = input<string>('common.edit');
   readonly onEdit = input<((event: Event) => void) | null>(null);
   readonly onDelete = input<((event: Event) => void) | null>(null);
 

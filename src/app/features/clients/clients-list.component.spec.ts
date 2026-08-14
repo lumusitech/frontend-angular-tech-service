@@ -370,10 +370,12 @@ describe('ClientsListComponent', () => {
   describe('bulkSetActive()', () => {
     it('should do nothing when no ids are selected', () => {
       component.bulkSetActive(true);
+      expect(dialogSpy).not.toHaveBeenCalled();
       expect(bulkUpdateStatusSpy).not.toHaveBeenCalled();
     });
 
-    it('should call bulkUpdateStatus and show success toast', () => {
+    it('should open confirm dialog and call bulkUpdateStatus when confirmed', () => {
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
       bulkUpdateStatusSpy.mockReturnValue(
         of({ succeeded: [{ id: 'a', isActive: false }], failed: [] }),
       );
@@ -384,6 +386,7 @@ describe('ClientsListComponent', () => {
 
       component.bulkSetActive(false);
 
+      expect(dialogSpy).toHaveBeenCalled();
       expect(bulkUpdateStatusSpy).toHaveBeenCalledWith(['a'], false);
       expect(toastSpy).toHaveBeenCalledWith('bulk.toast.deactivated', 'success');
       expect(component.selectedIds().size).toBe(0);
@@ -391,7 +394,17 @@ describe('ClientsListComponent', () => {
       expect(reloadSpy).toHaveBeenCalled();
     });
 
+    it('should not call bulkUpdateStatus when dialog is cancelled', () => {
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(false)) });
+      component.selectedIds.set(new Set(['a']));
+
+      component.bulkSetActive(true);
+
+      expect(bulkUpdateStatusSpy).not.toHaveBeenCalled();
+    });
+
     it('should show partial toast when some fail', () => {
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
       bulkUpdateStatusSpy.mockReturnValue(
         of({
           succeeded: [{ id: 'a', isActive: true }],
@@ -407,6 +420,7 @@ describe('ClientsListComponent', () => {
     });
 
     it('should show error toast on request error', () => {
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
       bulkUpdateStatusSpy.mockReturnValue(
         new Observable((subscriber) => subscriber.error({ error: { message: 'boom' } })),
       );

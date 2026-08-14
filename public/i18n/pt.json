@@ -171,17 +171,22 @@
   },
   "bulk": {
     "selectAll": "Selecionar tudo",
+    "selectHint": "Selecione linhas para ações em massa",
     "selected": "selecionados",
     "clearSelection": "Limpar seleção",
     "exportCsv": "Exportar CSV",
     "status": "Status",
     "activate": "Ativar",
     "deactivate": "Desativar",
+    "activateConfirmTitle": "Ativar clientes",
+    "activateConfirmMessage": "Tem certeza de que deseja ativar {{count}} cliente(s) selecionado(s)?",
+    "deactivateConfirmTitle": "Desativar clientes",
+    "deactivateConfirmMessage": "Tem certeza de que deseja desativar {{count}} cliente(s) selecionado(s)?",
     "deleteSelected": "Excluir selecionados",
     "deleteTitle": "Excluir clientes",
     "deleteMessage": "Tem certeza de que deseja excluir {{count}} cliente(s)? Esta ação não pode ser desfeita.",
     "changeStatus": "Alterar status",
-    "changeStatusMessage": "O status de {{count}} ordem(ns) de trabalho será alterado. Transições inválidas serão ignoradas.",
+    "changeStatusMessage": "Tem certeza de que deseja alterar o status de {{count}} ordem(ns) de trabalho selecionada(s)? Transições inválidas serão ignoradas.",
     "toast": {
       "activated": "Clientes ativados com sucesso",
       "deactivated": "Clientes desativados com sucesso",
@@ -285,6 +290,8 @@
     "addTask": "Adicionar tarefa",
     "assignTechnicians": "Atribuir técnicos",
     "changeStatus": "Alterar status",
+    "confirmCancelMessage": "Tem certeza de que deseja cancelar esta ordem? Esta ação não pode ser desfeita.",
+    "confirmStatusMessage": "Tem certeza de que deseja alterar o status para \"{{label}}\"?",
     "actions": {
       "assignTechnicians": "Atribuir Técnicos",
       "startWork": "Iniciar Trabalho",
@@ -295,7 +302,8 @@
       "cancel": "Cancelar",
       "resume": "Retomar",
       "reopen": "Reabrir",
-      "deliver": "Entregar"
+      "deliver": "Entregar",
+      "viewDetail": "Ver detalhes"
     },
     "serviceType": "Tipo de Serviço",
     "initialDiagnosis": "Diagnóstico inicial",
@@ -369,7 +377,9 @@
       "deleteTask": "Excluir tarefa",
       "deleteTaskConfirm": "Tem certeza de que deseja excluir esta tarefa?",
       "taskDeletedSuccess": "Tarefa excluída com sucesso",
-      "taskDeletedError": "Erro ao excluir a tarefa"
+      "taskDeletedError": "Erro ao excluir a tarefa",
+      "markAsPending": "Marcar como pendente",
+      "markAsCompleted": "Marcar como concluída"
     },
     "materials": {
       "addMaterial": "Adicionar material",
@@ -402,6 +412,8 @@
       "content": "Conteúdo",
       "contentPlaceholder": "Escreva o conteúdo da nota...",
       "saveNote": "Salvar nota",
+      "deleteTitle": "Excluir nota",
+      "deleteMessage": "Tem certeza de que deseja excluir esta nota?",
       "types": {
         "diagnosis": "Diagnóstico",
         "issue": "Problema",
@@ -771,6 +783,12 @@
       "orders": "Ordens",
       "notifications": "Notificações",
       "profile": "Perfil"
+    },
+    "profile": {
+      "title": "Perfil",
+      "experience": "Experiência",
+      "trust": "Confiança",
+      "skills": "Habilidades"
     }
   },
   "seller": {
@@ -1114,5 +1132,27 @@
     "editDetail": "Editar detalhe",
     "deleteDetailTitle": "Excluir detalhe",
     "deleteDetailMessage": "Tem certeza de que deseja excluir o detalhe? Esta ação não pode ser desfeita."
+  },
+  "relativeTime": {
+    "inSeconds": "em alguns segundos",
+    "agoSeconds": "há alguns segundos",
+    "inMinutes": "em {{count}} min",
+    "agoMinutes": "há {{count}} min",
+    "inHour": "em ~{{count}} hora",
+    "inHours": "em ~{{count}} horas",
+    "agoHour": "há ~{{count}} hora",
+    "agoHours": "há ~{{count}} horas",
+    "inDay": "em {{count}} dia",
+    "inDays": "em {{count}} dias",
+    "agoDay": "há {{count}} dia",
+    "agoDays": "há {{count}} dias",
+    "inMonth": "em {{count}} mês",
+    "inMonths": "em {{count}} meses",
+    "agoMonth": "há {{count}} mês",
+    "agoMonths": "há {{count}} meses",
+    "inYear": "em {{count}} ano",
+    "inYears": "em {{count}} anos",
+    "agoYear": "há {{count}} ano",
+    "agoYears": "há {{count}} anos"
   }
 }

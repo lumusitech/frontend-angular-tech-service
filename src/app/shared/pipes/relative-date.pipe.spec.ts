@@ -1,10 +1,52 @@
+import { TestBed } from '@angular/core/testing';
 import { RelativeDatePipe } from './relative-date.pipe';
+import { TranslationService } from '../../core/services/translation.service';
+
+const es = {
+  'relativeTime.inSeconds': 'en unos segundos',
+  'relativeTime.agoSeconds': 'hace unos segundos',
+  'relativeTime.inMinutes': 'en {{count}} min',
+  'relativeTime.agoMinutes': 'hace {{count}} min',
+  'relativeTime.inHour': 'en ~{{count}} hora',
+  'relativeTime.inHours': 'en ~{{count}} horas',
+  'relativeTime.agoHour': 'hace ~{{count}} hora',
+  'relativeTime.agoHours': 'hace ~{{count}} horas',
+  'relativeTime.inDay': 'en {{count}} día',
+  'relativeTime.inDays': 'en {{count}} días',
+  'relativeTime.agoDay': 'hace {{count}} día',
+  'relativeTime.agoDays': 'hace {{count}} días',
+  'relativeTime.inMonth': 'en {{count}} mes',
+  'relativeTime.inMonths': 'en {{count}} meses',
+  'relativeTime.agoMonth': 'hace {{count}} mes',
+  'relativeTime.agoMonths': 'hace {{count}} meses',
+  'relativeTime.inYear': 'en {{count}} año',
+  'relativeTime.inYears': 'en {{count}} años',
+  'relativeTime.agoYear': 'hace {{count}} año',
+  'relativeTime.agoYears': 'hace {{count}} años',
+};
+
+const translationMock = {
+  instant: (key: string, params?: Record<string, string>): string => {
+    const template = es[key as keyof typeof es] ?? key;
+    if (!params) return template;
+    return template.replace(/\{\{(\w+)\}\}/g, (_, name: string) => params[name] ?? '');
+  },
+};
 
 describe('RelativeDatePipe', () => {
   let pipe: RelativeDatePipe;
 
-  beforeEach(() => {
-    pipe = new RelativeDatePipe();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: TranslationService,
+          useValue: translationMock,
+        },
+      ],
+    }).compileComponents();
+
+    pipe = TestBed.runInInjectionContext(() => new RelativeDatePipe());
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-07-02T12:00:00.000Z'));
   });
@@ -142,7 +184,6 @@ describe('RelativeDatePipe', () => {
     it('should handle exact boundary: exactly 1 minute ago', () => {
       const date = new Date('2026-07-02T11:59:00.000Z'); // exactly 1 minute ago
       const result = pipe.transform(date);
-      // Should be "hace 1 min" since it's exactly 60000ms
       expect(result).toBe('hace 1 min');
     });
 
