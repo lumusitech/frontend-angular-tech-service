@@ -4,12 +4,13 @@ import { MatIconModule } from '@angular/material/icon';
 
 interface CrudToastData {
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: 'success' | 'error' | 'warning' | 'info';
 }
 
 const TYPE_ICONS: Record<string, string> = {
   success: 'check_circle',
   error: 'error',
+  warning: 'warning',
   info: 'info',
 };
 
@@ -24,7 +25,9 @@ const TYPE_ICONS: Record<string, string> = {
             ? '!text-green-500'
             : data.type === 'error'
               ? '!text-red-500'
-              : '!text-blue-500'
+              : data.type === 'warning'
+                ? '!text-amber-500'
+                : '!text-blue-500'
         "
       >
         {{ icon }}
@@ -43,7 +46,7 @@ export class CrudToastContentComponent {
 export class ToastService {
   private snackBar = inject(MatSnackBar);
 
-  show(message: string, type: 'success' | 'error' | 'info' = 'success'): void {
+  show(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success'): void {
     this.snackBar.openFromComponent(CrudToastContentComponent, {
       duration: 3000,
       horizontalPosition: 'end',

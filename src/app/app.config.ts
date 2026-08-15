@@ -18,9 +18,11 @@ import { routes } from './app.routes';
 import { apiResponseInterceptor } from './core/interceptors/api-response.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { offlineInterceptor } from './core/interceptors/offline.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 import { TranslationService } from './core/services/translation.service';
 import { ThemeService } from './core/services/theme.service';
+import { OfflineService } from './core/services/offline.service';
 import { LocalDateAdapter } from './core/utils/local-date.adapter';
 
 registerLocaleData(localeEsAR);
@@ -31,7 +33,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideClientHydration(),
     provideHttpClient(
-      withInterceptors([apiResponseInterceptor, authInterceptor, loadingInterceptor]),
+      withInterceptors([
+        offlineInterceptor,
+        apiResponseInterceptor,
+        authInterceptor,
+        loadingInterceptor,
+      ]),
     ),
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(MatNativeDateModule),
@@ -41,6 +48,8 @@ export const appConfig: ApplicationConfig = {
       const themeService = inject(ThemeService);
       themeService.init();
       const ts = inject(TranslationService);
+      const offlineService = inject(OfflineService);
+      offlineService.init();
       return ts.init();
     }),
     provideServiceWorker('ngsw-worker.js', {
