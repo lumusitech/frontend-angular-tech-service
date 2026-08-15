@@ -98,6 +98,14 @@ export class OfflineService {
     await this.refreshCounts();
   }
 
+  pendingItems(): Promise<QueuedRequest[]> {
+    return this.queueStore.getPending();
+  }
+
+  blockedItems(): Promise<QueuedRequest[]> {
+    return this.queueStore.getBlocked();
+  }
+
   /**
    * Reintenta las mutaciones encoladas en orden FIFO. Solo se re-envían
    * requests que nunca recibieron respuesta (replay seguro + idempotencia).

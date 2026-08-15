@@ -60,7 +60,8 @@
       "errorCreated": "Error creating",
       "errorUpdated": "Error updating",
       "errorDeleted": "Error deleting"
-    }
+    },
+    "close": "Close"
   },
   "validation": {
     "required": "This field is required",
@@ -1171,5 +1172,23 @@
     "inYears": "in {{count}} years",
     "agoYear": "{{count}} year ago",
     "agoYears": "{{count}} years ago"
+  },
+  "offline": {
+    "title": "Sync status",
+    "offline": "Offline",
+    "offlineMessage": "You're offline. Your changes will be saved and synced when the connection returns.",
+    "syncing": "Syncing {{count}} changes…",
+    "pending": "{{count}} changes pending sync",
+    "blocked": "{{count}} changes need attention",
+    "pendingSection": "Pending",
+    "blockedSection": "Need attention",
+    "empty": "No pending changes",
+    "retry": "Retry",
+    "retryAll": "Retry all",
+    "syncSuccess": "{{count}} changes synced",
+    "syncBlocked": "{{count}} changes need attention",
+    "syncSessionExpired": "Session expired. Log in again to sync this change.",
+    "syncConflict": "This change was modified by another user.",
+    "syncRejected": "Rejected by the server ({{status}})"
   }
 }

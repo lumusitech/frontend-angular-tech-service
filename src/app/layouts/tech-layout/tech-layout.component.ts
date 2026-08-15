@@ -3,10 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-nav.component';
+import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner.component';
+import { OfflineStatusButtonComponent } from '../../shared/components/offline-status-button/offline-status-button.component';
 
 @Component({
   selector: 'app-tech-layout',
-  imports: [RouterOutlet, BottomNavComponent],
+  imports: [RouterOutlet, BottomNavComponent, OfflineBannerComponent, OfflineStatusButtonComponent],
   template: `
     <div class="h-dvh flex flex-col bg-gray-50 dark:bg-gray-900">
       <!-- Header -->
@@ -17,6 +19,8 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-na
           <span class="text-lg font-bold text-gray-900 dark:text-gray-100">Tech Service</span>
         </div>
         <div class="flex items-center gap-3">
+          <app-offline-status-button />
+
           @if (authService.user()?.avatar) {
             <div
               class="w-8 h-8 rounded-full flex items-center justify-center text-lg overflow-hidden bg-blue-600"
@@ -64,6 +68,8 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav/bottom-na
           </button>
         </div>
       </header>
+
+      <app-offline-banner />
 
       <!-- Content -->
       <main class="flex-1 overflow-y-auto p-4 pb-20">

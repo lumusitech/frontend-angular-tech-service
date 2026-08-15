@@ -60,7 +60,8 @@
       "errorCreated": "Erro ao criar",
       "errorUpdated": "Erro ao atualizar",
       "errorDeleted": "Erro ao excluir"
-    }
+    },
+    "close": "Fechar"
   },
   "validation": {
     "required": "Este campo é obrigatório",
@@ -1173,5 +1174,23 @@
     "inYears": "em {{count}} anos",
     "agoYear": "há {{count}} ano",
     "agoYears": "há {{count}} anos"
+  },
+  "offline": {
+    "title": "Status de sincronização",
+    "offline": "Sem conexão",
+    "offlineMessage": "Sem conexão. Suas alterações serão salvas e sincronizadas quando o sinal voltar.",
+    "syncing": "Sincronizando {{count}} alterações…",
+    "pending": "{{count}} alterações aguardando sincronização",
+    "blocked": "{{count}} alterações precisam de atenção",
+    "pendingSection": "Pendentes",
+    "blockedSection": "Precisam de atenção",
+    "empty": "Sem alterações pendentes",
+    "retry": "Tentar novamente",
+    "retryAll": "Tentar todas novamente",
+    "syncSuccess": "{{count}} alterações sincronizadas",
+    "syncBlocked": "{{count}} alterações precisam de atenção",
+    "syncSessionExpired": "Sessão expirada. Entre novamente para sincronizar esta alteração.",
+    "syncConflict": "Esta alteração foi modificada por outro usuário.",
+    "syncRejected": "Rejeitada pelo servidor ({{status}})"
   }
 }
