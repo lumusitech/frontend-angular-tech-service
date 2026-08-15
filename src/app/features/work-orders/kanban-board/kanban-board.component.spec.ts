@@ -188,11 +188,60 @@ describe('KanbanBoardComponent', () => {
       expect(updateSpy).not.toHaveBeenCalled();
     });
 
-    it('should show success toast and reload on success', () => {
+    it('should show success toast on success', () => {
       const order = makeOrder('1', 'pending');
       const event = makeDropEvent('kanban-pending', 'kanban-assigned', order);
       component.onDrop(event);
       expect(toastSpy).toHaveBeenCalledWith('workOrders.kanban.toast.statusChanged', 'success');
+    });
+
+    it('should update status optimistically without reloading', async () => {
+      httpMock
+        .match((r) => r.url === '/api/work-orders')
+        .forEach((req) =>
+          req.flush({
+            data: [makeOrder('1', 'pending')],
+            total: 1,
+            page: 1,
+            limit: 200,
+            totalPages: 1,
+          } satisfies PaginatedResponse<WorkOrder>),
+        );
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const order = makeOrder('1', 'pending');
+      const event = makeDropEvent('kanban-pending', 'kanban-assigned', order);
+      component.onDrop(event);
+
+      const board = component as unknown as Record<string, unknown>;
+      const orders = board['orders'] as () => WorkOrder[];
+      expect(orders()[0].status).toBe('assigned');
+    });
+
+    it('should revert optimistic status when update fails', async () => {
+      updateSpy.mockReturnValue(throwError(() => new Error('fail')));
+      httpMock
+        .match((r) => r.url === '/api/work-orders')
+        .forEach((req) =>
+          req.flush({
+            data: [makeOrder('1', 'pending')],
+            total: 1,
+            page: 1,
+            limit: 200,
+            totalPages: 1,
+          } satisfies PaginatedResponse<WorkOrder>),
+        );
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const order = makeOrder('1', 'pending');
+      const event = makeDropEvent('kanban-pending', 'kanban-assigned', order);
+      component.onDrop(event);
+
+      const board = component as unknown as Record<string, unknown>;
+      const orders = board['orders'] as () => WorkOrder[];
+      expect(orders()[0].status).toBe('pending');
     });
 
     it('should show error toast when update fails', () => {

@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   inject,
   signal,
   ElementRef,
@@ -212,10 +213,21 @@ export class KanbanBoardComponent implements OnDestroy {
     };
   });
 
+  private readonly orders = signal<WorkOrder[]>([]);
+
+  constructor() {
+    effect(() => {
+      const data = this.boardResource.value()?.data;
+      if (data) {
+        this.orders.set(data);
+      }
+    });
+  }
+
   readonly totalCount = computed(() => this.boardResource.value()?.total ?? 0);
 
   readonly columns = computed<KanbanColumn[]>(() => {
-    const orders = this.boardResource.value()?.data ?? [];
+    const orders = this.orders();
     return KANBAN_STATUSES.map((status) => ({
       status,
       orders: orders.filter((order) => order.status === status),
@@ -364,6 +376,7 @@ export class KanbanBoardComponent implements OnDestroy {
 
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.reorderLocally(order, event.previousIndex, event.currentIndex);
       return;
     }
 
@@ -372,21 +385,38 @@ export class KanbanBoardComponent implements OnDestroy {
       return;
     }
 
+    const previousStatus = order.status;
+    this.applyStatusLocally(order.id, targetStatus);
+
     this.workOrdersService.update(order.id, { status: targetStatus }).subscribe({
       next: () => {
         this.toastService.show(
           this.translationService.instant('workOrders.kanban.toast.statusChanged'),
           'success',
         );
-        this.boardResource.reload();
       },
       error: () => {
+        this.applyStatusLocally(order.id, previousStatus);
         this.toastService.show(
           this.translationService.instant('workOrders.kanban.toast.error'),
           'error',
         );
-        this.boardResource.reload();
       },
+    });
+  }
+
+  private applyStatusLocally(id: string, status: WorkOrderStatus): void {
+    this.orders.update((list) => list.map((o) => (o.id === id ? { ...o, status } : o)));
+  }
+
+  private reorderLocally(order: WorkOrder, previousIndex: number, currentIndex: number): void {
+    this.orders.update((list) => {
+      const next = [...list];
+      const sameStatus = next.filter((o) => o.status === order.status);
+      moveItemInArray(sameStatus, previousIndex, currentIndex);
+      const status = order.status;
+      const others = next.filter((o) => o.status !== status);
+      return [...others, ...sameStatus];
     });
   }
 
