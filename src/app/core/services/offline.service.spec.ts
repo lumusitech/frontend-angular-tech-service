@@ -213,4 +213,21 @@ describe('OfflineService', () => {
     expect(await fakeStore.getPending()).toHaveLength(2);
     expect(service.pendingCount()).toBe(2);
   });
+
+  it('does not throw when the queue store fails during flush', async () => {
+    // Regresión: un fallo del storage (ej: store de IndexedDB inexistente →
+    // NotFoundError) no debe propagarse como unhandled rejection, sino terminar
+    // el flush con calma y dejar isSyncing en false.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(fakeStore, 'getPending').mockRejectedValue(
+      new Error('One of the specified object stores was not found.'),
+    );
+
+    const result = await service.flush();
+
+    expect(result).toEqual({ synced: 0, failed: 0, blocked: 0 });
+    expect(service.isSyncing()).toBe(false);
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
 });

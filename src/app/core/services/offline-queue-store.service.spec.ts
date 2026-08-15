@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
 import { OfflineQueueStore, QueuedRequest } from './offline-queue-store.service';
+import { OfflineGetCache } from './offline-get-cache.service';
 
 function makeRequest(overrides: Partial<QueuedRequest> = {}): QueuedRequest {
   return {
@@ -18,15 +19,19 @@ function makeRequest(overrides: Partial<QueuedRequest> = {}): QueuedRequest {
 
 describe('OfflineQueueStore', () => {
   let store: OfflineQueueStore;
+  let cache: OfflineGetCache;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({ providers: [OfflineQueueStore] });
+    TestBed.configureTestingModule({ providers: [OfflineQueueStore, OfflineGetCache] });
     store = TestBed.inject(OfflineQueueStore);
+    cache = TestBed.inject(OfflineGetCache);
     await store.clear();
+    await cache.clear();
   });
 
   afterEach(async () => {
     await store.clear();
+    await cache.clear();
   });
 
   it('enqueues and retrieves pending requests in order', async () => {
@@ -92,5 +97,16 @@ describe('OfflineQueueStore', () => {
     await store.clear();
 
     expect(await store.counts()).toEqual({ pending: 0, blocked: 0 });
+  });
+
+  it('coexists with OfflineGetCache using a separate database', async () => {
+    // Regresión: ambos servicios compartían el mismo DB_NAME a la misma versión
+    // con stores distintos → el segundo openDB nunca creaba su store y toda
+    // operación lanzaba NotFoundError. Cada store debe vivir en su propia base.
+    await store.enqueue(makeRequest({ id: 'collision-req' }));
+    await cache.set('/api/clients?page=1', { data: [{ id: '1' }] });
+
+    expect((await store.getPending()).map((r) => r.id)).toContain('collision-req');
+    expect((await cache.get('/api/clients?page=1'))?.body).toEqual({ data: [{ id: '1' }] });
   });
 });
