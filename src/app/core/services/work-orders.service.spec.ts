@@ -343,4 +343,14 @@ describe('WorkOrdersService', () => {
       req.flush(null);
     });
   });
+
+  describe('delete()', () => {
+    it('should DELETE /api/work-orders/:id', () => {
+      service.delete('wo-1').subscribe();
+
+      const req = httpMock.expectOne('/api/work-orders/wo-1');
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null);
+    });
+  });
 });

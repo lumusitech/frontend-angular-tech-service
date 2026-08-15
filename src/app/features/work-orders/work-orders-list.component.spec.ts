@@ -5,7 +5,20 @@ import { WorkOrdersListComponent } from './work-orders-list.component';
 import { WorkOrdersService } from '../../core/services/work-orders.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { Observable, of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
+import { MobileCardComponent } from '../../shared/components/mobile-card/mobile-card.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { PaginatedResponse } from '../../core/models/client.interfaces';
+import {
+  WorkOrder,
+  WorkOrderStatus,
+  WorkOrderPriority,
+  WorkOrderLocation,
+} from '../../core/models/work-order.interfaces';
 
 function createActivatedRouteMock(queryParams: Record<string, string | null> = {}) {
   return {
@@ -16,28 +29,62 @@ function createActivatedRouteMock(queryParams: Record<string, string | null> = {
   };
 }
 
+function makeOrder(id: string, status: string): WorkOrder {
+  return {
+    id,
+    trackingCode: `TS-${id.toUpperCase()}`,
+    status: status as WorkOrderStatus,
+    priority: 'medium' as WorkOrderPriority,
+    location: 'workshop' as WorkOrderLocation,
+    client: { id: 'c-1', name: 'Cliente', email: 'c@x.com', phone: '123' },
+    serviceType: { id: 'st-1', name: 'Servicio' },
+    technicians: [],
+    tasks: [],
+    materials: [],
+    notes: [],
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  };
+}
+
+function makePaginated(orders: WorkOrder[]): PaginatedResponse<WorkOrder> {
+  return { data: orders, total: orders.length, page: 1, limit: 10, totalPages: 1 };
+}
+
 describe('WorkOrdersListComponent - Date Filtering', () => {
   let component: WorkOrdersListComponent;
   let fixture: ComponentFixture<WorkOrdersListComponent>;
   let bulkStatusChangeSpy: ReturnType<typeof vi.fn>;
   let toastSpy: ReturnType<typeof vi.fn>;
   let dialogSpy: ReturnType<typeof vi.fn>;
+  let deleteSpy: ReturnType<typeof vi.fn>;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     bulkStatusChangeSpy = vi.fn();
     toastSpy = vi.fn();
     dialogSpy = vi.fn();
+    deleteSpy = vi.fn();
 
     TestBed.configureTestingModule({
       imports: [WorkOrdersListComponent],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: WorkOrdersService,
-          useValue: { bulkStatusChange: bulkStatusChangeSpy },
+          useValue: { bulkStatusChange: bulkStatusChangeSpy, delete: deleteSpy },
+        },
+        {
+          provide: WebsocketService,
+          useValue: { workOrderStatusChanges: () => ({}) },
         },
         {
           provide: TranslationService,
-          useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
+          useValue: {
+            instant: vi.fn().mockImplementation((k: string) => k),
+            locale: () => 'es',
+          },
         },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
         { provide: ToastService, useValue: { show: toastSpy } },
@@ -50,6 +97,12 @@ describe('WorkOrdersListComponent - Date Filtering', () => {
 
     fixture = TestBed.createComponent(WorkOrdersListComponent);
     component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.match(() => true).forEach((req) => req.flush({}));
+    httpMock.verify();
   });
 
   it('should create', () => {
@@ -251,6 +304,106 @@ describe('WorkOrdersListComponent - Date Filtering', () => {
 
       expect(toastSpy).toHaveBeenCalledWith('boom', 'error');
       expect(component.bulkLoading()).toBe(false);
+    });
+  });
+
+  describe('mobile cards swipe actions (regression guard)', () => {
+    it('should wire onDelete and onEdit handlers on every mobile card', async () => {
+      fixture.detectChanges();
+      const req = httpMock.expectOne((r) => r.url === '/api/work-orders');
+      req.flush(makePaginated([makeOrder('wo-1', 'pending'), makeOrder('wo-2', 'in_progress')]));
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const cards = fixture.debugElement.queryAll(By.directive(MobileCardComponent));
+      expect(cards.length).toBeGreaterThan(0);
+
+      for (const card of cards) {
+        const cardComponent = card.componentInstance as MobileCardComponent;
+        expect(typeof cardComponent.onDelete()).toBe('function');
+        expect(typeof cardComponent.onEdit()).toBe('function');
+      }
+    });
+
+    it('should invoke deleteOrder when the onDelete handler is called', async () => {
+      fixture.detectChanges();
+      const req = httpMock.expectOne((r) => r.url === '/api/work-orders');
+      req.flush(makePaginated([makeOrder('wo-1', 'pending')]));
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const card = fixture.debugElement.query(By.directive(MobileCardComponent));
+      const onDelete = (card.componentInstance as MobileCardComponent).onDelete();
+      expect(typeof onDelete).toBe('function');
+      if (!onDelete) return;
+
+      const order = { ...makeOrder('wo-1', 'pending') };
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
+      deleteSpy.mockReturnValue(of(undefined));
+      const reloadSpy = vi
+        .spyOn(component.workOrdersResource, 'reload')
+        .mockImplementation(() => true);
+
+      onDelete(new Event('swipe'));
+
+      expect(dialogSpy).toHaveBeenCalledWith(
+        ConfirmDialogComponent,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: 'workOrders.deleteTitle',
+            message: 'workOrders.deleteMessage',
+            confirmLabel: 'common.delete',
+            color: 'warn',
+          }),
+        }),
+      );
+      expect(deleteSpy).toHaveBeenCalledWith(order.id);
+      expect(toastSpy).toHaveBeenCalledWith('common.toast.deleted', 'success');
+      expect(reloadSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteOrder()', () => {
+    it('onDeleteSwipe should return a function that deletes the order', () => {
+      const order = makeOrder('wo-1', 'pending');
+      const swipeFn = component.onDeleteSwipe(order);
+      expect(typeof swipeFn).toBe('function');
+
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
+      deleteSpy.mockReturnValue(of(undefined));
+      const reloadSpy = vi
+        .spyOn(component.workOrdersResource, 'reload')
+        .mockImplementation(() => true);
+
+      swipeFn(new Event('swipe'));
+
+      expect(dialogSpy).toHaveBeenCalled();
+      expect(deleteSpy).toHaveBeenCalledWith('wo-1');
+      expect(toastSpy).toHaveBeenCalledWith('common.toast.deleted', 'success');
+      expect(reloadSpy).toHaveBeenCalled();
+    });
+
+    it('should not delete when the dialog is cancelled', () => {
+      const order = makeOrder('wo-1', 'pending');
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(false)) });
+
+      component.deleteOrder(order);
+
+      expect(dialogSpy).toHaveBeenCalled();
+      expect(deleteSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show error toast when delete fails', () => {
+      const order = makeOrder('wo-1', 'pending');
+      dialogSpy.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) });
+      deleteSpy.mockReturnValue(
+        new Observable((subscriber) => subscriber.error({ error: { message: 'boom' } })),
+      );
+      vi.spyOn(component.workOrdersResource, 'reload').mockImplementation(() => true);
+
+      component.deleteOrder(order);
+
+      expect(toastSpy).toHaveBeenCalledWith('boom', 'error');
     });
   });
 });
