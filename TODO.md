@@ -321,6 +321,29 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ## Bugs conocidos
 
+### ~~BUG-007: NotFoundError en IndexedDB offline — colisión de stores entre queue y getCache~~ ✅
+
+**Reportado (15/08/2026):** `NotFoundError: One of the specified object stores was not found` en el navegador, en un bucle de errores que no paraba (flush + enqueue reintentando y fallando).
+
+**Causa raíz:** `OfflineQueueStore` y `OfflineGetCache` abrían la **misma base IndexedDB** `tech-service-offline` a la **misma versión (1)** con object stores distintos (`queue` vs `getCache`). En IndexedDB el `upgrade()` solo corre si la versión pedida es mayor a la existente → el segundo `openDB` nunca creaba su store → toda operación lanzaba `NotFoundError` (`getPending()` en `flush()` línea 66/132).
+
+**Fix (PR frontend #251):**
+1. Bases separadas: `tech-service-offline-queue` y `tech-service-offline-cache` (comentario en ambos archivos documentando la restricción).
+2. Limpieza one-shot de la base legacy rota: `deleteDB('tech-service-offline')` en `OfflineService.init()` (reintenta en cada arranque si otra pestaña la mantiene abierta).
+3. Hardening: `catch` en `OfflineService.flush()` — un fallo de storage loguea y termina con calma (resetea `isSyncing`), sin unhandled rejection.
+4. Tests de regresión: coexistencia de ambos stores en `offline-queue-store.service.spec.ts` (verificado que falla pre-fix con `fake-indexeddb`) + resiliencia de `flush()` en `offline.service.spec.ts`.
+
+**Archivos modificados:**
+- `src/app/core/services/offline-queue-store.service.ts`
+- `src/app/core/services/offline-get-cache.service.ts`
+- `src/app/core/services/offline.service.ts`
+- `src/app/core/services/offline-queue-store.service.spec.ts`
+- `src/app/core/services/offline.service.spec.ts`
+
+**Verificación:** 881 tests PASS, lint OK, `ng build` OK (solo prerender `/` pre-existente).
+
+---
+
 ### ~~BUG-006: Botón "Vista Kanban" no se mostraba correctamente~~ ✅
 
 **Reportado (16/08/2026):** El botón para pasar al kanban estaba proyectado vía `ng-content` del `PageHeaderComponent`, que lo coloca a la izquierda del título en un flex con `justify-between`. En mobile el botón desbordaba el header (quedaba fuera del área visible, solo icono de 35px) y en general era fácil de perder.
