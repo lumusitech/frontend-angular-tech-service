@@ -293,8 +293,11 @@
     "kanban": {
       "title": "Kanban Board",
       "subtitle": "Manage orders by dragging them between statuses",
+      "undo": "Undo",
       "toast": {
         "statusChanged": "Order status updated successfully",
+        "moved": "Order moved",
+        "undone": "Change reverted",
         "error": "Could not update the order status"
       }
     },

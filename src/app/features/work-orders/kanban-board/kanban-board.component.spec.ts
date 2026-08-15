@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { CdkDragDrop, CdkDragMove } from '@angular/cdk/drag-drop';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { of, throwError } from 'rxjs';
-import { KanbanBoardComponent } from './kanban-board.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, of, throwError } from 'rxjs';
+import { KanbanBoardComponent, UndoEntry } from './kanban-board.component';
 import { WorkOrdersService } from '../../../core/services/work-orders.service';
 import { WebsocketService } from '../../../core/services/websocket.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -82,6 +83,14 @@ describe('KanbanBoardComponent', () => {
           useValue: { instant: vi.fn().mockImplementation((k: string) => k) },
         },
         { provide: Router, useValue: { navigate: navigateSpy } },
+        {
+          provide: MatSnackBar,
+          useValue: {
+            open: vi.fn().mockReturnValue({
+              onAction: () => new Observable<never>(),
+            }),
+          },
+        },
       ],
     });
 
@@ -341,6 +350,73 @@ describe('KanbanBoardComponent', () => {
 
       component.onDragMoved({ pointerPosition: { x: 500, y: 0 } } as unknown as CdkDragMove);
       expect(board['autoscrollDirection']).toBeNull();
+    });
+  });
+
+  describe('undo', () => {
+    type PrivateBoard = KanbanBoardComponent & Record<string, unknown>;
+
+    function flushOrders(orders: WorkOrder[]): void {
+      httpMock
+        .match((r) => r.url === '/api/work-orders')
+        .forEach((req) =>
+          req.flush({
+            data: orders,
+            total: orders.length,
+            page: 1,
+            limit: 200,
+            totalPages: 1,
+          } satisfies PaginatedResponse<WorkOrder>),
+        );
+    }
+
+    it('should push an undo entry and show snackbar after a successful move', async () => {
+      const snackbarOpenSpy = TestBed.inject(MatSnackBar).open as ReturnType<typeof vi.fn>;
+      flushOrders([makeOrder('1', 'pending')]);
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const order = makeOrder('1', 'pending');
+      component.onDrop(makeDropEvent('kanban-pending', 'kanban-assigned', order));
+      await Promise.resolve();
+
+      expect(snackbarOpenSpy).toHaveBeenCalled();
+      const board = component as unknown as PrivateBoard;
+      const stack = board['undoStack'] as () => UndoEntry[];
+      expect(stack().length).toBe(1);
+      expect(stack()[0].fromStatus).toBe('pending');
+      expect(stack()[0].toStatus).toBe('assigned');
+    });
+
+    it('should revert the move when undo action is triggered', async () => {
+      flushOrders([makeOrder('1', 'pending')]);
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const order = makeOrder('1', 'pending');
+      component.onDrop(makeDropEvent('kanban-pending', 'kanban-assigned', order));
+      await Promise.resolve();
+
+      // trigger the snackbar action
+      const board = component as unknown as PrivateBoard;
+      (board['undoLast'] as () => void).call(component);
+
+      expect(updateSpy).toHaveBeenLastCalledWith('1', { status: 'pending' });
+      const orders = board['orders'] as () => WorkOrder[];
+      expect(orders()[0].status).toBe('pending');
+    });
+
+    it('should cap the undo stack at maxUndoStack', () => {
+      const board = component as unknown as PrivateBoard;
+      for (let i = 0; i < 8; i++) {
+        (board['pushUndo'] as (e: UndoEntry) => void).call(component, {
+          id: `w-${i}`,
+          fromStatus: 'pending',
+          toStatus: 'assigned',
+        });
+      }
+      const stack = board['undoStack'] as () => UndoEntry[];
+      expect(stack().length).toBe(5);
     });
   });
 });
