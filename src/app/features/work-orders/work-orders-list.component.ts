@@ -205,6 +205,17 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               {{ 'notifications.filteredFromNotification' | translate }}
             </span>
           }
+
+          <button
+            mat-flat-button
+            color="primary"
+            class="ml-auto shrink-0"
+            (click)="openKanban()"
+            [title]="'workOrders.viewToggle.viewKanban' | translate"
+          >
+            <mat-icon>view_kanban</mat-icon>
+            <span>{{ 'workOrders.viewToggle.viewKanban' | translate }}</span>
+          </button>
         </div>
       </div>
 
@@ -791,6 +802,10 @@ export class WorkOrdersListComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.workOrdersResource.reload();
     });
+  }
+
+  openKanban(): void {
+    this.router.navigate(['/admin/work-orders/kanban']);
   }
 
   readonly hasActiveFilters = computed(() => {

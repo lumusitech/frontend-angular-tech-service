@@ -9,121 +9,10 @@ import {
 } from '../../shared/components/status-change-dialog/status-change-dialog.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../core/services/translation.service';
-
-interface StatusAction {
-  labelKey: string;
-  icon: string;
-  color: string;
-  nextStatus: WorkOrderStatus;
-  setStartedAt?: boolean;
-  setCompletedAt?: boolean;
-}
-
-const ACTIONS_BY_STATUS: Record<WorkOrderStatus, StatusAction[]> = {
-  pending: [
-    {
-      labelKey: 'workOrders.actions.startWork',
-      icon: 'play_arrow',
-      color: 'primary',
-      nextStatus: 'in_progress',
-      setStartedAt: true,
-    },
-    {
-      labelKey: 'workOrders.actions.pause',
-      icon: 'pause',
-      color: '',
-      nextStatus: 'postponed',
-    },
-    {
-      labelKey: 'workOrders.actions.cancel',
-      icon: 'cancel',
-      color: 'warn',
-      nextStatus: 'cancelled',
-    },
-  ],
-  assigned: [
-    {
-      labelKey: 'workOrders.actions.startWork',
-      icon: 'play_arrow',
-      color: 'primary',
-      nextStatus: 'in_progress',
-      setStartedAt: true,
-    },
-    {
-      labelKey: 'workOrders.actions.pause',
-      icon: 'pause',
-      color: '',
-      nextStatus: 'postponed',
-    },
-    {
-      labelKey: 'workOrders.actions.cancel',
-      icon: 'cancel',
-      color: 'warn',
-      nextStatus: 'cancelled',
-    },
-  ],
-  on_the_way: [
-    {
-      labelKey: 'workOrders.actions.cancel',
-      icon: 'cancel',
-      color: 'warn',
-      nextStatus: 'cancelled',
-    },
-  ],
-  in_progress: [
-    {
-      labelKey: 'workOrders.actions.complete',
-      icon: 'check_circle',
-      color: 'primary',
-      nextStatus: 'completed',
-      setCompletedAt: true,
-    },
-    {
-      labelKey: 'workOrders.actions.pause',
-      icon: 'pause',
-      color: '',
-      nextStatus: 'postponed',
-    },
-    {
-      labelKey: 'workOrders.actions.cancel',
-      icon: 'cancel',
-      color: 'warn',
-      nextStatus: 'cancelled',
-    },
-  ],
-  postponed: [
-    {
-      labelKey: 'workOrders.actions.resume',
-      icon: 'play_arrow',
-      color: 'primary',
-      nextStatus: 'in_progress',
-    },
-    {
-      labelKey: 'workOrders.actions.cancel',
-      icon: 'cancel',
-      color: 'warn',
-      nextStatus: 'cancelled',
-    },
-  ],
-  completed: [
-    {
-      labelKey: 'workOrders.actions.deliver',
-      icon: 'done_all',
-      color: 'primary',
-      nextStatus: 'delivered',
-    },
-    { labelKey: 'workOrders.actions.reopen', icon: 'replay', color: '', nextStatus: 'in_progress' },
-  ],
-  delivered: [],
-  cancelled: [
-    {
-      labelKey: 'workOrders.actions.reopen',
-      icon: 'replay',
-      color: 'primary',
-      nextStatus: 'pending',
-    },
-  ],
-};
+import {
+  WorkOrderTransitionAction,
+  getTransitionActions,
+} from '../../core/utils/work-order-transitions.util';
 
 @Component({
   selector: 'app-status-transition',
@@ -194,32 +83,11 @@ export class StatusTransitionComponent {
   }>();
   openTechnicianAssignment = output<void>();
 
-  actions(): StatusAction[] {
-    const all = ACTIONS_BY_STATUS[this.status()] || [];
-    let filtered = all;
-    if (!this.requiresDelivery() && this.status() === 'assigned') {
-      filtered = [
-        {
-          labelKey: 'workOrders.actions.onTheWay',
-          icon: 'directions_car',
-          color: 'primary',
-          nextStatus: 'on_the_way',
-        },
-        {
-          labelKey: 'workOrders.actions.cancel',
-          icon: 'cancel',
-          color: 'warn',
-          nextStatus: 'cancelled',
-        },
-      ];
-    }
-    if (!this.requiresDelivery()) {
-      filtered = filtered.filter((a) => a.nextStatus !== 'delivered');
-    }
-    return filtered;
+  actions(): WorkOrderTransitionAction[] {
+    return getTransitionActions(this.status(), this.requiresDelivery());
   }
 
-  onAction(action: StatusAction): void {
+  onAction(action: WorkOrderTransitionAction): void {
     if (action.labelKey === 'workOrders.actions.assignTechnicians') {
       this.openTechnicianAssignment.emit();
       return;
@@ -250,7 +118,7 @@ export class StatusTransitionComponent {
     });
   }
 
-  private emitTransition(action: StatusAction, statusDetail?: string): void {
+  private emitTransition(action: WorkOrderTransitionAction, statusDetail?: string): void {
     const payload: {
       status: WorkOrderStatus;
       startedAt?: string;

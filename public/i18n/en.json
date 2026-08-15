@@ -286,6 +286,18 @@
     "title": "Work Orders",
     "subtitle": "Manage technical service orders",
     "newOrder": "New Order",
+    "viewToggle": {
+      "viewTable": "View table",
+      "viewKanban": "Kanban view"
+    },
+    "kanban": {
+      "title": "Kanban Board",
+      "subtitle": "Manage orders by dragging them between statuses",
+      "toast": {
+        "statusChanged": "Order status updated successfully",
+        "error": "Could not update the order status"
+      }
+    },
     "trackingCode": "Code",
     "code": "Code",
     "client": "Client",

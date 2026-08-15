@@ -96,6 +96,13 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'kanban',
+            loadComponent: () =>
+              import('./features/work-orders/kanban-board/kanban-board.component').then(
+                (m) => m.KanbanBoardComponent,
+              ),
+          },
+          {
             path: ':id',
             loadComponent: () =>
               import('./features/work-orders/work-order-detail.component').then(

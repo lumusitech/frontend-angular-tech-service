@@ -226,6 +226,21 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (15/08/2026)
+
+### Feature: Kanban board para work orders (drag & drop por estado)
+
+- **Vista kanban:** Nueva ruta lazy `/admin/work-orders/kanban` con `KanbanBoardComponent` — columnas por los 8 estados (`pending, assigned, on_the_way, in_progress, postponed, completed, delivered, cancelled`), scroll horizontal, badges de estado/prioridad, avatares de técnicos, contador por columna, `scheduledDate` relativa. Toggle "Vista Kanban" en el header del listado (`work-orders-list.component.ts`) y botón "Ver tabla" de vuelta.
+- **Drag & drop:** CDK `CdkDropListGroup` + `cdkDropList` por columna + `cdkDrag` por card. Reorder dentro de la misma columna es solo visual (el modelo no tiene campo de orden). Cruzar de columna llama `workOrdersService.update(id, { status })` → backend valida transición, crea status log y emite `work_order.status_changed` por websocket. Drop a `delivered` solo permitido si `serviceType.requiresDelivery`.
+- **Validación de transiciones DRY:** Nueva `core/utils/work-order-transitions.util.ts` con `WORK_ORDER_TRANSITION_ACTIONS`, `getTransitionActions(status, requiresDelivery)` y `getAllowedTargetStatuses(status, requiresDelivery)`. `status-transition.component.ts` refactorizado para consumirla (sin cambio de comportamiento) — kanban y detalle comparten la misma matriz.
+- **Real-time:** `boardResource` (`httpResource`) keyed en `websocketService.workOrderRefreshKey()` → refetch al recibir notificaciones de work_order/task.
+- **UX:** `cdkDropListEnterPredicate` restringe drops a columnas válidas (highlight azul en columna destino válida durante el drag), card clicable → detalle (a11y: role=button, tabindex, Enter/Space), toasts de éxito/error. **Feedback de drag pulido:** `*cdkDragPreview` con sombra y rotación + `*cdkDragPlaceholder` dashed que preserva el layout + transición CSS `150ms cubic-bezier` → arrastre fluido sin saltos.
+- **i18n:** keys `workOrders.kanban.*` + `workOrders.viewToggle.*` en es/en/pt.
+- **Tests:** 32 nuevos (util 13, kanban-board 13, kanban-card 6).
+- **Verificación:** 747 tests frontend PASS, lint OK (0 errores), `ng build` OK (solo prerender `/` pre-existente).
+
+---
+
 ## Resumen de prioridades pendientes
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
@@ -248,11 +263,29 @@ if (isPlatformBrowser(this.platformId)) { ... }
 10. **Offline mode** — PWA real para técnicos en campo. Complejidad alta.
 11. ~~**i18n: Portugués**~~ ✅ — `pt.json` con 883 keys + selector en header y settings (14/08/2026)
 12. ~~**Bulk actions**~~ ✅ — Selección múltiple, exportar CSV, cambiar estado masivo. Completado en las 9 listas: clients, work-orders, suppliers, payments, expenses, pending-items, invoices, inquiries, notifications (15/08/2026). Ver sección "Bulk actions".
-13. **Kanban board** — Vista visual alternativa a tabla.
+13. ~~**Kanban board**~~ ✅ — Vista visual alternativa a tabla con drag & drop por estado. Completado (16/08/2026): ruta `/admin/work-orders/kanban`, CDK Drag & Drop, validación de transiciones compartida (ver sección "Kanban board").
+
+### ⏭️ Siguiente paso obligatorio
+
+14. **Offline mode — PWA real para técnicos en campo** — Cola de mutaciones (IndexedDB) para crear/editar offline, sync al reconectar. Complejidad alta. Ver "Próximos pasos priorizados" → item 4.
+
+### 🟠 Bulk actions faltantes (deuda)
+
+15. **Bulk actions en service-types, skills y users** — Las 9 listas restantes ya tienen bulk actions (15/08/2026), pero **service-types, skills y users no tienen selección múltiple** (ni en componente ni en servicios). Pendiente: backend (bulk-status/bulk-delete para service-types y skills, bulk-status/bulk-deactivate para users), `BulkActionsComponent` integrado en las 3 listas, y tests. Reportado 16/08/2026.
 
 ---
 
 ## Bugs conocidos
+
+### ~~BUG-006: Botón "Vista Kanban" no se mostraba correctamente~~ ✅
+
+**Reportado (16/08/2026):** El botón para pasar al kanban estaba proyectado vía `ng-content` del `PageHeaderComponent`, que lo coloca a la izquierda del título en un flex con `justify-between`. En mobile el botón desbordaba el header (quedaba fuera del área visible, solo icono de 35px) y en general era fácil de perder.
+
+**Fix:** Se quitó del `PageHeader` y se movió a la toolbar de filtros de `work-orders-list.component.ts` como un `mat-flat-button` con texto siempre visible y `ml-auto` (alineado a la derecha). Visible en todos los breakpoints.
+
+**Archivo modificado:** `src/app/features/work-orders/work-orders-list.component.ts`
+
+---
 
 ### ~~BUG-001: Material Button Colors — Color por defecto persiste~~ ✅
 
@@ -583,14 +616,16 @@ Fixes necesarios para que la suite corriera contra el backend real:
 
 **Completado (15/08/2026):** Piloto en clients y work-orders. Checkbox por fila (desktop + mobile via MobileCard), toolbar bulk sticky con select-all de página (indeterminate), conteo, clear, export CSV (`exportToCsv` util), cambiar estado (work-orders vía `StatusChangeDialogComponent` con status select), activar/desactivar y eliminar masivo (clients). Backend: endpoints `bulk-status`/`bulk-delete` con resultado `{succeeded, failed}` por id. 65 tests nuevos. **Extendido a las 7 listas restantes** (suppliers, payments, expenses, pending-items, invoices, inquiries, notifications) con 11 endpoints bulk backend y 138 tests nuevos — ver "Últimas features implementadas (15/08/2026)".
 
-### 4. Offline mode — PWA real (esfuerzo alto)
+### ~~4. Offline mode — PWA real (esfuerzo alto)~~ ⏭️ SIGUIENTE OBLIGATORIO
+
+> **Nota (16/08/2026):** Kanban completado → este es el **próximo paso obligatorio** del proyecto.
 
 Cola de mutaciones para crear/editar offline, sync al reconectar.
 Requiere investigación de IndexedDB o similar.
 
-### 5. Kanban board — drag & drop de work orders (esfuerzo alto)
+### ~~5. Kanban board — drag & drop de work orders (esfuerzo alto)~~ ✅
 
-Vista alternativa por columnas de estado. Usar Angular CDK Drag & Drop.
+**Completado (16/08/2026):** Vista por columnas de estado con Angular CDK Drag & Drop. Ruta `/admin/work-orders/kanban` + toggle en el listado. Ver sección "Kanban board".
 
 ### 6. ~~Google Maps + WhatsApp + Tap-to-Call (esfuerzo bajo-medio) — PRIORIDAD~~ ✅
 
@@ -675,15 +710,37 @@ Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → B
 
 ## Sugerencias adicionales (futuro)
 
-| Feature                                   | Valor | Nota                      |
-| ----------------------------------------- | ----- | ------------------------- |
-| Biometric auth (huella/face ID)           | Medio | WebAuthn API              |
-| Drag & drop en work orders (kanban board) | Medio | UX visual                 |
-| Bulk actions (selección múltiple)         | Medio | Exportar, cambiar estado  |
-| Dashboard: Widget de actividad reciente   | Bajo  | Timeline                  |
-| Email templates (confirmación, factura)   | Medio | Requiere backend          |
-| Multi-language: Portugués                 | Bajo  | Patrón i18n existente     |
-| Dark mode: Coherencia total               | Bajo  | Ya funciona, polish menor |
+> Backlog de ideas para evaluar ANTES de iniciar pruebas directas de usuarios (alpha/beta). Priorizar según valor percibido y validación con usuarios reales.
+
+| Feature                                   | Valor | Esfuerzo | Nota                                                     |
+| ----------------------------------------- | ----- | -------- | -------------------------------------------------------- |
+| Biometric auth (huella/face ID)           | Medio | Medio    | WebAuthn API, mejora login en campo                      |
+| Drag & drop en work orders (kanban board) | Medio | Alto     | ✅ **Completado (16/08/2026)** — ver sección Kanban      |
+| Bulk actions (selección múltiple)         | Medio | Medio    | ✅ **Completado (15/08/2026)** — 9 listas                |
+| Dashboard: Widget de actividad reciente   | Bajo  | Bajo     | Timeline de eventos recientes                            |
+| Email templates (confirmación, factura)   | Medio | Medio    | Requiere backend                                         |
+| Multi-language: Portugués                 | Bajo  | Bajo     | ✅ **Completado (14/08/2026)**                           |
+| Dark mode: Coherencia total               | Bajo  | Bajo     | Ya funciona, polish menor                                |
+| Offline mode (PWA)                        | Alto  | Alto     | ⏭️ **SIGUIENTE OBLIGATORIO** — cola de mutaciones        |
+
+### Otras ideas (validar con usuarios en alpha/beta)
+
+| Idea                                                              | Valor | Nota                                                  |
+| ----------------------------------------------------------------- | ----- | ----------------------------------------------------- |
+| Notas de voz en work orders (grabar diagnóstico en campo)         | Alto  | MediaRecorder API, mejora UX del técnico              |
+| Firma digital del cliente al entregar (canvas o touch)            | Alto  | Legal/papel cero, valor percibido alto                 |
+| Fotos adjuntas (evidencia de reparación) en tasks/notas           | Alto  | Upload, thumbnails, storage backend                    |
+| Check-in del técnico con geolocalización al llegar                | Medio | Maps API, timestamps                                   |
+| Presupuestos/envíos de cotización por WhatsApp desde la orden     | Medio | Compartir PDF/imagen vía wa.me                         |
+| Recordatorios automáticos de garantías (vencimientos)             | Medio | Push + dashboard                                       |
+| Historial del cliente unificado (todas las órdenes en su perfil)  | Medio | Ya parcial en ClientReportComponent                     |
+| Multi-sucursal / inventario por local                             | Medio | Requiere modelo de datos                               |
+| Feedback del cliente post-entrega (rating + reseña)               | Bajo  | Link en tracking portal                                 |
+| Exportación de reportes a Excel con formato                       | Bajo  | csv→xlsx vía lib                                      |
+| Impresión directa (recibo/orden) en el local                      | Bajo  | window.print sobre vista optimizada                     |
+| Search con filtros guardados (presets por técnico/equipo)         | Bajo  | localStorage prefs                                    |
+| Accesos rápidos configurables (atajos de teclado)                 | Bajo  | Keyboard shortcuts                                    |
+| Onboarding interactivo para nuevos usuarios                        | Bajo  | Tour guiado por secciones                              |
 
 ---
 
@@ -728,6 +785,7 @@ Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → B
 - [x] E2E tests: 16 specs, 16 POs, seed fixture, waits deterministas — PRs #190–#193
 - [x] E2E tests contra backend real: 59/59 passing (14/08/2026) — fixes de credenciales, seed, y selectores
 - [x] Google Maps + WhatsApp + Tap-to-Call (iconos en CopyFieldComponent, InfoTabComponent, TechWorkOrderDetail, ClientDetail)
+- [x] Kanban board (drag & drop por estado, ruta `/admin/work-orders/kanban`, validación de transiciones compartida) — 16/08/2026
 - [x] LocalDateAdapter (adaptador de fecha local para prevención de desfasajes GMT) — PR #214
 - [x] Swipe entre tabs y reordenamiento de acciones en detalle de orden mobile — PR #213
 - [x] Estilos e ícono de MobileFilterBarComponent con color primario dinámico — PR #216
