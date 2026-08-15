@@ -25,6 +25,9 @@ export class WebsocketService implements OnDestroy {
   readonly workOrderRefreshKey = signal(0);
   readonly workOrderStatusChanges = signal<Record<string, string>>({});
 
+  private readonly suppressedToastIds = new Set<string>();
+  private readonly suppressTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
   connect(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     if (this.socket?.connected) return;
@@ -101,7 +104,31 @@ export class WebsocketService implements OnDestroy {
     }
   }
 
+  /**
+   * Suprime el toast de notificación para un referenceId concreto durante
+   * `durationMs`. Usado por el kanban para no pisar el snackbar de "Deshacer"
+   * cuando el propio usuario mueve una card (MatSnackBar solo muestra uno a la vez).
+   */
+  suppressToastFor(referenceId: string, durationMs = 10_000): void {
+    this.suppressedToastIds.add(referenceId);
+    const existing = this.suppressTimers.get(referenceId);
+    if (existing) {
+      clearTimeout(existing);
+    }
+    this.suppressTimers.set(
+      referenceId,
+      setTimeout(() => {
+        this.suppressedToastIds.delete(referenceId);
+        this.suppressTimers.delete(referenceId);
+      }, durationMs),
+    );
+  }
+
   private showNotificationToast(notification: AppNotification): void {
+    if (notification.referenceId && this.suppressedToastIds.has(notification.referenceId)) {
+      return;
+    }
+
     const icon = NOTIFICATION_TOAST_ICONS[notification.type] || 'notifications';
 
     this.snackBar.openFromComponent(ToastContentComponent, {
@@ -118,6 +145,9 @@ export class WebsocketService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.suppressTimers.forEach((timer) => clearTimeout(timer));
+    this.suppressTimers.clear();
+    this.suppressedToastIds.clear();
     this.disconnect();
   }
 }

@@ -64,11 +64,13 @@ describe('KanbanBoardComponent', () => {
   let updateSpy: ReturnType<typeof vi.fn>;
   let toastSpy: ReturnType<typeof vi.fn>;
   let navigateSpy: ReturnType<typeof vi.fn>;
+  let suppressSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     updateSpy = vi.fn().mockReturnValue(of({}));
     toastSpy = vi.fn();
     navigateSpy = vi.fn();
+    suppressSpy = vi.fn();
 
     TestBed.configureTestingModule({
       imports: [KanbanBoardComponent],
@@ -76,7 +78,10 @@ describe('KanbanBoardComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: WorkOrdersService, useValue: { update: updateSpy } },
-        { provide: WebsocketService, useValue: { workOrderRefreshKey: () => 0 } },
+        {
+          provide: WebsocketService,
+          useValue: { workOrderRefreshKey: () => 0, suppressToastFor: suppressSpy },
+        },
         { provide: ToastService, useValue: { show: toastSpy } },
         {
           provide: TranslationService,
@@ -197,11 +202,17 @@ describe('KanbanBoardComponent', () => {
       expect(updateSpy).not.toHaveBeenCalled();
     });
 
-    it('should show success toast on success', () => {
+    it('should suppress websocket toast and open undo snackbar on success', () => {
+      const snackbarOpenSpy = TestBed.inject(MatSnackBar).open as ReturnType<typeof vi.fn>;
       const order = makeOrder('1', 'pending');
       const event = makeDropEvent('kanban-pending', 'kanban-assigned', order);
       component.onDrop(event);
-      expect(toastSpy).toHaveBeenCalledWith('workOrders.kanban.toast.statusChanged', 'success');
+      expect(suppressSpy).toHaveBeenCalledWith('1');
+      expect(snackbarOpenSpy).toHaveBeenCalledWith(
+        'workOrders.kanban.toast.moved',
+        'workOrders.kanban.undo',
+        expect.objectContaining({ duration: 6000 }),
+      );
     });
 
     it('should update status optimistically without reloading', async () => {
