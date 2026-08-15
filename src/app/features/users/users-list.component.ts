@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
@@ -17,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
@@ -30,10 +32,12 @@ import {
   MobileCardComponent,
   MobileCardField,
 } from '../../shared/components/mobile-card/mobile-card.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
 import { UserFormComponent } from './user-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 @Component({
   selector: 'app-users-list',
@@ -46,6 +50,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatChipsModule,
@@ -57,6 +62,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
     StatusBadgeComponent,
     MobileCardComponent,
     MobileFilterBarComponent,
+    BulkActionsComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -120,6 +126,19 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (usersResource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showActivateDeactivate]="true"
+          [showDelete]="false"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (activate)="bulkSetActive($event)"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (user of usersResource.value().data; track user.id) {
@@ -134,6 +153,9 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               [statusType]="$any('activeInactive')"
               [fields]="getUserFields(user)"
               [canSwipe]="true"
+              [selectable]="true"
+              [checked]="isSelected(user.id)"
+              (selectionChange)="toggleSelection(user.id, $event)"
               [onEdit]="onEditSwipe(user)"
               [onDelete]="onDeleteSwipe(user)"
             >
@@ -168,6 +190,30 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let user"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(user.id)"
+                  (change)="toggleSelection(user.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -316,6 +362,7 @@ import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-
               (click)="openEditDialog(row)"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
               [class.highlight-pulse]="highlightedId() === row.id && highlightApplied()"
+              [class.selected-row]="isSelected(row.id)"
             ></tr>
           </table>
 
@@ -397,7 +444,142 @@ export class UsersListComponent {
       });
   }
 
-  displayedColumns = ['name', 'email', 'phone', 'role', 'isActive', 'createdAt', 'actions'];
+  displayedColumns = [
+    'select',
+    'name',
+    'email',
+    'phone',
+    'role',
+    'isActive',
+    'createdAt',
+    'actions',
+  ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<User[]>(() => this.usersResource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((user) => this.selectedIds().has(user.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((user) => this.selectedIds().has(user.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const user of this.currentPageData()) {
+      if (checked) {
+        next.add(user.id);
+      } else {
+        next.delete(user.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((user) => this.selectedIds().has(user.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('users.name'),
+      t('users.email'),
+      t('users.phone'),
+      t('users.role'),
+      t('common.status'),
+      t('common.created'),
+    ];
+    const rows = selected.map((user) => [
+      user.name,
+      user.email,
+      user.phone ?? '-',
+      t(`users.roles.${user.role}`),
+      user.isActive ? t('common.active') : t('common.inactive'),
+      user.createdAt,
+    ]);
+    exportToCsv(`users-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkSetActive(isActive: boolean): void {
+    const count = this.selectedIds().size;
+    if (count === 0) return;
+
+    const entity = this.translationService.instant('users.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmTitle' : 'bulk.deactivateConfirmTitle',
+          { entity },
+        ),
+        message: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmMessage' : 'bulk.deactivateConfirmMessage',
+          { count: String(count), entity },
+        ),
+        confirmLabel: this.translationService.instant(
+          isActive ? 'bulk.activate' : 'bulk.deactivate',
+        ),
+        color: isActive ? 'primary' : 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      const key = isActive ? 'bulk.toast.activated' : 'bulk.toast.deactivated';
+      this.bulkLoading.set(true);
+      this.usersService.bulkUpdateStatus(ids, isActive).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(this.translationService.instant(key, { entity }), 'success');
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.usersResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
 
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.roleFilter() !== '';

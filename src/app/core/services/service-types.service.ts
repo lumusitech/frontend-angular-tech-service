@@ -6,6 +6,8 @@ import {
   CreateServiceTypeDto,
   UpdateServiceTypeDto,
   ServiceTypeFilters,
+  BulkServiceTypeStatusResult,
+  BulkServiceTypeDeleteResult,
 } from '../models/service-type.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
@@ -40,5 +42,16 @@ export class ServiceTypesService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], isActive: boolean): Observable<BulkServiceTypeStatusResult> {
+    return this.http.patch<BulkServiceTypeStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      isActive,
+    });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkServiceTypeDeleteResult> {
+    return this.http.post<BulkServiceTypeDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

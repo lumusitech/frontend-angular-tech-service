@@ -28,3 +28,13 @@ export interface SkillFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkSkillStatusResult {
+  succeeded: { id: string; isActive: boolean }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkSkillDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

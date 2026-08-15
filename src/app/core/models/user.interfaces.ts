@@ -52,3 +52,8 @@ export interface UserFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkUserStatusResult {
+  succeeded: { id: string; isActive: boolean }[];
+  failed: { id: string; reason: string }[];
+}

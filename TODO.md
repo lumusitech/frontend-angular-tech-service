@@ -260,6 +260,29 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (16/08/2026)
+
+### Feature: Bulk actions en las 3 listas restantes (service-types, skills, users)
+
+- **Backend (PR backend):** 5 endpoints bulk nuevos replicando el patrón `{succeeded, failed}` por id con fallos aislados:
+  - `PATCH /api/service-types/bulk-status` + `POST /api/service-types/bulk-delete`
+  - `PATCH /api/skills/bulk-status` + `POST /api/skills/bulk-delete`
+  - `PATCH /api/users/bulk-status` (solo `{ids, isActive}`, sin bulk-delete — decisión: eliminar usuarios en masa es riesgoso)
+  - DTOs nuevos `bulk-service-type.dto.ts`, `bulk-skill.dto.ts`, `bulk-user.dto.ts` con `@IsArray/@ArrayNotEmpty/@IsUUID(each:true)/@IsBoolean` + interfaces de resultado. Rutas declaradas ANTES de `:id`.
+  - 10 tests unitarios nuevos (service-types 4, skills 4, users 2) → 489 tests PASS, lint OK (0 errores, 14 warnings pre-existentes en `notifications.listener.ts`).
+- **Frontend:**
+  - Modelos: interfaces `BulkServiceTypeStatusResult`/`BulkServiceTypeDeleteResult`, `BulkSkillStatusResult`/`BulkSkillDeleteResult`, `BulkUserStatusResult` en los 3 `.interfaces.ts`.
+  - Servicios: `bulkUpdateStatus(ids, isActive)` en `service-types.service.ts`/`skills.service.ts`/`users.service.ts` + `bulkDelete(ids)` en los 2 primeros.
+  - Integración `BulkActionsComponent` en los 3 list components (checkbox fila + select-all página con indeterminate, toolbar sticky desktop + flotante mobile, CSV de seleccionados, toasts éxito/parcial/error vía i18n `bulk.*`):
+    - **service-types-list:** activar/desactivar + eliminar masivo (showDelete) + CSV (name, description, estimatedDuration, status, createdAt).
+    - **skills-list:** ídem + **nueva columna `isActive`** con `app-status-badge` en tabla y status `activeInactive` en mobile cards (antes no mostraba estado).
+    - **users-list:** solo activar/desactivar (`[showDelete]="false"`) + CSV (name, email, phone, role, status, createdAt).
+  - i18n: sin keys nuevas (bloque `bulk.*` ya es genérico con `{{entity}}`); paridad es/en/pt verificada.
+- **Tests:** 3 service specs nuevos + 3 component specs (1 ampliado, 2 nuevos) → 49 tests nuevos → **879 tests PASS**.
+- **Verificación:** `npx ng build` OK (solo prerender `/` pre-existente), `pnpm test` 879 PASS, `pnpm lint` OK (0 errores), backend 489 tests PASS + lint OK.
+
+---
+
 ## Resumen de prioridades pendientes
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
@@ -290,7 +313,9 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### 🟠 Bulk actions faltantes (deuda)
 
-15. **Bulk actions en service-types, skills y users** — Las 9 listas restantes ya tienen bulk actions (15/08/2026), pero **service-types, skills y users no tienen selección múltiple** (ni en componente ni en servicios). Pendiente: backend (bulk-status/bulk-delete para service-types y skills, bulk-status/bulk-deactivate para users), `BulkActionsComponent` integrado en las 3 listas, y tests. Reportado 16/08/2026. ⏭️ **Próximo candidato.**
+15. ~~**Bulk actions en service-types, skills y users**~~ ✅ — Completado (15/08/2026). Backend: `PATCH /api/service-types/bulk-status` + `POST /api/service-types/bulk-delete`, `PATCH /api/skills/bulk-status` + `POST /api/skills/bulk-delete`, `PATCH /api/users/bulk-status` (solo isActive, sin delete masivo — decisión de producto). DTOs bulk con `IsUUID(each:true)` y rutas ANTES de `:id`, patrón `{succeeded, failed}` con fallos aislados. Frontend: `BulkActionsComponent` integrado en las 3 listas — service-types (activar/desactivar + eliminar + CSV), skills (ídem + **nueva columna isActive** con badge en tabla y status en mobile cards), users (solo activar/desactivar + CSV). Ver sección "Bulk actions en las 3 listas restantes" abajo.
+
+16. **Fix 14 warnings ESLint pre-existentes en backend** — `notifications.listener.ts` tiene 14 warnings `@typescript-eslint/no-floating-promises` (promises no await en métodos listener). Reportado 15/08/2026. ⏭️ Pendiente menor de deuda técnica.
 
 ---
 
