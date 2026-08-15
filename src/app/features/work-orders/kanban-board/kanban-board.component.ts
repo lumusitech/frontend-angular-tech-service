@@ -400,10 +400,7 @@ export class KanbanBoardComponent implements OnDestroy {
 
     this.workOrdersService.update(order.id, { status: targetStatus }).subscribe({
       next: () => {
-        this.toastService.show(
-          this.translationService.instant('workOrders.kanban.toast.statusChanged'),
-          'success',
-        );
+        this.websocketService.suppressToastFor(order.id);
         this.pushUndo({ id: order.id, fromStatus: previousStatus, toStatus: targetStatus });
         this.showUndoSnackbar();
       },
@@ -439,6 +436,7 @@ export class KanbanBoardComponent implements OnDestroy {
 
     this.undoStack.update((stack) => stack.slice(1));
     this.applyStatusLocally(entry.id, entry.fromStatus);
+    this.websocketService.suppressToastFor(entry.id);
 
     this.workOrdersService.update(entry.id, { status: entry.fromStatus }).subscribe({
       next: () => {
