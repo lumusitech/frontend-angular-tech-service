@@ -286,8 +286,11 @@
     "kanban": {
       "title": "Tablero Kanban",
       "subtitle": "Gestiona las órdenes arrastrándolas entre estados",
+      "undo": "Deshacer",
       "toast": {
         "statusChanged": "Estado actualizado correctamente",
+        "moved": "Orden movida",
+        "undone": "Cambio revertido",
         "error": "No se pudo cambiar el estado de la orden"
       }
     },

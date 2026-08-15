@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   inject,
   signal,
   ElementRef,
@@ -25,6 +26,7 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkOrder, WorkOrderStatus } from '../../../core/models/work-order.interfaces';
 import { PaginatedResponse } from '../../../core/models/client.interfaces';
 import { WorkOrdersService } from '../../../core/services/work-orders.service';
@@ -42,6 +44,12 @@ import { StatusLabelPipe } from '../../../shared/pipes/status-label.pipe';
 interface KanbanColumn {
   status: WorkOrderStatus;
   orders: WorkOrder[];
+}
+
+export interface UndoEntry {
+  id: string;
+  fromStatus: WorkOrderStatus;
+  toStatus: WorkOrderStatus;
 }
 
 const KANBAN_STATUSES: WorkOrderStatus[] = [
@@ -196,8 +204,11 @@ export class KanbanBoardComponent implements OnDestroy {
   private readonly websocketService = inject(WebsocketService);
   private readonly toastService = inject(ToastService);
   private readonly translationService = inject(TranslationService);
+  private readonly snackBar = inject(MatSnackBar);
 
   private readonly draggedOrder = signal<WorkOrder | null>(null);
+  private readonly undoStack = signal<UndoEntry[]>([]);
+  private readonly maxUndoStack = 5;
 
   readonly boardResource = httpResource<PaginatedResponse<WorkOrder>>(() => {
     this.websocketService.workOrderRefreshKey();
@@ -212,10 +223,21 @@ export class KanbanBoardComponent implements OnDestroy {
     };
   });
 
+  private readonly orders = signal<WorkOrder[]>([]);
+
+  constructor() {
+    effect(() => {
+      const data = this.boardResource.value()?.data;
+      if (data) {
+        this.orders.set(data);
+      }
+    });
+  }
+
   readonly totalCount = computed(() => this.boardResource.value()?.total ?? 0);
 
   readonly columns = computed<KanbanColumn[]>(() => {
-    const orders = this.boardResource.value()?.data ?? [];
+    const orders = this.orders();
     return KANBAN_STATUSES.map((status) => ({
       status,
       orders: orders.filter((order) => order.status === status),
@@ -364,6 +386,7 @@ export class KanbanBoardComponent implements OnDestroy {
 
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.reorderLocally(order, event.previousIndex, event.currentIndex);
       return;
     }
 
@@ -372,21 +395,80 @@ export class KanbanBoardComponent implements OnDestroy {
       return;
     }
 
+    const previousStatus = order.status;
+    this.applyStatusLocally(order.id, targetStatus);
+
     this.workOrdersService.update(order.id, { status: targetStatus }).subscribe({
       next: () => {
         this.toastService.show(
           this.translationService.instant('workOrders.kanban.toast.statusChanged'),
           'success',
         );
-        this.boardResource.reload();
+        this.pushUndo({ id: order.id, fromStatus: previousStatus, toStatus: targetStatus });
+        this.showUndoSnackbar();
       },
       error: () => {
+        this.applyStatusLocally(order.id, previousStatus);
         this.toastService.show(
           this.translationService.instant('workOrders.kanban.toast.error'),
           'error',
         );
-        this.boardResource.reload();
       },
+    });
+  }
+
+  private pushUndo(entry: UndoEntry): void {
+    this.undoStack.update((stack) => {
+      const next = [entry, ...stack];
+      return next.slice(0, this.maxUndoStack);
+    });
+  }
+
+  private showUndoSnackbar(): void {
+    const ref = this.snackBar.open(
+      this.translationService.instant('workOrders.kanban.toast.moved'),
+      this.translationService.instant('workOrders.kanban.undo'),
+      { duration: 6000, horizontalPosition: 'end', verticalPosition: 'top' },
+    );
+    ref.onAction().subscribe(() => this.undoLast());
+  }
+
+  private undoLast(): void {
+    const entry = this.undoStack()[0];
+    if (!entry) return;
+
+    this.undoStack.update((stack) => stack.slice(1));
+    this.applyStatusLocally(entry.id, entry.fromStatus);
+
+    this.workOrdersService.update(entry.id, { status: entry.fromStatus }).subscribe({
+      next: () => {
+        this.toastService.show(
+          this.translationService.instant('workOrders.kanban.toast.undone'),
+          'info',
+        );
+      },
+      error: () => {
+        this.applyStatusLocally(entry.id, entry.toStatus);
+        this.toastService.show(
+          this.translationService.instant('workOrders.kanban.toast.error'),
+          'error',
+        );
+      },
+    });
+  }
+
+  private applyStatusLocally(id: string, status: WorkOrderStatus): void {
+    this.orders.update((list) => list.map((o) => (o.id === id ? { ...o, status } : o)));
+  }
+
+  private reorderLocally(order: WorkOrder, previousIndex: number, currentIndex: number): void {
+    this.orders.update((list) => {
+      const next = [...list];
+      const sameStatus = next.filter((o) => o.status === order.status);
+      moveItemInArray(sameStatus, previousIndex, currentIndex);
+      const status = order.status;
+      const others = next.filter((o) => o.status !== status);
+      return [...others, ...sameStatus];
     });
   }
 
