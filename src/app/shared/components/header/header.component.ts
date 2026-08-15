@@ -10,6 +10,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { GlobalSearchComponent } from '../global-search/global-search.component';
+import { OfflineStatusButtonComponent } from '../offline-status-button/offline-status-button.component';
 
 interface LanguageOption {
   code: string;
@@ -26,6 +27,7 @@ interface LanguageOption {
     MatButtonModule,
     MatIconModule,
     GlobalSearchComponent,
+    OfflineStatusButtonComponent,
   ],
   template: `
     <header
@@ -102,6 +104,8 @@ interface LanguageOption {
             </button>
           }
         </mat-menu>
+
+        <app-offline-status-button />
 
         <button
           mat-icon-button

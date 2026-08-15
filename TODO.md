@@ -241,6 +241,25 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Últimas features implementadas (16/08/2026)
+
+### Feature: Offline mode — PWA real para técnicos en campo (cola de mutaciones + sync)
+
+- **Objetivo:** el técnico sin señal crea/edita offline y todo se sincroniza al reconectar. Próximo paso obligatorio del proyecto (#14). Complejidad alta.
+- **Backend (PRs backend `feat/auth-refresh-tokens`, `feat/idempotency`):**
+  - **Refresh token rotation:** entidad `refresh_tokens` (token_hash sha256, TTL 14d configurable `JWT_REFRESH_TTL_DAYS`), `POST /api/auth/refresh` con rotación (revoca el usado), `POST /api/auth/logout` revoca todos. Migration `1786763909608-CreateRefreshTokens`.
+  - **Idempotencia global:** entidad `idempotency_records` + `IdempotencyInterceptor` global EXTERNO (antes de `TransformInterceptor`). Dedupe por `sha256(userId|method|path|Idempotency-Key)`; replay devuelve la respuesta almacenada sin re-ejecutar; TTL 48h (purga lazy cada 50 requests). Migration `1786764000000-CreateIdempotencyRecords`.
+- **Frontend (PR `feat/auth-refresh`):**
+  - **Auth con refresh:** `AuthService.refresh()` rota la sesión; `authInterceptor` ante 401 hace refresh **single-flight** y reintenta la request (logout solo si el refresh falla). `LoginResponse.refreshToken`.
+  - **Núcleo offline:** `ConnectivityService` (signal `online()` + corrección por fallo real de red), `OfflineQueueStore` (IndexedDB vía `idb`, estados `pending`/`blocked`, nunca se borra lo bloqueado), `OfflineGetCache` (cache persistente de GETs JSON, TTL 7d, LRU 500), `OfflineService` (motor de sync FIFO: 2xx→elimina, 4xx/401→blocked visible, red/5xx→conserva + backoff; replay reutiliza la Idempotency-Key; bump `workOrderRefreshKey` tras sync), `offlineInterceptor` (1ro en la cadena: online inyecta Idempotency-Key en mutaciones + cachea GETs; offline encola mutaciones con respuesta sintética `X-Offline-Queued` y sirve GETs desde cache).
+  - **Detección robusta de red:** si una mutación online falla con status 0 (navigator.onLine poco confiable), se encola y se reporta offline. **Sonda de recuperación** cada 6s mientras esté offline detecta el retorno y dispara el sync.
+  - **UI:** `OfflineBannerComponent` (estados offline/syncing/pending/blocked), `OfflineStatusButtonComponent` (badge en headers admin + tech), `SyncStatusPanelComponent` (dialog con pendientes/bloqueados, retry individual y reintentar todos). i18n `offline.*` (16 keys) en es/en/pt. `ToastService` con tipo `warning`.
+  - **ngsw-config:** dataGroup `/api/work-orders*` `networkFirst` 24h (capa corta SW) + cache IDB 7d (capa larga).
+  - **Deps:** `idb` + `fake-indexeddb` (dev) + util `generateUuid`.
+- **Tests:** backend 479 PASS (16 refresh + 9 idempotencia), frontend **838 PASS** (33 núcleo + 12 UI + connectivity), **E2E 60/60 PASS** (incluye `offline.spec.ts`: crea cliente offline → reconecta → verifica sync y creación única sin duplicados con idempotencia end-to-end). `npx ng build` OK (solo prerender `/` pre-existente).
+
+---
+
 ## Resumen de prioridades pendientes
 
 ### 🔴 Alta prioridad (bloqueantes / UX rota)
@@ -267,11 +286,11 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ### ⏭️ Siguiente paso obligatorio
 
-14. **Offline mode — PWA real para técnicos en campo** — Cola de mutaciones (IndexedDB) para crear/editar offline, sync al reconectar. Complejidad alta. Ver "Próximos pasos priorizados" → item 4.
+14. ~~**Offline mode — PWA real para técnicos en campo**~~ ✅ — Completado (16/08/2026): cola de mutaciones IndexedDB, sync automático al reconectar, refresh token rotation + idempotencia global en backend. Ver "Últimas features implementadas (16/08/2026)".
 
 ### 🟠 Bulk actions faltantes (deuda)
 
-15. **Bulk actions en service-types, skills y users** — Las 9 listas restantes ya tienen bulk actions (15/08/2026), pero **service-types, skills y users no tienen selección múltiple** (ni en componente ni en servicios). Pendiente: backend (bulk-status/bulk-delete para service-types y skills, bulk-status/bulk-deactivate para users), `BulkActionsComponent` integrado en las 3 listas, y tests. Reportado 16/08/2026.
+15. **Bulk actions en service-types, skills y users** — Las 9 listas restantes ya tienen bulk actions (15/08/2026), pero **service-types, skills y users no tienen selección múltiple** (ni en componente ni en servicios). Pendiente: backend (bulk-status/bulk-delete para service-types y skills, bulk-status/bulk-deactivate para users), `BulkActionsComponent` integrado en las 3 listas, y tests. Reportado 16/08/2026. ⏭️ **Próximo candidato.**
 
 ---
 
@@ -616,12 +635,9 @@ Fixes necesarios para que la suite corriera contra el backend real:
 
 **Completado (15/08/2026):** Piloto en clients y work-orders. Checkbox por fila (desktop + mobile via MobileCard), toolbar bulk sticky con select-all de página (indeterminate), conteo, clear, export CSV (`exportToCsv` util), cambiar estado (work-orders vía `StatusChangeDialogComponent` con status select), activar/desactivar y eliminar masivo (clients). Backend: endpoints `bulk-status`/`bulk-delete` con resultado `{succeeded, failed}` por id. 65 tests nuevos. **Extendido a las 7 listas restantes** (suppliers, payments, expenses, pending-items, invoices, inquiries, notifications) con 11 endpoints bulk backend y 138 tests nuevos — ver "Últimas features implementadas (15/08/2026)".
 
-### ~~4. Offline mode — PWA real (esfuerzo alto)~~ ⏭️ SIGUIENTE OBLIGATORIO
+### ~~4. Offline mode — PWA real (esfuerzo alto)~~ ✅
 
-> **Nota (16/08/2026):** Kanban completado → este es el **próximo paso obligatorio** del proyecto.
-
-Cola de mutaciones para crear/editar offline, sync al reconectar.
-Requiere investigación de IndexedDB o similar.
+**Completado (16/08/2026):** Cola de mutaciones para crear/editar offline + sync al reconectar. Requirió refresh token rotation e idempotencia global en el backend. Ver "Últimas features implementadas (16/08/2026)".
 
 ### ~~5. Kanban board — drag & drop de work orders (esfuerzo alto)~~ ✅
 
@@ -661,11 +677,9 @@ Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → B
 
 ---
 
-### 11. Offline mode — Cola de mutaciones
+### ~~11. Offline mode — Cola de mutaciones~~ ✅
 
-**Valor:** PWA real. Crear/editar offline, sync al reconectar.
-
-**Estado:** Pendiente (requiere investigación)
+**Completado (16/08/2026):** Cola de mutaciones IndexedDB + sync automático + refresh token + idempotencia. Ver "Últimas features implementadas (16/08/2026)".
 
 ---
 
@@ -721,7 +735,7 @@ Rediseño mobile-first completado (ver "Resumen de prioridades pendientes" → B
 | Email templates (confirmación, factura)   | Medio | Medio    | Requiere backend                                         |
 | Multi-language: Portugués                 | Bajo  | Bajo     | ✅ **Completado (14/08/2026)**                           |
 | Dark mode: Coherencia total               | Bajo  | Bajo     | Ya funciona, polish menor                                |
-| Offline mode (PWA)                        | Alto  | Alto     | ⏭️ **SIGUIENTE OBLIGATORIO** — cola de mutaciones        |
+| Offline mode (PWA)                        | Alto  | Alto  | ✅ **Completado (16/08/2026)** — cola de mutaciones + sync |
 
 ### Otras ideas (validar con usuarios en alpha/beta)
 

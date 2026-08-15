@@ -35,6 +35,16 @@
   ],
   "dataGroups": [
     {
+      "name": "api-work-orders",
+      "urls": ["/api/work-orders", "/api/work-orders/**"],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "24h",
+        "timeout": "5s",
+        "strategy": "networkFirst"
+      }
+    },
+    {
       "name": "api-dynamic",
       "urls": ["/api/**"],
       "cacheConfig": {

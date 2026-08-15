@@ -80,7 +80,7 @@ export class TranslationService {
     await this.loadLocale(locale);
   }
 
-  instant(key: string, params?: Record<string, string>): string {
+  instant(key: string, params?: Record<string, string | number>): string {
     const translations = this.translations();
     const value = this.getNestedValue(translations, key);
 
@@ -92,7 +92,7 @@ export class TranslationService {
 
     if (params) {
       for (const [paramKey, paramValue] of Object.entries(params)) {
-        result = result.replace(new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g'), paramValue);
+        result = result.replace(new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g'), String(paramValue));
       }
     }
 

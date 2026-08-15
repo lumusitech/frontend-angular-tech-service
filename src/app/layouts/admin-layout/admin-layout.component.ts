@@ -5,10 +5,17 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 import { AdminBottomNavComponent } from '../../shared/components/admin-bottom-nav/admin-bottom-nav.component';
+import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner.component';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, HeaderComponent, SidebarComponent, AdminBottomNavComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    SidebarComponent,
+    AdminBottomNavComponent,
+    OfflineBannerComponent,
+  ],
   template: `
     <div class="h-dvh flex overflow-hidden bg-gray-50 dark:bg-gray-900">
       <!-- Desktop sidebar -->
@@ -21,6 +28,7 @@ import { AdminBottomNavComponent } from '../../shared/components/admin-bottom-na
 
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <app-header (toggleSidebar)="mobileSidebarOpen.set(!mobileSidebarOpen())" />
+        <app-offline-banner />
 
         <main class="flex-1 overflow-y-auto p-4 lg:p-6 pb-20 lg:pb-6">
           <router-outlet />

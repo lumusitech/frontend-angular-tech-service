@@ -19,6 +19,7 @@ describe('AuthService', () => {
 
   const mockLoginResponse: LoginResponse = {
     accessToken: 'jwt-token-abc123',
+    refreshToken: 'refresh-token-abc123',
     user: mockUser,
   };
 
@@ -99,6 +100,22 @@ describe('AuthService', () => {
       expect(localStorage.getItem('auth_token')).toBe('jwt-token-abc123');
     });
 
+    it('should set refreshToken signal on successful login', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      expect(service.refreshToken()).toBe('refresh-token-abc123');
+    });
+
+    it('should store refreshToken in localStorage on successful login', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      expect(localStorage.getItem('auth_refresh_token')).toBe('refresh-token-abc123');
+    });
+
     it('should store user in localStorage', () => {
       service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
 
@@ -160,8 +177,19 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(service.token()).toBeNull();
+    });
+
+    it('should clear refreshToken signal', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
+
+      expect(service.refreshToken()).toBeNull();
     });
 
     it('should clear user signal', () => {
@@ -169,6 +197,7 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(service.user()).toBeNull();
     });
@@ -178,6 +207,7 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponseWithPrefs);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(service.preferences()).toBeNull();
     });
@@ -187,8 +217,19 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(localStorage.getItem('auth_token')).toBeNull();
+    });
+
+    it('should remove refreshToken from localStorage', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
+
+      expect(localStorage.getItem('auth_refresh_token')).toBeNull();
     });
 
     it('should remove user from localStorage', () => {
@@ -196,6 +237,7 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(localStorage.getItem('auth_user')).toBeNull();
     });
@@ -205,6 +247,7 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponseWithPrefs);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(localStorage.getItem('auth_preferences')).toBeNull();
     });
@@ -218,6 +261,75 @@ describe('AuthService', () => {
     it('should be safe to call when nothing is stored', () => {
       expect(() => service.logout()).not.toThrow();
       expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+    });
+  });
+
+  describe('refresh()', () => {
+    it('should POST /api/auth/refresh with the stored refresh token', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.refresh().subscribe();
+
+      const req = httpMock.expectOne('/api/auth/refresh');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ refreshToken: 'refresh-token-abc123' });
+      req.flush({ ...mockLoginResponse, accessToken: 'new-token', refreshToken: 'new-refresh' });
+    });
+
+    it('should update token and refreshToken (rotation) on success', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.refresh().subscribe();
+
+      httpMock
+        .expectOne('/api/auth/refresh')
+        .flush({ ...mockLoginResponse, accessToken: 'new-token', refreshToken: 'new-refresh' });
+
+      expect(service.token()).toBe('new-token');
+      expect(service.refreshToken()).toBe('new-refresh');
+      expect(localStorage.getItem('auth_token')).toBe('new-token');
+      expect(localStorage.getItem('auth_refresh_token')).toBe('new-refresh');
+    });
+
+    it('should update user and preferences on success', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.refresh().subscribe();
+
+      httpMock
+        .expectOne('/api/auth/refresh')
+        .flush({ ...mockLoginResponseWithPrefs, accessToken: 'new-token' });
+
+      expect(service.user()).toEqual(mockUser);
+      expect(service.preferences()).toEqual(mockLoginResponseWithPrefs.preferences);
+    });
+
+    it('should throw without calling http when no refresh token is stored', () => {
+      service.refresh().subscribe({
+        error: (err) => expect(err.status).toBe(401),
+      });
+
+      httpMock.expectNone('/api/auth/refresh');
+    });
+
+    it('should propagate HTTP error and clear the session', () => {
+      service.login({ email: 'a@b.com', password: 'pass' }).subscribe();
+      httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
+
+      service.refresh().subscribe({ error: () => undefined });
+
+      httpMock
+        .expectOne('/api/auth/refresh')
+        .flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+      expect(service.token()).toBeNull();
+      expect(service.refreshToken()).toBeNull();
+      expect(service.user()).toBeNull();
+      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('auth_refresh_token')).toBeNull();
     });
   });
 
@@ -251,6 +363,7 @@ describe('AuthService', () => {
       httpMock.expectOne('/api/auth/login').flush(mockLoginResponse);
 
       service.logout();
+      httpMock.expectOne('/api/auth/logout').flush({});
 
       expect(service.isAuthenticated()).toBe(false);
     });
@@ -346,6 +459,23 @@ describe('AuthService', () => {
       const freshService = TestBed.inject(AuthService);
 
       expect(freshService.token()).toBe('restored-token');
+    });
+
+    it('should restore refreshToken from localStorage on construction', () => {
+      localStorage.setItem('auth_refresh_token', 'restored-refresh');
+      localStorage.setItem('auth_user', JSON.stringify(mockUser));
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: { navigate: vi.fn() } },
+        ],
+      });
+      const freshService = TestBed.inject(AuthService);
+
+      expect(freshService.refreshToken()).toBe('restored-refresh');
     });
 
     it('should restore user from localStorage on construction', () => {
