@@ -24,7 +24,10 @@ interface OfflineQueueDB extends DBSchema {
   };
 }
 
-const DB_NAME = 'tech-service-offline';
+// Base dedicada: NO compartir DB_NAME con otros stores (OfflineGetCache usa
+// 'tech-service-offline-cache'). Dos openDB al mismo nombre+versión con stores
+// distintos hacen que el segundo nunca cree su store → NotFoundError.
+const DB_NAME = 'tech-service-offline-queue';
 const STORE = 'queue';
 
 function browserHasIndexedDB(): boolean {

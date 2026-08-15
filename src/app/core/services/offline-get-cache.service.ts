@@ -17,7 +17,10 @@ interface GetCacheDB extends DBSchema {
   };
 }
 
-const DB_NAME = 'tech-service-offline';
+// Base dedicada: NO compartir DB_NAME con otros stores (OfflineQueueStore usa
+// 'tech-service-offline-queue'). Dos openDB al mismo nombre+versión con stores
+// distintos hacen que el segundo nunca cree su store → NotFoundError.
+const DB_NAME = 'tech-service-offline-cache';
 const STORE = 'getCache';
 const TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_ENTRIES = 500;

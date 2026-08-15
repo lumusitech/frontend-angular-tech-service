@@ -10,6 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { deleteDB } from 'idb';
 import { ConnectivityService } from './connectivity.service';
 import { OfflineQueueStore, QueuedRequest } from './offline-queue-store.service';
 import { OfflineGetCache } from './offline-get-cache.service';
@@ -46,6 +47,7 @@ export class OfflineService {
 
   private effectRef: EffectRef | null = null;
   private probeTimer: ReturnType<typeof setInterval> | null = null;
+  private legacyDbCleanupDone = false;
 
   init(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -56,6 +58,7 @@ export class OfflineService {
     });
 
     void this.refreshCounts();
+    this.cleanupLegacyDb();
 
     this.effectRef = effect(() => {
       if (this.connectivity.online()) {
@@ -65,6 +68,20 @@ export class OfflineService {
         this.startProbe();
       }
     });
+  }
+
+  /**
+   * Limpieza one-shot de la base legacy del feature offline (v1): ambos stores
+   * (queue y getCache) compartían el nombre 'tech-service-offline' a la misma
+   * versión → el segundo openDB nunca creaba su store y toda operación lanzaba
+   * NotFoundError. Hoy cada store vive en su propia base. Este método descarta
+   * la base rota huérfana; si otra pestaña la mantiene abierta, se reintenta en
+   * el próximo arranque.
+   */
+  private cleanupLegacyDb(): void {
+    if (this.legacyDbCleanupDone) return;
+    this.legacyDbCleanupDone = true;
+    void deleteDB('tech-service-offline').catch(() => undefined);
   }
 
   async queueRequest(
@@ -184,6 +201,10 @@ export class OfflineService {
           'warning',
         );
       }
+    } catch (error) {
+      // Fallo del almacenamiento (ej: store de IndexedDB no disponible): no
+      // propagar unhandled rejection — loguear y terminar el flush con calma.
+      console.error('OfflineService.flush failed:', error);
     } finally {
       await this.refreshCounts();
       this.isSyncing.set(false);
