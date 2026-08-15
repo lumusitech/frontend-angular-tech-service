@@ -23,6 +23,8 @@ export interface FlushResult {
   blocked: number;
 }
 
+const PROBE_INTERVAL_MS = 6000;
+
 @Service()
 export class OfflineService {
   private readonly connectivity = inject(ConnectivityService);
@@ -43,17 +45,24 @@ export class OfflineService {
   readonly lastResult = signal<FlushResult | null>(null);
 
   private effectRef: EffectRef | null = null;
+  private probeTimer: ReturnType<typeof setInterval> | null = null;
 
   init(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.destroyRef.onDestroy(() => this.effectRef?.destroy());
+    this.destroyRef.onDestroy(() => {
+      this.effectRef?.destroy();
+      this.stopProbe();
+    });
 
     void this.refreshCounts();
 
     this.effectRef = effect(() => {
       if (this.connectivity.online()) {
+        this.stopProbe();
         void this.flush();
+      } else {
+        this.startProbe();
       }
     });
   }
@@ -127,7 +136,10 @@ export class OfflineService {
         if (!this.connectivity.online()) break;
 
         try {
-          const headers = new HttpHeaders({ 'Idempotency-Key': item.idempotencyKey });
+          const headers = new HttpHeaders({
+            'Idempotency-Key': item.idempotencyKey,
+            'X-Offline-Replay': 'true',
+          });
           await firstValueFrom(
             this.http.request(item.method, item.url, { body: item.body, headers }),
           );
@@ -222,6 +234,38 @@ export class OfflineService {
     } catch {
       this.pendingCount.set(0);
       this.blockedCount.set(0);
+    }
+  }
+
+  /**
+   * Sonda de recuperación: mientras esté "offline" (detectado por fallos reales
+   * de red), cada PROBE_INTERVAL_MS se intenta una request liviana. Al tener
+   * éxito, se reporta online y el efecto dispara el flush.
+   */
+  private startProbe(): void {
+    if (this.probeTimer) return;
+    void this.probe();
+    this.probeTimer = setInterval(() => void this.probe(), PROBE_INTERVAL_MS);
+  }
+
+  private stopProbe(): void {
+    if (this.probeTimer) {
+      clearInterval(this.probeTimer);
+      this.probeTimer = null;
+    }
+  }
+
+  private async probe(): Promise<void> {
+    if (this.connectivity.online()) return;
+    const headers = new HttpHeaders({
+      'X-Connectivity-Probe': 'true',
+      'X-Skip-Loading': 'true',
+    });
+    try {
+      await firstValueFrom(this.http.get('/api/business-settings', { headers }));
+      this.connectivity.reportOnline();
+    } catch {
+      // Sigue offline; el próximo probe reintenta.
     }
   }
 }

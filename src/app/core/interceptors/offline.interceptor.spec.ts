@@ -10,6 +10,8 @@ describe('offlineInterceptor', () => {
   let httpClient: HttpClient;
   let httpMock: HttpTestingController;
   let online: ReturnType<typeof signal<boolean>>;
+  let reportOfflineSpy: ReturnType<typeof vi.fn>;
+  let reportOnlineSpy: ReturnType<typeof vi.fn>;
   let queueRequestSpy: ReturnType<typeof vi.fn>;
   let cacheGetSpy: ReturnType<typeof vi.fn>;
   let getCachedSpy: ReturnType<typeof vi.fn>;
@@ -20,6 +22,8 @@ describe('offlineInterceptor', () => {
 
   beforeEach(() => {
     online = signal(true);
+    reportOfflineSpy = vi.fn();
+    reportOnlineSpy = vi.fn();
     queueRequestSpy = vi.fn();
     cacheGetSpy = vi.fn();
     getCachedSpy = vi.fn();
@@ -28,7 +32,14 @@ describe('offlineInterceptor', () => {
       providers: [
         provideHttpClient(withInterceptors([offlineInterceptor])),
         provideHttpClientTesting(),
-        { provide: ConnectivityService, useValue: { online } },
+        {
+          provide: ConnectivityService,
+          useValue: {
+            online,
+            reportOffline: reportOfflineSpy,
+            reportOnline: reportOnlineSpy,
+          },
+        },
         {
           provide: OfflineService,
           useValue: {
@@ -83,6 +94,38 @@ describe('offlineInterceptor', () => {
       httpMock.expectOne('/api/work-orders').flush({});
 
       expect(queueRequestSpy).not.toHaveBeenCalled();
+    });
+
+    it('queues a mutation that fails with a network error even if navigator.onLine says online', async () => {
+      let result: unknown;
+      httpClient.post('/api/work-orders', { clientId: 'c' }).subscribe((r) => (result = r));
+
+      const req = httpMock.expectOne('/api/work-orders');
+      req.error(new ProgressEvent('error'), { status: 0, statusText: 'Network Error' });
+
+      expect(result).toBeNull();
+      expect(queueRequestSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ method: 'POST', url: '/api/work-orders' }),
+      );
+      expect(reportOfflineSpy).toHaveBeenCalled();
+    });
+
+    it('does not queue mutations that fail with an HTTP error (e.g. 400)', () => {
+      httpClient.post('/api/work-orders', {}).subscribe({ error: () => undefined });
+
+      const req = httpMock.expectOne('/api/work-orders');
+      req.flush('Bad Request', { status: 400, statusText: 'Bad Request' });
+
+      expect(queueRequestSpy).not.toHaveBeenCalled();
+      expect(reportOfflineSpy).not.toHaveBeenCalled();
+    });
+
+    it('reports online after a successful cached GET', () => {
+      httpClient.get('/api/work-orders?page=1').subscribe();
+
+      httpMock.expectOne('/api/work-orders?page=1').flush({ data: [] });
+
+      expect(reportOnlineSpy).toHaveBeenCalled();
     });
   });
 

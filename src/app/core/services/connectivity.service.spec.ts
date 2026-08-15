@@ -23,4 +23,20 @@ describe('ConnectivityService', () => {
     window.dispatchEvent(new Event('online'));
     expect(service.online()).toBe(true);
   });
+
+  it('reportOffline corrects the state based on real network failures', () => {
+    service.reportOffline();
+    expect(service.online()).toBe(false);
+  });
+
+  it('reportOnline corrects the state back to online', () => {
+    service.reportOffline();
+    service.reportOnline();
+    expect(service.online()).toBe(true);
+  });
+
+  it('reportOnline is a no-op when already online', () => {
+    service.reportOnline();
+    expect(service.online()).toBe(true);
+  });
 });
