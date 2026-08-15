@@ -687,7 +687,7 @@ Genera `src/app/core/models/api.interfaces.ts` con todas las interfaces del back
 
 | #   | Item                                  | Descripción                                                                                      | Esfuerzo |
 | --- | ------------------------------------- | ------------------------------------------------------------------------------------------------ | -------- |
-| 7   | **Offline mode — cola de mutaciones** | PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar. Complejidad alta. | Alto     |
+| 7   | ~~**Offline mode — cola de mutaciones**~~ ✅ | ~~PWA real. Técnicos en campo sin señal pueden crear/editar, sync al reconectar.~~ Completado 16/08/2026: cola IndexedDB + sync automático + refresh token rotation + idempotencia global. | Alto |
 | 8   | ~~**i18n: Portugués**~~ ✅         | ~~Expansión regional. Patrón i18n ya existe (ES + EN). Agregar `pt.json`.~~ Completado 14/08/2026 | Bajo     |
 | 9   | ~~**Bulk actions (selección múltiple)**~~ ✅ | Completado en 9 listas (clients, work-orders, suppliers, payments, expenses, pending-items, invoices, inquiries, notifications) con 11 endpoints bulk backend + export CSV + i18n `{{entity}}`. 15/08/2026. | Medio |
 | 10  | **Kanban board para work orders**     | Vista visual alternativa a tabla (columnas por estado, drag & drop).                             | Alto     |
