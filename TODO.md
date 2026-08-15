@@ -315,7 +315,7 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 15. ~~**Bulk actions en service-types, skills y users**~~ ✅ — Completado (15/08/2026). Backend: `PATCH /api/service-types/bulk-status` + `POST /api/service-types/bulk-delete`, `PATCH /api/skills/bulk-status` + `POST /api/skills/bulk-delete`, `PATCH /api/users/bulk-status` (solo isActive, sin delete masivo — decisión de producto). DTOs bulk con `IsUUID(each:true)` y rutas ANTES de `:id`, patrón `{succeeded, failed}` con fallos aislados. Frontend: `BulkActionsComponent` integrado en las 3 listas — service-types (activar/desactivar + eliminar + CSV), skills (ídem + **nueva columna isActive** con badge en tabla y status en mobile cards), users (solo activar/desactivar + CSV). Ver sección "Bulk actions en las 3 listas restantes" abajo.
 
-16. **Fix 14 warnings ESLint pre-existentes en backend** — `notifications.listener.ts` tiene 14 warnings `@typescript-eslint/no-floating-promises` (promises no await en métodos listener). Reportado 15/08/2026. ⏭️ Pendiente menor de deuda técnica.
+16. **Fix 14 warnings ESLint pre-existentes en backend** — `notifications.listener.ts` tenía 14 warnings `@typescript-eslint/no-floating-promises` (promises no await en métodos listener). Reportado 15/08/2026. 🔧 En PR (backend #148): las llamadas fire-and-forget a `sendPush()` se marcan con `void` (ya maneja sus errores internamente). Verificado: 0 warnings, `pnpm lint` 0 errores, 489 tests PASS. Pendiente de merge por el owner.
 
 ---
 
