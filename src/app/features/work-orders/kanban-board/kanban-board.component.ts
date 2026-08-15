@@ -425,7 +425,12 @@ export class KanbanBoardComponent implements OnDestroy {
     const ref = this.snackBar.open(
       this.translationService.instant('workOrders.kanban.toast.moved'),
       this.translationService.instant('workOrders.kanban.undo'),
-      { duration: 6000, horizontalPosition: 'end', verticalPosition: 'top' },
+      {
+        duration: 6000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['undo-snackbar-panel'],
+      },
     );
     ref.onAction().subscribe(() => this.undoLast());
   }

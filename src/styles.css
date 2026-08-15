@@ -216,11 +216,30 @@ app-mobile-filter-bar .mat-mdc-form-field-subscript-wrapper {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
 
+/* --- Undo snackbar (kanban) --- */
+.undo-snackbar-panel {
+  --mat-snack-bar-container-color: white;
+  --mat-snack-bar-supporting-text-color: #111827;
+  --mat-snack-bar-button-color: #2563eb;
+  border-left: 4px solid #2563eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.undo-snackbar-panel .mat-mdc-snack-bar-action .mdc-button__label {
+  font-weight: 600;
+}
+
 :root.dark .toast-success,
 :root.dark .toast-error,
-:root.dark .toast-info {
+:root.dark .toast-info,
+:root.dark .undo-snackbar-panel {
   --mat-snack-bar-container-color: #1f2937;
   --mat-snack-bar-supporting-text-color: #f3f4f6;
+}
+
+:root.dark .undo-snackbar-panel {
+  --mat-snack-bar-button-color: #93c5fd;
 }
 
 /* --- Mat Dialog backdrop --- */
@@ -246,6 +265,15 @@ app-mobile-filter-bar .mat-mdc-form-field-subscript-wrapper {
 :root.dark .mat-mdc-dialog-container .mdc-dialog__surface,
 :root.dark .mat-mdc-dialog-container .mat-mdc-dialog-surface,
 :root.dark .cdk-overlay-container .mat-mdc-dialog-container {
+  background-color: #1f2937 !important;
+}
+
+/* Snackbar container */
+.mat-mdc-snack-bar-container {
+  background-color: #ffffff !important;
+}
+
+:root.dark .mat-mdc-snack-bar-container {
   background-color: #1f2937 !important;
 }
 
