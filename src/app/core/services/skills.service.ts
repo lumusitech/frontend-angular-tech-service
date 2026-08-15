@@ -1,7 +1,14 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Skill, CreateSkillDto, UpdateSkillDto, SkillFilters } from '../models/skill.interfaces';
+import {
+  Skill,
+  CreateSkillDto,
+  UpdateSkillDto,
+  SkillFilters,
+  BulkSkillStatusResult,
+  BulkSkillDeleteResult,
+} from '../models/skill.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
 @Service()
@@ -36,5 +43,16 @@ export class SkillsService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], isActive: boolean): Observable<BulkSkillStatusResult> {
+    return this.http.patch<BulkSkillStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      isActive,
+    });
+  }
+
+  bulkDelete(ids: string[]): Observable<BulkSkillDeleteResult> {
+    return this.http.post<BulkSkillDeleteResult>(`${this.apiUrl}/bulk-delete`, { ids });
   }
 }

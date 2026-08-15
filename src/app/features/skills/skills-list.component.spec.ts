@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
-import { ServiceTypesListComponent } from './service-types-list.component';
-import { ServiceTypesService } from '../../core/services/service-types.service';
+import { SkillsListComponent } from './skills-list.component';
+import { SkillsService } from '../../core/services/skills.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
 
@@ -14,9 +14,9 @@ function createActivatedRouteMock(queryParams: Record<string, string | null> = {
   };
 }
 
-describe('ServiceTypesListComponent', () => {
-  let component: ServiceTypesListComponent;
-  let fixture: ComponentFixture<ServiceTypesListComponent>;
+describe('SkillsListComponent', () => {
+  let component: SkillsListComponent;
+  let fixture: ComponentFixture<SkillsListComponent>;
   let bulkUpdateStatusSpy: ReturnType<typeof vi.fn>;
   let bulkDeleteSpy: ReturnType<typeof vi.fn>;
   let toastSpy: ReturnType<typeof vi.fn>;
@@ -29,10 +29,10 @@ describe('ServiceTypesListComponent', () => {
     dialogSpy = vi.fn();
 
     TestBed.configureTestingModule({
-      imports: [ServiceTypesListComponent],
+      imports: [SkillsListComponent],
       providers: [
         {
-          provide: ServiceTypesService,
+          provide: SkillsService,
           useValue: {
             delete: vi.fn(),
             bulkUpdateStatus: bulkUpdateStatusSpy,
@@ -48,11 +48,11 @@ describe('ServiceTypesListComponent', () => {
       ],
     });
 
-    TestBed.overrideComponent(ServiceTypesListComponent, {
+    TestBed.overrideComponent(SkillsListComponent, {
       add: { providers: [{ provide: MatDialog, useValue: { open: dialogSpy } }] },
     });
 
-    fixture = TestBed.createComponent(ServiceTypesListComponent);
+    fixture = TestBed.createComponent(SkillsListComponent);
     component = fixture.componentInstance;
   });
 
@@ -62,28 +62,28 @@ describe('ServiceTypesListComponent', () => {
 
   describe('bulk selection', () => {
     it('should toggle selection', () => {
-      component.toggleSelection('st-1', true);
-      expect(component.isSelected('st-1')).toBe(true);
-      component.toggleSelection('st-1', false);
-      expect(component.isSelected('st-1')).toBe(false);
+      component.toggleSelection('sk-1', true);
+      expect(component.isSelected('sk-1')).toBe(true);
+      component.toggleSelection('sk-1', false);
+      expect(component.isSelected('sk-1')).toBe(false);
     });
 
     it('should clear selection', () => {
-      component.toggleSelection('st-1', true);
-      component.toggleSelection('st-2', true);
+      component.toggleSelection('sk-1', true);
+      component.toggleSelection('sk-2', true);
       component.clearSelection();
       expect(component.selectedIds().size).toBe(0);
     });
 
     it('should select all visible page data', () => {
-      const pageData = [{ id: 'st-1' }, { id: 'st-2' }] as never;
+      const pageData = [{ id: 'sk-1' }, { id: 'sk-2' }] as never;
       vi.spyOn(component, 'currentPageData').mockReturnValue(pageData as never);
 
       component.onSelectAllPage(true);
 
       expect(component.selectedIds().size).toBe(2);
-      expect(component.isSelected('st-1')).toBe(true);
-      expect(component.isSelected('st-2')).toBe(true);
+      expect(component.isSelected('sk-1')).toBe(true);
+      expect(component.isSelected('sk-2')).toBe(true);
 
       component.onSelectAllPage(false);
       expect(component.selectedIds().size).toBe(0);
@@ -105,20 +105,20 @@ describe('ServiceTypesListComponent', () => {
     });
 
     it('should call bulkUpdateStatus and show success toast when confirmed', () => {
-      component.toggleSelection('st-1', true);
+      component.toggleSelection('sk-1', true);
       bulkUpdateStatusSpy.mockReturnValue(
-        of({ succeeded: [{ id: 'st-1', isActive: false }], failed: [] }),
+        of({ succeeded: [{ id: 'sk-1', isActive: false }], failed: [] }),
       );
       dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
 
       component.bulkSetActive(false);
 
-      expect(bulkUpdateStatusSpy).toHaveBeenCalledWith(['st-1'], false);
+      expect(bulkUpdateStatusSpy).toHaveBeenCalledWith(['sk-1'], false);
       expect(toastSpy).toHaveBeenCalledWith('bulk.toast.deactivated', 'success');
     });
 
     it('should not call bulkUpdateStatus when dialog is cancelled', () => {
-      component.toggleSelection('st-1', true);
+      component.toggleSelection('sk-1', true);
       dialogSpy.mockReturnValue({ afterClosed: () => of(false) });
 
       component.bulkSetActive(false);
@@ -127,12 +127,12 @@ describe('ServiceTypesListComponent', () => {
     });
 
     it('should show partial toast when some fail', () => {
-      component.toggleSelection('st-1', true);
-      component.toggleSelection('st-2', true);
+      component.toggleSelection('sk-1', true);
+      component.toggleSelection('sk-2', true);
       bulkUpdateStatusSpy.mockReturnValue(
         of({
-          succeeded: [{ id: 'st-1', isActive: false }],
-          failed: [{ id: 'st-2', reason: 'x' }],
+          succeeded: [{ id: 'sk-1', isActive: false }],
+          failed: [{ id: 'sk-2', reason: 'x' }],
         }),
       );
       dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
@@ -143,85 +143,53 @@ describe('ServiceTypesListComponent', () => {
     });
   });
 
-  describe('bulkDeleteServiceTypes()', () => {
+  describe('bulkDeleteSkills()', () => {
     it('should do nothing when nothing is selected', () => {
-      component.bulkDeleteServiceTypes();
+      component.bulkDeleteSkills();
       expect(bulkDeleteSpy).not.toHaveBeenCalled();
     });
 
     it('should call bulkDelete and show success toast when confirmed', () => {
-      component.toggleSelection('st-1', true);
-      bulkDeleteSpy.mockReturnValue(of({ succeeded: [{ id: 'st-1' }], failed: [] }));
+      component.toggleSelection('sk-1', true);
+      bulkDeleteSpy.mockReturnValue(of({ succeeded: [{ id: 'sk-1' }], failed: [] }));
       dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
 
-      component.bulkDeleteServiceTypes();
+      component.bulkDeleteSkills();
 
-      expect(bulkDeleteSpy).toHaveBeenCalledWith(['st-1']);
+      expect(bulkDeleteSpy).toHaveBeenCalledWith(['sk-1']);
       expect(toastSpy).toHaveBeenCalledWith('common.toast.deleted', 'success');
     });
 
     it('should show partial toast when some fail', () => {
-      component.toggleSelection('st-1', true);
-      component.toggleSelection('st-2', true);
+      component.toggleSelection('sk-1', true);
+      component.toggleSelection('sk-2', true);
       bulkDeleteSpy.mockReturnValue(
         of({
           succeeded: [],
-          failed: [{ id: 'st-1', reason: 'x' }],
+          failed: [{ id: 'sk-1', reason: 'x' }],
         }),
       );
       dialogSpy.mockReturnValue({ afterClosed: () => of(true) });
 
-      component.bulkDeleteServiceTypes();
+      component.bulkDeleteSkills();
 
       expect(toastSpy).toHaveBeenCalledWith('bulk.toast.partial', 'info');
     });
   });
 
-  describe('date filter validation', () => {
-    it('should update dateFrom via onDateFromChange', () => {
-      const event = { value: new Date(2026, 4, 15) } as never;
-      component.onDateFromChange(event);
-      expect(component.dateFrom()).toMatch(/2026-05-15/);
-      expect(component.dateError()).toBe('');
-    });
-
-    it('should clear dateFrom when value is null', () => {
-      component.dateFrom.set('2026-05-15');
-      component.onDateFromChange({ value: null } as never);
-      expect(component.dateFrom()).toBe('');
-    });
-
-    it('should update dateTo via onDateToChange', () => {
-      const event = { value: new Date(2026, 5, 30) } as never;
-      component.onDateToChange(event);
-      expect(component.dateTo()).toMatch(/2026-06-30/);
-      expect(component.dateError()).toBe('');
-    });
-
-    it('should clear dateTo when value is null', () => {
-      component.dateTo.set('2026-06-30');
-      component.onDateToChange({ value: null } as never);
-      expect(component.dateTo()).toBe('');
-    });
-
-    it('should not set dateFrom when it is after dateTo', () => {
-      component.dateTo.set('2026-05-15');
-      component.onDateFromChange({ value: new Date(2026, 5, 30) } as never);
-      expect(component.dateFrom()).toBe('');
-      expect(component.dateError()).toBe('common.invalidDateTo');
-    });
-
-    it('should not set dateTo when it is before dateFrom', () => {
-      component.dateFrom.set('2026-05-15');
-      component.onDateToChange({ value: new Date(2026, 4, 10) } as never);
-      expect(component.dateTo()).toBe('');
-      expect(component.dateError()).toBe('common.invalidDateFrom');
-    });
-
-    it('should clear dateError when clearing filters', () => {
-      component.dateError.set('common.invalidDateTo');
+  describe('filters', () => {
+    it('should reset filters on clearFilters', () => {
+      component.searchFilter.set('x');
+      component.categoryFilter.set('Networking');
       component.clearFilters();
-      expect(component.dateError()).toBe('');
+      expect(component.searchFilter()).toBe('');
+      expect(component.categoryFilter()).toBe('');
+    });
+
+    it('should compute hasActiveFilters', () => {
+      expect(component.hasActiveFilters()).toBe(false);
+      component.searchFilter.set('x');
+      expect(component.hasActiveFilters()).toBe(true);
     });
   });
 });

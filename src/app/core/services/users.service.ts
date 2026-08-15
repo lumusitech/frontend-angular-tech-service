@@ -1,7 +1,13 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, CreateUserDto, UpdateUserDto, UserFilters } from '../models/user.interfaces';
+import {
+  User,
+  CreateUserDto,
+  UpdateUserDto,
+  UserFilters,
+  BulkUserStatusResult,
+} from '../models/user.interfaces';
 import { PaginatedResponse } from '../models/client.interfaces';
 
 @Service()
@@ -34,5 +40,12 @@ export class UsersService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  bulkUpdateStatus(ids: string[], isActive: boolean): Observable<BulkUserStatusResult> {
+    return this.http.patch<BulkUserStatusResult>(`${this.apiUrl}/bulk-status`, {
+      ids,
+      isActive,
+    });
   }
 }

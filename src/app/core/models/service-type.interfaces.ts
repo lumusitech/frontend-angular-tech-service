@@ -31,3 +31,13 @@ export interface ServiceTypeFilters {
   page?: number;
   limit?: number;
 }
+
+export interface BulkServiceTypeStatusResult {
+  succeeded: { id: string; isActive: boolean }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface BulkServiceTypeDeleteResult {
+  succeeded: { id: string }[];
+  failed: { id: string; reason: string }[];
+}

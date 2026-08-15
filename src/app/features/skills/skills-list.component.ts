@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { toLocalDateString } from '../../core/utils/date.utils';
 import { httpResource } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -26,12 +28,15 @@ import {
   MobileCardComponent,
   MobileCardField,
 } from '../../shared/components/mobile-card/mobile-card.component';
+import { BulkActionsComponent } from '../../shared/components/bulk-actions/bulk-actions.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { SkillFormComponent } from './skill-form.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { RelativeDatePipe } from '../../shared/pipes/relative-date.pipe';
 import { MobileFilterBarComponent } from '../../shared/components/mobile-filter-bar/mobile-filter-bar.component';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { exportToCsv } from '../../shared/utils/csv-export.util';
 
 @Component({
   selector: 'app-skills-list',
@@ -46,6 +51,7 @@ import { TranslationService } from '../../core/services/translation.service';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatAccordion,
@@ -54,6 +60,8 @@ import { TranslationService } from '../../core/services/translation.service';
     PageHeaderComponent,
     MobileCardComponent,
     MobileFilterBarComponent,
+    BulkActionsComponent,
+    StatusBadgeComponent,
     TranslatePipe,
     RelativeDatePipe,
   ],
@@ -118,13 +126,36 @@ import { TranslationService } from '../../core/services/translation.service';
           [action]="openCreateDialog.bind(this)"
         />
       } @else if (skillsResource.hasValue()) {
+        <app-bulk-actions
+          [selectedCount]="selectedIds().size"
+          [totalCount]="currentPageData().length"
+          [showStatusChange]="false"
+          [showActivateDeactivate]="true"
+          [showDelete]="true"
+          [loading]="bulkLoading()"
+          (selectAll)="onSelectAllPage($event)"
+          (clearSelection)="clearSelection()"
+          (exportCsv)="exportSelectedCsv()"
+          (activate)="bulkSetActive($event)"
+          (deleteSelected)="bulkDeleteSkills()"
+        />
+
         <!-- Mobile: Cards -->
         <mat-accordion class="block md:hidden">
           @for (skill of skillsResource.value().data; track skill.id) {
             <app-mobile-card
               [title]="skill.name"
+              [status]="
+                skill.isActive
+                  ? translationService.instant('common.active')
+                  : translationService.instant('common.inactive')
+              "
+              [statusType]="$any('activeInactive')"
               [fields]="getSkillFields(skill)"
               [canSwipe]="true"
+              [selectable]="true"
+              [checked]="isSelected(skill.id)"
+              (selectionChange)="toggleSelection(skill.id, $event)"
               [onEdit]="onEditSwipe(skill)"
               [onDelete]="onDeleteSwipe(skill)"
             >
@@ -159,6 +190,30 @@ import { TranslationService } from '../../core/services/translation.service';
             (matSortChange)="onSortChange($event)"
             class="w-full"
           >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3 w-12">
+                <mat-checkbox
+                  color="primary"
+                  [checked]="allPageSelected()"
+                  [indeterminate]="somePageSelected()"
+                  (change)="onSelectAllPage($event.checked)"
+                  [title]="'bulk.selectAll' | translate"
+                />
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let skill"
+                class="px-4 py-3"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isSelected(skill.id)"
+                  (change)="toggleSelection(skill.id, $event.checked)"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="name">
               <th
                 mat-header-cell
@@ -209,6 +264,20 @@ import { TranslationService } from '../../core/services/translation.service';
                 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate"
               >
                 {{ skill.description || '—' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="isActive">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+              >
+                {{ 'common.status' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let skill" class="px-4 py-3">
+                <app-status-badge [value]="skill.isActive" type="activeInactive" />
               </td>
             </ng-container>
 
@@ -268,6 +337,7 @@ import { TranslationService } from '../../core/services/translation.service';
               *matRowDef="let row; columns: displayedColumns"
               (click)="openEditDialog(row)"
               [class.highlight-pulse]="highlightedId() === row.id"
+              [class.selected-row]="isSelected(row.id)"
               class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             ></tr>
           </table>
@@ -289,7 +359,7 @@ export class SkillsListComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
-  private readonly translationService = inject(TranslationService);
+  readonly translationService = inject(TranslationService);
   private readonly toastService = inject(ToastService);
 
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: false });
@@ -322,7 +392,192 @@ export class SkillsListComponent {
     return this.translationService.instant(key, params);
   }
 
-  displayedColumns = ['name', 'category', 'description', 'createdAt', 'actions'];
+  displayedColumns = [
+    'select',
+    'name',
+    'category',
+    'description',
+    'isActive',
+    'createdAt',
+    'actions',
+  ];
+
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly bulkLoading = signal(false);
+
+  readonly currentPageData = computed<Skill[]>(() => this.skillsResource.value()?.data ?? []);
+  readonly allPageSelected = computed(
+    () =>
+      this.currentPageData().length > 0 &&
+      this.currentPageData().every((skill) => this.selectedIds().has(skill.id)),
+  );
+  readonly somePageSelected = computed(
+    () =>
+      this.currentPageData().some((skill) => this.selectedIds().has(skill.id)) &&
+      !this.allPageSelected(),
+  );
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: string, checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    this.selectedIds.set(next);
+  }
+
+  onSelectAllPage(checked: boolean): void {
+    const next = new Set(this.selectedIds());
+    for (const skill of this.currentPageData()) {
+      if (checked) {
+        next.add(skill.id);
+      } else {
+        next.delete(skill.id);
+      }
+    }
+    this.selectedIds.set(next);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  exportSelectedCsv(): void {
+    const selected = this.currentPageData().filter((skill) => this.selectedIds().has(skill.id));
+    if (selected.length === 0) return;
+
+    const t = (key: string): string => this.translationService.instant(key);
+    const headers = [
+      t('skills.name'),
+      t('skills.category'),
+      t('skills.description'),
+      t('common.status'),
+      t('common.created'),
+    ];
+    const rows = selected.map((skill) => [
+      skill.name,
+      skill.category ?? '-',
+      skill.description ?? '-',
+      skill.isActive ? t('common.active') : t('common.inactive'),
+      skill.createdAt,
+    ]);
+    exportToCsv(`skills-${toLocalDateString(new Date())}.csv`, headers, rows);
+  }
+
+  bulkSetActive(isActive: boolean): void {
+    const count = this.selectedIds().size;
+    if (count === 0) return;
+
+    const entity = this.translationService.instant('skills.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmTitle' : 'bulk.deactivateConfirmTitle',
+          { entity },
+        ),
+        message: this.translationService.instant(
+          isActive ? 'bulk.activateConfirmMessage' : 'bulk.deactivateConfirmMessage',
+          { count: String(count), entity },
+        ),
+        confirmLabel: this.translationService.instant(
+          isActive ? 'bulk.activate' : 'bulk.deactivate',
+        ),
+        color: isActive ? 'primary' : 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      const key = isActive ? 'bulk.toast.activated' : 'bulk.toast.deactivated';
+      this.bulkLoading.set(true);
+      this.skillsService.bulkUpdateStatus(ids, isActive).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(this.translationService.instant(key, { entity }), 'success');
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.skillsResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
+
+  bulkDeleteSkills(): void {
+    const count = this.selectedIds().size;
+    if (count === 0) return;
+    const entity = this.translationService.instant('skills.title');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('bulk.deleteTitle', { entity }),
+        message: this.translationService.instant('bulk.deleteMessage', {
+          count: String(count),
+          entity,
+        }),
+        confirmLabel: this.translationService.instant('common.delete'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const ids = Array.from(this.selectedIds());
+      this.bulkLoading.set(true);
+      this.skillsService.bulkDelete(ids).subscribe({
+        next: (result) => {
+          this.bulkLoading.set(false);
+          const failedCount = result.failed.length;
+          if (failedCount === 0) {
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
+          } else {
+            this.toastService.show(
+              this.translationService.instant('bulk.toast.partial', {
+                succeeded: String(result.succeeded.length),
+                failed: String(failedCount),
+              }),
+              'info',
+            );
+          }
+          this.clearSelection();
+          this.skillsResource.reload();
+        },
+        error: (err) => {
+          this.bulkLoading.set(false);
+          const msg = Array.isArray(err.error?.message)
+            ? err.error.message.join(', ')
+            : err.error?.message || this.translationService.instant('bulk.toast.error');
+          this.toastService.show(msg, 'error');
+        },
+      });
+    });
+  }
 
   readonly hasActiveFilters = computed(() => {
     return this.searchFilter() !== '' || this.categoryFilter() !== '';
