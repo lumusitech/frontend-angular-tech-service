@@ -52,6 +52,7 @@ import {
 } from '../../shared/components/status-change-dialog/status-change-dialog.component';
 import { ToastService } from '../../core/services/toast.service';
 import { exportToCsv } from '../../shared/utils/csv-export.util';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-work-orders-list',
@@ -260,6 +261,7 @@ import { exportToCsv } from '../../shared/utils/csv-export.util';
               [checked]="isSelected(order.id)"
               (selectionChange)="toggleSelection(order.id, $event)"
               [onEdit]="onEditSwipe(order)"
+              [onDelete]="onDeleteSwipe(order)"
               editIcon="visibility"
               [editLabel]="'workOrders.actions.viewDetail'"
             />
@@ -861,5 +863,43 @@ export class WorkOrdersListComponent {
 
   onEditSwipe(order: WorkOrder): (event: Event) => void {
     return () => this.viewDetail(order);
+  }
+
+  onDeleteSwipe(order: WorkOrder): (event: Event) => void {
+    return () => this.deleteOrder(order);
+  }
+
+  deleteOrder(order: WorkOrder): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translationService.instant('workOrders.deleteTitle'),
+        message: this.translationService.instant('workOrders.deleteMessage', {
+          code: order.trackingCode,
+        }),
+        confirmLabel: this.translationService.instant('common.delete'),
+        color: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.workOrdersService.delete(order.id).subscribe({
+          next: () => {
+            this.toastService.show(
+              this.translationService.instant('common.toast.deleted'),
+              'success',
+            );
+            this.workOrdersResource.reload();
+          },
+          error: (err) => {
+            const msg = Array.isArray(err.error?.message)
+              ? err.error.message.join(', ')
+              : err.error?.message || this.translationService.instant('common.toast.errorDeleted');
+            this.toastService.show(msg, 'error');
+          },
+        });
+      }
+    });
   }
 }

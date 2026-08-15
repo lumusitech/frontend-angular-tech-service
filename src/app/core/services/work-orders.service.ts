@@ -50,6 +50,10 @@ export class WorkOrdersService {
     return this.http.patch<WorkOrder>(`${this.apiUrl}/${id}`, dto);
   }
 
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
   addNote(workOrderId: string, dto: CreateWorkOrderNoteDto): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${workOrderId}/notes`, dto);
   }
