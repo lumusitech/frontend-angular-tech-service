@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragMove } from '@angular/cdk/drag-drop';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
@@ -236,6 +236,62 @@ describe('KanbanBoardComponent', () => {
       const dragWrappers = el.querySelectorAll('.cdk-drag-kanban-card');
       expect(dragWrappers.length).toBe(1);
       expect(dragWrappers[0].getAttribute('cdkdrag')).not.toBeNull();
+    });
+  });
+
+  describe('progressive autoscroll', () => {
+    type PrivateBoard = KanbanBoardComponent & Record<string, unknown>;
+
+    function setBoardContainer(rect = { left: 0, right: 1000 }): void {
+      const board = component as unknown as PrivateBoard;
+      const container = { getBoundingClientRect: () => rect } as unknown as HTMLDivElement;
+      // boardScrollEl is a read-only signal invoked as a function; replace its accessor
+      Object.defineProperty(board, 'boardScrollEl', {
+        configurable: true,
+        get: () => () => ({ nativeElement: container }),
+      });
+    }
+
+    it('should produce faster speeds as closeness increases', () => {
+      const board = component as unknown as PrivateBoard;
+      const speedFor = board['speedFor'] as (closeness: number) => number;
+
+      const slow = speedFor.call(board, 0.2);
+      const medium = speedFor.call(board, 0.5);
+      const fast = speedFor.call(board, 1);
+
+      expect(fast).toBeGreaterThan(medium);
+      expect(medium).toBeGreaterThan(slow);
+      expect(slow).toBeGreaterThan(0);
+    });
+
+    it('should set right direction when pointer is near the right edge', () => {
+      setBoardContainer();
+      const board = component as unknown as PrivateBoard;
+      component.onDragMoved({
+        pointerPosition: { x: 900, y: 0 },
+      } as unknown as CdkDragMove);
+      expect(board['autoscrollDirection']).toBe('right');
+      expect(board['autoscrollSpeed']).toBeGreaterThan(0);
+      expect(board['autoscrollRaf']).toBeGreaterThan(0);
+    });
+
+    it('should set left direction when pointer is near the left edge', () => {
+      setBoardContainer({ left: 100, right: 1000 });
+      const board = component as unknown as PrivateBoard;
+      component.onDragMoved({ pointerPosition: { x: 150, y: 0 } } as unknown as CdkDragMove);
+      expect(board['autoscrollDirection']).toBe('left');
+      expect(board['autoscrollSpeed']).toBeGreaterThan(0);
+    });
+
+    it('should stop autoscroll when pointer is far from both edges', () => {
+      setBoardContainer();
+      const board = component as unknown as PrivateBoard;
+      board['autoscrollDirection'] = 'right';
+      board['autoscrollRaf'] = 1;
+
+      component.onDragMoved({ pointerPosition: { x: 500, y: 0 } } as unknown as CdkDragMove);
+      expect(board['autoscrollDirection']).toBeNull();
     });
   });
 });

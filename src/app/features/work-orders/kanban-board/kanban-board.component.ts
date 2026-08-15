@@ -1,4 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  ElementRef,
+  viewChild,
+  NgZone,
+  OnDestroy,
+} from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import {
@@ -7,6 +16,7 @@ import {
   CdkDropList,
   CdkDrag,
   CdkDragStart,
+  CdkDragMove,
   CdkDragPreview,
   CdkDragPlaceholder,
   moveItemInArray,
@@ -117,7 +127,12 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
           [message]="'workOrders.noOrdersMessage' | translate"
         />
       } @else if (boardResource.hasValue()) {
-        <div cdkScrollable cdkDropListGroup class="flex gap-4 overflow-x-auto pb-4 min-h-[60vh]">
+        <div
+          #boardScroll
+          cdkScrollable
+          cdkDropListGroup
+          class="flex gap-4 overflow-x-auto pb-4 min-h-[60vh]"
+        >
           @for (column of columns(); track column.status) {
             <div
               class="flex-shrink-0 w-72 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col max-h-[80vh]"
@@ -146,6 +161,7 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
                 cdkDropList
                 [cdkDropListData]="column.orders"
                 [cdkDropListEnterPredicate]="enterPredicate"
+                [cdkDropListAutoScrollDisabled]="true"
                 (cdkDropListDropped)="onDrop($event)"
                 class="flex-1 overflow-y-auto p-2 space-y-2 min-h-16 transition-colors rounded-b-xl"
                 [class.bg-blue-50/50]="isDropAllowedFor(column.status)"
@@ -155,6 +171,7 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
                     cdkDrag
                     [cdkDragData]="order"
                     (cdkDragStarted)="onDragStarted($event)"
+                    (cdkDragMoved)="onDragMoved($event)"
                     (cdkDragEnded)="onDragEnded()"
                     class="cdk-drag-kanban-card"
                   >
@@ -173,7 +190,7 @@ const KANBAN_STATUSES: WorkOrderStatus[] = [
     </div>
   `,
 })
-export class KanbanBoardComponent {
+export class KanbanBoardComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly workOrdersService = inject(WorkOrdersService);
   private readonly websocketService = inject(WebsocketService);
@@ -231,13 +248,92 @@ export class KanbanBoardComponent {
     return this.isAllowed(order, status);
   };
 
+  private readonly boardScrollEl = viewChild<ElementRef<HTMLDivElement>>('boardScroll');
+  private readonly ngZone = inject(NgZone);
+
+  private autoscrollRaf = 0;
+  private autoscrollDirection: 'left' | 'right' | null = null;
+  private autoscrollSpeed = 0;
+  private readonly autoscrollEdge = 160;
+  private readonly autoscrollMinSpeed = 4;
+  private readonly autoscrollMaxSpeed = 32;
+
   onDragStarted(_event: CdkDragStart): void {
     const drag = _event.source;
     this.draggedOrder.set(drag.data ?? null);
+    this.stopAutoscroll();
+  }
+
+  onDragMoved(event: CdkDragMove): void {
+    const pointerX = event.pointerPosition.x;
+    const container = this.boardScrollEl()?.nativeElement;
+    if (!container) {
+      this.stopAutoscroll();
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const distanceToLeft = pointerX - rect.left;
+    const distanceToRight = rect.right - pointerX;
+    const nearLeft = distanceToLeft < this.autoscrollEdge;
+    const nearRight = distanceToRight < this.autoscrollEdge;
+
+    if (nearLeft && !nearRight) {
+      const closeness = Math.max(0, 1 - distanceToLeft / this.autoscrollEdge);
+      this.autoscrollDirection = 'left';
+      this.autoscrollSpeed = this.speedFor(closeness);
+    } else if (nearRight && !nearLeft) {
+      const closeness = Math.max(0, 1 - distanceToRight / this.autoscrollEdge);
+      this.autoscrollDirection = 'right';
+      this.autoscrollSpeed = this.speedFor(closeness);
+    } else {
+      this.stopAutoscroll();
+      return;
+    }
+
+    if (!this.autoscrollRaf) {
+      this.startAutoscroll();
+    }
+  }
+
+  private speedFor(closeness: number): number {
+    const eased = closeness * closeness;
+    return Math.round(
+      this.autoscrollMinSpeed + (this.autoscrollMaxSpeed - this.autoscrollMinSpeed) * eased,
+    );
+  }
+
+  private startAutoscroll(): void {
+    this.ngZone.runOutsideAngular(() => {
+      const step = () => {
+        const container = this.boardScrollEl()?.nativeElement;
+        if (!container || !this.autoscrollDirection) {
+          this.autoscrollRaf = 0;
+          return;
+        }
+        container.scrollLeft +=
+          this.autoscrollDirection === 'right' ? this.autoscrollSpeed : -this.autoscrollSpeed;
+        this.autoscrollRaf = requestAnimationFrame(step);
+      };
+      this.autoscrollRaf = requestAnimationFrame(step);
+    });
+  }
+
+  private stopAutoscroll(): void {
+    this.autoscrollDirection = null;
+    if (this.autoscrollRaf) {
+      cancelAnimationFrame(this.autoscrollRaf);
+      this.autoscrollRaf = 0;
+    }
   }
 
   onDragEnded(): void {
     this.draggedOrder.set(null);
+    this.stopAutoscroll();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoscroll();
   }
 
   statusDotClass(status: WorkOrderStatus): string {
