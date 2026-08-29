@@ -114,14 +114,22 @@ describe('OfflineService', () => {
   });
 
   it('does not flush while already syncing', async () => {
-    httpMock.request.mockReturnValue(new Promise(() => undefined));
-    await fakeStore.enqueue(makeRequest());
+    vi.useFakeTimers();
+    try {
+      httpMock.request.mockReturnValue(new Promise(() => undefined));
+      await fakeStore.enqueue(makeRequest());
 
-    const first = service.flush();
-    const second = await service.flush();
+      const first = service.flush();
+      const second = await service.flush();
 
-    expect(second.synced).toBe(0);
-    await first;
+      expect(second.synced).toBe(0);
+
+      await vi.advanceTimersByTimeAsync(20000);
+      await first;
+      expect(service.isSyncing()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('removes synced requests, bumps refresh key and shows success toast', async () => {
@@ -229,5 +237,23 @@ describe('OfflineService', () => {
     expect(service.isSyncing()).toBe(false);
     expect(errorSpy).toHaveBeenCalled();
     errorSpy.mockRestore();
+  });
+
+  it('resets isSyncing when a replay request hangs (timeout)', async () => {
+    vi.useFakeTimers();
+    try {
+      httpMock.request.mockReturnValue(new Promise(() => undefined));
+      await fakeStore.enqueue(makeRequest());
+
+      const flushPromise = service.flush();
+      await vi.advanceTimersByTimeAsync(20000);
+      const result = await flushPromise;
+
+      expect(result.failed).toBe(1);
+      expect(service.isSyncing()).toBe(false);
+      expect(await fakeStore.getPending()).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

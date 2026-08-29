@@ -3,6 +3,7 @@ import {
   inject,
   signal,
   effect,
+  untracked,
   PLATFORM_ID,
   DestroyRef,
   type EffectRef,
@@ -17,6 +18,7 @@ import { OfflineGetCache } from './offline-get-cache.service';
 import { WebsocketService } from './websocket.service';
 import { ToastService } from './toast.service';
 import { TranslationService } from './translation.service';
+import { withTimeout } from '../utils/with-timeout.util';
 
 export interface FlushResult {
   synced: number;
@@ -25,6 +27,10 @@ export interface FlushResult {
 }
 
 const PROBE_INTERVAL_MS = 6000;
+const REPLAY_TIMEOUT_MS = 15000;
+const PROBE_TIMEOUT_MS = 15000;
+const IDB_TIMEOUT_MS = 5000;
+const FLUSH_MAX_MS = 20000;
 
 @Service()
 export class OfflineService {
@@ -47,6 +53,7 @@ export class OfflineService {
 
   private effectRef: EffectRef | null = null;
   private probeTimer: ReturnType<typeof setInterval> | null = null;
+  private flushWatchdog: ReturnType<typeof setTimeout> | null = null;
   private legacyDbCleanupDone = false;
 
   init(): void {
@@ -55,13 +62,18 @@ export class OfflineService {
     this.destroyRef.onDestroy(() => {
       this.effectRef?.destroy();
       this.stopProbe();
+      this.clearFlushWatchdog();
     });
 
     void this.refreshCounts();
     this.cleanupLegacyDb();
 
+    // El effect debe depender SOLO de `online()`. flush() lee isSyncing() con
+    // untracked() para no crear una dependencia reactiva espuria que genere un
+    // bucle infinito de flush.
     this.effectRef = effect(() => {
-      if (this.connectivity.online()) {
+      const isOnline = this.connectivity.online();
+      if (isOnline) {
         this.stopProbe();
         void this.flush();
       } else {
@@ -142,11 +154,16 @@ export class OfflineService {
     const result: FlushResult = { synced: 0, failed: 0, blocked: 0 };
 
     if (!isPlatformBrowser(this.platformId)) return result;
-    if (!this.connectivity.online() || this.isSyncing()) return result;
+    if (untracked(() => !this.connectivity.online() || this.isSyncing())) return result;
 
     this.isSyncing.set(true);
+    this.startFlushWatchdog();
     try {
-      const pending = await this.queueStore.getPending();
+      const pending = await withTimeout(
+        this.queueStore.getPending(),
+        IDB_TIMEOUT_MS,
+        'OfflineService.flush getPending',
+      );
       const sorted = pending.sort((a, b) => a.createdAt - b.createdAt);
 
       for (const item of sorted) {
@@ -157,8 +174,10 @@ export class OfflineService {
             'Idempotency-Key': item.idempotencyKey,
             'X-Offline-Replay': 'true',
           });
-          await firstValueFrom(
-            this.http.request(item.method, item.url, { body: item.body, headers }),
+          await withTimeout(
+            firstValueFrom(this.http.request(item.method, item.url, { body: item.body, headers })),
+            REPLAY_TIMEOUT_MS,
+            `OfflineService.flush replay ${item.method} ${item.url}`,
           );
           await this.queueStore.remove(item.id);
           result.synced += 1;
@@ -206,8 +225,9 @@ export class OfflineService {
       // propagar unhandled rejection — loguear y terminar el flush con calma.
       console.error('OfflineService.flush failed:', error);
     } finally {
-      await this.refreshCounts();
+      this.clearFlushWatchdog();
       this.isSyncing.set(false);
+      await this.refreshCounts();
     }
 
     return result;
@@ -249,12 +269,33 @@ export class OfflineService {
 
   private async refreshCounts(): Promise<void> {
     try {
-      const counts = await this.queueStore.counts();
+      const counts = await withTimeout(
+        this.queueStore.counts(),
+        IDB_TIMEOUT_MS,
+        'OfflineService.refreshCounts counts',
+      );
       this.pendingCount.set(counts.pending);
       this.blockedCount.set(counts.blocked);
     } catch {
       this.pendingCount.set(0);
       this.blockedCount.set(0);
+    }
+  }
+
+  private startFlushWatchdog(): void {
+    this.clearFlushWatchdog();
+    this.flushWatchdog = setTimeout(() => {
+      if (this.isSyncing()) {
+        console.warn('OfflineService.flush watchdog: forzando isSyncing=false tras timeout');
+        this.isSyncing.set(false);
+      }
+    }, FLUSH_MAX_MS);
+  }
+
+  private clearFlushWatchdog(): void {
+    if (this.flushWatchdog) {
+      clearTimeout(this.flushWatchdog);
+      this.flushWatchdog = null;
     }
   }
 
@@ -283,7 +324,11 @@ export class OfflineService {
       'X-Skip-Loading': 'true',
     });
     try {
-      await firstValueFrom(this.http.get('/api/business-settings', { headers }));
+      await withTimeout(
+        firstValueFrom(this.http.get('/api/business-settings', { headers })),
+        PROBE_TIMEOUT_MS,
+        'OfflineService.probe',
+      );
       this.connectivity.reportOnline();
     } catch {
       // Sigue offline; el próximo probe reintenta.
