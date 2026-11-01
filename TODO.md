@@ -564,6 +564,31 @@ if (isPlatformBrowser(this.platformId)) { ... }
 
 ---
 
+## Próximo paso — UI/UX mobile-first y tenancy real
+
+> 📄 Documento de arranque: [`docs/ui-ux-and-tenancy-next-steps.md`](./docs/ui-ux-and-tenancy-next-steps.md)
+
+Tres líneas de trabajo a **investigar y acotar** antes de implementar. El núcleo
+funcional está completo; el siguiente salto de valor es fricción de uso + modelo
+de negocio, no más features.
+
+1. **A — UI/UX (mobile-first PWA + desktop):** auditoría de pantallas críticas.
+   Problema actual: íconos incoherentes de tamaño, touch targets chicos,
+   desalineaciones, sin escala tipográfica documentada y sin fuente de marca.
+   Incluye investigación de métricas modernas (touch targets, escalas de íconos
+   y texto, thumb zone) y evaluación de una nueva fuente de marca.
+2. **B — Tenancy real:** hoy `business-settings` es un registro global único
+   (solo branding, no multi-tenant real). **Bloqueante:** decidir primero si el
+   modelo es SaaS multi-tenant o una app desplegada por cliente (single-tenant).
+   De esa decisión depende qué puede customizar cada cliente en A.
+3. **C — Perfil de técnico:** mejora de carga de foto real (hoy data URL base64)
+   y reemplazo del picker de 18 emojis hardcodeados por el picker nativo del SO.
+
+**Dependencia clave:** resolver B antes de implementar A, para no rehacer el
+branding.
+
+---
+
 ## Próxima sesión — prioridades en orden
 
 ### ~~🔷 BRANDING: Logo B — check + hexágono + workflow line~~ ✅
